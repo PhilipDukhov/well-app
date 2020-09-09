@@ -1,0 +1,6 @@
+framework module Pods_Well_WellUITests {
+  umbrella header "Pods-Well-WellUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}

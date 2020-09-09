@@ -1,0 +1,16 @@
+inhibit_all_warnings!
+
+target 'Well' do
+  platform :ios, '12.0'
+  use_frameworks!
+
+  pod 'R.swift.Library'
+
+  target 'WellTests' do
+    inherit! :search_paths
+  end
+
+  target 'WellUITests' do
+  end
+
+end

@@ -1,0 +1,16 @@
+PODS:
+  - R.swift.Library (5.2.0)
+
+DEPENDENCIES:
+  - R.swift.Library
+
+SPEC REPOS:
+  trunk:
+    - R.swift.Library
+
+SPEC CHECKSUMS:
+  R.swift.Library: 5ba4f1631300caf9a4d890186930da85d540769d
+
+PODFILE CHECKSUM: fbd478b899928839b91a3dd01edb9067738c45ae
+
+COCOAPODS: 1.9.3

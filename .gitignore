@@ -18,6 +18,8 @@ build/
 xcuserdata/
 *.xcscmblueprint
 *.xccheckout
+*.xcworkspace
+R.generated.swift
 
 ## Obj-C/Swift specific
 #*.hmap
@@ -32,3 +34,4 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+.idea/gradle.xml
