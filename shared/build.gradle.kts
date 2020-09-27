@@ -8,12 +8,6 @@ plugins {
 group = "com.well.app"
 version = "1.0-SNAPSHOT"
 
-repositories {
-    gradlePluginPortal()
-    google()
-    jcenter()
-    mavenCentral()
-}
 kotlin {
     android()
     ios {
@@ -33,7 +27,9 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                implementation("com.google.android.material:material:1.2.1")
+                val libs = extra["Libs"] as Map<String, Any>
+                val jetpack = libs["jetpack"] as Map<String, Any>
+                implementation(jetpack["material"] as String)
             }
         }
         val androidTest by getting {
@@ -74,3 +70,4 @@ val packForXcode by tasks.creating(Sync::class) {
     into(targetDir)
 }
 tasks.getByName("build").dependsOn(packForXcode)
+apply(from = "$projectDir/dependencies.gradle")
