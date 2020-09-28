@@ -7,16 +7,19 @@ group = "com.well.app"
 version = "1.0-SNAPSHOT"
 
 buildscript {
-    val kotlinVersion = "1.4.0"
     repositories {
         gradlePluginPortal()
         jcenter()
         google()
         mavenCentral()
     }
+
+    apply(from = "dependencies.gradle")
+    val gradle = extra.libAt("build.gradle")
+    val gradlePlugin = extra.libAt("kotlin.gradlePlugin")
     dependencies {
-        classpath("com.android.tools.build:gradle:4.0.1")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        classpath(gradle)
+        classpath(gradlePlugin)
     }
 }
 

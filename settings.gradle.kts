@@ -17,16 +17,15 @@ pluginManagement {
     resolutionStrategy {
         eachPlugin {
             val pluginId = requested.id.id
-            if (pluginId == "com.android" || pluginId == "kotlin-android-extensions") {
-                useModule("com.android.tools.build:gradle:4.0.1")
-            }
-            if (pluginId.startsWith("com.avito.android")) {
-                val artifact = pluginId.replace("com.avito.android.", "")
-                useModule("com.avito.android:$artifact:2020.10")
+            when {
+                pluginId == "com.android" || pluginId == "kotlin-android-extensions" ->
+                    useModule("com.android.tools.build:gradle:4.0.1")
+
+                pluginId.startsWith("com.avito.android") -> {
+                    val artifact = pluginId.replace("com.avito.android.", "")
+                    useModule("com.avito.android:$artifact:2020.10")
+                }
             }
         }
     }
 }
-
-
-

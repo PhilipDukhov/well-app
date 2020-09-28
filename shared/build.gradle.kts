@@ -27,9 +27,7 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                val libs = extra["Libs"] as Map<String, Any>
-                val jetpack = libs["jetpack"] as Map<String, Any>
-                implementation(jetpack["material"] as String)
+                implementation(extra.libAt("jetpack.material"))
             }
         }
         val androidTest by getting {
