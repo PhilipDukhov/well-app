@@ -38,7 +38,7 @@
         android:scaleType="fitXY"
         app:srcCompat="@drawable/ic_logo" />
 
-    <com.well.app.androidApp.BoldUpperCaseTextView
+    <com.well.androidApp.BoldUpperCaseTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/neris"

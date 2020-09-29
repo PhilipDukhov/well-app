@@ -5,4 +5,8 @@ dependencies {
     implementation(Libs.jetpack.appCompat)
     implementation(Libs.jetpack.constraint)
     implementation(Libs.jetpack.coreCtx)
+
+    implementation(Libs.napier)
+    implementation(Libs.google.firebaseAnalytics)
+    implementation(Libs.google.firebaseCrashlytics)
 }

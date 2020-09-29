@@ -1,9 +1,8 @@
 import com.android.build.gradle.*
 import com.avito.android.plugin.build_param_check.CheckMode.FAIL
 
-
 val javaVersion = JavaVersion.VERSION_1_8
-group = "com.well.app"
+group = "com.well"
 version = "1.0-SNAPSHOT"
 
 buildscript {
@@ -15,11 +14,9 @@ buildscript {
     }
 
     apply(from = "dependencies.gradle")
-    val gradle = extra.libAt("build.gradle")
-    val gradlePlugin = extra.libAt("kotlin.gradlePlugin")
+    val libs = extra.libsAt("build")
     dependencies {
-        classpath(gradle)
-        classpath(gradlePlugin)
+        libs.forEach { classpath(it) }
     }
 }
 
@@ -91,6 +88,7 @@ allprojects {
     @Suppress("UnstableApiUsage")
     repositories {
         jcenter()
+        google()
 
         exclusiveContent {
             forRepository {

@@ -5,7 +5,7 @@ plugins {
     id("com.android.library")
     id("kotlin-android-extensions")
 }
-group = "com.well.app"
+group = "com.well"
 version = "1.0-SNAPSHOT"
 
 kotlin {
@@ -18,7 +18,11 @@ kotlin {
         }
     }
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+                implementation(extra.libAt("napier"))
+            }
+        }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))
@@ -41,18 +45,10 @@ kotlin {
     }
 }
 android {
-    compileSdkVersion(30)
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
-        minSdkVersion(24)
-        targetSdkVersion(30)
         versionCode = 1
         versionName = "1.0"
-    }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-        }
     }
 }
 val packForXcode by tasks.creating(Sync::class) {
@@ -68,4 +64,3 @@ val packForXcode by tasks.creating(Sync::class) {
     into(targetDir)
 }
 tasks.getByName("build").dependsOn(packForXcode)
-apply(from = "$projectDir/dependencies.gradle")

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1170"
+   LastUpgradeVersion = "1200"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -17,7 +17,7 @@
                BlueprintIdentifier = "7555FF7A242A565900829871"
                BuildableName = "Well.app"
                BlueprintName = "Well"
-               ReferencedContainer = "container:WELL.xcodeproj">
+               ReferencedContainer = "container:Well.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
                BlueprintIdentifier = "7555FF90242A565B00829871"
                BuildableName = "WellTests.xctest"
                BlueprintName = "WellTests"
-               ReferencedContainer = "container:WELL.xcodeproj">
+               ReferencedContainer = "container:Well.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -45,7 +45,7 @@
                BlueprintIdentifier = "7555FF9B242A565B00829871"
                BuildableName = "WellUITests.xctest"
                BlueprintName = "WellUITests"
-               ReferencedContainer = "container:WELL.xcodeproj">
+               ReferencedContainer = "container:Well.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -67,7 +67,7 @@
             BlueprintIdentifier = "7555FF7A242A565900829871"
             BuildableName = "Well.app"
             BlueprintName = "Well"
-            ReferencedContainer = "container:WELL.xcodeproj">
+            ReferencedContainer = "container:Well.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -84,7 +84,7 @@
             BlueprintIdentifier = "7555FF7A242A565900829871"
             BuildableName = "Well.app"
             BlueprintName = "Well"
-            ReferencedContainer = "container:WELL.xcodeproj">
+            ReferencedContainer = "container:Well.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
