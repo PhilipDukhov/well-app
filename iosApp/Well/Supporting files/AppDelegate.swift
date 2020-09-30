@@ -16,9 +16,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func initializeLogging() {
-//        #if DEBUG
-//        NapierProxyKt.buildDebug()
-//        #else
+        #if DEBUG
+        NapierProxyKt.buildDebug()
+        #else
         FirebaseApp.configure()
         NapierProxyKt.build(antilog: CrashlyticsAntilog
         { _, tag, message in
@@ -36,6 +36,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 )
             )
         })
-//        #endif
+        #endif
     }
 }
