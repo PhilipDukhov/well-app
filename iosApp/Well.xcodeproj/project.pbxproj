@@ -21,6 +21,8 @@
 		D5BFD5492524670900A94FCC /* ActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5482524670900A94FCC /* ActionButton.swift */; };
 		D5BFD5772524938400A94FCC /* Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5762524938400A94FCC /* Action.swift */; };
 		D5BFD57925249E1900A94FCC /* HasApply.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD57825249E1900A94FCC /* HasApply.swift */; };
+		D5BFD57D2524B06900A94FCC /* NSError+description.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD57C2524B06900A94FCC /* NSError+description.swift */; };
+		D5BFD57F2524B0AB00A94FCC /* Bundle+displayName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD57E2524B0AB00A94FCC /* Bundle+displayName.swift */; };
 		D5ECE2C42523181C00207638 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D5ECE2C32523181C00207638 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
@@ -59,6 +61,8 @@
 		D5BFD5482524670900A94FCC /* ActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionButton.swift; sourceTree = "<group>"; };
 		D5BFD5762524938400A94FCC /* Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Action.swift; sourceTree = "<group>"; };
 		D5BFD57825249E1900A94FCC /* HasApply.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HasApply.swift; sourceTree = "<group>"; };
+		D5BFD57C2524B06900A94FCC /* NSError+description.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSError+description.swift"; sourceTree = "<group>"; };
+		D5BFD57E2524B0AB00A94FCC /* Bundle+displayName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+displayName.swift"; sourceTree = "<group>"; };
 		D5ECE2C32523181C00207638 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D5ECE30225231ECB00207638 /* Well.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Well.entitlements; sourceTree = "<group>"; };
 		E7C0F47F0D380B0A230F9888 /* Pods-Well-WellUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Well-WellUITests.debug.xcconfig"; path = "Target Support Files/Pods-Well-WellUITests/Pods-Well-WellUITests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -167,6 +171,8 @@
 			children = (
 				D5BFD5762524938400A94FCC /* Action.swift */,
 				D5BFD57825249E1900A94FCC /* HasApply.swift */,
+				D5BFD57C2524B06900A94FCC /* NSError+description.swift */,
+				D5BFD57E2524B0AB00A94FCC /* Bundle+displayName.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -383,7 +389,9 @@
 				D519AFAD25245E0F00C24377 /* LoginSocialsView.swift in Sources */,
 				D5BFD5772524938400A94FCC /* Action.swift in Sources */,
 				D519AF87252441DC00C24377 /* LoginInitialViewController.swift in Sources */,
+				D5BFD57D2524B06900A94FCC /* NSError+description.swift in Sources */,
 				D5BFD5492524670900A94FCC /* ActionButton.swift in Sources */,
+				D5BFD57F2524B0AB00A94FCC /* Bundle+displayName.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

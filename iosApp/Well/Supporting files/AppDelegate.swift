@@ -30,16 +30,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         { _, tag, message in
             let args = [tag, message].compactMap { $0 }
             Crashlytics.crashlytics().log(args.joined(separator: " "))
-            print("test \(args)")
         }
         crashlyticsSendLog: { throwable in
-            print("test \(throwable)")
             Crashlytics.crashlytics().record(
-                error: NSError(
-                    domain: "Bubble",
-                    code: 0,
-                    userInfo: [NSLocalizedDescriptionKey: throwable.description()]
-                )
+                error: NSError(description: throwable.description())
             )
         })
         #endif
