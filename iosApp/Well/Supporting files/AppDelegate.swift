@@ -4,15 +4,28 @@ import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    var window: UIWindow?
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        if #available(iOS 13.0, *) { } else {
+            window = Self.initializeWindow()
+        }
         initializeLogging()
-        print(Greeting().greeting())
         return true
     }
     
     @available(iOS 13.0, *)
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    }
+    
+    static func initializeWindow() -> UIWindow {
+        let window = UIWindow(frame: UIScreen.main.bounds)
+        let navigationController = UINavigationController(rootViewController: LoginInitialViewController())
+        navigationController.setNavigationBarHidden(true, animated: false)
+        window.rootViewController = navigationController
+        window.makeKeyAndVisible()
+        return window
     }
     
     private func initializeLogging() {
