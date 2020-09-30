@@ -35,7 +35,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		40C154561ECF31B7E1BC87D6 /* Pods_WellTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WellTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E7FAE8E4CF4ED7E47F58204 /* Pods-Well-WellUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Well-WellUITests.release.xcconfig"; path = "Target Support Files/Pods-Well-WellUITests/Pods-Well-WellUITests.release.xcconfig"; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* Well.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Well.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF7E242A565900829871 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -45,7 +44,6 @@
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7555FFB1242A642300829871 /* shared.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = shared.framework; path = "../shared/build/xcode-frameworks/shared.framework"; sourceTree = "<group>"; };
 		A8560B869390C33CC211DA86 /* Pods_Well.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Well.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B629B4F08FE6A8DD14421A70 /* Pods_Well_WellUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Well_WellUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6C5234FBEC00FAADC9E6A32 /* Pods-Well.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Well.release.xcconfig"; path = "Target Support Files/Pods-Well/Pods-Well.release.xcconfig"; sourceTree = "<group>"; };
 		BE7BB08AC1C3EC928622AE74 /* Pods-Well.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Well.debug.xcconfig"; path = "Target Support Files/Pods-Well/Pods-Well.debug.xcconfig"; sourceTree = "<group>"; };
 		C8444AE5C00230D2481A2661 /* Pods-WellTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WellTests.release.xcconfig"; path = "Target Support Files/Pods-WellTests/Pods-WellTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -103,8 +101,6 @@
 			children = (
 				7555FFB1242A642300829871 /* shared.framework */,
 				A8560B869390C33CC211DA86 /* Pods_Well.framework */,
-				B629B4F08FE6A8DD14421A70 /* Pods_Well_WellUITests.framework */,
-				40C154561ECF31B7E1BC87D6 /* Pods_WellTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -182,7 +178,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 1130;
 				LastUpgradeCheck = 1200;
-				ORGANIZATIONNAME = orgName;
+				ORGANIZATIONNAME = Well;
 				TargetAttributes = {
 					7555FF7A242A565900829871 = {
 						CreatedOnToolsVersion = 11.3.1;

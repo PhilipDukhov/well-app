@@ -70,6 +70,7 @@ PODS:
     - nanopb/encode (= 1.30906.0)
   - nanopb/decode (1.30906.0)
   - nanopb/encode (1.30906.0)
+  - PinLayout (1.9.2)
   - PromisesObjC (1.2.10)
   - R.swift (5.2.2):
     - R.swift.Library (~> 5.2.0)
@@ -78,6 +79,7 @@ PODS:
 DEPENDENCIES:
   - Firebase/Analytics
   - Firebase/Crashlytics
+  - PinLayout
   - R.swift
   - R.swift.Library
 
@@ -93,6 +95,7 @@ SPEC REPOS:
     - GoogleDataTransport
     - GoogleUtilities
     - nanopb
+    - PinLayout
     - PromisesObjC
     - R.swift
     - R.swift.Library
@@ -108,10 +111,11 @@ SPEC CHECKSUMS:
   GoogleDataTransport: b7f406340a291370045a270c599e53c6fa6ec20f
   GoogleUtilities: 7f2f5a07f888cdb145101d6042bc4422f57e70b3
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
+  PinLayout: 0d96022e46e8b80468d819f182a393b97ca038da
   PromisesObjC: b14b1c6b68e306650688599de8a45e49fae81151
   R.swift: 7c52cdc57a66840ffe6cbd8a823d732059d42a32
   R.swift.Library: 5ba4f1631300caf9a4d890186930da85d540769d
 
-PODFILE CHECKSUM: 780124a357502ac3f65a9f4e7028b8c84115aa6d
+PODFILE CHECKSUM: 2f48b67369d5d5a85926890126cb740611256d14
 
 COCOAPODS: 1.9.3

@@ -8,6 +8,9 @@ target 'Well' do
 
   pod 'R.swift.Library'
   pod 'R.swift'
+  
+  pod 'PinLayout'
+  
   pod 'Firebase/Analytics'
   pod 'Firebase/Crashlytics'
 end
