@@ -31,7 +31,6 @@ excluded:
  - Pods/
 custom_rules:
   local_todo: # rule identifier
-    included: "WireGuard\\/Bubble\\/.*\\.swift" # regex that defines paths to include during linting. optional.
     name: "Todo" # rule name. optional.
     regex: "\\b(?:TODO|FIXME)(?::|\\b)" # matching pattern
     match_kinds: # SyntaxKinds to match. optional.
