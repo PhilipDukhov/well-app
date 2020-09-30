@@ -23,7 +23,6 @@
 		D5BFD57925249E1900A94FCC /* HasApply.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD57825249E1900A94FCC /* HasApply.swift */; };
 		D5BFD57D2524B06900A94FCC /* NSError+description.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD57C2524B06900A94FCC /* NSError+description.swift */; };
 		D5BFD57F2524B0AB00A94FCC /* Bundle+displayName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD57E2524B0AB00A94FCC /* Bundle+displayName.swift */; };
-		D5ECE2C42523181C00207638 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D5ECE2C32523181C00207638 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -63,7 +62,8 @@
 		D5BFD57825249E1900A94FCC /* HasApply.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HasApply.swift; sourceTree = "<group>"; };
 		D5BFD57C2524B06900A94FCC /* NSError+description.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSError+description.swift"; sourceTree = "<group>"; };
 		D5BFD57E2524B0AB00A94FCC /* Bundle+displayName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+displayName.swift"; sourceTree = "<group>"; };
-		D5ECE2C32523181C00207638 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		D5BFD5952524B99000A94FCC /* GoogleService-Info-Release.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-Release.plist"; sourceTree = "<group>"; };
+		D5ECE2C32523181C00207638 /* GoogleService-Info-Debug.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-Debug.plist"; sourceTree = "<group>"; };
 		D5ECE30225231ECB00207638 /* Well.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Well.entitlements; sourceTree = "<group>"; };
 		E7C0F47F0D380B0A230F9888 /* Pods-Well-WellUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Well-WellUITests.debug.xcconfig"; path = "Target Support Files/Pods-Well-WellUITests/Pods-Well-WellUITests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -159,7 +159,7 @@
 				7555FF7E242A565900829871 /* AppDelegate.swift */,
 				D51625602503C945009E103B /* R.generated.swift */,
 				7555FF8C242A565B00829871 /* Info.plist */,
-				D5ECE2C32523181C00207638 /* GoogleService-Info.plist */,
+				D5BFD5942524B98200A94FCC /* Firebase */,
 				7555FF89242A565B00829871 /* LaunchScreen.storyboard */,
 				D51625742504BD9C009E103B /* font */,
 			);
@@ -185,6 +185,15 @@
 			path = CustomViews;
 			sourceTree = "<group>";
 		};
+		D5BFD5942524B98200A94FCC /* Firebase */ = {
+			isa = PBXGroup;
+			children = (
+				D5BFD5952524B99000A94FCC /* GoogleService-Info-Release.plist */,
+				D5ECE2C32523181C00207638 /* GoogleService-Info-Debug.plist */,
+			);
+			path = Firebase;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -203,6 +212,7 @@
 				7555FFB4242A642300829871 /* Embed Frameworks */,
 				F6791FE7149714BE16B59DFD /* [CP] Embed Pods Frameworks */,
 				E3BC619DFBBD0B7E84CF050E /* [CP] Copy Pods Resources */,
+				D5BFD5982524B9B000A94FCC /* Copy GoogleService-Info */,
 			);
 			buildRules = (
 			);
@@ -253,7 +263,6 @@
 			files = (
 				D51625792504BD9C009E103B /* neris_semi_bold.otf in Resources */,
 				D516257A2504BD9C009E103B /* neris_thin.otf in Resources */,
-				D5ECE2C42523181C00207638 /* GoogleService-Info.plist in Resources */,
 				7555FF8B242A565B00829871 /* LaunchScreen.storyboard in Resources */,
 				7555FF85242A565B00829871 /* Assets.xcassets in Resources */,
 			);
@@ -339,6 +348,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+		D5BFD5982524B9B000A94FCC /* Copy GoogleService-Info */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy GoogleService-Info";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "PATH_TO_GOOGLE_PLISTS=\"${PROJECT_DIR}/Well/Supporting files/Firebase\"\n\ncase \"${CONFIGURATION}\" in\n\n   \"Debug\" )\n        SOURCE_FILE_NAME=\"GoogleService-Info-Debug\"\n        ;;\n        \n   \"Release\" )\n        SOURCE_FILE_NAME=\"GoogleService-Info-Release\"\n        ;;\n\n    *)\n        ;;\nesac\ncp -r \"$PATH_TO_GOOGLE_PLISTS/$SOURCE_FILE_NAME.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\"\n";
 		};
 		D5ECE2F3252319F000207638 /* FirebaseCrashlytics */ = {
 			isa = PBXShellScriptBuildPhase;
