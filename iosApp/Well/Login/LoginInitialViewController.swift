@@ -8,6 +8,7 @@
 
 import UIKit
 import PinLayout
+import GoogleSignIn
 
 class LoginInitialViewController: UIViewController {
     private let loginSocialsView = LoginSocialsView()
@@ -40,8 +41,15 @@ class LoginInitialViewController: UIViewController {
          loginSocialsView
         ].forEach(view.addSubview)
         
-        loginSocialsView.action = .init { social in
-            print(social)
+        loginSocialsView.action = .init { [weak self] social in
+            switch social {
+            case .google:
+                GIDSignIn.sharedInstance()?.presentingViewController = self
+                GIDSignIn.sharedInstance()?.signIn()
+            
+            default:
+                print(social)
+            }
         }
         createAccountButton.action = .init {
             print("createAccountButton")

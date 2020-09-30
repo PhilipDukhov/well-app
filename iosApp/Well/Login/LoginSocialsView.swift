@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import PinLayout
 
 class LoginSocialsView: UIStackView {
     enum Social: CaseIterable {
@@ -36,16 +35,14 @@ class LoginSocialsView: UIStackView {
     var action: ActionWith<Social>?
     
     init() {
-        let buttons = Social.allCases.reduce(into: [Social: ActionButton]())
-        { result, social in
+        socialButtons = Social.allCases.map { social -> ActionButton in
             let button = ActionButton()
             button.setImage(social.image, for: .normal)
-            result[social] = button
+            return button
         }
-        socialButtons = Array(buttons.values)
         super.init(frame: .zero)
         socialButtons.forEach(addArrangedSubview)
-        buttons.forEach { social, button in
+        zip(Social.allCases, socialButtons).forEach { social, button in
             button.action = .init { [weak self] in
                 self?.action?.execute(social)
             }
