@@ -202,6 +202,7 @@
 				D5ECE2F3252319F000207638 /* FirebaseCrashlytics */,
 				7555FFB4242A642300829871 /* Embed Frameworks */,
 				F6791FE7149714BE16B59DFD /* [CP] Embed Pods Frameworks */,
+				E3BC619DFBBD0B7E84CF050E /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -358,6 +359,23 @@
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/FirebaseCrashlytics/run\"\n";
+		};
+		E3BC619DFBBD0B7E84CF050E /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-resources.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		F6791FE7149714BE16B59DFD /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
