@@ -14,6 +14,17 @@ enum SocialSignerError: Error {
     case unknown
     
     case other(Error)
+    
+    static func forFirebaseAuthError(_ error: NSError) -> Self {
+        guard error.domain == AuthErrorDomain else { return .other(error) }
+        switch AuthErrorCode(rawValue: error.code) {
+        case .webContextCancelled:
+            return .canceled
+            
+        default:
+            return .other(error)
+        }
+    }
 }
 
 protocol SocialSigner: class {

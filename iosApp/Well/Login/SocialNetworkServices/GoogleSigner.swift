@@ -42,7 +42,7 @@ extension GoogleSigner: GIDSignInDelegate {
     {
         finishCredentialRequest({
             if let error = error as NSError? {
-                return .failure(.forGoogleError(error: error))
+                return .failure(.forGoogleError(error))
             }
             guard let authentication = user.authentication else {
                 return .failure(.unknown)
@@ -58,7 +58,7 @@ extension GoogleSigner: GIDSignInDelegate {
 }
 
 extension SocialSignerError {
-    static fileprivate func forGoogleError(error: NSError) -> Self {
+    static fileprivate func forGoogleError(_ error: NSError) -> Self {
         guard error.domain == kGIDSignInErrorDomain else { return .other(error) }
         switch GIDSignInErrorCode(rawValue: error.code) {
         case .canceled:

@@ -7,21 +7,22 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class TwitterSigner: BaseSocialSigner {
-    override func application(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?)
-    {
-    }
-    
-    override func application(
-        _ app: UIApplication,
-        open url: URL,
-        options: [UIApplication.OpenURLOptionsKey: Any])
-    -> Bool
-    { false }
-    
+    private lazy var provider = OAuthProvider(providerID: "twitter.com")
+
     override func baseRequestCredential(placeholder: UIViewController) {
+        provider.getCredentialWith(nil) { [weak self] credential, error in
+            self?.finishCredentialRequest({
+                if let error = error {
+                    return .failure(.forFirebaseAuthError(error as NSError))
+                }
+                guard let credential = credential else {
+                    return .failure(.unknown)
+                }
+                return .success(credential)
+            }())
+        }
     }
 }

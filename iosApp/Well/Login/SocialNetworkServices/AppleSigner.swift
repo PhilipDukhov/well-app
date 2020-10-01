@@ -121,7 +121,7 @@ extension AppleSigner: ASAuthorizationControllerDelegate {
         controller: ASAuthorizationController,
         didCompleteWithError error: Error)
     {
-        finishCredentialRequest(.failure(.forAppleError(error: error as NSError)))
+        finishCredentialRequest(.failure(.forAppleError(error as NSError)))
     }
 }
 
@@ -134,7 +134,7 @@ extension AppleSigner: ASAuthorizationControllerPresentationContextProviding {
 
 @available(iOS 13, *)
 extension SocialSignerError {
-    static fileprivate func forAppleError(error: NSError) -> Self {
+    static fileprivate func forAppleError(_ error: NSError) -> Self {
         guard let authError = error as? ASAuthorizationError else { return .other(error) }
         switch authError.code {
         case .canceled:
