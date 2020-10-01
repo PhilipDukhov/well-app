@@ -23,6 +23,17 @@
 		D5BFD57925249E1900A94FCC /* HasApply.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD57825249E1900A94FCC /* HasApply.swift */; };
 		D5BFD57D2524B06900A94FCC /* NSError+description.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD57C2524B06900A94FCC /* NSError+description.swift */; };
 		D5BFD57F2524B0AB00A94FCC /* Bundle+displayName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD57E2524B0AB00A94FCC /* Bundle+displayName.swift */; };
+		D5BFD5B02524BEE400A94FCC /* SocialNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5AF2524BEE400A94FCC /* SocialNetworkService.swift */; };
+		D5BFD5BA2524BFB900A94FCC /* Future.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5B92524BFB900A94FCC /* Future.swift */; };
+		D5BFD5BD2524BFE000A94FCC /* Property.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5BC2524BFE000A94FCC /* Property.swift */; };
+		D5BFD5C02524C12A00A94FCC /* SocialNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5BF2524C12A00A94FCC /* SocialNetwork.swift */; };
+		D5BFD5C22524C22500A94FCC /* GoogleSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5C12524C22500A94FCC /* GoogleSigner.swift */; };
+		D5BFD5C42524C26A00A94FCC /* FacebookSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5C32524C26A00A94FCC /* FacebookSigner.swift */; };
+		D5BFD5C62525845500A94FCC /* EnumDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5C52525845500A94FCC /* EnumDictionary.swift */; };
+		D5BFD5C9252584FE00A94FCC /* Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5C8252584FE00A94FCC /* Cancellable.swift */; };
+		D5BFD5CB2525871700A94FCC /* SocialSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5CA2525871700A94FCC /* SocialSigner.swift */; };
+		D5BFD5CD2525AAE000A94FCC /* AppleSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5CC2525AAE000A94FCC /* AppleSigner.swift */; };
+		D5BFD5CF2525AAEB00A94FCC /* TwitterSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5CE2525AAEB00A94FCC /* TwitterSigner.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -63,6 +74,17 @@
 		D5BFD57C2524B06900A94FCC /* NSError+description.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSError+description.swift"; sourceTree = "<group>"; };
 		D5BFD57E2524B0AB00A94FCC /* Bundle+displayName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+displayName.swift"; sourceTree = "<group>"; };
 		D5BFD5952524B99000A94FCC /* GoogleService-Info-Release.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-Release.plist"; sourceTree = "<group>"; };
+		D5BFD5AF2524BEE400A94FCC /* SocialNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialNetworkService.swift; sourceTree = "<group>"; };
+		D5BFD5B92524BFB900A94FCC /* Future.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Future.swift; sourceTree = "<group>"; };
+		D5BFD5BC2524BFE000A94FCC /* Property.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Property.swift; sourceTree = "<group>"; };
+		D5BFD5BF2524C12A00A94FCC /* SocialNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialNetwork.swift; sourceTree = "<group>"; };
+		D5BFD5C12524C22500A94FCC /* GoogleSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSigner.swift; sourceTree = "<group>"; };
+		D5BFD5C32524C26A00A94FCC /* FacebookSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FacebookSigner.swift; sourceTree = "<group>"; };
+		D5BFD5C52525845500A94FCC /* EnumDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnumDictionary.swift; sourceTree = "<group>"; };
+		D5BFD5C8252584FE00A94FCC /* Cancellable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cancellable.swift; sourceTree = "<group>"; };
+		D5BFD5CA2525871700A94FCC /* SocialSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialSigner.swift; sourceTree = "<group>"; };
+		D5BFD5CC2525AAE000A94FCC /* AppleSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleSigner.swift; sourceTree = "<group>"; };
+		D5BFD5CE2525AAEB00A94FCC /* TwitterSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterSigner.swift; sourceTree = "<group>"; };
 		D5ECE2C32523181C00207638 /* GoogleService-Info-Debug.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-Debug.plist"; sourceTree = "<group>"; };
 		D5ECE30225231ECB00207638 /* Well.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Well.entitlements; sourceTree = "<group>"; };
 		E7C0F47F0D380B0A230F9888 /* Pods-Well-WellUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Well-WellUITests.debug.xcconfig"; path = "Target Support Files/Pods-Well-WellUITests/Pods-Well-WellUITests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -148,6 +170,7 @@
 			children = (
 				D519AF86252441DC00C24377 /* LoginInitialViewController.swift */,
 				D519AFAC25245E0F00C24377 /* LoginSocialsView.swift */,
+				D5BFD5BE2524C10D00A94FCC /* SocialNetworkServices */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -159,8 +182,8 @@
 				7555FF7E242A565900829871 /* AppDelegate.swift */,
 				D51625602503C945009E103B /* R.generated.swift */,
 				7555FF8C242A565B00829871 /* Info.plist */,
-				D5BFD5942524B98200A94FCC /* Firebase */,
 				7555FF89242A565B00829871 /* LaunchScreen.storyboard */,
+				D5BFD5942524B98200A94FCC /* Firebase */,
 				D51625742504BD9C009E103B /* font */,
 			);
 			path = "Supporting files";
@@ -171,6 +194,10 @@
 			children = (
 				D5BFD5762524938400A94FCC /* Action.swift */,
 				D5BFD57825249E1900A94FCC /* HasApply.swift */,
+				D5BFD5B92524BFB900A94FCC /* Future.swift */,
+				D5BFD5BC2524BFE000A94FCC /* Property.swift */,
+				D5BFD5C8252584FE00A94FCC /* Cancellable.swift */,
+				D5BFD5C52525845500A94FCC /* EnumDictionary.swift */,
 				D5BFD57C2524B06900A94FCC /* NSError+description.swift */,
 				D5BFD57E2524B0AB00A94FCC /* Bundle+displayName.swift */,
 			);
@@ -192,6 +219,20 @@
 				D5ECE2C32523181C00207638 /* GoogleService-Info-Debug.plist */,
 			);
 			path = Firebase;
+			sourceTree = "<group>";
+		};
+		D5BFD5BE2524C10D00A94FCC /* SocialNetworkServices */ = {
+			isa = PBXGroup;
+			children = (
+				D5BFD5BF2524C12A00A94FCC /* SocialNetwork.swift */,
+				D5BFD5CA2525871700A94FCC /* SocialSigner.swift */,
+				D5BFD5AF2524BEE400A94FCC /* SocialNetworkService.swift */,
+				D5BFD5C12524C22500A94FCC /* GoogleSigner.swift */,
+				D5BFD5C32524C26A00A94FCC /* FacebookSigner.swift */,
+				D5BFD5CC2525AAE000A94FCC /* AppleSigner.swift */,
+				D5BFD5CE2525AAEB00A94FCC /* TwitterSigner.swift */,
+			);
+			path = SocialNetworkServices;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -428,13 +469,24 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5BFD5CD2525AAE000A94FCC /* AppleSigner.swift in Sources */,
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
+				D5BFD5B02524BEE400A94FCC /* SocialNetworkService.swift in Sources */,
 				D51625612503C945009E103B /* R.generated.swift in Sources */,
+				D5BFD5C02524C12A00A94FCC /* SocialNetwork.swift in Sources */,
+				D5BFD5C22524C22500A94FCC /* GoogleSigner.swift in Sources */,
 				D5BFD57925249E1900A94FCC /* HasApply.swift in Sources */,
+				D5BFD5C9252584FE00A94FCC /* Cancellable.swift in Sources */,
+				D5BFD5C42524C26A00A94FCC /* FacebookSigner.swift in Sources */,
+				D5BFD5CF2525AAEB00A94FCC /* TwitterSigner.swift in Sources */,
 				D519AFAD25245E0F00C24377 /* LoginSocialsView.swift in Sources */,
 				D5BFD5772524938400A94FCC /* Action.swift in Sources */,
+				D5BFD5CB2525871700A94FCC /* SocialSigner.swift in Sources */,
+				D5BFD5BD2524BFE000A94FCC /* Property.swift in Sources */,
+				D5BFD5C62525845500A94FCC /* EnumDictionary.swift in Sources */,
 				D519AF87252441DC00C24377 /* LoginInitialViewController.swift in Sources */,
 				D5BFD57D2524B06900A94FCC /* NSError+description.swift in Sources */,
+				D5BFD5BA2524BFB900A94FCC /* Future.swift in Sources */,
 				D5BFD5492524670900A94FCC /* ActionButton.swift in Sources */,
 				D5BFD57F2524B0AB00A94FCC /* Bundle+displayName.swift in Sources */,
 			);
@@ -578,6 +630,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Well/Supporting files/Well.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FVMDZDYX72;
+				FACEBOOK_APP_ID = 264820284691132;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../shared/build/xcode-frameworks",
@@ -604,6 +657,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Well/Supporting files/Well.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FVMDZDYX72;
+				FACEBOOK_APP_ID = 264820284691132;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../shared/build/xcode-frameworks",

@@ -8,9 +8,14 @@
 
 import UIKit
 import PinLayout
-import GoogleSignIn
 
 class LoginInitialViewController: UIViewController {
+    struct Props {
+        let socialNetworkAction: ActionWith<SocialNetwork>
+        let createAccountAction: Action
+        let signInAction: Action
+    }
+    
     private let loginSocialsView = LoginSocialsView()
     private let createAccountButton = ActionButton().apply {
         $0.setTitle("Create an account", for: .normal)
@@ -31,6 +36,13 @@ class LoginInitialViewController: UIViewController {
         $0.titleLabel?.textColor = .white
     }
     
+    var props: Props? {
+        didSet {
+            guard isViewLoaded else { return }
+            propsUpdated()
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         [alreadyHaveAccountLabel,
@@ -40,23 +52,7 @@ class LoginInitialViewController: UIViewController {
          signInContainer,
          loginSocialsView
         ].forEach(view.addSubview)
-        
-        loginSocialsView.action = .init { [weak self] social in
-            switch social {
-            case .google:
-                GIDSignIn.sharedInstance()?.presentingViewController = self
-                GIDSignIn.sharedInstance()?.signIn()
-            
-            default:
-                print(social)
-            }
-        }
-        createAccountButton.action = .init {
-            print("createAccountButton")
-        }
-        signInButton.action = .init {
-            print("signInButton")
-        }
+        propsUpdated()
     }
     
     override func viewDidLayoutSubviews() {
@@ -86,5 +82,12 @@ class LoginInitialViewController: UIViewController {
             .height(57)
             .hCenter()
             .width(85%)
+    }
+    
+    private func propsUpdated() {
+        guard let props = props else { return }
+        loginSocialsView.action = props.socialNetworkAction
+        createAccountButton.action = props.createAccountAction
+        signInButton.action = props.signInAction
     }
 }

@@ -71,7 +71,7 @@ public struct Action: Hashable {
         self.execute = execute
     }
     
-    public static let none = Action{}
+    public static let zero = Action{}
     
     public func hash(into hasher: inout Hasher) {
         hasher.combine(actionInfo)

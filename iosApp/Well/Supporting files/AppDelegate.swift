@@ -1,23 +1,43 @@
 import UIKit
 import shared
 import Firebase
-import FirebaseAuth
-import GoogleSignIn
+import FBSDKCoreKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
+    private let socialNetworkService = SocialNetworkService()
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        window = Self.initializeWindow()
+        window = initializeWindow()
         initializeLogging()
-        initializeGoogleServices()
+        FirebaseApp.configure()
+        socialNetworkService.application(
+            application,
+            didFinishLaunchingWithOptions: launchOptions
+        )
+        socialNetworkService.disconnectedHandler = { signer in
+            print("disconnected \(signer)")
+        }
         return true
     }
     
-    static func initializeWindow() -> UIWindow {
+    func initializeWindow() -> UIWindow {
         let window = UIWindow(frame: UIScreen.main.bounds)
-        let navigationController = UINavigationController(rootViewController: LoginInitialViewController())
+        let loginInitialViewController = LoginInitialViewController()
+        loginInitialViewController.props = .init(
+            socialNetworkAction: .init { [self, unowned loginInitialViewController] in
+                socialNetworkService.requestCredential(
+                    in: loginInitialViewController,
+                    social: $0
+                ).onComplete { result in
+                    print(result)
+                }
+            },
+            createAccountAction: .zero,
+            signInAction: .zero)
+        let navigationController = UINavigationController(rootViewController: loginInitialViewController)
         navigationController.setNavigationBarHidden(true, animated: false)
         window.rootViewController = navigationController
         window.makeKeyAndVisible()
@@ -30,7 +50,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         options: [UIApplication.OpenURLOptionsKey: Any] = [:])
     -> Bool
     {
-        return GIDSignIn.sharedInstance().handle(url)
+        socialNetworkService.application(app, open: url, options: options)
     }
     
     private func initializeLogging() {
@@ -49,30 +69,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             )
         })
         #endif
-    }
-    
-    private func initializeGoogleServices() {
-        FirebaseApp.configure()
-        
-        GIDSignIn.sharedInstance().clientID = FirebaseApp.app()?.options.clientID
-        GIDSignIn.sharedInstance().delegate = self
-    }
-}
-
-extension AppDelegate: GIDSignInDelegate {
-    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error?) {
-        if let error = error {
-            print(error)
-            return
-        }
-        
-        guard let authentication = user.authentication else { return }
-        let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken, accessToken: authentication.accessToken)
-        print(credential)
-    }
-    
-    func sign(_ signIn: GIDSignIn!, didDisconnectWith user: GIDGoogleUser!, withError error: Error!) {
-        // Perform any operations when the user disconnects from app here.
-        // ...
     }
 }
