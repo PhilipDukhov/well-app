@@ -34,7 +34,7 @@ final class SocialNetworkService {
             case .google:
                 return GoogleSigner()
             case .twitter:
-                return TwitterSigner()
+                return OAuthSigner(providerID: "twitter.com")
             }
         }
     }

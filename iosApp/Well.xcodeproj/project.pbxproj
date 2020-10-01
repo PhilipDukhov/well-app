@@ -33,7 +33,7 @@
 		D5BFD5C9252584FE00A94FCC /* Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5C8252584FE00A94FCC /* Cancellable.swift */; };
 		D5BFD5CB2525871700A94FCC /* SocialSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5CA2525871700A94FCC /* SocialSigner.swift */; };
 		D5BFD5CD2525AAE000A94FCC /* AppleSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5CC2525AAE000A94FCC /* AppleSigner.swift */; };
-		D5BFD5CF2525AAEB00A94FCC /* TwitterSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5CE2525AAEB00A94FCC /* TwitterSigner.swift */; };
+		D5BFD5CF2525AAEB00A94FCC /* OAuthSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5CE2525AAEB00A94FCC /* OAuthSigner.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -84,7 +84,7 @@
 		D5BFD5C8252584FE00A94FCC /* Cancellable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cancellable.swift; sourceTree = "<group>"; };
 		D5BFD5CA2525871700A94FCC /* SocialSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialSigner.swift; sourceTree = "<group>"; };
 		D5BFD5CC2525AAE000A94FCC /* AppleSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleSigner.swift; sourceTree = "<group>"; };
-		D5BFD5CE2525AAEB00A94FCC /* TwitterSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterSigner.swift; sourceTree = "<group>"; };
+		D5BFD5CE2525AAEB00A94FCC /* OAuthSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthSigner.swift; sourceTree = "<group>"; };
 		D5ECE2C32523181C00207638 /* GoogleService-Info-Debug.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-Debug.plist"; sourceTree = "<group>"; };
 		D5ECE30225231ECB00207638 /* Well.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Well.entitlements; sourceTree = "<group>"; };
 		E7C0F47F0D380B0A230F9888 /* Pods-Well-WellUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Well-WellUITests.debug.xcconfig"; path = "Target Support Files/Pods-Well-WellUITests/Pods-Well-WellUITests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -230,7 +230,7 @@
 				D5BFD5C12524C22500A94FCC /* GoogleSigner.swift */,
 				D5BFD5C32524C26A00A94FCC /* FacebookSigner.swift */,
 				D5BFD5CC2525AAE000A94FCC /* AppleSigner.swift */,
-				D5BFD5CE2525AAEB00A94FCC /* TwitterSigner.swift */,
+				D5BFD5CE2525AAEB00A94FCC /* OAuthSigner.swift */,
 			);
 			path = SocialNetworkServices;
 			sourceTree = "<group>";
@@ -478,7 +478,7 @@
 				D5BFD57925249E1900A94FCC /* HasApply.swift in Sources */,
 				D5BFD5C9252584FE00A94FCC /* Cancellable.swift in Sources */,
 				D5BFD5C42524C26A00A94FCC /* FacebookSigner.swift in Sources */,
-				D5BFD5CF2525AAEB00A94FCC /* TwitterSigner.swift in Sources */,
+				D5BFD5CF2525AAEB00A94FCC /* OAuthSigner.swift in Sources */,
 				D519AFAD25245E0F00C24377 /* LoginSocialsView.swift in Sources */,
 				D5BFD5772524938400A94FCC /* Action.swift in Sources */,
 				D5BFD5CB2525871700A94FCC /* SocialSigner.swift in Sources */,

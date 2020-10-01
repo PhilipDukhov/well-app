@@ -1,5 +1,5 @@
 //
-//  TwitterSigner.swift
+//  OAuthSigner.swift
 //  Well
 //
 //  Created by Philip Dukhov on 10/1/20.
@@ -9,8 +9,13 @@
 import UIKit
 import FirebaseAuth
 
-class TwitterSigner: BaseSocialSigner {
-    private lazy var provider = OAuthProvider(providerID: "twitter.com")
+class OAuthSigner: BaseSocialSigner {
+    private let providerID: String
+    private lazy var provider = OAuthProvider(providerID: providerID)
+    
+    init(providerID: String) {
+        self.providerID = providerID
+    }
 
     override func baseRequestCredential(placeholder: UIViewController) {
         provider.getCredentialWith(nil) { [weak self] credential, error in
