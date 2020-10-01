@@ -23,12 +23,16 @@ final class SocialNetworkService {
     init() {
         signers = EnumDictionary<SocialNetwork, SocialSigner> {
             switch $0 {
+            case .apple:
+                if #available(iOS 13, *) {
+                    return AppleSigner()
+                } else {
+                    fatalError()
+                }
             case .facebook:
                 return FacebookSigner()
             case .google:
                 return GoogleSigner()
-            case .apple:
-                return AppleSigner()
             case .twitter:
                 return TwitterSigner()
             }

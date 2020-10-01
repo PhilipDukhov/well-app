@@ -9,8 +9,22 @@
 import Foundation
 
 enum SocialNetwork: CaseIterable {
+    @available(iOS 13.0, *)
     case apple
+    
     case twitter
     case facebook
     case google
+    
+    static var allCases: [SocialNetwork] {
+        var result: [SocialNetwork] = [
+            .twitter,
+            .facebook,
+            .google
+        ]
+        if #available(iOS 13.0, *) {
+            result.insert(.apple, at: 0)
+        }
+        return result
+    }
 }
