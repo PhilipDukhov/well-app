@@ -24,6 +24,7 @@
       android:layout_height="wrap_content"
       android:layout_gravity="center_vertical"
       android:orientation="vertical"
+      android:visibility="invisible"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
@@ -45,6 +46,54 @@
         android:text="@string/logo_title"
         android:textColor="#FFFFFF"
         android:textSize="24sp" />
+  </LinearLayout>
+
+  <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:layout_marginBottom="16dp"
+      android:divider="@drawable/empty_tall_divider"
+      android:gravity="center"
+      android:orientation="horizontal"
+      android:showDividers="middle"
+      android:fitsSystemWindows="true"
+
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent">
+
+
+    <Button
+        android:id="@+id/auth_apple"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_auth_apple"
+        android:scaleType="fitXY" />
+
+    <Button
+        android:id="@+id/auth_twitter"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_auth_twitter" />
+
+    <Button
+        android:id="@+id/auth_facebook"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:background="@drawable/ic_auth_facebook" />
+
+    <Button
+        android:id="@+id/auth_google"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_auth_google" />
+
   </LinearLayout>
 
 

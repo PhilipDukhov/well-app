@@ -7,6 +7,8 @@ dependencies {
     implementation(Libs.jetpack.coreCtx)
 
     implementation(Libs.napier)
-    implementation(Libs.google.firebaseAnalytics)
-    implementation(Libs.google.firebaseCrashlytics)
+    implementation(Libs.google.firebase.analytics)
+    implementation(Libs.google.firebase.crashlytics)
+    implementation(Libs.google.firebase.auth)
+    implementation(Libs.google.playServicesAuth)
 }
