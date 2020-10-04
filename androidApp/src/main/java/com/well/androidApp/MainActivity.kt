@@ -4,14 +4,22 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
+import com.facebook.login.widget.LoginButton
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.GoogleAuthProvider
 
 class MainActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var facebookCallbackManager: CallbackManager
 
     enum class Request(val code: Int) {
         GoogleAuth(9001)
@@ -21,10 +29,34 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
         setContentView(R.layout.activity_main)
-        findViewById<Button>(R.id.auth_google).setOnClickListener {
-            signIn()
-        }
+
+        initializeFacebook()
         initializeGoogle()
+
+        findViewById<Button>(R.id.auth_google).setOnClickListener {
+            startActivityForResult(googleSignInClient.signInIntent, Request.GoogleAuth.code)
+        }
+        findViewById<Button>(R.id.auth_facebook).setOnClickListener {
+            LoginManager.getInstance().logInWithReadPermissions(this, listOf("email"))
+        }
+    }
+
+    private fun initializeFacebook() {
+        facebookCallbackManager = CallbackManager.Factory.create()
+        LoginManager.getInstance().registerCallback(facebookCallbackManager, object : FacebookCallback<LoginResult> {
+            override fun onSuccess(result: LoginResult?) {
+                val credential = FacebookAuthProvider.getCredential(result!!.accessToken.token)
+                println("success $credential")
+            }
+
+            override fun onCancel() {
+                println("cancel")
+            }
+
+            override fun onError(error: FacebookException?) {
+                println("facebook error $error")
+            }
+        })
     }
 
     private fun initializeGoogle() {
@@ -34,10 +66,6 @@ class MainActivity : AppCompatActivity() {
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions)
         googleSignInClient.signOut()
-    }
-
-    private fun signIn() {
-        startActivityForResult(googleSignInClient.signInIntent, Request.GoogleAuth.code)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -54,6 +82,8 @@ class MainActivity : AppCompatActivity() {
                 // ...
             }
         }
+
+        facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     private fun firebaseAuthWithGoogle(idToken: String) {

@@ -11,4 +11,5 @@ dependencies {
     implementation(Libs.google.firebase.crashlytics)
     implementation(Libs.google.firebase.auth)
     implementation(Libs.google.playServicesAuth)
+    implementation(Libs.facebookLogin)
 }

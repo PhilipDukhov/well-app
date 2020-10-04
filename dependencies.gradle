@@ -27,6 +27,7 @@ ext.Libs = [
                 ],
                 "playServicesAuth": "com.google.android.gms:play-services-auth:18.1.0",
         ],
+        facebookLogin: "com.facebook.android:facebook-login:8.0.0",
         napier     : "com.github.aakira:napier:$napierVersion",
         test       : [
                 "junit": "junit:junit:4.13"

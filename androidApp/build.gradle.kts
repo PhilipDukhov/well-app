@@ -14,6 +14,7 @@ android {
         applicationId = "com.well.philip.android.app.test.gone.well"
         versionCode = 1
         versionName = "1.0"
+        multiDexEnabled = true
         vectorDrawables.useSupportLibrary = true
     }
 }
