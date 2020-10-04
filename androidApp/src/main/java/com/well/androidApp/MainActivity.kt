@@ -9,13 +9,16 @@ import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
-import com.facebook.login.widget.LoginButton
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FacebookAuthProvider
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.OAuthProvider
+import com.google.firebase.ktx.Firebase
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
@@ -29,7 +32,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
         setContentView(R.layout.activity_main)
-
         initializeFacebook()
         initializeGoogle()
 
@@ -39,24 +41,46 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.auth_facebook).setOnClickListener {
             LoginManager.getInstance().logInWithReadPermissions(this, listOf("email"))
         }
+        findViewById<Button>(R.id.auth_twitter).setOnClickListener {
+            val provider = OAuthProvider.newBuilder("twitter.com")
+            FirebaseAuth.getInstance()
+                .startActivityForSignInWithProvider(this, provider.build())
+                .addOnSuccessListener {
+                    val cred = it.credential!!
+                    println("twitter success $cred")
+                }
+                .addOnFailureListener {
+                    println("twitter error $it")
+                }
+        }
+        val pendingResultTask = FirebaseAuth.getInstance().pendingAuthResult
+        pendingResultTask?.addOnSuccessListener {
+            val cred = it.credential!!
+            print("1 twitter success $cred")
+        }
+            ?.addOnFailureListener {
+                print("1 twitter error $it")
+            }
     }
 
     private fun initializeFacebook() {
         facebookCallbackManager = CallbackManager.Factory.create()
-        LoginManager.getInstance().registerCallback(facebookCallbackManager, object : FacebookCallback<LoginResult> {
-            override fun onSuccess(result: LoginResult?) {
-                val credential = FacebookAuthProvider.getCredential(result!!.accessToken.token)
-                println("success $credential")
-            }
+        LoginManager.getInstance().registerCallback(
+            facebookCallbackManager,
+            object : FacebookCallback<LoginResult> {
+                override fun onSuccess(result: LoginResult?) {
+                    val credential = FacebookAuthProvider.getCredential(result!!.accessToken.token)
+                    println("success $credential")
+                }
 
-            override fun onCancel() {
-                println("cancel")
-            }
+                override fun onCancel() {
+                    println("cancel")
+                }
 
-            override fun onError(error: FacebookException?) {
-                println("facebook error $error")
-            }
-        })
+                override fun onError(error: FacebookException?) {
+                    println("facebook error $error")
+                }
+            })
     }
 
     private fun initializeGoogle() {
