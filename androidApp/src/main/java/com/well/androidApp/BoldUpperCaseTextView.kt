@@ -9,7 +9,8 @@ import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.text.HtmlCompat
 
-class BoldUpperCaseTextView(context: Context, attrs: AttributeSet?) : AppCompatTextView(context, attrs) {
+class BoldUpperCaseTextView(context: Context, attrs: AttributeSet?) :
+    AppCompatTextView(context, attrs) {
     override fun setText(text: CharSequence?, type: BufferType?) {
         if (text == null) {
             super.setText(null, type)
@@ -19,8 +20,13 @@ class BoldUpperCaseTextView(context: Context, attrs: AttributeSet?) : AppCompatT
         text.withIndex()
             .filter { it.value.isUpperCase() }
             .forEach {
-                string.setSpan(StyleSpan(Typeface.BOLD), it.index, it.index + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        }
+                string.setSpan(
+                    StyleSpan(Typeface.BOLD),
+                    it.index,
+                    it.index + 1,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
         super.setText(string, type)
     }
 }

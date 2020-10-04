@@ -1,6 +1,8 @@
 package com.well.shared.napier
 
-import com.github.aakira.napier.*
+import com.github.aakira.napier.Antilog
+import com.github.aakira.napier.DebugAntilog
+import com.github.aakira.napier.Napier
 
 fun buildDebug() {
     Napier.base(DebugAntilog())

@@ -17,7 +17,7 @@ class CrashlyticsAntilog(private val context: Context) : Antilog() {
 
         throwable?.let {
 //            when {
-                // e.g. http exception, add a customized your exception message
+            // e.g. http exception, add a customized your exception message
 //                it is KtorException -> {
 //                    Crashlytics.getInstance().core.log(priority.ordinal, "HTTP Exception", it.response?.errorBody.toString())
 //                }

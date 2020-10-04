@@ -20,10 +20,10 @@ ext.Libs = [
                 "navigationUi"      : "androidx.navigation:navigation-ui-ktx:2.3.0"
         ],
         google     : [
-                "firebase": [
+                "firebase"        : [
                         "analytics"  : "com.google.firebase:firebase-analytics-ktx:17.5.0",
                         "crashlytics": "com.google.firebase:firebase-crashlytics-ktx:17.2.1",
-                        "auth": "com.google.firebase:firebase-auth:19.4.0"
+                        "auth"       : "com.google.firebase:firebase-auth:19.4.0"
                 ],
                 "playServicesAuth": "com.google.android.gms:play-services-auth:18.1.0",
         ],

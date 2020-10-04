@@ -1,8 +1,9 @@
 package com.well.androidApp
 
 import android.app.Application
-import com.github.aakira.napier.*
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.github.aakira.napier.BuildConfig
+import com.github.aakira.napier.DebugAntilog
+import com.github.aakira.napier.Napier
 
 class App : Application() {
     override fun onCreate() {

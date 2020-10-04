@@ -1,4 +1,6 @@
-import com.android.build.gradle.*
+import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.BaseExtension
+import com.android.build.gradle.LibraryPlugin
 import com.avito.android.plugin.build_param_check.CheckMode.FAIL
 
 val javaVersion = JavaVersion.VERSION_1_8

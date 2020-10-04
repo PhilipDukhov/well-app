@@ -1,13 +1,19 @@
 package com.well.shared.napier
 
-import com.github.aakira.napier.*
+import com.github.aakira.napier.Antilog
+import com.github.aakira.napier.Napier
 
 class CrashlyticsAntilog(
     private val crashlyticsAddLog: (priority: Int, tag: String?, message: String?) -> Unit,
     private val crashlyticsSendLog: (throwable: Throwable) -> Unit
 ) : Antilog() {
 
-    override fun performLog(priority: Napier.Level, tag: String?, throwable: Throwable?, message: String?) {
+    override fun performLog(
+        priority: Napier.Level,
+        tag: String?,
+        throwable: Throwable?,
+        message: String?
+    ) {
         // send only error log
         if (priority < Napier.Level.ERROR) return
 
@@ -15,7 +21,7 @@ class CrashlyticsAntilog(
 
         throwable?.let {
 //            when {
-                // e.g. http exception, add a customized your exception message
+            // e.g. http exception, add a customized your exception message
 //                it is KtorException -> {
 //                    crashlyticsAddLog.invoke(priority.ordinal, "HTTP Exception", it.response?.errorBody.toString())
 //                }
