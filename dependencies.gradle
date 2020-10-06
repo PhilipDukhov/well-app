@@ -2,16 +2,16 @@ def kotlinVersion = "1.4.10"
 def napierVersion = "1.4.1"
 
 ext.Libs = [
-        build      : [
+        build        : [
                 "gradle"             : "com.android.tools.build:gradle:4.0.1",
                 "kotlin"             : "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion",
                 "googleServices"     : "com.google.gms:google-services:4.3.3",
                 "firebaseCrashlytics": "com.google.firebase:firebase-crashlytics-gradle:2.3.0",
         ],
-        kotlin     : [
-                "stdLib": "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion",
+        kotlin       : [
+                "stdLib"    : "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion",
         ],
-        jetpack    : [
+        jetpack      : [
                 "appCompat"         : "androidx.appcompat:appcompat:1.1.0",
                 "coreCtx"           : "androidx.core:core-ktx:1.3.0",
                 "material"          : "com.google.android.material:material:1.1.0",
@@ -19,21 +19,21 @@ ext.Libs = [
                 "navigationFragment": "androidx.navigation:navigation-fragment-ktx:2.3.0",
                 "navigationUi"      : "androidx.navigation:navigation-ui-ktx:2.3.0"
         ],
-        google     : [
+        google       : [
                 "firebase"        : [
                         "analytics"  : "com.google.firebase:firebase-analytics-ktx:17.5.0",
                         "crashlytics": "com.google.firebase:firebase-crashlytics-ktx:17.2.1",
-                        "auth"       : "com.google.firebase:firebase-auth:19.4.0"
+                        "auth"       : "com.google.firebase:firebase-auth:19.4.0",
                 ],
                 "playServicesAuth": "com.google.android.gms:play-services-auth:18.1.0",
         ],
         facebookLogin: "com.facebook.android:facebook-login:8.0.0",
-        napier     : "com.github.aakira:napier:$napierVersion",
-        test       : [
-                "junit": "junit:junit:4.13"
+        napier       : "com.github.aakira:napier:$napierVersion",
+        test         : [
+                "junit": "junit:junit:4.13",
         ],
-        androidTest: [
+        androidTest  : [
                 "junit"   : "androidx.test.ext:junit:1.1.1",
-                "espresso": "androidx.test.espresso:espresso-core:3.2.0"
+                "espresso": "androidx.test.espresso:espresso-core:3.2.0",
         ]
 ]
