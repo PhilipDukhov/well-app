@@ -1,7 +1,6 @@
-package com.well.androidApp.auth.signers
+package com.well.androidApp.ui.auth.signers
 
 import android.app.Activity
-import com.facebook.FacebookCallback
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.OAuthProvider

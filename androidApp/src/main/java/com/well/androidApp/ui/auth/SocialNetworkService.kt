@@ -1,4 +1,4 @@
-package com.well.androidApp.auth
+package com.well.androidApp.ui.auth
 
 import android.app.Activity
 import android.content.Context
@@ -6,10 +6,10 @@ import android.content.Intent
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.well.androidApp.Callback
-import com.well.androidApp.auth.signers.FacebookSigner
-import com.well.androidApp.auth.signers.GoogleSigner
-import com.well.androidApp.auth.signers.OAuthSigner
-import com.well.androidApp.auth.signers.SocialSigner
+import com.well.androidApp.ui.auth.signers.FacebookSigner
+import com.well.androidApp.ui.auth.signers.GoogleSigner
+import com.well.androidApp.ui.auth.signers.OAuthSigner
+import com.well.androidApp.ui.auth.signers.SocialSigner
 import java.lang.Exception
 
 class SocialNetworkService(

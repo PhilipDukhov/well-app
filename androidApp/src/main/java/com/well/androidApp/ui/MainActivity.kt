@@ -1,12 +1,18 @@
-package com.well.androidApp
+package com.well.androidApp.ui
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.github.aakira.napier.BuildConfig
+import com.github.aakira.napier.DebugAntilog
+import com.github.aakira.napier.Napier
 import com.google.firebase.auth.AuthCredential
-import com.well.androidApp.auth.SocialNetwork
-import com.well.androidApp.auth.SocialNetworkService
+import com.well.androidApp.Callback
+import com.well.androidApp.CrashlyticsAntilog
+import com.well.androidApp.R
+import com.well.androidApp.ui.auth.SocialNetwork
+import com.well.androidApp.ui.auth.SocialNetworkService
 
 
 class MainActivity : AppCompatActivity() {
@@ -32,6 +38,8 @@ class MainActivity : AppCompatActivity() {
                 }
             })
 
+        initializeLogging()
+
         findViewById<Button>(R.id.auth_apple).setOnClickListener {
             socialNetworkService.requestCredentials(SocialNetwork.Apple, this)
         }
@@ -50,4 +58,7 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         socialNetworkService.handleActivityResult(requestCode, resultCode, data)
     }
+
+    private fun initializeLogging() =
+        Napier.base(if (BuildConfig.DEBUG) DebugAntilog() else CrashlyticsAntilog(this))
 }

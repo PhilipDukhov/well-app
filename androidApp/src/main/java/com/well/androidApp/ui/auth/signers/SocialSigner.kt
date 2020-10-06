@@ -1,4 +1,4 @@
-package com.well.androidApp.auth.signers
+package com.well.androidApp.ui.auth.signers
 
 import android.app.Activity
 import android.content.Intent
