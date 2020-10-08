@@ -38,6 +38,13 @@
             {
               "client_id": "567261840338-eivsjdeeubgguo902risef7h3jdotobe.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "567261840338-enepr2lb9j9vuus8919t5ls4cgamvbhe.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.bubble.bubble-vpn"
+              }
             }
           ]
         }

@@ -11,7 +11,7 @@ version = "1.0-SNAPSHOT"
 
 android {
     defaultConfig {
-        applicationId = "com.well.philip.android.app.test.gone.well"
+        applicationId = "com.well.androidApp"
         versionCode = 1
         versionName = "1.0"
         multiDexEnabled = true
