@@ -23,7 +23,7 @@ pluginManagement {
 
                 pluginId.startsWith("com.avito.android") -> {
                     val artifact = pluginId.replace("com.avito.android.", "")
-                    useModule("com.avito.android:$artifact:2020.10")
+                    useModule("com.avito.android:$artifact:2020.23")
                 }
             }
         }
