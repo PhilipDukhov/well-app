@@ -11,9 +11,9 @@ import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.GoogleAuthProvider
 import com.well.androidApp.Callback
 import com.well.androidApp.R
-import java.lang.Exception
 
-class GoogleSigner(context: Context, callback: Callback<AuthCredential, Exception>): SocialSigner(callback) {
+class GoogleSigner(context: Context, callback: Callback<AuthCredential, Exception>) :
+    SocialSigner(callback) {
     private val authRequestCode = 9001
     private val googleSignInClient: GoogleSignInClient
 

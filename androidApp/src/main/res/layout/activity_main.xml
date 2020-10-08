@@ -69,8 +69,7 @@
             style="@style/Widget.AppCompat.Button.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/ic_auth_apple"
-            android:scaleType="fitXY" />
+            android:background="@drawable/ic_auth_apple" />
 
         <Button
             android:id="@+id/auth_twitter"

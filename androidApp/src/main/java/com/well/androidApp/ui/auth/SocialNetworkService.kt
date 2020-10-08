@@ -10,7 +10,6 @@ import com.well.androidApp.ui.auth.signers.FacebookSigner
 import com.well.androidApp.ui.auth.signers.GoogleSigner
 import com.well.androidApp.ui.auth.signers.OAuthSigner
 import com.well.androidApp.ui.auth.signers.SocialSigner
-import java.lang.Exception
 
 class SocialNetworkService(
     private val context: Context,

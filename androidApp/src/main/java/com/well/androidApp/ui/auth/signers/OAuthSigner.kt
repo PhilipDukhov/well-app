@@ -5,9 +5,9 @@ import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.OAuthProvider
 import com.well.androidApp.Callback
-import java.lang.Exception
 
-class OAuthSigner(providerURL: String, callback: Callback<AuthCredential, Exception>): SocialSigner(callback) {
+class OAuthSigner(providerURL: String, callback: Callback<AuthCredential, Exception>) :
+    SocialSigner(callback) {
     private val provider = OAuthProvider.newBuilder(providerURL)
 
     override fun requestCredentials(activity: Activity) {
