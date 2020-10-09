@@ -1,4 +1,4 @@
-package com.well.androidApp.ui
+package com.well.androidApp.ui.customViews
 
 import android.content.Context
 import android.graphics.Typeface

@@ -1,5 +1,6 @@
 def kotlinVersion = "1.4.10"
 def napierVersion = "1.4.1"
+def nav_version = "2.3.0"
 
 ext.Libs = [
         build        : [
@@ -16,8 +17,8 @@ ext.Libs = [
                 "coreCtx"           : "androidx.core:core-ktx:1.3.2",
                 "material"          : "com.google.android.material:material:1.2.1",
                 "constraint"        : "androidx.constraintlayout:constraintlayout:2.0.2",
-                "navigationFragment": "androidx.navigation:navigation-fragment-ktx:2.3.0",
-                "navigationUi"      : "androidx.navigation:navigation-ui-ktx:2.3.0"
+                "navigationFragment": "androidx.navigation:navigation-fragment-ktx:$nav_version",
+                "navigationUi"      : "androidx.navigation:navigation-ui-ktx:$nav_version"
         ],
         google       : [
                 "firebase"        : [
@@ -30,11 +31,4 @@ ext.Libs = [
         oolong       : "org.oolong-kt:oolong:2.1.0",
         facebookLogin: "com.facebook.android:facebook-login:8.0.0",
         napier       : "com.github.aakira:napier:$napierVersion",
-        test         : [
-                "junit": "junit:junit:4.13",
-        ],
-        androidTest  : [
-                "junit"   : "androidx.test.ext:junit:1.1.1",
-                "espresso": "androidx.test.espresso:espresso-core:3.2.0",
-        ]
 ]

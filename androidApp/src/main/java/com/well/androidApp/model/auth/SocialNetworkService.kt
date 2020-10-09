@@ -1,15 +1,15 @@
-package com.well.androidApp.ui.auth
+package com.well.androidApp.model.auth
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.fragment.app.Fragment
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.well.androidApp.Callback
-import com.well.androidApp.ui.auth.signers.FacebookSigner
-import com.well.androidApp.ui.auth.signers.GoogleSigner
-import com.well.androidApp.ui.auth.signers.OAuthSigner
-import com.well.androidApp.ui.auth.signers.SocialSigner
+import com.well.androidApp.model.auth.signers.FacebookSigner
+import com.well.androidApp.model.auth.signers.GoogleSigner
+import com.well.androidApp.model.auth.signers.OAuthSigner
+import com.well.androidApp.model.auth.signers.SocialSigner
 
 class SocialNetworkService(
     private val context: Context,
@@ -30,7 +30,7 @@ class SocialNetworkService(
 
     fun requestCredentials(
         network: SocialNetwork,
-        activity: Activity
+        fragment: Fragment
     ) {
         singers.getOrPut(network) {
             when (network) {
@@ -39,7 +39,7 @@ class SocialNetworkService(
                 SocialNetwork.Twitter -> OAuthSigner("twitter.com", callback)
                 SocialNetwork.Facebook -> FacebookSigner(callback)
             }
-        }.requestCredentials(activity)
+        }.requestCredentials(fragment)
     }
 
     fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

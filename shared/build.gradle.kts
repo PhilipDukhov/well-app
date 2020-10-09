@@ -21,6 +21,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(extra.libAt("napier"))
+                implementation(extra.libAt("oolong"))
             }
         }
         val commonTest by getting {

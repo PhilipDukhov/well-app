@@ -1,3 +1,3 @@
 <component name="DependencyValidationManager">
-  <scope name="Code" pattern="file[androidApp]:src/main/java/com/well/androidApp//*||file[androidApp]:*||file[WELL]:*&amp;&amp;!file:local.properties&amp;&amp;!file:.gitignore&amp;&amp;!file:gradle.properties||file[shared]:*/&amp;&amp;!file:src/androidMain/AndroidManifest.xml||file[shared_iosMain]:*/||file[shared_commonMain]:*/||file[androidApp]:src/main/res/layout/*" />
+  <scope name="Code" pattern="file[androidApp]:src/main/java/com/well/androidApp//*||file[androidApp]:*||file[WELL]:*&amp;&amp;!file:local.properties&amp;&amp;!file:.gitignore&amp;&amp;!file:gradle.properties||file[shared]:*/&amp;&amp;!file:src/androidMain/AndroidManifest.xml||file[shared_iosMain]:*/||file[shared_commonMain]:*/||file[androidApp]:src/main/res/layout/*||file[androidApp]:src/main/res/navigation/*||file[androidApp]:src/main/res/anim/*" />
 </component>

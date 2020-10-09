@@ -1,8 +1,8 @@
-package com.well.androidApp.ui.auth.signers
+package com.well.androidApp.model.auth.signers
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.fragment.app.Fragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -25,9 +25,9 @@ class GoogleSigner(context: Context, callback: Callback<AuthCredential, Exceptio
         googleSignInClient = GoogleSignIn.getClient(context, googleSignInOptions)
     }
 
-    override fun requestCredentials(activity: Activity) {
+    override fun requestCredentials(fragment: Fragment) {
         googleSignInClient.signOut()
-        activity.startActivityForResult(googleSignInClient.signInIntent, authRequestCode)
+        fragment.activity?.startActivityForResult(googleSignInClient.signInIntent, authRequestCode)
     }
 
     override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {

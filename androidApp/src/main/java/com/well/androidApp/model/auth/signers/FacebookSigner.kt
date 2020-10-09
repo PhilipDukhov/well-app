@@ -1,7 +1,7 @@
-package com.well.androidApp.ui.auth.signers
+package com.well.androidApp.model.auth.signers
 
-import android.app.Activity
 import android.content.Intent
+import androidx.fragment.app.Fragment
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
@@ -10,9 +10,8 @@ import com.facebook.login.LoginResult
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FacebookAuthProvider
 import com.well.androidApp.Callback
-import kotlin.Exception
 
-class FacebookSigner(callback: Callback<AuthCredential, Exception>): SocialSigner(callback) {
+class FacebookSigner(callback: Callback<AuthCredential, Exception>) : SocialSigner(callback) {
     private val callbackManager: CallbackManager = CallbackManager.Factory.create()
     private val loginManager = LoginManager.getInstance()
 
@@ -44,8 +43,8 @@ class FacebookSigner(callback: Callback<AuthCredential, Exception>): SocialSigne
         loginManager.unregisterCallback(callbackManager)
     }
 
-    override fun requestCredentials(activity: Activity) {
-        loginManager.logInWithReadPermissions(activity, listOf("email"))
+    override fun requestCredentials(fragment: Fragment) {
+        loginManager.logInWithReadPermissions(fragment, listOf("email"))
     }
 
     override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {

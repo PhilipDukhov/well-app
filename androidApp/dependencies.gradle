@@ -4,6 +4,8 @@ dependencies {
     implementation(Libs.jetpack.material)
     implementation(Libs.jetpack.appCompat)
     implementation(Libs.jetpack.constraint)
+    implementation(Libs.jetpack.navigationFragment)
+    implementation(Libs.jetpack.navigationUi)
     implementation(Libs.jetpack.coreCtx)
 
     implementation(Libs.napier)
@@ -12,4 +14,5 @@ dependencies {
     implementation(Libs.google.firebase.auth)
     implementation(Libs.google.playServicesAuth)
     implementation(Libs.facebookLogin)
+    implementation(Libs.oolong)
 }
