@@ -30,5 +30,3 @@ class BoldUpperCaseTextView(context: Context, attrs: AttributeSet?) :
         super.setText(string, type)
     }
 }
-
-fun String.fromHtml() = HtmlCompat.fromHtml(this, HtmlCompat.FROM_HTML_MODE_LEGACY)

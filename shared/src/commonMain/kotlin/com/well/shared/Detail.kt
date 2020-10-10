@@ -1,6 +1,19 @@
 package com.well.shared
 
+import oolong.Dispatch
+import oolong.Oolong
 import oolong.effect.none
+import oolong.runtime
+
+
+fun createJob() {
+    val job = runtime(
+        Detail.init,
+        Detail.update,
+        Detail.view,
+        Detail.render)
+}
+
 
 object Detail {
 
@@ -38,6 +51,10 @@ object Detail {
             { Msg.Decrement },
             false
         )
+    }
+
+    val render = { props: Props, dispatch: Dispatch<Msg> ->
+
     }
 
 }

@@ -3,46 +3,66 @@ package com.well.androidApp.model.auth
 import android.content.Context
 import android.content.Intent
 import androidx.fragment.app.Fragment
-import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
-import com.well.androidApp.Callback
-import com.well.androidApp.model.auth.signers.FacebookSigner
-import com.well.androidApp.model.auth.signers.GoogleSigner
-import com.well.androidApp.model.auth.signers.OAuthSigner
-import com.well.androidApp.model.auth.signers.SocialSigner
+import com.google.firebase.auth.OAuthProvider
+import com.well.androidApp.model.auth.credentialProviders.CredentialProvider
+import com.well.androidApp.model.auth.credentialProviders.FacebookProvider
+import com.well.androidApp.model.auth.credentialProviders.GoogleProvider
+import kotlinx.coroutines.tasks.await
 
-class SocialNetworkService(
-    private val context: Context,
-    private val callback: Callback<AuthCredential, Exception>
-) {
-    private val singers = mutableMapOf<SocialNetwork, SocialSigner>()
+class SocialNetworkService(private val context: Context) {
+    private val credentialProviders = mutableMapOf<SocialNetwork, CredentialProvider>()
 
-    init {
-        FirebaseAuth.getInstance().pendingAuthResult
-            ?.addOnSuccessListener {
-                val cred = it.credential!!
-                print("1 twitter success $cred")
-            }
-            ?.addOnFailureListener {
-                print("1 twitter error $it")
-            }
-    }
+    private val SocialNetwork.hasCredentialProvider: Boolean
+        get() = when (this) {
+            SocialNetwork.Google, SocialNetwork.Facebook -> true
+            SocialNetwork.Twitter, SocialNetwork.Apple -> false
+        }
 
-    fun requestCredentials(
+    suspend fun login(
         network: SocialNetwork,
         fragment: Fragment
-    ) {
-        singers.getOrPut(network) {
+    ): AuthResult {
+        return if (network.hasCredentialProvider)
+            credentialsProviderLogin(network, fragment)
+        else
+            oAuthProviderLogin(network, fragment)
+    }
+
+    private suspend fun oAuthProviderLogin(
+        network: SocialNetwork,
+        fragment: Fragment
+    ): AuthResult {
+        val activity = fragment.activity ?: throw IllegalStateException()
+        val builder = OAuthProvider.newBuilder(
             when (network) {
-                SocialNetwork.Google -> GoogleSigner(context, callback)
-                SocialNetwork.Apple -> TODO()
-                SocialNetwork.Twitter -> OAuthSigner("twitter.com", callback)
-                SocialNetwork.Facebook -> FacebookSigner(callback)
+                SocialNetwork.Twitter -> "twitter.com"
+                else -> throw IllegalArgumentException()
             }
-        }.requestCredentials(fragment)
+        )
+        return FirebaseAuth.getInstance()
+            .startActivityForSignInWithProvider(activity, builder.build())
+            .await()
+    }
+
+    private suspend fun credentialsProviderLogin(
+        network: SocialNetwork,
+        fragment: Fragment
+    ): AuthResult {
+        val credentials = credentialProviders.getOrPut(network) {
+            when (network) {
+                SocialNetwork.Google -> GoogleProvider(context)
+                SocialNetwork.Facebook -> FacebookProvider()
+                else -> throw IllegalArgumentException()
+            }
+        }.getCredentials(fragment)
+        return FirebaseAuth.getInstance()
+            .signInWithCredential(credentials)
+            .await()
     }
 
     fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        singers.values.first { it.handleActivityResult(requestCode, resultCode, data) }
+        credentialProviders.values.first { it.handleActivityResult(requestCode, resultCode, data) }
     }
 }

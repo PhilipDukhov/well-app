@@ -1,6 +1,7 @@
 package com.well.androidApp.ui
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import com.github.aakira.napier.BuildConfig
@@ -10,7 +11,21 @@ import com.google.firebase.auth.FirebaseAuth
 import com.well.androidApp.CrashlyticsAntilog
 import com.well.androidApp.R
 
+
 class MainActivity : AppCompatActivity() {
+    enum class State {
+        Idle, Processing
+    }
+
+    var state = State.Idle
+        set(value) {
+            if (value == field) return
+            field = value
+            findViewById<View>(R.id.progress_overlay)?.visibility = when (value) {
+                State.Idle -> View.GONE
+                State.Processing -> View.VISIBLE
+            }
+        }
     private val auth = FirebaseAuth.getInstance()
     private var signedIn = false
         set(value) {
@@ -42,6 +57,7 @@ class MainActivity : AppCompatActivity() {
         )
         supportFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, host)
             .setPrimaryNavigationFragment(host).commit()
+        state = State.Idle
     }
 
     private fun initializeLogging() =

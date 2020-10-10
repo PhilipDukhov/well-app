@@ -6,15 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import androidx.fragment.app.Fragment
-import com.google.firebase.auth.AuthCredential
-import com.google.firebase.auth.FirebaseAuth
-import com.well.androidApp.Callback
+import androidx.appcompat.app.AlertDialog
 import com.well.androidApp.R
 import com.well.androidApp.model.auth.SocialNetwork
 import com.well.androidApp.model.auth.SocialNetworkService
+import com.well.androidApp.ui.MainActivity
+import com.well.androidApp.ui.customViews.BaseFragment
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
-class SignInStartFragment : Fragment() {
+class SignInStartFragment : BaseFragment() {
     private lateinit var socialNetworkService: SocialNetworkService
 
     private val SocialNetwork.layoutButtonId: Int
@@ -31,7 +33,7 @@ class SignInStartFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_sign_in_start, container, false).also { view ->
             SocialNetwork.values().forEach { socialNetwork ->
                 view.findViewById<Button>(socialNetwork.layoutButtonId).setOnClickListener {
-                    socialNetworkService.requestCredentials(socialNetwork, this)
+                    onSocialNetworkButtonClick(socialNetwork)
                 }
             }
         }
@@ -39,30 +41,33 @@ class SignInStartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        socialNetworkService = SocialNetworkService(requireContext(),
-            object : Callback<AuthCredential, java.lang.Exception> {
-                override fun onSuccess(result: AuthCredential) {
-                    val progressView = activity?.findViewById<View>(R.id.progress_overlay)
-                    progressView?.visibility = View.VISIBLE
-                    FirebaseAuth.getInstance()
-                        .signInWithCredential(result)
-                        .addOnCompleteListener {
-                            progressView?.visibility = View.GONE
-                        }
-                }
-
-                override fun onCancel() {
-                    print("canceled")
-                }
-
-                override fun onError(error: Exception) {
-                    print(error)
-                }
-            })
+        socialNetworkService = SocialNetworkService(requireContext())
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         socialNetworkService.handleActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun onSocialNetworkButtonClick(socialNetwork: SocialNetwork) {
+        activity?.state = MainActivity.State.Processing
+        GlobalScope.launch {
+            try {
+                socialNetworkService.login(socialNetwork, this@SignInStartFragment)
+                println("logged in")
+            } catch (e: Exception) {
+                MainScope().launch {
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Login error")
+                        .setMessage(e.localizedMessage)
+                        .setNeutralButton("OK", null)
+                        .show()
+                }
+            } finally {
+                MainScope().launch {
+                    activity?.state = MainActivity.State.Idle
+                }
+            }
+        }
     }
 }

@@ -15,4 +15,5 @@ dependencies {
     implementation(Libs.google.playServicesAuth)
     implementation(Libs.facebookLogin)
     implementation(Libs.oolong)
+    implementation(Libs.kotlin.coroutinesPlayServices)
 }
