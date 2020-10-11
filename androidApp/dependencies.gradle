@@ -12,8 +12,12 @@ dependencies {
     implementation(Libs.google.firebase.analytics)
     implementation(Libs.google.firebase.crashlytics)
     implementation(Libs.google.firebase.auth)
+    implementation(Libs.google.firebase.storage)
     implementation(Libs.google.playServicesAuth)
     implementation(Libs.facebookLogin)
     implementation(Libs.oolong)
     implementation(Libs.kotlin.coroutinesPlayServices)
+    implementation(Libs.glide.glide)
+    implementation(Libs.glide.compiler)
+
 }

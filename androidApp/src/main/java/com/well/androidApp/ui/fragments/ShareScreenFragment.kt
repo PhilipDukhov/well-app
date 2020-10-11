@@ -3,40 +3,38 @@ package com.well.androidApp.ui.fragments
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.ImageDecoder
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.MimeTypeMap
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import com.well.androidApp.R
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 
 
 class ShareScreenFragment : Fragment() {
-    private val FirebaseUser.description: String
-        get() {
-            return "$displayName\n$email\n${
-                providerData.map { it.providerId }.filter { it != "firebase" }.joinToString(
-                    "\n"
-                )
-            }"
-        }
-    private val processingThread = Thread()
     private lateinit var imageView: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_share_screen, container, false).apply {
             findViewById<Button>(R.id.signOut).setOnClickListener {
                 FirebaseAuth.getInstance().signOut()
@@ -52,20 +50,6 @@ class ShareScreenFragment : Fragment() {
         }
     }
 
-    private val pickImageRequestCode = 1234
-    private fun onChooseImageClick() {
-        val getIntent = Intent(Intent.ACTION_GET_CONTENT)
-        getIntent.type = "image/*"
-
-        val pickIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        pickIntent.type = "image/*"
-
-        val chooserIntent = Intent.createChooser(getIntent, "Select Image")
-        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(pickIntent))
-
-        startActivityForResult(chooserIntent, pickImageRequestCode)
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (resultCode) {
@@ -73,24 +57,95 @@ class ShareScreenFragment : Fragment() {
         }
     }
 
-    private fun updateImage(imageUri: Uri) {
-        processingThread.run {
-            val bitmap = imageUri.getBitmap()
-            activity?.runOnUiThread {
-                imageView.setImageBitmap(bitmap)
-            }
+    private val pickImageRequestCode = 7230
+    private fun onChooseImageClick() {
+        val intents = listOf(
+            Intent(Intent.ACTION_GET_CONTENT),
+            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        )
+        intents.forEach {
+            it.type = "image/*"
+        }
+
+        val chooserIntent = Intent.createChooser(intents.first(), "Select Image")
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.drop(1).toTypedArray())
+        startActivityForResult(chooserIntent, pickImageRequestCode)
+    }
+
+    private fun updateImage(uri: Uri) {
+        Glide.with(requireContext()).apply {
+            load(uri)
+                .into(imageView)
+            asBitmap()
+                .load(uri)
+                .override(1125, 2436)
+                .fitCenter()
+                .listener(object : RequestListener<Bitmap> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Bitmap>?,
+                        isFirstResource: Boolean
+                    ): Boolean = false
+
+                    override fun onResourceReady(
+                        resource: Bitmap?,
+                        model: Any?,
+                        target: Target<Bitmap>?,
+                        dataSource: com.bumptech.glide.load.DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        resource?.let {
+                            val fileExt: String =
+                                MimeTypeMap.getFileExtensionFromUrl(uri.toString())
+
+                            println("image ${it.width} ${it.height}")
+                            GlobalScope.launch {
+                                upload(fileExt, it)
+                            }
+                        }
+                        return true
+                    }
+
+                })
+                .submit()
         }
     }
 
-    private fun Uri.getBitmap(): Bitmap =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            ImageDecoder.decodeBitmap(
-                ImageDecoder.createSource(
-                    requireContext().contentResolver,
-                    this@getBitmap
-                )
-            )
-        } else {
-            MediaStore.Images.Media.getBitmap(requireContext().contentResolver, this@getBitmap)
-        }
+    private fun upload(fileExt: String, bitmap: Bitmap) {
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+        val ref = Firebase.storage.reference.child("mountains.$fileExt")
+        val uploadTask = ref.putBytes(stream.toByteArray())
+
+        uploadTask
+            .addOnProgressListener {
+                println("upload ${it.bytesTransferred.toDouble() / it.totalByteCount}")
+            }
+            .continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    task.exception?.let {
+                        throw it
+                    }
+                }
+                ref.downloadUrl
+            }.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val downloadUri = task.result
+                    println("upload $downloadUri")
+                } else {
+                    println("upload ${task.exception}")
+                }
+            }
+    }
 }
+
+private val FirebaseUser.description: String
+    get() {
+        return "$displayName\n$email\n${
+            providerData
+                .map { it.providerId }
+                .filter { it != "firebase" }
+                .joinToString("\n")
+        }"
+    }
