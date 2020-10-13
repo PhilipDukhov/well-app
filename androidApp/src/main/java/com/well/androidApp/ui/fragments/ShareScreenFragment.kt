@@ -138,14 +138,14 @@ class ShareScreenFragment : Fragment() {
                 }
             }
     }
-}
 
-private val FirebaseUser.description: String
-    get() {
-        return "$displayName\n$email\n${
-            providerData
-                .map { it.providerId }
-                .filter { it != "firebase" }
-                .joinToString("\n")
-        }"
-    }
+    private val FirebaseUser.description: String
+        get() {
+            return "$displayName\n$email\n${
+                providerData
+                    .map { it.providerId }
+                    .filter { it != "firebase" }
+                    .joinToString("\n")
+            }"
+        }
+}

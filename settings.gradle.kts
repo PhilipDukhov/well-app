@@ -19,7 +19,7 @@ pluginManagement {
             val pluginId = requested.id.id
             when {
                 pluginId == "com.android" || pluginId == "kotlin-android-extensions" ->
-                    useModule("com.android.tools.build:gradle:4.0.1")
+                    useModule("com.android.tools.build:gradle:4.1.0")
 
                 pluginId.startsWith("com.avito.android") -> {
                     val artifact = pluginId.replace("com.avito.android.", "")

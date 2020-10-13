@@ -5,7 +5,7 @@ def glide = "4.11.0"
 
 ext.Libs = [
         build        : [
-                "gradle"             : "com.android.tools.build:gradle:4.0.2",
+                "gradle"             : "com.android.tools.build:gradle:4.1.0",
                 "kotlin"             : "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion",
                 "googleServices"     : "com.google.gms:google-services:4.3.4",
                 "firebaseCrashlytics": "com.google.firebase:firebase-crashlytics-gradle:2.3.0",
