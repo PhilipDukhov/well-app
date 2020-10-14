@@ -18,16 +18,16 @@ import kotlin.coroutines.suspendCoroutine
 class GoogleProvider(context: Context) : CredentialProvider {
     private val authRequestCode = 9001
     private val googleSignInClient: GoogleSignInClient
+    private var continuation: Continuation<AuthCredential>? = null
 
     init {
-        val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        val googleSignInOptions = GoogleSignInOptions
+            .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(context.getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(context, googleSignInOptions)
     }
-
-    var continuation: Continuation<AuthCredential>? = null
 
     override suspend fun getCredentials(fragment: Fragment): AuthCredential =
         suspendCoroutine {
@@ -42,7 +42,9 @@ class GoogleProvider(context: Context) : CredentialProvider {
         }
 
     override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-        if (requestCode != authRequestCode) return false
+        if (requestCode != authRequestCode) {
+            return false
+        }
         try {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             val account = task.getResult(ApiException::class.java)!!

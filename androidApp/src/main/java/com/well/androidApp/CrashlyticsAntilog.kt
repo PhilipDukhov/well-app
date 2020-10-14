@@ -12,18 +12,19 @@ class CrashlyticsAntilog(private val context: Context) : Antilog() {
         throwable: Throwable?,
         message: String?
     ) {
-        if (priority < Napier.Level.ERROR) return
+        if (priority < Napier.Level.ERROR) {
+            return
+        }
         FirebaseCrashlytics.getInstance().log("$tag : $message")
 
         throwable?.let {
-//            when {
+            // when {
             // e.g. http exception, add a customized your exception message
-//                it is KtorException -> {
-//                    Crashlytics.getInstance().core.log(priority.ordinal, "HTTP Exception", it.response?.errorBody.toString())
-//                }
-//            }
+            // it is KtorException -> {
+            // Crashlytics.getInstance().core.log(priority.ordinal, "HTTP Exception", it.response?.errorBody.toString())
+            // }
+            // }
             FirebaseCrashlytics.getInstance().recordException(it)
         }
     }
 }
-

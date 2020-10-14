@@ -11,7 +11,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.well.androidApp.CrashlyticsAntilog
 import com.well.androidApp.R
 
-
 class MainActivity : AppCompatActivity() {
     enum class State {
         Idle, Processing
@@ -19,7 +18,9 @@ class MainActivity : AppCompatActivity() {
 
     var state = State.Idle
         set(value) {
-            if (value == field) return
+            if (value == field) {
+                return
+            }
             field = value
             findViewById<View>(R.id.progress_overlay)?.visibility = when (value) {
                 State.Idle -> View.GONE
@@ -29,7 +30,9 @@ class MainActivity : AppCompatActivity() {
     private val auth = FirebaseAuth.getInstance()
     private var signedIn = false
         set(value) {
-            if (value == field) return
+            if (value == field) {
+                return
+            }
             field = value
             updateNavigationHost()
         }
@@ -50,13 +53,17 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
         navController.graph.id
         val host = NavHostFragment.create(
-            if (signedIn)
+            if (signedIn) {
                 R.navigation.navigation_main_graph
-            else
+            } else {
                 R.navigation.navigation_sign_in_graph
+            }
         )
-        supportFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, host)
-            .setPrimaryNavigationFragment(host).commit()
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.nav_host_fragment, host)
+            .setPrimaryNavigationFragment(host)
+            .commit()
         state = State.Idle
     }
 

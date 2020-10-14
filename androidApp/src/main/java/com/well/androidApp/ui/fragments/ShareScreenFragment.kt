@@ -27,25 +27,22 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
-
 class ShareScreenFragment : Fragment() {
     private lateinit var imageView: ImageView
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_share_screen, container, false).apply {
-            findViewById<Button>(R.id.signOut).setOnClickListener {
-                FirebaseAuth.getInstance().signOut()
-            }
-            findViewById<Button>(R.id.chooseImage).setOnClickListener { onChooseImageClick() }
-            imageView = findViewById(R.id.imageView)
+    ) = inflater.inflate(R.layout.fragment_share_screen, container, false).apply {
+        findViewById<Button>(R.id.signOut).setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+        }
+        findViewById<Button>(R.id.chooseImage).setOnClickListener { onChooseImageClick() }
+        imageView = findViewById(R.id.imageView)
 
-            FirebaseAuth.getInstance().addAuthStateListener { auth ->
-                findViewById<TextView>(R.id.textView).apply {
-                    text = auth.currentUser?.description
-                }
+        FirebaseAuth.getInstance().addAuthStateListener { auth ->
+            findViewById<TextView>(R.id.textView).apply {
+                text = auth.currentUser?.description
             }
         }
     }
@@ -54,6 +51,8 @@ class ShareScreenFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         when (resultCode) {
             pickImageRequestCode, RESULT_OK -> data?.data?.let(::updateImage)
+
+            else -> return
         }
     }
 
@@ -106,7 +105,6 @@ class ShareScreenFragment : Fragment() {
                         }
                         return true
                     }
-
                 })
                 .submit()
         }
@@ -129,7 +127,8 @@ class ShareScreenFragment : Fragment() {
                     }
                 }
                 ref.downloadUrl
-            }.addOnCompleteListener { task ->
+            }
+            .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val downloadUri = task.result
                     println("upload $downloadUri")
@@ -142,10 +141,10 @@ class ShareScreenFragment : Fragment() {
     private val FirebaseUser.description: String
         get() {
             return "$displayName\n$email\n${
-                providerData
-                    .map { it.providerId }
-                    .filter { it != "firebase" }
-                    .joinToString("\n")
+            providerData
+                .map { it.providerId }
+                .filter { it != "firebase" }
+                .joinToString("\n")
             }"
         }
 }

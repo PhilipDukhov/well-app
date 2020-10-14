@@ -28,13 +28,13 @@ class SignInStartFragment : BaseFragment() {
         }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_sign_in_start, container, false).also { view ->
-            SocialNetwork.values().forEach { socialNetwork ->
-                view.findViewById<Button>(socialNetwork.layoutButtonId).setOnClickListener {
-                    onSocialNetworkButtonClick(socialNetwork)
-                }
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) = inflater.inflate(R.layout.fragment_sign_in_start, container, false).also { view ->
+        SocialNetwork.values().forEach { socialNetwork ->
+            view.findViewById<Button>(socialNetwork.layoutButtonId).setOnClickListener {
+                onSocialNetworkButtonClick(socialNetwork)
             }
         }
     }
@@ -57,7 +57,8 @@ class SignInStartFragment : BaseFragment() {
                 println("logged in")
             } catch (e: Exception) {
                 MainScope().launch {
-                    AlertDialog.Builder(requireContext())
+                    AlertDialog
+                        .Builder(requireContext())
                         .setTitle("Login error")
                         .setMessage(e.localizedMessage)
                         .setNeutralButton("OK", null)

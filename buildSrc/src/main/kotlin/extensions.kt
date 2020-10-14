@@ -5,7 +5,7 @@ private fun ExtraPropertiesExtension.mapAt(
     path: String,
     skipLast: Boolean
 ): Pair<LinkedHashMap<*, *>, String> {
-    var components = path.split('.')
+    val components = path.split('.')
     var map = this["Libs"] as LinkedHashMap<*, *>
     val last = components.last()
     for (component in components.dropLast(if (skipLast) 1 else 0)) {
@@ -15,7 +15,8 @@ private fun ExtraPropertiesExtension.mapAt(
 }
 
 fun ExtraPropertiesExtension.libsAt(path: String) =
-    mapAt(path, false).first
+    mapAt(path, false)
+        .first
         .values
         .mapNotNull {
             when (it) {

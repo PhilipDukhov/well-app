@@ -7,7 +7,6 @@ import android.text.SpannableString
 import android.text.style.StyleSpan
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.text.HtmlCompat
 
 class BoldUpperCaseTextView(context: Context, attrs: AttributeSet?) :
     AppCompatTextView(context, attrs) {
@@ -17,7 +16,8 @@ class BoldUpperCaseTextView(context: Context, attrs: AttributeSet?) :
             return
         }
         val string = SpannableString(text)
-        text.withIndex()
+        text
+            .withIndex()
             .filter { it.value.isUpperCase() }
             .forEach {
                 string.setSpan(

@@ -49,7 +49,8 @@ class FacebookProvider : CredentialProvider {
                             continuation.resumeWithException(error)
                         }
                     }
-                })
+                }
+            )
             loginManager.logInWithReadPermissions(fragment, listOf("email"))
         }
 

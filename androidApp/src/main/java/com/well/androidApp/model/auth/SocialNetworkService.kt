@@ -23,12 +23,13 @@ class SocialNetworkService(private val context: Context) {
     suspend fun login(
         network: SocialNetwork,
         fragment: Fragment
-    ): AuthResult {
-        return if (network.hasCredentialProvider)
-            credentialsProviderLogin(network, fragment)
-        else
-            oAuthProviderLogin(network, fragment)
-    }
+    ) = (
+        if (network.hasCredentialProvider) {
+            ::credentialsProviderLogin
+        } else {
+            ::oAuthProviderLogin
+        }
+        )(network, fragment)
 
     private suspend fun oAuthProviderLogin(
         network: SocialNetwork,
@@ -41,7 +42,8 @@ class SocialNetworkService(private val context: Context) {
                 else -> throw IllegalArgumentException()
             }
         )
-        return FirebaseAuth.getInstance()
+        return FirebaseAuth
+            .getInstance()
             .startActivityForSignInWithProvider(activity, builder.build())
             .await()
     }
@@ -57,7 +59,8 @@ class SocialNetworkService(private val context: Context) {
                 else -> throw IllegalArgumentException()
             }
         }.getCredentials(fragment)
-        return FirebaseAuth.getInstance()
+        return FirebaseAuth
+            .getInstance()
             .signInWithCredential(credentials)
             .await()
     }
