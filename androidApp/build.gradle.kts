@@ -16,5 +16,8 @@ android {
         versionName = "1.0"
         multiDexEnabled = true
     }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
 }
 apply(from = "$projectDir/dependencies.gradle")

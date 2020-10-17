@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.Button
@@ -20,9 +19,8 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import com.well.androidApp.R
+import com.well.shared.FirebaseManager
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
@@ -45,7 +43,7 @@ class ShareScreenFragment : Fragment() {
                 text = auth.currentUser?.description
             }
         }
-    }
+    }!!
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -95,11 +93,10 @@ class ShareScreenFragment : Fragment() {
                         isFirstResource: Boolean
                     ): Boolean {
                         resource?.let {
-                            val fileExt: String =
-                                MimeTypeMap.getFileExtensionFromUrl(uri.toString())
-
                             println("image ${it.width} ${it.height}")
                             GlobalScope.launch {
+                                val fileExt: String =
+                                    MimeTypeMap.getFileExtensionFromUrl(uri.toString())
                                 upload(fileExt, it)
                             }
                         }
@@ -110,32 +107,11 @@ class ShareScreenFragment : Fragment() {
         }
     }
 
-    private fun upload(fileExt: String, bitmap: Bitmap) {
+    private suspend fun upload(fileExt: String, bitmap: Bitmap) {
         val stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-        val ref = Firebase.storage.reference.child("mountains.$fileExt")
-        val uploadTask = ref.putBytes(stream.toByteArray())
-
-        uploadTask
-            .addOnProgressListener {
-                println("upload ${it.bytesTransferred.toDouble() / it.totalByteCount}")
-            }
-            .continueWithTask { task ->
-                if (!task.isSuccessful) {
-                    task.exception?.let {
-                        throw it
-                    }
-                }
-                ref.downloadUrl
-            }
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val downloadUri = task.result
-                    println("upload $downloadUri")
-                } else {
-                    println("upload ${task.exception}")
-                }
-            }
+        val path = FirebaseManager.manager.upload(stream.toByteArray(), "mountains.$fileExt")
+        println("uploaded $path")
     }
 
     private val FirebaseUser.description: String

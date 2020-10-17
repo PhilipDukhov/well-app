@@ -5,11 +5,13 @@ import android.content.Intent
 import androidx.fragment.app.Fragment
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthWebException
 import com.google.firebase.auth.OAuthProvider
 import com.well.androidApp.model.auth.credentialProviders.CredentialProvider
 import com.well.androidApp.model.auth.credentialProviders.FacebookProvider
 import com.well.androidApp.model.auth.credentialProviders.GoogleProvider
 import kotlinx.coroutines.tasks.await
+import kotlin.coroutines.cancellation.CancellationException
 
 class SocialNetworkService(private val context: Context) {
     private val credentialProviders = mutableMapOf<SocialNetwork, CredentialProvider>()
@@ -42,10 +44,19 @@ class SocialNetworkService(private val context: Context) {
                 else -> throw IllegalArgumentException()
             }
         )
-        return FirebaseAuth
-            .getInstance()
-            .startActivityForSignInWithProvider(activity, builder.build())
-            .await()
+        try {
+            return FirebaseAuth
+                .getInstance()
+                .startActivityForSignInWithProvider(activity, builder.build())
+                .await()
+        } catch (e: FirebaseAuthWebException) {
+            throw when ((e).errorCode) {
+                "ERROR_WEB_CONTEXT_CANCELED" -> CancellationException()
+                else -> e
+            }
+        } catch (e: Exception) {
+            throw e
+        }
     }
 
     private suspend fun credentialsProviderLogin(

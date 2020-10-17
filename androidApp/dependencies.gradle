@@ -8,16 +8,17 @@ dependencies {
     implementation(Libs.jetpack.navigationUi)
     implementation(Libs.jetpack.coreCtx)
 
-    implementation(Libs.napier)
-    implementation(Libs.google.firebase.analytics)
-    implementation(Libs.google.firebase.crashlytics)
-    implementation(Libs.google.firebase.auth)
-    implementation(Libs.google.firebase.storage)
+    implementation(Libs.firebase.analytics)
+    implementation(Libs.firebase.crashlytics)
+    implementation(Libs.firebase.auth)
+    implementation(Libs.firebase.storage)
     implementation(Libs.google.playServicesAuth)
     implementation(Libs.facebookLogin)
-    implementation(Libs.oolong)
     implementation(Libs.kotlin.coroutinesPlayServices)
+
     implementation(Libs.glide.glide)
     implementation(Libs.glide.compiler)
 
+    implementation(Libs.oolong)
+    implementation(Libs.napier)
 }

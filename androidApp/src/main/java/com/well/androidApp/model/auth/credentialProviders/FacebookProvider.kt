@@ -9,11 +9,9 @@ import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FacebookAuthProvider
-import kotlinx.coroutines.CancellationException
-import kotlin.coroutines.Continuation
+import kotlinx.coroutines.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 class FacebookProvider : CredentialProvider {
     private val callbackManager: CallbackManager = CallbackManager.Factory.create()
@@ -24,35 +22,35 @@ class FacebookProvider : CredentialProvider {
     }
 
     override suspend fun getCredentials(fragment: Fragment): AuthCredential =
-        suspendCoroutine { globalContinuation ->
-            val continuation = Continuation<AuthCredential>(globalContinuation.context) {
-                loginManager.unregisterCallback(callbackManager)
-                globalContinuation.resumeWith(it)
+        runCatching<AuthCredential> {
+            suspendCancellableCoroutine { continuation ->
+                loginManager.registerCallback(
+                    callbackManager,
+                    object : FacebookCallback<LoginResult> {
+                        override fun onSuccess(result: LoginResult?) {
+                            if (result != null) {
+                                continuation.resume(FacebookAuthProvider.getCredential(result.accessToken.token))
+                            } else {
+                                continuation.resumeWithException(IllegalStateException("Facebook login empty success"))
+                            }
+                        }
+
+                        override fun onCancel() {
+                            continuation.cancel()
+                        }
+
+                        override fun onError(error: FacebookException?) {
+                            continuation.resumeWithException(
+                                error ?: IllegalStateException("Facebook login empty error")
+                            )
+                        }
+                    }
+                )
+                loginManager.logInWithReadPermissions(fragment, listOf("email"))
             }
-            loginManager.registerCallback(
-                callbackManager,
-                object : FacebookCallback<LoginResult> {
-                    override fun onSuccess(result: LoginResult?) {
-                        if (result != null) {
-                            continuation.resume(FacebookAuthProvider.getCredential(result.accessToken.token))
-                        } else {
-                            continuation.resumeWithException(Exception("Facebook Empty Success"))
-                        }
-                    }
-
-                    override fun onCancel() {
-                        continuation.resumeWithException(CancellationException("Task $this was cancelled normally."))
-                    }
-
-                    override fun onError(error: FacebookException?) {
-                        if (error != null) {
-                            continuation.resumeWithException(error)
-                        }
-                    }
-                }
-            )
-            loginManager.logInWithReadPermissions(fragment, listOf("email"))
-        }
+        }.also {
+            loginManager.unregisterCallback(callbackManager)
+        }.getOrThrow()
 
     override fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean =
         callbackManager.onActivityResult(requestCode, resultCode, data)

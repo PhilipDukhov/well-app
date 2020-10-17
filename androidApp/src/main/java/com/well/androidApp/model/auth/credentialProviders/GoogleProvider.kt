@@ -6,19 +6,20 @@ import androidx.fragment.app.Fragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes.SIGN_IN_CANCELLED
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.GoogleAuthProvider
 import com.well.androidApp.R
-import kotlin.coroutines.Continuation
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 class GoogleProvider(context: Context) : CredentialProvider {
     private val authRequestCode = 9001
     private val googleSignInClient: GoogleSignInClient
-    private var continuation: Continuation<AuthCredential>? = null
+    private var continuation: CancellableContinuation<AuthCredential>? = null
 
     init {
         val googleSignInOptions = GoogleSignInOptions
@@ -30,7 +31,7 @@ class GoogleProvider(context: Context) : CredentialProvider {
     }
 
     override suspend fun getCredentials(fragment: Fragment): AuthCredential =
-        suspendCoroutine {
+        suspendCancellableCoroutine {
             continuation = it
             googleSignInClient.signOut()
                 .addOnCompleteListener {
@@ -49,8 +50,11 @@ class GoogleProvider(context: Context) : CredentialProvider {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             val account = task.getResult(ApiException::class.java)!!
             continuation?.resume(GoogleAuthProvider.getCredential(account.idToken!!, null))
-        } catch (e: ApiException) {
-            continuation?.resumeWithException(e)
+        } catch (e: Throwable) {
+            when ((e as? ApiException)?.statusCode) {
+                SIGN_IN_CANCELLED -> continuation?.cancel()
+                else -> continuation?.resumeWithException(e)
+            }
         }
         continuation = null
         return true

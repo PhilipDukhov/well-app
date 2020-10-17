@@ -12,6 +12,7 @@ import com.well.androidApp.model.auth.SocialNetwork
 import com.well.androidApp.model.auth.SocialNetworkService
 import com.well.androidApp.ui.MainActivity
 import com.well.androidApp.ui.customViews.BaseFragment
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -37,7 +38,7 @@ class SignInStartFragment : BaseFragment() {
                 onSocialNetworkButtonClick(socialNetwork)
             }
         }
-    }
+    }!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,6 +56,7 @@ class SignInStartFragment : BaseFragment() {
             try {
                 socialNetworkService.login(socialNetwork, this@SignInStartFragment)
                 println("logged in")
+            } catch (e: CancellationException) {
             } catch (e: Exception) {
                 MainScope().launch {
                     AlertDialog

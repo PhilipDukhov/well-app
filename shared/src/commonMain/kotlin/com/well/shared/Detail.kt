@@ -6,13 +6,13 @@ import oolong.effect.none
 import oolong.runtime
 
 
-fun createJob() {
-    val job = runtime(
-        Detail.init,
-        Detail.update,
-        Detail.view,
-        Detail.render)
-}
+//fun createJob() {
+//    val job = runtime(
+//        Detail.init,
+//        Detail.update,
+//        Detail.view,
+//        Detail.render)
+//}
 
 
 object Detail {
