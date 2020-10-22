@@ -2,10 +2,13 @@ package com.well.androidApp.ui.fragments
 
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.content.Intent.*
 import android.graphics.Bitmap
+import android.graphics.Bitmap.CompressFormat.JPEG
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
@@ -45,6 +48,10 @@ class ShareScreenFragment : Fragment() {
         }
     }!!
 
+    override fun onResume() {
+        super.onResume()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (resultCode) {
@@ -57,15 +64,15 @@ class ShareScreenFragment : Fragment() {
     private val pickImageRequestCode = 7230
     private fun onChooseImageClick() {
         val intents = listOf(
-            Intent(Intent.ACTION_GET_CONTENT),
-            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            Intent(ACTION_GET_CONTENT),
+            Intent(ACTION_PICK, EXTERNAL_CONTENT_URI),
         )
         intents.forEach {
             it.type = "image/*"
         }
 
         val chooserIntent = Intent.createChooser(intents.first(), "Select Image")
-        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.drop(1).toTypedArray())
+        chooserIntent.putExtra(EXTRA_INITIAL_INTENTS, intents.drop(1).toTypedArray())
         startActivityForResult(chooserIntent, pickImageRequestCode)
     }
 
@@ -109,7 +116,7 @@ class ShareScreenFragment : Fragment() {
 
     private suspend fun upload(fileExt: String, bitmap: Bitmap) {
         val stream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+        bitmap.compress(JPEG, 100, stream)
         val path = FirebaseManager.manager.upload(stream.toByteArray(), "mountains.$fileExt")
         println("uploaded $path")
     }

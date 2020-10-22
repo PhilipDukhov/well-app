@@ -3,6 +3,7 @@ import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryPlugin
 import com.avito.android.plugin.build_param_check.CheckMode.FAIL
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
 
 val javaVersion = JavaVersion.VERSION_1_8
 group = "com.well"
@@ -170,4 +171,55 @@ tasks.named("dependencyUpdates", DependencyUpdatesTask::class.java).configure {
     outputFormatter = "json"
     outputDir = "build/dependencyUpdates"
     reportfileName = "report"
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency {
+        when (requested.group to requested.name) {
+            "org.jetbrains.kotlin" to "kotlin-reflect" -> useVersion(extra.version("kotlin"))
+        }
+    }
+}
+
+val ktlint by configurations.creating
+
+dependencies {
+    ktlint("com.pinterest:ktlint:0.39.0") {
+        // need to exclude standard ruleset to use only diktat rules
+        exclude("com.pinterest.ktlint", "ktlint-ruleset-standard")
+    }
+
+    // diktat ruleset
+    ktlint("org.cqfn.diktat:diktat-rules:0.1.2")
+}
+
+val outputDir = "${project.buildDir}/reports/diktat/"
+val inputFiles = project.fileTree(mapOf("dir" to "src", "include" to "**/*.kt"))
+val checkLocations = listOf(
+    "androidApp",
+    "androidLintRules/src/main/java/com/well/androidlintrules/detectors"
+).map { "$it/**/*.kt" }
+
+val diktatCheck by tasks.creating(JavaExec::class) {
+    inputs.files(inputFiles)
+    outputs.dir(outputDir)
+
+    description = "Check Kotlin code style."
+    classpath = ktlint
+    main = "com.pinterest.ktlint.Main"
+
+    // specify proper path to sources that should be checked here
+    args = checkLocations
+}
+
+val diktatFix by tasks.creating(JavaExec::class) {
+    inputs.files(inputFiles)
+    outputs.dir(outputDir)
+
+    description = "Fix Kotlin code style deviations."
+    classpath = ktlint
+    main = "com.pinterest.ktlint.Main"
+
+    // specify proper path to sources that should be checked here
+    args = listOf("-F") + checkLocations
 }

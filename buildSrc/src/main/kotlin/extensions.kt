@@ -6,10 +6,10 @@ private fun ExtraPropertiesExtension.mapAt(
     skipLast: Boolean
 ): Pair<LinkedHashMap<*, *>, String> {
     val components = path.split('.')
-    var map = this["Libs"] as LinkedHashMap<*, *>
+    var map = this["Libs"]!!.toLinkedHashMap()
     val last = components.last()
     for (component in components.dropLast(if (skipLast) 1 else 0)) {
-        map = map[component] as LinkedHashMap<*, *>
+        map = map[component]!!.toLinkedHashMap()
     }
     return Pair(map, last)
 }
@@ -34,3 +34,7 @@ fun ExtraPropertiesExtension.libAt(path: String): Any {
         else -> throw NoSuchFieldException()
     }
 }
+
+fun ExtraPropertiesExtension.version(path: String) = (this["Versions"]!!.toLinkedHashMap()[path] as String?)!!
+
+fun Any.toLinkedHashMap(): LinkedHashMap<*, *> = this as LinkedHashMap<*, *>

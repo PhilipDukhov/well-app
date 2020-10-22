@@ -12,6 +12,7 @@
         android:layout_height="match_parent" />
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="right"
@@ -33,12 +34,38 @@
             android:text="Sign out" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/chooseImage"
-        android:layout_width="wrap_content"
+    <LinearLayout
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="Choose image"
+        android:layout_width="0dp"
+        android:gravity="left"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/linearLayout2"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/vStartSharing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Start sharing" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:gravity="left"
+        android:orientation="horizontal"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/linearLayout2"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/chooseImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Choose image" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

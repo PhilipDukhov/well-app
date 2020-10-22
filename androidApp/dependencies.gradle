@@ -1,5 +1,6 @@
 dependencies {
     implementation(project(":shared"))
+    lintChecks(project(":androidLintRules"))
 
     implementation(Libs.jetpack.material)
     implementation(Libs.jetpack.appCompat)

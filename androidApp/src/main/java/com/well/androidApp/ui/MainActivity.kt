@@ -2,32 +2,36 @@ package com.well.androidApp.ui
 
 import android.os.Bundle
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
-import com.github.aakira.napier.BuildConfig
+import com.github.aakira.napier.BuildConfig.DEBUG
 import com.github.aakira.napier.DebugAntilog
 import com.github.aakira.napier.Napier
 import com.google.firebase.auth.FirebaseAuth
 import com.well.androidApp.CrashlyticsAntilog
 import com.well.androidApp.R
+import com.well.androidApp.ui.MainActivity.State.*
 
 class MainActivity : AppCompatActivity() {
     enum class State {
         Idle, Processing
     }
 
-    var state = State.Idle
+    var state = Idle
         set(value) {
             if (value == field) {
                 return
             }
             field = value
             findViewById<View>(R.id.progress_overlay)?.visibility = when (value) {
-                State.Idle -> View.GONE
-                State.Processing -> View.VISIBLE
+                Idle -> GONE
+                Processing -> VISIBLE
             }
         }
     private val auth = FirebaseAuth.getInstance()
+
     private var signedIn = false
         set(value) {
             if (value == field) {
@@ -64,9 +68,9 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.nav_host_fragment, host)
             .setPrimaryNavigationFragment(host)
             .commit()
-        state = State.Idle
+        state = Idle
     }
 
     private fun initializeLogging() =
-        Napier.base(if (BuildConfig.DEBUG) DebugAntilog() else CrashlyticsAntilog(this))
+        Napier.base(if (DEBUG) DebugAntilog() else CrashlyticsAntilog(this))
 }

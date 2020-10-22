@@ -7,6 +7,7 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthWebException
 import com.google.firebase.auth.OAuthProvider
+import com.well.androidApp.model.auth.SocialNetwork.*
 import com.well.androidApp.model.auth.credentialProviders.CredentialProvider
 import com.well.androidApp.model.auth.credentialProviders.FacebookProvider
 import com.well.androidApp.model.auth.credentialProviders.GoogleProvider
@@ -18,8 +19,8 @@ class SocialNetworkService(private val context: Context) {
 
     private val SocialNetwork.hasCredentialProvider: Boolean
         get() = when (this) {
-            SocialNetwork.Google, SocialNetwork.Facebook -> true
-            SocialNetwork.Twitter, SocialNetwork.Apple -> false
+            Google, Facebook -> true
+            Twitter, Apple -> false
         }
 
     suspend fun login(
@@ -40,7 +41,7 @@ class SocialNetworkService(private val context: Context) {
         val activity = fragment.activity ?: throw IllegalStateException()
         val builder = OAuthProvider.newBuilder(
             when (network) {
-                SocialNetwork.Twitter -> "twitter.com"
+                Twitter -> "twitter.com"
                 else -> throw IllegalArgumentException()
             }
         )
@@ -65,8 +66,8 @@ class SocialNetworkService(private val context: Context) {
     ): AuthResult {
         val credentials = credentialProviders.getOrPut(network) {
             when (network) {
-                SocialNetwork.Google -> GoogleProvider(context)
-                SocialNetwork.Facebook -> FacebookProvider()
+                Google -> GoogleProvider(context)
+                Facebook -> FacebookProvider()
                 else -> throw IllegalArgumentException()
             }
         }.getCredentials(fragment)

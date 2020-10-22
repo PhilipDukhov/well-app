@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN
 import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes.SIGN_IN_CANCELLED
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.AuthCredential
@@ -23,7 +24,7 @@ class GoogleProvider(context: Context) : CredentialProvider {
 
     init {
         val googleSignInOptions = GoogleSignInOptions
-            .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .Builder(DEFAULT_SIGN_IN)
             .requestIdToken(context.getString(R.string.default_web_client_id))
             .requestEmail()
             .build()

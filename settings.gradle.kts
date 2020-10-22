@@ -1,5 +1,6 @@
 rootProject.name = "WELL"
 
+include(":androidLintRules")
 include(":androidApp")
 include(":shared")
 

@@ -18,12 +18,6 @@ class CrashlyticsAntilog(private val context: Context) : Antilog() {
         FirebaseCrashlytics.getInstance().log("$tag : $message")
 
         throwable?.let {
-            // when {
-            // e.g. http exception, add a customized your exception message
-            // it is KtorException -> {
-            // Crashlytics.getInstance().core.log(priority.ordinal, "HTTP Exception", it.response?.errorBody.toString())
-            // }
-            // }
             FirebaseCrashlytics.getInstance().recordException(it)
         }
     }
