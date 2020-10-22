@@ -2,4 +2,7 @@
 <resources>
     <string name="app_name">WELL</string>
     <string name="logo_title">Word Endo Live-Link</string>
+    <string name="action_choose_image">Choose image</string>
+    <string name="action_start_sharing">Start sharing</string>
+    <string name="action_sign_out">Sign out</string>
 </resources>

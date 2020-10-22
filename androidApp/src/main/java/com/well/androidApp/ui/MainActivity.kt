@@ -1,7 +1,6 @@
 package com.well.androidApp.ui
 
 import android.os.Bundle
-import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
@@ -12,7 +11,9 @@ import com.github.aakira.napier.Napier
 import com.google.firebase.auth.FirebaseAuth
 import com.well.androidApp.CrashlyticsAntilog
 import com.well.androidApp.R
-import com.well.androidApp.ui.MainActivity.State.*
+import com.well.androidApp.databinding.ActivityMainBinding
+import com.well.androidApp.ui.MainActivity.State.Idle
+import com.well.androidApp.ui.MainActivity.State.Processing
 
 class MainActivity : AppCompatActivity() {
     enum class State {
@@ -25,12 +26,13 @@ class MainActivity : AppCompatActivity() {
                 return
             }
             field = value
-            findViewById<View>(R.id.progress_overlay)?.visibility = when (value) {
+            binding.progressOverlay.visibility = when (value) {
                 Idle -> GONE
                 Processing -> VISIBLE
             }
         }
     private val auth = FirebaseAuth.getInstance()
+    private lateinit var binding: ActivityMainBinding
 
     private var signedIn = false
         set(value) {
@@ -43,7 +45,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+
         initializeLogging()
 
         auth.addAuthStateListener {

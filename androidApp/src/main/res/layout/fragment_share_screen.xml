@@ -31,7 +31,7 @@
             android:id="@+id/signOut"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sign out" />
+            android:text="@string/action_sign_out" />
     </LinearLayout>
 
     <LinearLayout
@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Start sharing" />
+            android:text="@string/action_start_sharing" />
     </LinearLayout>
 
     <LinearLayout
@@ -66,6 +66,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Choose image" />
+            android:text="@string/action_choose_image" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

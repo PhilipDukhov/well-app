@@ -1,29 +1,34 @@
 package com.well.shared
 
+import oolong.effect.none
 
-//import oolong.effect.none
-//
-//
-//object SharingScreen {
-//    data class Model(
-//        val imageURL: String? = null
-//    )
-//
-//    sealed class Msg {
-//        class UploadData(val data: ByteArray) : Msg()
-//    }
-//
-//    data class Props(
-//        val count: Int,
-//        val onIncrement: () -> Msg,
-//        val onDecrement: () -> Msg,
-//        val test: Boolean
-//    )
-//
-//    val init = {
-//        Model() to none<Msg>()
-//    }
-//
+object SharingScreen {
+    data class Screen(val imageURL: String? = null) {
+        companion object {
+            val zero: Screen = Screen()
+        }
+    }
+
+    sealed class Model {
+        data class Host(val screen: Screen)
+        data class Guest(val screen: Screen)
+    }
+
+    sealed class Msg {
+        class UploadData(val data: ByteArray) : Msg()
+    }
+
+    data class Props(
+        val count: Int,
+        val onIncrement: () -> Msg,
+        val onDecrement: () -> Msg,
+        val test: Boolean
+    )
+
+    val init = {
+        Model.Guest(Screen.zero) to none<Msg>()
+    }
+
 //    val update = { msg: Msg, model: Model ->
 //        when (msg) {
 //            is Msg.UploadData -> model.copy(count = model.count + 1)
@@ -42,5 +47,5 @@ package com.well.shared
 //    val render = { props: Props, dispatch: Dispatch<Msg> ->
 //
 //    }
-//
-//}
+
+}

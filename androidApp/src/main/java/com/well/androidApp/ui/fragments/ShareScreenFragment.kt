@@ -7,14 +7,11 @@ import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat.JPEG
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.GlideException
@@ -22,31 +19,32 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.well.androidApp.R
+import com.well.androidApp.databinding.FragmentShareScreenBinding
 import com.well.shared.FirebaseManager
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
 class ShareScreenFragment : Fragment() {
-    private lateinit var imageView: ImageView
+    private lateinit var binding: FragmentShareScreenBinding
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) = inflater.inflate(R.layout.fragment_share_screen, container, false).apply {
-        findViewById<Button>(R.id.signOut).setOnClickListener {
+    ): View {
+        binding = FragmentShareScreenBinding.inflate(inflater, container, false)
+        binding.signOut.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
         }
-        findViewById<Button>(R.id.chooseImage).setOnClickListener { onChooseImageClick() }
-        imageView = findViewById(R.id.imageView)
-
+        binding.chooseImage.setOnClickListener { onChooseImageClick() }
         FirebaseAuth.getInstance().addAuthStateListener { auth ->
-            findViewById<TextView>(R.id.textView).apply {
+            binding.textView.apply {
                 text = auth.currentUser?.description
             }
         }
-    }!!
+        return binding.root
+    }
 
     override fun onResume() {
         super.onResume()
@@ -71,15 +69,13 @@ class ShareScreenFragment : Fragment() {
             it.type = "image/*"
         }
 
-        val chooserIntent = Intent.createChooser(intents.first(), "Select Image")
-        chooserIntent.putExtra(EXTRA_INITIAL_INTENTS, intents.drop(1).toTypedArray())
-        startActivityForResult(chooserIntent, pickImageRequestCode)
+        startActivityForResult(createChooser(intents), pickImageRequestCode)
     }
 
     private fun updateImage(uri: Uri) {
         Glide.with(requireContext()).apply {
             load(uri)
-                .into(imageView)
+                .into(binding.imageView)
             asBitmap()
                 .load(uri)
                 .override(1125, 2436)
@@ -124,10 +120,16 @@ class ShareScreenFragment : Fragment() {
     private val FirebaseUser.description: String
         get() {
             return "$displayName\n$email\n${
-            providerData
-                .map { it.providerId }
-                .filter { it != "firebase" }
-                .joinToString("\n")
+                providerData
+                    .map { it.providerId }
+                    .filter { it != "firebase" }
+                    .joinToString("\n")
             }"
         }
+
+    private fun createChooser(intents: List<Intent>): Intent {
+        val chooserIntent = createChooser(intents.first(), "Select Image")
+        chooserIntent.putExtra(EXTRA_INITIAL_INTENTS, intents.drop(1).toTypedArray())
+        return chooserIntent
+    }
 }
