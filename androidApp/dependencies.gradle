@@ -22,4 +22,5 @@ dependencies {
 
     implementation(Libs.oolong)
     implementation(Libs.napier)
+    implementation(Libs.viewbindingpropertydelegate)
 }

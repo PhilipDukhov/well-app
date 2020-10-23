@@ -14,6 +14,10 @@ pluginManagement {
             name = "Avito bintray"
             setUrl("https://dl.bintray.com/avito/maven")
         }
+        maven {
+            name = "ViewBindingPropertyDelegate"
+            setUrl("https://dl.bintray.com/kirich1409/maven")
+        }
     }
     resolutionStrategy {
         eachPlugin {

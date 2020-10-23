@@ -2,10 +2,10 @@ package com.well.androidApp.ui.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.well.androidApp.R
 import com.well.androidApp.databinding.FragmentSignInStartBinding
 import com.well.androidApp.model.auth.SocialNetwork
 import com.well.androidApp.model.auth.SocialNetwork.*
@@ -17,32 +17,25 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
-class SignInStartFragment : BaseFragment() {
+class SignInStartFragment : BaseFragment(R.layout.fragment_sign_in_start) {
     private lateinit var socialNetworkService: SocialNetworkService
-    private lateinit var binding: FragmentSignInStartBinding
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentSignInStartBinding.inflate(inflater, container, false)
-        SocialNetwork.values().forEach { socialNetwork ->
-            when (socialNetwork) {
-                Apple -> binding.authApple
-                Twitter -> binding.authTwitter
-                Facebook -> binding.authFacebook
-                Google -> binding.authGoogle
-            }.setOnClickListener {
-                onSocialNetworkButtonClick(socialNetwork)
-            }
-        }
-        return binding.root
-    }
+    private val viewBinding: FragmentSignInStartBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         socialNetworkService = SocialNetworkService(requireContext())
+        SocialNetwork.values().forEach { socialNetwork ->
+            viewBinding.run {
+                when (socialNetwork) {
+                    Apple -> authApple
+                    Twitter -> authTwitter
+                    Facebook -> authFacebook
+                    Google -> authGoogle
+                }
+            }.setOnClickListener {
+                onSocialNetworkButtonClick(socialNetwork)
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -55,7 +48,6 @@ class SignInStartFragment : BaseFragment() {
         GlobalScope.launch {
             try {
                 socialNetworkService.login(socialNetwork, this@SignInStartFragment)
-                println("logged in")
             } catch (e: CancellationException) {
             } catch (e: Exception) {
                 MainScope().launch {

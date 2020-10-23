@@ -3,7 +3,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
@@ -29,7 +28,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/nav_host_fragment"
+            android:id="@+id/navHostFragment"
             android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -38,7 +37,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
-        android:id="@+id/progress_overlay"
+        android:id="@+id/progressOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.3"
