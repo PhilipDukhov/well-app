@@ -1,13 +1,14 @@
 import UIKit
 import shared
 import Firebase
-import FBSDKCoreKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     private let socialNetworkService = SocialNetworkService()
+    
+    private var job: Kotlinx_coroutines_coreJob?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         window = initializeWindow()
@@ -19,6 +20,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         )
         socialNetworkService.disconnectedHandler = { signer in
             print("disconnected \(signer)")
+        }
+        job = SharingScreen()
+            .runtime(userId: "123") { props, dispatch in
+            print(props)
         }
         return true
     }
@@ -56,9 +61,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func initializeLogging() {
         #if DEBUG
         FirebaseConfiguration.shared.setLoggerLevel(.min)
-        NapierProxyKt.buildDebug()
+        NapierProxy().buildDebug()
         #else
-        NapierProxyKt.build(antilog: CrashlyticsAntilog
+        NapierProxy().build(antilog: CrashlyticsAntilog
         { _, tag, message in
             let args = [tag, message].compactMap { $0 }
             Crashlytics.crashlytics().log(args.joined(separator: " "))

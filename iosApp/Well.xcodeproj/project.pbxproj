@@ -11,8 +11,6 @@
 		7555FF7F242A565900829871 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF7E242A565900829871 /* AppDelegate.swift */; };
 		7555FF85242A565B00829871 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF84242A565B00829871 /* Assets.xcassets */; };
 		7555FF8B242A565B00829871 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF89242A565B00829871 /* LaunchScreen.storyboard */; };
-		7555FFB2242A642300829871 /* shared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7555FFB1242A642300829871 /* shared.framework */; };
-		7555FFB3242A642300829871 /* shared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7555FFB1242A642300829871 /* shared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D51625612503C945009E103B /* R.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51625602503C945009E103B /* R.generated.swift */; };
 		D51625792504BD9C009E103B /* neris_semi_bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = D51625762504BD9C009E103B /* neris_semi_bold.otf */; };
 		D516257A2504BD9C009E103B /* neris_thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = D51625772504BD9C009E103B /* neris_thin.otf */; };
@@ -43,7 +41,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				7555FFB3242A642300829871 /* shared.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -57,7 +54,6 @@
 		7555FF84242A565B00829871 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7555FF8A242A565B00829871 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		7555FFB1242A642300829871 /* shared.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = shared.framework; path = "../shared/build/xcode-frameworks/shared.framework"; sourceTree = "<group>"; };
 		A8560B869390C33CC211DA86 /* Pods_Well.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Well.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6C5234FBEC00FAADC9E6A32 /* Pods-Well.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Well.release.xcconfig"; path = "Target Support Files/Pods-Well/Pods-Well.release.xcconfig"; sourceTree = "<group>"; };
 		BE7BB08AC1C3EC928622AE74 /* Pods-Well.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Well.debug.xcconfig"; path = "Target Support Files/Pods-Well/Pods-Well.debug.xcconfig"; sourceTree = "<group>"; };
@@ -95,7 +91,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7555FFB2242A642300829871 /* shared.framework in Frameworks */,
 				0902BD0460D4849CA1790CBB /* Pods_Well.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -136,7 +131,6 @@
 		7555FFB0242A642200829871 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7555FFB1242A642300829871 /* shared.framework */,
 				A8560B869390C33CC211DA86 /* Pods_Well.framework */,
 			);
 			name = Frameworks;
@@ -244,16 +238,15 @@
 			buildPhases = (
 				1AB7C8205D06361A1F02E3B2 /* [CP] Check Pods Manifest.lock */,
 				D51DA36D2503C44700123642 /* R.swift */,
-				7555FFB5242A651A00829871 /* Gradlew script */,
 				D51DA36E2503C47700123642 /* Swiftlint */,
 				7555FF77242A565900829871 /* Sources */,
 				7555FF78242A565900829871 /* Frameworks */,
 				7555FF79242A565900829871 /* Resources */,
 				D5ECE2F3252319F000207638 /* FirebaseCrashlytics */,
 				7555FFB4242A642300829871 /* Embed Frameworks */,
-				F6791FE7149714BE16B59DFD /* [CP] Embed Pods Frameworks */,
-				E3BC619DFBBD0B7E84CF050E /* [CP] Copy Pods Resources */,
 				D5BFD5982524B9B000A94FCC /* Copy GoogleService-Info */,
+				491238037572C75B2A859A9E /* [CP] Embed Pods Frameworks */,
+				D347414206A97BE54CE79D44 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -334,23 +327,39 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		7555FFB5242A651A00829871 /* Gradlew script */ = {
+		491238037572C75B2A859A9E /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
-			name = "Gradlew script";
+			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-			);
-			outputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :shared:packForXCode -PXCODE_CONFIGURATION=${CONFIGURATION}\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D347414206A97BE54CE79D44 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-resources.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		D51DA36D2503C44700123642 /* R.swift */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -427,40 +436,6 @@
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/FirebaseCrashlytics/run\"\n";
-		};
-		E3BC619DFBBD0B7E84CF050E /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F6791FE7149714BE16B59DFD /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 

@@ -5,7 +5,6 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
-import by.kirich1409.viewbindingdelegate.viewBinding
 import com.github.aakira.napier.BuildConfig.DEBUG
 import com.github.aakira.napier.DebugAntilog
 import com.github.aakira.napier.Napier
@@ -23,17 +22,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     var state = Idle
         set(value) {
-            if (value == field) {
-                return
-            }
+            val oldValue = field
             field = value
-            viewBinding.progressOverlay.visibility = when (value) {
-                Idle -> GONE
-                Processing -> VISIBLE
-            }
+            stateUpdated(oldValue)
         }
+
     private val auth = FirebaseAuth.getInstance()
-    private val viewBinding: ActivityMainBinding by viewBinding()
+    private lateinit var viewBinding: ActivityMainBinding// by viewBinding()
+    private lateinit var navHostFragment: NavHostFragment
 
     private var signedIn = false
         set(value) {
@@ -47,15 +43,18 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initializeLogging()
-
+        viewBinding = ActivityMainBinding.inflate(layoutInflater)
+        navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
+        setContentView(viewBinding.root)
+        updateNavigationHost()
         auth.addAuthStateListener {
             signedIn = it.currentUser != null
+            println("logged in ${it.currentUser?.uid}")
         }
     }
 
     private fun updateNavigationHost() {
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
         val navController = navHostFragment.navController
         navController.graph.id
         val host = NavHostFragment.create(
@@ -71,6 +70,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             .setPrimaryNavigationFragment(host)
             .commit()
         state = Idle
+    }
+
+    private fun stateUpdated(oldValue: State) {
+        if (oldValue == state) return
+        viewBinding.progressOverlay.visibility = when (state) {
+            Idle -> GONE
+            Processing -> VISIBLE
+        }
     }
 
     private fun initializeLogging() =

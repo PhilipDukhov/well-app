@@ -2,10 +2,13 @@ package com.well.androidApp.ui.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.well.androidApp.R
+import com.well.androidApp.databinding.FragmentShareScreenBinding
 import com.well.androidApp.databinding.FragmentSignInStartBinding
 import com.well.androidApp.model.auth.SocialNetwork
 import com.well.androidApp.model.auth.SocialNetwork.*
@@ -19,7 +22,16 @@ import kotlinx.coroutines.launch
 
 class SignInStartFragment : BaseFragment(R.layout.fragment_sign_in_start) {
     private lateinit var socialNetworkService: SocialNetworkService
-    private val viewBinding: FragmentSignInStartBinding by viewBinding()
+    private lateinit var viewBinding: FragmentSignInStartBinding// by viewBinding()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        viewBinding = FragmentSignInStartBinding.inflate(inflater, container, false);
+        return viewBinding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -1,9 +1,7 @@
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryPlugin
-import com.avito.android.plugin.build_param_check.CheckMode.FAIL
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
-import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
 
 val javaVersion = JavaVersion.VERSION_1_8
 group = "com.well"
@@ -30,63 +28,24 @@ repositories {
 }
 
 plugins {
-    id("com.avito.android.buildchecks")
+//    id("com.avito.android.buildchecks")
 }
-
-buildChecks {
-    enableByDefault = true
-
-    /**
-     * Android build tools uses android.jar ($ANDROID_HOME/platforms/android-<compileSdkVersion>/android.jar).
-     * The version can be specified only without a revision (#117789774). Different revisions lead to Gradle remote cache misses
-     */
-    androidSdk {
-        enabled = false
-        compileSdkVersion = 30
-        revision = 1
-    }
-
-    /**
-     * The Java version can influence the output of the Java compiler. It leads to Gradle remote cache misses.
-     */
-    javaVersion {
-        version = javaVersion
-    }
-
-    /**
-     * If two Android modules use the same package, their R classes will be merged. While merging,
-     * it can unexpectedly override resources. It happens even with android.namespacedRClass.
-     */
-    uniqueRClasses {
-        enabled = false
-    }
-
-    /**
-     * On macOs java.net.InetAddress#getLocalHost()
-     * invocation can last up to 5 seconds instead of milliseconds (thoeni.io/post/macos-sierra-java).
-     */
-    macOSLocalhost { }
-
-    /**
-     * Dynamic versions, such as “2.+”, and snapshot versions force Gradle to check them on a remote server.
-     * It slows down a configuration time and makes build less reproducible.
-     */
-    dynamicDependencies { }
-
-    /**
-     * Gradle can run multiple daemons for many reasons.
-     * If you use buildSrc in the project with standalone Gradle wrapper, this check will verify common problems to reuse it.
-     */
-    gradleDaemon { }
-
-    /**
-     * This check verifies that all KAPT annotation processors support incremental annotation processing if it is enabled (kapt.incremental.apt=true).
-     * Because if one of them does not support it then whole incremental annotation processing won’t work at all
-     */
-    incrementalKapt {
-        mode = FAIL
-    }
-}
+//
+//buildChecks {
+//    androidSdk {
+//        compileSdkVersion = 30
+//        revision = 3
+//    }
+//    javaVersion {
+//        version = JavaVersion.VERSION_1_8
+//    }
+//    uniqueRClasses {
+//        enabled = false
+//    }
+//    macOSLocalhost { }
+//    dynamicDependencies { }
+//    gradleDaemon { }
+//}
 
 allprojects {
     @Suppress("UnstableApiUsage")
@@ -111,6 +70,9 @@ allprojects {
 
 
 subprojects {
+    val v = "1.0"
+    group = "com.well"
+    version = v
     plugins.matching { it is AppPlugin || it is LibraryPlugin }.whenPluginAdded {
         configure<BaseExtension> {
             setCompileSdkVersion(30)
@@ -119,6 +81,8 @@ subprojects {
             defaultConfig {
                 minSdkVersion(23)
                 targetSdkVersion(30)
+                versionCode = 1
+                versionName = v
             }
             buildTypes {
                 getByName("release") {
@@ -130,6 +94,13 @@ subprojects {
                 targetCompatibility = javaVersion
             }
         }
+    }
+    plugins.whenPluginAdded {
+        extensions
+            .findByType<com.android.build.gradle.LibraryExtension>()
+            ?.apply {
+                sourceSets["main"]?.manifest?.srcFile("src/androidMain/AndroidManifest.xml")
+            }
     }
 
     apply(from = "${rootDir}/dependencies.gradle")

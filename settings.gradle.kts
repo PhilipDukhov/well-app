@@ -3,6 +3,7 @@ rootProject.name = "WELL"
 include(":androidLintRules")
 include(":androidApp")
 include(":shared")
+include(":serverModels")
 
 pluginManagement {
     repositories {
@@ -28,7 +29,7 @@ pluginManagement {
 
                 pluginId.startsWith("com.avito.android") -> {
                     val artifact = pluginId.replace("com.avito.android.", "")
-                    useModule("com.avito.android:$artifact:2020.23")
+                    useModule("com.avito.android:$artifact:2020.25")
                 }
             }
         }

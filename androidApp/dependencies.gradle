@@ -1,5 +1,6 @@
 dependencies {
     implementation(project(":shared"))
+    implementation(project(":serverModels"))
     lintChecks(project(":androidLintRules"))
 
     implementation(Libs.jetpack.material)
@@ -13,9 +14,13 @@ dependencies {
     implementation(Libs.firebase.crashlytics)
     implementation(Libs.firebase.auth)
     implementation(Libs.firebase.storage)
+    implementation platform(Libs.firebase.bom)
+    implementation(Libs.firebase.database)
+
     implementation(Libs.google.playServicesAuth)
     implementation(Libs.facebookLogin)
     implementation(Libs.kotlin.coroutinesPlayServices)
+    implementation(Libs.kotlin.serialization)
 
     implementation(Libs.glide.glide)
     implementation(Libs.glide.compiler)

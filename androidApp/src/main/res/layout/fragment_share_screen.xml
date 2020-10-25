@@ -11,8 +11,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <com.well.androidApp.ui.customViews.DrawingView
+        android:id="@+id/drawingView"
+        tools:viewBindingIgnore="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
     <LinearLayout
-        android:id="@+id/linearLayout2"
+        android:id="@+id/userInfoLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="right"
@@ -35,16 +42,17 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/idleLayout"
         android:layout_height="wrap_content"
         android:layout_width="0dp"
         android:gravity="left"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/linearLayout2"
+        app:layout_constraintEnd_toStartOf="@+id/userInfoLayout"
         app:layout_constraintStart_toStartOf="parent">
 
         <Button
-            android:id="@+id/vStartSharing"
+            android:id="@+id/startSharing"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -52,13 +60,14 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/editingLayout"
         android:layout_height="wrap_content"
         android:layout_width="0dp"
         android:gravity="left"
         android:orientation="horizontal"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/linearLayout2"
+        app:layout_constraintEnd_toStartOf="@+id/userInfoLayout"
         app:layout_constraintStart_toStartOf="parent">
 
         <Button

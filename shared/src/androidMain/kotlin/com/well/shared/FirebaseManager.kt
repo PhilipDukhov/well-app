@@ -2,9 +2,7 @@ package com.well.shared
 
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.tasks.await
 
 actual class FirebaseManager {
     actual companion object {
@@ -12,22 +10,21 @@ actual class FirebaseManager {
             get() = FirebaseManager()
     }
 
-    actual suspend fun upload(byteArray: ByteArray, path: String): String =
-        suspendCancellableCoroutine { continuation ->
-            val ref = Firebase.storage.reference.child(path)
-            val uploadTask = ref.putBytes(byteArray)
-            uploadTask
-                .addOnProgressListener {
-                    println("upload ${it.bytesTransferred.toDouble() / it.totalByteCount}")
-                }
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        continuation.resume(ref.downloadUrl.toString())
-                    } else {
-                        continuation.resumeWithException(task.exception ?: IllegalStateException())
+    actual suspend fun upload(byteArray: ByteArray, path: String): String {
+        val ref = Firebase.storage.reference.child(path)
+        val uploadTask = ref.putBytes(byteArray)
+        return uploadTask
+            .addOnProgressListener {
+                println("upload ${it.bytesTransferred.toDouble() / it.totalByteCount}")
+            }
+            .continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    task.exception?.let {
+                        throw it
                     }
                 }
-            continuation.cancel()
-            continuation.invokeOnCancellation { uploadTask.cancel() }
-        }
+                ref.downloadUrl
+            }
+            .await().toString()
+    }
 }
