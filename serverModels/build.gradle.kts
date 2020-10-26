@@ -1,9 +1,8 @@
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
+    kotlin("plugin.serialization")
     id("com.android.library")
-    id("kotlin-android-extensions")
-    id("kotlinx-serialization")
 }
 
 kotlin {
@@ -17,8 +16,9 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                implementation(kotlin("stdlib-common"))
                 listOf(
-                    "kotlin.serialization",
+                    "kotlin.serializationJson",
                     "kotlin.stdLib"
                 ).forEach {
                     implementation(extra.libAt(it))

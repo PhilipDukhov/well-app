@@ -1,39 +1,39 @@
 def versions = [
-        kotlin: "1.4.10",
+        kotlin             : "1.4.10",
         kotlinSerialization: "1.0.0",
-        napier: "1.4.1",
-        nav   : "2.3.1",
-        glide : "4.11.0",
-        lint  : "27.2.0-alpha14",
-        kotest: "4.3.0",
+        napier             : "1.4.1",
+        nav                : "2.3.1",
+        glide              : "4.11.0",
+        lint               : "27.2.0-alpha14",
+        kotest             : "4.3.0",
         iosDeploymentTarget: "12.0",
 ]
 
 ext.Versions = versions
 ext.Libs = [
-        build        : [
+        build                      : [
                 gradle             : "com.android.tools.build:gradle:4.1.0",
                 kotlin             : "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin",
                 kotlinSerialization: "org.jetbrains.kotlin:kotlin-serialization:$versions.kotlin",
                 googleServices     : "com.google.gms:google-services:4.3.4",
                 firebaseCrashlytics: "com.google.firebase:firebase-crashlytics-gradle:2.3.0",
         ],
-        kotlin       : [
+        kotlin                     : [
                 stdLib                : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin",
                 reflect               : "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin",
                 coroutinesPlayServices: "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.3.9",
-                serialization         : "org.jetbrains.kotlinx:kotlinx-serialization-json:$versions.kotlinSerialization",
+                serializationJson     : "org.jetbrains.kotlinx:kotlinx-serialization-json:$versions.kotlinSerialization",
         ],
-        jetpack      : [
+        jetpack                    : [
                 appCompat         : "androidx.appcompat:appcompat:1.2.0",
                 coreCtx           : "androidx.core:core-ktx:1.3.2",
                 material          : "com.google.android.material:material:1.2.1",
                 constraint        : "androidx.constraintlayout:constraintlayout:2.0.2",
                 navigationFragment: "androidx.navigation:navigation-fragment-ktx:$versions.nav",
                 navigationUi      : "androidx.navigation:navigation-ui-ktx:$versions.nav",
-                annotation: "androidx.annotation:annotation:1.1.0",
+                annotation        : "androidx.annotation:annotation:1.1.0",
         ],
-        firebase     : [
+        firebase                   : [
                 analytics  : "com.google.firebase:firebase-analytics-ktx:17.6.0",
                 crashlytics: "com.google.firebase:firebase-crashlytics-ktx:17.2.2",
                 auth       : "com.google.firebase:firebase-auth:19.4.0",
@@ -41,24 +41,24 @@ ext.Libs = [
                 bom        : "com.google.firebase:firebase-bom:25.12.0",
                 database   : "com.google.firebase:firebase-database-ktx",
         ],
-        google       : [
+        google                     : [
                 playServicesAuth: "com.google.android.gms:play-services-auth:18.1.0",
         ],
-        glide        : [
+        glide                      : [
                 glide   : "com.github.bumptech.glide:glide:$versions.glide",
                 compiler: "com.github.bumptech.glide:compiler:$versions.glide",
         ],
-        lint         : [
+        lint                       : [
                 lint  : "com.android.tools.lint:lint:$versions.lint",
                 api   : "com.android.tools.lint:lint-api:$versions.lint",
                 checks: "com.android.tools.lint:lint-checks:$versions.lint",
                 tests : "com.android.tools.lint:lint-tests:$versions.lint",
         ],
-        oolong       : "org.oolong-kt:oolong:2.1.0",
-        facebookLogin: "com.facebook.android:facebook-login:8.0.0",
-        napier       : "com.github.aakira:napier:$versions.napier",
+        oolong                     : "org.oolong-kt:oolong:2.1.0",
+        facebookLogin              : "com.facebook.android:facebook-login:8.0.0",
+        napier                     : "com.github.aakira:napier:$versions.napier",
         viewbindingpropertydelegate: "com.kirich1409.viewbindingpropertydelegate:viewbindingpropertydelegate:1.3.0",
-        tests        : [
+        tests                      : [
                 utils : "com.android.tools:testutils:$versions.lint",
                 kotest: [
                         runner        : "io.kotest:kotest-runner-junit5:$versions.kotest",

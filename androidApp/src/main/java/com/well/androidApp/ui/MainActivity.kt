@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         updateNavigationHost()
         auth.addAuthStateListener {
             signedIn = it.currentUser != null
-            println("logged in ${it.currentUser?.uid}")
         }
     }
 

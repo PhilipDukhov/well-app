@@ -18,7 +18,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 listOf(
-                    "kotlin.serialization",
+                    "kotlin.serializationJson",
                     "kotlin.stdLib",
                     "napier",
                     "oolong"
@@ -41,7 +41,7 @@ kotlin {
         val iosMain by getting {
             dependencies {
                 listOf(
-                    "kotlin.serialization",
+                    "kotlin.serializationJson",
                     "napier",
                     "kotlin.stdLib",
                     "oolong"
