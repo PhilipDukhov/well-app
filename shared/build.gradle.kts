@@ -17,6 +17,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                implementation(project(":serverModels"))
                 listOf(
                     "kotlin.serializationJson",
                     "kotlin.stdLib",
@@ -25,7 +26,6 @@ kotlin {
                 ).forEach {
                     implementation(extra.libAt(it))
                 }
-                implementation(project(":serverModels"))
             }
         }
         val androidMain by getting {

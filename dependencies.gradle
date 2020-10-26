@@ -7,6 +7,7 @@ def versions = [
         lint               : "27.2.0-alpha14",
         kotest             : "4.3.0",
         iosDeploymentTarget: "12.0",
+        ktor               : "1.4.1",
 ]
 
 ext.Versions = versions
@@ -58,6 +59,12 @@ ext.Libs = [
         facebookLogin              : "com.facebook.android:facebook-login:8.0.0",
         napier                     : "com.github.aakira:napier:$versions.napier",
         viewbindingpropertydelegate: "com.kirich1409.viewbindingpropertydelegate:viewbindingpropertydelegate:1.3.0",
+        ktor                       : [
+                netty: "io.ktor:ktor-server-netty:$ktor_version",
+                core : "io.ktor:ktor-server-core:$ktor_version",
+                auth : "io.ktor:ktor-auth:$ktor_version",
+        ],
+        logback                    : "ch.qos.logback:logback-classic:1.2.1",
         tests                      : [
                 utils : "com.android.tools:testutils:$versions.lint",
                 kotest: [

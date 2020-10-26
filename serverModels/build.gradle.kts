@@ -8,6 +8,7 @@ plugins {
 kotlin {
     android()
     ios()
+    jvm()
     cocoapods {
         summary = "Server models module"
         homepage = ""

@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="1.8" />
+    <bytecodeTargetLevel target="1.8">
+      <module name="WELL.server.commonMain" target="1.6" />
+      <module name="WELL.server.commonTest" target="1.6" />
+      <module name="WELL.server.jvmMain" target="1.6" />
+      <module name="WELL.server.jvmTest" target="1.6" />
+      <module name="WELL.serverModels.commonMain" target="1.6" />
+      <module name="WELL.serverModels.commonTest" target="1.6" />
+      <module name="WELL.serverModels.jvmMain" target="1.6" />
+      <module name="WELL.serverModels.jvmTest" target="1.6" />
+    </bytecodeTargetLevel>
   </component>
 </project>

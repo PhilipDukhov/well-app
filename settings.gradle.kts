@@ -4,6 +4,7 @@ include(":androidLintRules")
 include(":androidApp")
 include(":shared")
 include(":serverModels")
+include(":server")
 
 pluginManagement {
     repositories {
