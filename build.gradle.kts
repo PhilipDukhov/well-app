@@ -194,3 +194,9 @@ val diktatFix by tasks.creating(JavaExec::class) {
     // specify proper path to sources that should be checked here
     args = listOf("-F") + checkLocations
 }
+
+subprojects {
+    tasks.create<DependencyReportTask>("allDeps") {
+
+    }
+}

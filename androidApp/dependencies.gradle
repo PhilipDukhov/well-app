@@ -19,7 +19,7 @@ dependencies {
 
     implementation(Libs.google.playServicesAuth)
     implementation(Libs.facebookLogin)
-    implementation(Libs.kotlin.coroutinesPlayServices)
+    implementation(Libs.kotlin.coroutines.playServices)
     implementation(Libs.kotlin.serializationJson)
 
     implementation(Libs.glide.glide)

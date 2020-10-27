@@ -19,6 +19,7 @@ kotlin {
             dependencies {
                 implementation(project(":serverModels"))
                 listOf(
+                    "kotlin.coroutines.core",
                     "kotlin.serializationJson",
                     "kotlin.stdLib",
                     "napier",
@@ -31,7 +32,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 listOf(
-                    "kotlin.coroutinesPlayServices",
+                    "kotlin.coroutines.playServices",
                     "firebase.storage"
                 ).forEach {
                     implementation(extra.libAt(it))
