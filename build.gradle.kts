@@ -95,12 +95,14 @@ subprojects {
             }
         }
     }
-    plugins.whenPluginAdded {
-        extensions
-            .findByType<com.android.build.gradle.LibraryExtension>()
-            ?.apply {
-                sourceSets["main"]?.manifest?.srcFile("src/androidMain/AndroidManifest.xml")
-            }
+    plugins.withType<org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper> {
+        plugins.whenPluginAdded {
+            extensions
+                .findByType<com.android.build.gradle.LibraryExtension>()
+                ?.apply {
+                    sourceSets["main"]?.manifest?.srcFile("src/androidMain/AndroidManifest.xml")
+                }
+        }
     }
 
     apply(from = "${rootDir}/dependencies.gradle")
