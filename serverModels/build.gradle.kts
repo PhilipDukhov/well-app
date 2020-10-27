@@ -1,6 +1,5 @@
 plugins {
     kotlin("multiplatform")
-    kotlin("native.cocoapods")
     kotlin("plugin.serialization")
     id("com.android.library")
 }
@@ -9,11 +8,6 @@ kotlin {
     android()
     ios()
     jvm()
-    cocoapods {
-        summary = "Server models module"
-        homepage = ""
-        ios.deploymentTarget = extra.version("iosDeploymentTarget")
-    }
     sourceSets {
         val commonMain by getting {
             dependencies {

@@ -11,7 +11,8 @@ kotlin {
     ios()
     cocoapods {
         summary = "Shared"
-        homepage = ""
+        homepage = "-"
+        license = "-"
         ios.deploymentTarget = extra.version("iosDeploymentTarget")
     }
     sourceSets {
