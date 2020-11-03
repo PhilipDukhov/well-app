@@ -28,24 +28,24 @@ repositories {
 }
 
 plugins {
-//    id("com.avito.android.buildchecks")
+    id("com.avito.android.buildchecks")
 }
-//
-//buildChecks {
-//    androidSdk {
-//        compileSdkVersion = 30
-//        revision = 3
-//    }
-//    javaVersion {
-//        version = JavaVersion.VERSION_1_8
-//    }
-//    uniqueRClasses {
-//        enabled = false
-//    }
-//    macOSLocalhost { }
-//    dynamicDependencies { }
-//    gradleDaemon { }
-//}
+
+buildChecks {
+    androidSdk {
+        compileSdkVersion = 30
+        revision = 3
+    }
+    javaVersion {
+        version = JavaVersion.VERSION_1_8
+    }
+    uniqueRClasses {
+        enabled = false
+    }
+    macOSLocalhost { }
+    dynamicDependencies { }
+    gradleDaemon { }
+}
 
 allprojects {
     @Suppress("UnstableApiUsage")
