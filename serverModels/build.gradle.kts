@@ -12,17 +12,17 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-common"))
-                listOf(
+                extra.libsAt(listOf(
                     "kotlin.serializationJson",
                     "kotlin.stdLib"
-                ).forEach {
-                    implementation(extra.libAt(it))
-                }
+                )).forEach { implementation(it) }
             }
         }
         val androidMain by getting {
             dependencies {
-                implementation(extra.libAt("jetpack.annotation"))
+                extra.libsAt(listOf(
+                    "android.annotation"
+                )).forEach { implementation(it) }
             }
         }
     }

@@ -8,6 +8,7 @@ import com.well.shared.FirebaseManager
 import com.well.shared.leafs.SharingScreen.Model.Guest
 import com.well.shared.leafs.SharingScreen.Model.Host
 import com.well.shared.leafs.SharingScreen.Msg.*
+import kotlinx.coroutines.Dispatchers
 import oolong.Effect
 import oolong.effect.none
 
@@ -100,15 +101,17 @@ object SharingScreen {
     }
 
     val view = { model: Model ->
-        Props(
-            when (model) {
-                is Host -> model.screen
-                is Guest -> model.screen
-            }?.run {
-                copy(paths = paths.filter { it.points.isNotEmpty() })
-            },
-            model.userId
-        )
+        model.run {
+            Props(
+                screen = when (this) {
+                    is Host -> screen
+                    is Guest -> screen
+                }?.run {
+                    copy(paths = paths.filter { it.points.isNotEmpty() })
+                },
+                currentUserId = userId
+            )
+        }
     }
 
     private fun Screen.addPoint(msg: AddPoint): Screen {

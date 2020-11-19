@@ -3,12 +3,14 @@ dependencies {
     implementation(project(":serverModels"))
     lintChecks(project(":androidLintRules"))
 
-    implementation(Libs.jetpack.material)
-    implementation(Libs.jetpack.appCompat)
-    implementation(Libs.jetpack.constraint)
-    implementation(Libs.jetpack.navigationFragment)
-    implementation(Libs.jetpack.navigationUi)
-    implementation(Libs.jetpack.coreCtx)
+    implementation(Libs.android.material)
+    implementation(Libs.android.appCompat)
+    implementation(Libs.android.constraint)
+    implementation(Libs.android.navigationFragment)
+    implementation(Libs.android.navigationUi)
+    implementation(Libs.android.coreCtx)
+    implementation(Libs.android.activity)
+    implementation(Libs.android.fragment)
 
     implementation(Libs.firebase.analytics)
     implementation(Libs.firebase.crashlytics)
@@ -28,4 +30,10 @@ dependencies {
     implementation(Libs.oolong)
     implementation(Libs.napier)
     implementation(Libs.viewbindingpropertydelegate)
+    implementation(Libs.webrtc)
+    implementation(Libs.ktor.client)
+
+    implementation('io.socket:socket.io-client:1.0.0') {
+        exclude group: 'org.json', module: 'json'
+    }
 }

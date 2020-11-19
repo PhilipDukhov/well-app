@@ -1,5 +1,6 @@
 package com.well.androidApp.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -9,11 +10,13 @@ import com.github.aakira.napier.BuildConfig.DEBUG
 import com.github.aakira.napier.DebugAntilog
 import com.github.aakira.napier.Napier
 import com.google.firebase.auth.FirebaseAuth
-import com.well.androidApp.CrashlyticsAntilog
+import com.well.androidApp.utils.CrashlyticsAntilog
 import com.well.androidApp.R
 import com.well.androidApp.databinding.ActivityMainBinding
 import com.well.androidApp.ui.MainActivity.State.Idle
 import com.well.androidApp.ui.MainActivity.State.Processing
+import com.well.androidApp.ui.videoCall.CompleteActivity
+import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
     enum class State {
@@ -47,9 +50,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         navHostFragment =
             supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
         setContentView(viewBinding.root)
-        updateNavigationHost()
-        auth.addAuthStateListener {
-            signedIn = it.currentUser != null
+//        updateNavigationHost()
+//        auth.addAuthStateListener {
+//            signedIn = it.currentUser != null
+//        }
+        GlobalScope.launch(context = Dispatchers.Main) {
+            delay(300)
+            MainScope().launch {
+                startActivity(Intent(this@MainActivity, CompleteActivity::class.java))
+            }
         }
     }
 

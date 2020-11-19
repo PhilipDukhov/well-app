@@ -4,6 +4,9 @@
     package="com.well.androidApp">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <application
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
@@ -16,6 +19,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.videoCall.CompleteActivity"
+            android:label="title"
+            android:theme="@style/Theme.Design.NoActionBar" />
 
         <!--Facebook-->
         <meta-data
