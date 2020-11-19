@@ -19,37 +19,31 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":serverModels"))
-                listOf(
+                extra.libsAt(listOf(
                     "kotlin.coroutines.core",
                     "kotlin.serializationJson",
                     "kotlin.stdLib",
                     "napier",
                     "oolong"
-                ).forEach {
-                    implementation(extra.libAt(it))
-                }
+                )).forEach { implementation(it) }
             }
         }
         val androidMain by getting {
             dependencies {
-                listOf(
+                extra.libsAt(listOf(
                     "kotlin.coroutines.playServices",
                     "firebase.storage"
-                ).forEach {
-                    implementation(extra.libAt(it))
-                }
+                )).forEach { implementation(it) }
             }
         }
         val iosMain by getting {
             dependencies {
-                listOf(
+                extra.libsAt(listOf(
                     "kotlin.serializationJson",
                     "napier",
                     "kotlin.stdLib",
                     "oolong"
-                ).forEach {
-                    implementation(extra.libAt(it))
-                }
+                )).forEach { implementation(it) }
             }
         }
     }

@@ -37,7 +37,7 @@ buildChecks {
         revision = 3
     }
     javaVersion {
-        version = JavaVersion.VERSION_1_8
+        version = javaVersion
     }
     uniqueRClasses {
         enabled = false
@@ -103,6 +103,22 @@ subprojects {
                     sourceSets["main"]?.manifest?.srcFile("src/androidMain/AndroidManifest.xml")
                 }
         }
+    }
+    plugins.withType<org.jetbrains.kotlin.gradle.plugin.KotlinBasePluginWrapper> {
+        this@subprojects.run {
+            tasks {
+                withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+                    kotlinOptions {
+                        jvmTarget = javaVersion.toString()
+                    }
+                }
+            }
+        }
+    }
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
+        kotlinOptions.freeCompilerArgs += listOf(
+            "io.ktor.util.KtorExperimentalAPI"
+        ).map { "-Xuse-experimental=$it" }
     }
 
     apply(from = "${rootDir}/dependencies.gradle")

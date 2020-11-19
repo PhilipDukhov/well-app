@@ -24,13 +24,14 @@ pluginManagement {
     resolutionStrategy {
         eachPlugin {
             val pluginId = requested.id.id
+            val gradlePluginVersion: String by settings
             when {
                 pluginId == "com.android" || pluginId == "kotlin-android-extensions" ->
-                    useModule("com.android.tools.build:gradle:4.1.0")
+                    useModule("com.android.tools.build:gradle:${gradlePluginVersion}")
 
                 pluginId.startsWith("com.avito.android") -> {
                     val artifact = pluginId.replace("com.avito.android.", "")
-                    useModule("com.avito.android:$artifact:2020.27")
+                    useModule("com.avito.android:$artifact:2020.28")
                 }
             }
         }

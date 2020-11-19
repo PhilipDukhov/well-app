@@ -26,7 +26,7 @@ fun ExtraPropertiesExtension.libsAt(path: String) =
             }
         }
 
-fun ExtraPropertiesExtension.libAt(path: String): Any {
+fun ExtraPropertiesExtension.libAt(path: String): String {
     val (map, last) = mapAt(path, true)
     return when (val lastValue = map[last]) {
         is String -> lastValue
@@ -34,6 +34,10 @@ fun ExtraPropertiesExtension.libAt(path: String): Any {
         else -> throw NoSuchFieldException()
     }
 }
+
+fun ExtraPropertiesExtension.libsAt(paths: List<String>): List<String> =
+    paths.map { libAt(it) }
+
 
 fun ExtraPropertiesExtension.version(path: String) = (this["Versions"]!!.toLinkedHashMap()[path] as String?)!!
 
