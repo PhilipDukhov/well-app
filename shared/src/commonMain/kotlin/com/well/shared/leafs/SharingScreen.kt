@@ -4,11 +4,9 @@ import com.well.serverModels.Color
 import com.well.serverModels.Path
 import com.well.serverModels.Point
 import com.well.serverModels.Screen
-import com.well.shared.FirebaseManager
 import com.well.shared.leafs.SharingScreen.Model.Guest
 import com.well.shared.leafs.SharingScreen.Model.Host
 import com.well.shared.leafs.SharingScreen.Msg.*
-import kotlinx.coroutines.Dispatchers
 import oolong.Effect
 import oolong.effect.none
 
@@ -135,12 +133,13 @@ object SharingScreen {
 
     private fun uploadImageData(msg: UploadImageData): Effect<Msg> = {
         try {
-            val path = FirebaseManager.manager.upload(
-                msg.data,
-                "mountains.${msg.fileExtension}"
-            )
-            println(path)
-            UpdateImagePath(path)
+            TODO()
+//            val path = FirebaseManager.manager.upload(
+//                msg.data,
+//                "mountains.${msg.fileExtension}"
+//            )
+//            println(path)
+//            UpdateImagePath(path)
         } catch (e: Throwable) {
             throw e
         }

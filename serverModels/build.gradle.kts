@@ -5,18 +5,25 @@ plugins {
 }
 
 kotlin {
-    android()
     ios()
     jvm()
+    android()
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-common"))
                 extra.libsAt(listOf(
                     "kotlin.serializationJson",
+//                    "klock",
                     "kotlin.stdLib"
                 )).forEach { implementation(it) }
             }
+        }
+        val jvmMain by getting {
+//            dependencies {
+//                extra.libsAt(listOf(
+//                    "android.annotation"
+//                )).forEach { implementation(it) }
+//            }
         }
         val androidMain by getting {
             dependencies {

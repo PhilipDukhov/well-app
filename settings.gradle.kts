@@ -1,8 +1,9 @@
 rootProject.name = "WELL"
 
-include(":androidLintRules")
+//include(":androidLintRules")
 include(":androidApp")
 include(":shared")
+include(":auth")
 include(":serverModels")
 include(":server")
 
@@ -26,7 +27,7 @@ pluginManagement {
             val pluginId = requested.id.id
             val gradlePluginVersion: String by settings
             when {
-                pluginId == "com.android" || pluginId == "kotlin-android-extensions" ->
+                pluginId == "com.android" ->
                     useModule("com.android.tools.build:gradle:${gradlePluginVersion}")
 
                 pluginId.startsWith("com.avito.android") -> {

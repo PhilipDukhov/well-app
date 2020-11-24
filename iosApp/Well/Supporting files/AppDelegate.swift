@@ -1,30 +1,23 @@
 import UIKit
-import shared
-import Firebase
+import Auth
+import Shared
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    
     var window: UIWindow?
     
-    private let socialNetworkService = SocialNetworkService()
-    
-    private var job: Kotlinx_coroutines_coreJob?
-    
+    private var socialNetworkService: SocialNetworkService!
+        
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        socialNetworkService = SocialNetworkService(
+            context: .init(
+                application: application,
+                launchOptions: launchOptions
+            )
+        )
         window = initializeWindow()
         initializeLogging()
-        FirebaseApp.configure()
-        socialNetworkService.application(
-            application,
-            didFinishLaunchingWithOptions: launchOptions
-        )
-        socialNetworkService.disconnectedHandler = { signer in
-            print("disconnected \(signer)")
-        }
-        job = SharingScreen()
-            .runtime(userId: "123") { props, dispatch in
-            print(props)
-        }
         return true
     }
     
@@ -33,11 +26,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let loginInitialViewController = LoginInitialViewController()
         loginInitialViewController.props = .init(
             socialNetworkAction: .init { [self, unowned loginInitialViewController] in
-                socialNetworkService.requestCredential(
-                    in: loginInitialViewController,
-                    social: $0
-                ).onComplete { result in
-                    print(result)
+                socialNetworkService.login(
+                    network: $0,
+                    loginView: loginInitialViewController
+                ) { result, error in
+                    print(result, (error as NSError?)?.kotlinException ?? error)
                 }
             },
             createAccountAction: .zero,
@@ -55,12 +48,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         options: [UIApplication.OpenURLOptionsKey: Any] = [:])
     -> Bool
     {
-        socialNetworkService.application(app, open: url, options: options)
+        socialNetworkService.application(app: app, openURL: url, options: options)
     }
     
     private func initializeLogging() {
         #if DEBUG
-        FirebaseConfiguration.shared.setLoggerLevel(.min)
+//        FirebaseConfiguration.shared.setLoggerLevel(.min)
         NapierProxy().buildDebug()
         #else
         NapierProxy().build(antilog: CrashlyticsAntilog

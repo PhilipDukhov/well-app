@@ -21,17 +21,10 @@
 		D5BFD57925249E1900A94FCC /* HasApply.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD57825249E1900A94FCC /* HasApply.swift */; };
 		D5BFD57D2524B06900A94FCC /* NSError+description.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD57C2524B06900A94FCC /* NSError+description.swift */; };
 		D5BFD57F2524B0AB00A94FCC /* Bundle+displayName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD57E2524B0AB00A94FCC /* Bundle+displayName.swift */; };
-		D5BFD5B02524BEE400A94FCC /* SocialNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5AF2524BEE400A94FCC /* SocialNetworkService.swift */; };
 		D5BFD5BA2524BFB900A94FCC /* Future.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5B92524BFB900A94FCC /* Future.swift */; };
 		D5BFD5BD2524BFE000A94FCC /* Property.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5BC2524BFE000A94FCC /* Property.swift */; };
-		D5BFD5C02524C12A00A94FCC /* SocialNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5BF2524C12A00A94FCC /* SocialNetwork.swift */; };
-		D5BFD5C22524C22500A94FCC /* GoogleSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5C12524C22500A94FCC /* GoogleSigner.swift */; };
-		D5BFD5C42524C26A00A94FCC /* FacebookSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5C32524C26A00A94FCC /* FacebookSigner.swift */; };
 		D5BFD5C62525845500A94FCC /* EnumDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5C52525845500A94FCC /* EnumDictionary.swift */; };
 		D5BFD5C9252584FE00A94FCC /* Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5C8252584FE00A94FCC /* Cancellable.swift */; };
-		D5BFD5CB2525871700A94FCC /* SocialSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5CA2525871700A94FCC /* SocialSigner.swift */; };
-		D5BFD5CD2525AAE000A94FCC /* AppleSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5CC2525AAE000A94FCC /* AppleSigner.swift */; };
-		D5BFD5CF2525AAEB00A94FCC /* OAuthSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5CE2525AAEB00A94FCC /* OAuthSigner.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -59,29 +52,23 @@
 		BE7BB08AC1C3EC928622AE74 /* Pods-Well.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Well.debug.xcconfig"; path = "Target Support Files/Pods-Well/Pods-Well.debug.xcconfig"; sourceTree = "<group>"; };
 		C8444AE5C00230D2481A2661 /* Pods-WellTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WellTests.release.xcconfig"; path = "Target Support Files/Pods-WellTests/Pods-WellTests.release.xcconfig"; sourceTree = "<group>"; };
 		C89E1C624FA54F84A4908E83 /* Pods-WellTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WellTests.debug.xcconfig"; path = "Target Support Files/Pods-WellTests/Pods-WellTests.debug.xcconfig"; sourceTree = "<group>"; };
+		D5157D56256D2B1C007BADD1 /* replacePlistEnvironmentVariables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = replacePlistEnvironmentVariables.swift; sourceTree = "<group>"; };
 		D51625602503C945009E103B /* R.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = R.generated.swift; sourceTree = "<group>"; };
 		D51625762504BD9C009E103B /* neris_semi_bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = neris_semi_bold.otf; sourceTree = "<group>"; };
 		D51625772504BD9C009E103B /* neris_thin.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = neris_thin.otf; sourceTree = "<group>"; };
 		D519AF86252441DC00C24377 /* LoginInitialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginInitialViewController.swift; sourceTree = "<group>"; };
 		D519AFAC25245E0F00C24377 /* LoginSocialsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSocialsView.swift; sourceTree = "<group>"; };
+		D524FE22256D5BAA00090D40 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
 		D5BFD5482524670900A94FCC /* ActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionButton.swift; sourceTree = "<group>"; };
 		D5BFD5762524938400A94FCC /* Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Action.swift; sourceTree = "<group>"; };
 		D5BFD57825249E1900A94FCC /* HasApply.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HasApply.swift; sourceTree = "<group>"; };
 		D5BFD57C2524B06900A94FCC /* NSError+description.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSError+description.swift"; sourceTree = "<group>"; };
 		D5BFD57E2524B0AB00A94FCC /* Bundle+displayName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+displayName.swift"; sourceTree = "<group>"; };
-		D5BFD5952524B99000A94FCC /* GoogleService-Info-Release.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-Release.plist"; sourceTree = "<group>"; };
-		D5BFD5AF2524BEE400A94FCC /* SocialNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialNetworkService.swift; sourceTree = "<group>"; };
 		D5BFD5B92524BFB900A94FCC /* Future.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Future.swift; sourceTree = "<group>"; };
 		D5BFD5BC2524BFE000A94FCC /* Property.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Property.swift; sourceTree = "<group>"; };
-		D5BFD5BF2524C12A00A94FCC /* SocialNetwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialNetwork.swift; sourceTree = "<group>"; };
-		D5BFD5C12524C22500A94FCC /* GoogleSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSigner.swift; sourceTree = "<group>"; };
-		D5BFD5C32524C26A00A94FCC /* FacebookSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FacebookSigner.swift; sourceTree = "<group>"; };
 		D5BFD5C52525845500A94FCC /* EnumDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnumDictionary.swift; sourceTree = "<group>"; };
 		D5BFD5C8252584FE00A94FCC /* Cancellable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cancellable.swift; sourceTree = "<group>"; };
-		D5BFD5CA2525871700A94FCC /* SocialSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialSigner.swift; sourceTree = "<group>"; };
-		D5BFD5CC2525AAE000A94FCC /* AppleSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleSigner.swift; sourceTree = "<group>"; };
-		D5BFD5CE2525AAEB00A94FCC /* OAuthSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthSigner.swift; sourceTree = "<group>"; };
-		D5ECE2C32523181C00207638 /* GoogleService-Info-Debug.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-Debug.plist"; sourceTree = "<group>"; };
+		D5ECE2C32523181C00207638 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D5ECE30225231ECB00207638 /* Well.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Well.entitlements; sourceTree = "<group>"; };
 		E7C0F47F0D380B0A230F9888 /* Pods-Well-WellUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Well-WellUITests.debug.xcconfig"; path = "Target Support Files/Pods-Well-WellUITests/Pods-Well-WellUITests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -164,7 +151,6 @@
 			children = (
 				D519AF86252441DC00C24377 /* LoginInitialViewController.swift */,
 				D519AFAC25245E0F00C24377 /* LoginSocialsView.swift */,
-				D5BFD5BE2524C10D00A94FCC /* SocialNetworkServices */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -177,10 +163,20 @@
 				D51625602503C945009E103B /* R.generated.swift */,
 				7555FF8C242A565B00829871 /* Info.plist */,
 				7555FF89242A565B00829871 /* LaunchScreen.storyboard */,
+				D524FE21256D40CA00090D40 /* Scripts */,
 				D5BFD5942524B98200A94FCC /* Firebase */,
 				D51625742504BD9C009E103B /* font */,
+				D524FE22256D5BAA00090D40 /* Shared.xcconfig */,
 			);
 			path = "Supporting files";
+			sourceTree = "<group>";
+		};
+		D524FE21256D40CA00090D40 /* Scripts */ = {
+			isa = PBXGroup;
+			children = (
+				D5157D56256D2B1C007BADD1 /* replacePlistEnvironmentVariables.swift */,
+			);
+			path = Scripts;
 			sourceTree = "<group>";
 		};
 		D5BFD57A2524AA7400A94FCC /* General */ = {
@@ -209,24 +205,9 @@
 		D5BFD5942524B98200A94FCC /* Firebase */ = {
 			isa = PBXGroup;
 			children = (
-				D5BFD5952524B99000A94FCC /* GoogleService-Info-Release.plist */,
-				D5ECE2C32523181C00207638 /* GoogleService-Info-Debug.plist */,
+				D5ECE2C32523181C00207638 /* GoogleService-Info.plist */,
 			);
 			path = Firebase;
-			sourceTree = "<group>";
-		};
-		D5BFD5BE2524C10D00A94FCC /* SocialNetworkServices */ = {
-			isa = PBXGroup;
-			children = (
-				D5BFD5BF2524C12A00A94FCC /* SocialNetwork.swift */,
-				D5BFD5CA2525871700A94FCC /* SocialSigner.swift */,
-				D5BFD5AF2524BEE400A94FCC /* SocialNetworkService.swift */,
-				D5BFD5C12524C22500A94FCC /* GoogleSigner.swift */,
-				D5BFD5C32524C26A00A94FCC /* FacebookSigner.swift */,
-				D5BFD5CC2525AAE000A94FCC /* AppleSigner.swift */,
-				D5BFD5CE2525AAEB00A94FCC /* OAuthSigner.swift */,
-			);
-			path = SocialNetworkServices;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -244,9 +225,9 @@
 				7555FF79242A565900829871 /* Resources */,
 				D5ECE2F3252319F000207638 /* FirebaseCrashlytics */,
 				7555FFB4242A642300829871 /* Embed Frameworks */,
-				D5BFD5982524B9B000A94FCC /* Copy GoogleService-Info */,
+				D5157D55256D2948007BADD1 /* Copy GoogleService-Info */,
 				491238037572C75B2A859A9E /* [CP] Embed Pods Frameworks */,
-				D347414206A97BE54CE79D44 /* [CP] Copy Pods Resources */,
+				9ADA97D69C59739FCF76E93A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -344,7 +325,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		D347414206A97BE54CE79D44 /* [CP] Copy Pods Resources */ = {
+		9ADA97D69C59739FCF76E93A /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -360,6 +341,24 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		D5157D55256D2948007BADD1 /* Copy GoogleService-Info */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy GoogleService-Info";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "SUPPORTING_FILES=\"${PROJECT_DIR}/Well/Supporting files\"\n\n/usr/bin/xcrun --sdk macosx swift \"${SUPPORTING_FILES}/scripts/replacePlistEnvironmentVariables.swift\"  \"${SUPPORTING_FILES}/Firebase/GoogleService-Info.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\"\n";
 		};
 		D51DA36D2503C44700123642 /* R.swift */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -399,24 +398,6 @@
 			shellPath = /bin/sh;
 			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
-		D5BFD5982524B9B000A94FCC /* Copy GoogleService-Info */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Copy GoogleService-Info";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "PATH_TO_GOOGLE_PLISTS=\"${PROJECT_DIR}/Well/Supporting files/Firebase\"\n\ncase \"${CONFIGURATION}\" in\n\n   \"Debug\" )\n        SOURCE_FILE_NAME=\"GoogleService-Info-Debug\"\n        ;;\n        \n   \"Release\" )\n        SOURCE_FILE_NAME=\"GoogleService-Info-Release\"\n        ;;\n\n    *)\n        ;;\nesac\ncp -r \"$PATH_TO_GOOGLE_PLISTS/$SOURCE_FILE_NAME.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\"\n";
-		};
 		D5ECE2F3252319F000207638 /* FirebaseCrashlytics */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 8;
@@ -444,19 +425,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5BFD5CD2525AAE000A94FCC /* AppleSigner.swift in Sources */,
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
-				D5BFD5B02524BEE400A94FCC /* SocialNetworkService.swift in Sources */,
 				D51625612503C945009E103B /* R.generated.swift in Sources */,
-				D5BFD5C02524C12A00A94FCC /* SocialNetwork.swift in Sources */,
-				D5BFD5C22524C22500A94FCC /* GoogleSigner.swift in Sources */,
 				D5BFD57925249E1900A94FCC /* HasApply.swift in Sources */,
 				D5BFD5C9252584FE00A94FCC /* Cancellable.swift in Sources */,
-				D5BFD5C42524C26A00A94FCC /* FacebookSigner.swift in Sources */,
-				D5BFD5CF2525AAEB00A94FCC /* OAuthSigner.swift in Sources */,
 				D519AFAD25245E0F00C24377 /* LoginSocialsView.swift in Sources */,
 				D5BFD5772524938400A94FCC /* Action.swift in Sources */,
-				D5BFD5CB2525871700A94FCC /* SocialSigner.swift in Sources */,
 				D5BFD5BD2524BFE000A94FCC /* Property.swift in Sources */,
 				D5BFD5C62525845500A94FCC /* EnumDictionary.swift in Sources */,
 				D519AF87252441DC00C24377 /* LoginInitialViewController.swift in Sources */,
@@ -483,6 +457,7 @@
 /* Begin XCBuildConfiguration section */
 		7555FFA3242A565B00829871 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D524FE22256D5BAA00090D40 /* Shared.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -532,7 +507,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -544,6 +519,7 @@
 		};
 		7555FFA4242A565B00829871 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D524FE22256D5BAA00090D40 /* Shared.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -587,7 +563,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -605,14 +581,13 @@
 				CODE_SIGN_ENTITLEMENTS = "Well/Supporting files/Well.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FVMDZDYX72;
-				FACEBOOK_APP_ID = 264820284691132;
+				FACEBOOK_APP_ID = "$(SHARED_FACEBOOK_APP_ID)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../shared/build/xcode-frameworks",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/R.swift.Library\"",
 				);
+				GOOGLE_CLIENT_ID = "$(IOS_GOOGLE_CLIENT_ID)";
 				INFOPLIST_FILE = "well/Supporting files/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -632,14 +607,13 @@
 				CODE_SIGN_ENTITLEMENTS = "Well/Supporting files/Well.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = FVMDZDYX72;
-				FACEBOOK_APP_ID = 264820284691132;
+				FACEBOOK_APP_ID = "$(SHARED_FACEBOOK_APP_ID)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../shared/build/xcode-frameworks",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/R.swift.Library\"",
 				);
+				GOOGLE_CLIENT_ID = "$(IOS_GOOGLE_CLIENT_ID)";
 				INFOPLIST_FILE = "well/Supporting files/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

@@ -8,6 +8,7 @@
 
 import UIKit
 import PinLayout
+import Auth
 
 class LoginInitialViewController: UIViewController {
     struct Props {

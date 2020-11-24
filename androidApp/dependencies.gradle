@@ -1,7 +1,8 @@
 dependencies {
     implementation(project(":shared"))
+    implementation(project(":auth"))
     implementation(project(":serverModels"))
-    lintChecks(project(":androidLintRules"))
+//    lintChecks(project(":androidLintRules"))
 
     implementation(Libs.android.material)
     implementation(Libs.android.appCompat)
@@ -14,13 +15,7 @@ dependencies {
 
     implementation(Libs.firebase.analytics)
     implementation(Libs.firebase.crashlytics)
-    implementation(Libs.firebase.auth)
-    implementation(Libs.firebase.storage)
-    implementation platform(Libs.firebase.bom)
-    implementation(Libs.firebase.database)
 
-    implementation(Libs.google.playServicesAuth)
-    implementation(Libs.facebookLogin)
     implementation(Libs.kotlin.coroutines.playServices)
     implementation(Libs.kotlin.serializationJson)
 
@@ -31,9 +26,4 @@ dependencies {
     implementation(Libs.napier)
     implementation(Libs.viewbindingpropertydelegate)
     implementation(Libs.webrtc)
-    implementation(Libs.ktor.client)
-
-    implementation('io.socket:socket.io-client:1.0.0') {
-        exclude group: 'org.json', module: 'json'
-    }
 }

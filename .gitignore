@@ -329,3 +329,6 @@ R.generated.swift
 
 # Multiplatform Cocoapods
 */*.podspec
+
+# Config
+iosApp/Well/Supporting files/Shared.xcconfig

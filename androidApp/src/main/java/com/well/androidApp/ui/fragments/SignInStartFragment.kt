@@ -6,15 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
-import by.kirich1409.viewbindingdelegate.viewBinding
 import com.well.androidApp.R
-import com.well.androidApp.databinding.FragmentShareScreenBinding
 import com.well.androidApp.databinding.FragmentSignInStartBinding
-import com.well.androidApp.model.auth.SocialNetwork
-import com.well.androidApp.model.auth.SocialNetwork.*
-import com.well.androidApp.model.auth.SocialNetworkService
 import com.well.androidApp.ui.MainActivity
 import com.well.androidApp.ui.customViews.BaseFragment
+import com.well.auth.Context
+import com.well.auth.SocialNetwork
+import com.well.auth.SocialNetwork.*
+import com.well.auth.SocialNetworkService
+import com.well.auth.handleActivityResult
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
@@ -22,25 +22,26 @@ import kotlinx.coroutines.launch
 
 class SignInStartFragment : BaseFragment(R.layout.fragment_sign_in_start) {
     private lateinit var socialNetworkService: SocialNetworkService
-    private lateinit var viewBinding: FragmentSignInStartBinding// by viewBinding()
+
+    private lateinit var viewBinding: FragmentSignInStartBinding  // by viewBinding()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        viewBinding = FragmentSignInStartBinding.inflate(inflater, container, false);
+    ): View {
+        viewBinding = FragmentSignInStartBinding.inflate(inflater, container, false)
         return viewBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        socialNetworkService = SocialNetworkService(requireContext())
+        socialNetworkService = SocialNetworkService(Context(requireContext()))
         SocialNetwork.values().forEach { socialNetwork ->
             viewBinding.run {
                 when (socialNetwork) {
-                    Apple -> authApple
-                    Twitter -> authTwitter
+// Apple -> authApple
+// Twitter -> authTwitter
                     Facebook -> authFacebook
                     Google -> authGoogle
                 }
@@ -50,7 +51,11 @@ class SignInStartFragment : BaseFragment(R.layout.fragment_sign_in_start) {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
         super.onActivityResult(requestCode, resultCode, data)
         socialNetworkService.handleActivityResult(requestCode, resultCode, data)
     }
@@ -59,7 +64,8 @@ class SignInStartFragment : BaseFragment(R.layout.fragment_sign_in_start) {
         activity?.state = MainActivity.State.Processing
         GlobalScope.launch {
             try {
-                socialNetworkService.login(socialNetwork, this@SignInStartFragment)
+                val result = socialNetworkService.login(socialNetwork, this@SignInStartFragment)
+                println("yai $result")
             } catch (e: CancellationException) {
             } catch (e: Exception) {
                 MainScope().launch {

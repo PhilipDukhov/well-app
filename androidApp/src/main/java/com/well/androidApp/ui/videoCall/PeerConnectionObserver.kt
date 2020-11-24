@@ -4,49 +4,49 @@ import android.util.Log
 import org.webrtc.*
 
 open class PeerConnectionObserver : PeerConnection.Observer {
-    val TAG = "PeerConnectionObserver"
+    private val tag = "PeerConnectionObserver"
 
     override fun onIceCandidate(iceCandidate: IceCandidate) {
-        Log.e(TAG, "onIceCandidate: ")
+        Log.e(tag, "onIceCandidate: ")
     }
 
     override fun onAddStream(mediaStream: MediaStream) {
-        Log.e(TAG, "onAddStream: " + mediaStream.videoTracks.size)
+        Log.e(tag, "onAddStream: " + mediaStream.videoTracks.size)
     }
 
     override fun onIceCandidatesRemoved(iceCandidates: Array<IceCandidate>) {
-        Log.e(TAG, "onIceCandidatesRemoved: ")
+        Log.e(tag, "onIceCandidatesRemoved: ")
     }
 
     override fun onSignalingChange(signalingState: PeerConnection.SignalingState) {
-        Log.e(TAG, "onSignalingChange: ")
+        Log.e(tag, "onSignalingChange: ")
     }
 
     override fun onIceConnectionChange(iceConnectionState: PeerConnection.IceConnectionState) {
-        Log.e(TAG, "onIceConnectionChange: ")
+        Log.e(tag, "onIceConnectionChange: ")
     }
 
     override fun onIceConnectionReceivingChange(b: Boolean) {
-        Log.e(TAG, "onIceConnectionReceivingChange: ")
+        Log.e(tag, "onIceConnectionReceivingChange: ")
     }
 
     override fun onIceGatheringChange(iceGatheringState: PeerConnection.IceGatheringState) {
-        Log.e(TAG, "onIceGatheringChange: ")
+        Log.e(tag, "onIceGatheringChange: ")
     }
 
     override fun onRemoveStream(mediaStream: MediaStream) {
-        Log.e(TAG, "onRemoveStream: ")
+        Log.e(tag, "onRemoveStream: ")
     }
 
     override fun onDataChannel(dataChannel: DataChannel) {
-        Log.e(TAG, "onDataChannel: ")
+        Log.e(tag, "onDataChannel: ")
     }
 
     override fun onRenegotiationNeeded() {
-        Log.e(TAG, "onRenegotiationNeeded: ")
+        Log.e(tag, "onRenegotiationNeeded: ")
     }
 
     override fun onAddTrack(p0: RtpReceiver?, p1: Array<out MediaStream>?) {
-        Log.e(TAG, "onAddTrack: $p1")
+        Log.e(tag, "onAddTrack: $p1")
     }
 }

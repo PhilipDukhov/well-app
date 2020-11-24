@@ -1,9 +1,9 @@
 def versions = [
-        kotlin             : "1.4.10",
-        kotlinSerialization: "1.0.0",
-        kotlinCoroutines   : "1.4.0",
+        kotlin             : "1.4.20",
+        kotlinSerialization: "1.0.1",
+        kotlinCoroutines   : "1.3.9-native-mt-2",
         ktor               : "1.4.2",
-        iosDeploymentTarget: "12.0",
+        iosDeploymentTarget: "13.0",
         napier             : "1.4.1",
         nav                : "2.3.1",
         glide              : "4.11.0",
@@ -19,6 +19,7 @@ ext.Libs = [
                 kotlinSerialization: "org.jetbrains.kotlin:kotlin-serialization:$versions.kotlin",
                 googleServices     : "com.google.gms:google-services:4.3.4",
                 firebaseCrashlytics: "com.google.firebase:firebase-crashlytics-gradle:2.3.0",
+                dotenv             : "io.github.cdimascio:dotenv-kotlin:6.2.2",
         ],
         kotlin                     : [
                 stdLib           : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin",
@@ -49,7 +50,9 @@ ext.Libs = [
                 database   : "com.google.firebase:firebase-database-ktx",
         ],
         google                     : [
-                playServicesAuth: "com.google.android.gms:play-services-auth:18.1.0",
+                playServicesAuth  : "com.google.android.gms:play-services-auth:18.1.0",
+                apiClient         : "com.google.api-client:google-api-client:1.30.4",
+                httpClientApacheV2: "com.google.http-client:google-http-client-apache-v2:1.34.1",
         ],
         glide                      : [
                 glide   : "com.github.bumptech.glide:glide:$versions.glide",
@@ -67,17 +70,22 @@ ext.Libs = [
         viewbindingpropertydelegate: "com.kirich1409.viewbindingpropertydelegate:viewbindingpropertydelegate:1.3.0",
         webrtc                     : "org.webrtc:google-webrtc:1.0.32006",
         ktor                       : [
-                server    : [
+                server       : [
                         netty  : "io.ktor:ktor-server-netty:$versions.ktor",
                         core   : "io.ktor:ktor-server-core:$versions.ktor",
-                        logback: "ch.qos.logback:logback-classic:1.2.1",
+                        logback: "ch.qos.logback:logback-classic:1.2.3",
                 ],
-                client    : "io.ktor:ktor-client-cio:$versions.ktor",
-                auth      : "io.ktor:ktor-auth:$versions.ktor",
-                metrics   : "io.ktor:ktor-metrics:$versions.ktor",
-                websockets: "io.ktor:ktor-websockets:$versions.ktor",
-                gson      : "io.ktor:ktor-gson:$versions.ktor",
+                client       : [
+                        cio          : "io.ktor:ktor-client-cio:$versions.ktor",
+                        serialization: "io.ktor:ktor-client-serialization-jvm:$versions.ktor",
+                ],
+                serialization: "io.ktor:ktor-serialization:$versions.ktor",
+                auth         : "io.ktor:ktor-auth:$versions.ktor",
+                authJwt      : "io.ktor:ktor-auth-jwt:$versions.ktor",
+                metrics      : "io.ktor:ktor-metrics:$versions.ktor",
+                websockets   : "io.ktor:ktor-websockets:$versions.ktor",
         ],
+        klock                      : "com.soywiz.korlibs.klock:klock:2.0.0",
         tests                      : [
                 utils : "com.android.tools:testutils:$versions.lint",
                 kotest: [

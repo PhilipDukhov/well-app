@@ -2,15 +2,21 @@ plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
     id("com.android.library")
-    id("kotlin-android-extensions")
     id("kotlinx-serialization")
 }
 
 kotlin {
     android()
-    ios()
+    // Revert to just ios() when gradle plugin can properly resolve it
+    val onPhone = System.getenv("SDK_NAME")?.startsWith("iphoneos") ?: false
+    if (onPhone) {
+        iosArm64("ios")
+    } else {
+        iosX64("ios")
+    }
     cocoapods {
-        summary = "Shared"
+        frameworkName = "Shared"
+        summary = frameworkName
         homepage = "-"
         license = "-"
         ios.deploymentTarget = extra.version("iosDeploymentTarget")
@@ -18,32 +24,41 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(project(":serverModels"))
-                extra.libsAt(listOf(
-                    "kotlin.coroutines.core",
-                    "kotlin.serializationJson",
-                    "kotlin.stdLib",
-                    "napier",
-                    "oolong"
-                )).forEach { implementation(it) }
+                listOf(
+                    ":serverModels"
+                ).forEach { implementation(project(it)) }
+                extra.libsAt(
+                    listOf(
+                        "kotlin.serializationJson",
+                        "napier",
+                        "oolong",
+                        "kotlin.stdLib"
+                    )
+                ).forEach { implementation(it) }
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core") {
+                    version { strictly("1.3.9-native-mt-2") }
+                }
             }
         }
         val androidMain by getting {
             dependencies {
-                extra.libsAt(listOf(
-                    "kotlin.coroutines.playServices",
-                    "firebase.storage"
-                )).forEach { implementation(it) }
+                extra.libsAt(
+                    listOf(
+                        "kotlin.coroutines.playServices"
+                    )
+                ).forEach { implementation(it) }
             }
         }
         val iosMain by getting {
             dependencies {
-                extra.libsAt(listOf(
-                    "kotlin.serializationJson",
-                    "napier",
-                    "kotlin.stdLib",
-                    "oolong"
-                )).forEach { implementation(it) }
+                extra.libsAt(
+                    listOf(
+                        "kotlin.serializationJson",
+                        "napier",
+                        "kotlin.stdLib",
+                        "oolong"
+                    )
+                ).forEach { implementation(it) }
             }
         }
     }

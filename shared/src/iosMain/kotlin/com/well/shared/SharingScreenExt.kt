@@ -4,7 +4,6 @@ import com.well.shared.leafs.SharingScreen
 import oolong.Dispatch
 import oolong.runtime
 
-
 @Suppress("unused")
 fun SharingScreen.runtime(userId: String, render: (SharingScreen.Props, Dispatch<SharingScreen.Msg>) -> Unit) =
     runtime(

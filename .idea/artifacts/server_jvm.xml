@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="server-jvm">
+    <output-path>$PROJECT_DIR$/server/build/libs</output-path>
+    <root id="archive" name="server-jvm.jar">
+      <element id="module-output" name="WELL.server.jvmMain" />
+    </root>
+  </artifact>
+</component>

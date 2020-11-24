@@ -3,9 +3,14 @@ import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryPlugin
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
-val javaVersion = JavaVersion.VERSION_1_8
-group = "com.well"
-version = "1.0-SNAPSHOT"
+object Constants {
+    val javaVersion = JavaVersion.VERSION_1_8
+    const val group = "com.well"
+    const val version = "1.0-SNAPSHOT"
+}
+
+group = Constants.group
+version = Constants.version
 
 buildscript {
     repositories {
@@ -29,6 +34,7 @@ repositories {
 
 plugins {
     id("com.avito.android.buildchecks")
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "0.1.5"
 }
 
 buildChecks {
@@ -37,7 +43,7 @@ buildChecks {
         revision = 3
     }
     javaVersion {
-        version = javaVersion
+        version = Constants.javaVersion
     }
     uniqueRClasses {
         enabled = false
@@ -70,9 +76,8 @@ allprojects {
 
 
 subprojects {
-    val v = "1.0"
-    group = "com.well"
-    version = v
+    group = Constants.group
+    version = Constants.version
     plugins.matching { it is AppPlugin || it is LibraryPlugin }.whenPluginAdded {
         configure<BaseExtension> {
             setCompileSdkVersion(30)
@@ -82,7 +87,7 @@ subprojects {
                 minSdkVersion(23)
                 targetSdkVersion(30)
                 versionCode = 1
-                versionName = v
+                versionName = Constants.version
             }
             buildTypes {
                 getByName("release") {
@@ -90,8 +95,8 @@ subprojects {
                 }
             }
             compileOptions {
-                sourceCompatibility = javaVersion
-                targetCompatibility = javaVersion
+                sourceCompatibility = Constants.javaVersion
+                targetCompatibility = Constants.javaVersion
             }
         }
     }
@@ -109,16 +114,19 @@ subprojects {
             tasks {
                 withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
                     kotlinOptions {
-                        jvmTarget = javaVersion.toString()
+                        jvmTarget = Constants.javaVersion.toString()
                     }
                 }
             }
         }
     }
+
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
         kotlinOptions.freeCompilerArgs += listOf(
             "io.ktor.util.KtorExperimentalAPI"
-        ).map { "-Xuse-experimental=$it" }
+        ).map { "-Xuse-experimental=$it" } + listOf(
+            "kotlinx.serialization.ExperimentalSerializationApi"
+        ).map { "-Xopt-in=$it" }
     }
 
     apply(from = "${rootDir}/dependencies.gradle")
@@ -170,18 +178,6 @@ configurations.all {
     }
 }
 
-val ktlint by configurations.creating
-
-dependencies {
-    ktlint("com.pinterest:ktlint:0.39.0") {
-        // need to exclude standard ruleset to use only diktat rules
-        exclude("com.pinterest.ktlint", "ktlint-ruleset-standard")
-    }
-
-    // diktat ruleset
-    ktlint("org.cqfn.diktat:diktat-rules:0.1.2")
-}
-
 val outputDir = "${project.buildDir}/reports/diktat/"
 val inputFiles = project.fileTree(mapOf("dir" to "src", "include" to "**/*.kt"))
 val checkLocations = listOf(
@@ -189,28 +185,9 @@ val checkLocations = listOf(
     "androidLintRules/src/main/java/com/well/androidlintrules/detectors"
 ).map { "$it/**/*.kt" }
 
-val diktatCheck by tasks.creating(JavaExec::class) {
-    inputs.files(inputFiles)
-    outputs.dir(outputDir)
-
-    description = "Check Kotlin code style."
-    classpath = ktlint
-    main = "com.pinterest.ktlint.Main"
-
-    // specify proper path to sources that should be checked here
-    args = checkLocations
-}
-
-val diktatFix by tasks.creating(JavaExec::class) {
-    inputs.files(inputFiles)
-    outputs.dir(outputDir)
-
-    description = "Fix Kotlin code style deviations."
-    classpath = ktlint
-    main = "com.pinterest.ktlint.Main"
-
-    // specify proper path to sources that should be checked here
-    args = listOf("-F") + checkLocations
+diktat {
+    inputs = files("androidApp/**/*.kt")
+    debug = true
 }
 
 subprojects {

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Auth
 
 class LoginSocialsView: UIStackView {
     private var socialButtons: [ActionButton]!
@@ -15,7 +16,7 @@ class LoginSocialsView: UIStackView {
     
     init() {
         super.init(frame: .zero)
-        socialButtons = SocialNetwork.allCases.map { social -> ActionButton in
+        socialButtons = SocialNetwork.Companion().allCases.map { social -> ActionButton in
             let button = ActionButton()
             button.setImage(social.image, for: .normal)
             button.action = .init { [weak self] in
@@ -34,14 +35,16 @@ extension SocialNetwork {
     fileprivate var image: UIImage? {
         let images = R.image.loginSocials.self
         switch self {
-        case .apple:
-            return images.apple()
-        case .twitter:
-            return images.twitter()
+//        case .apple:
+//            return images.apple()
+//        case .twitter:
+//            return images.twitter()
         case .facebook:
             return images.facebook()
         case .google:
             return images.google()
+            
+        default: fatalError()
         }
     }
 }

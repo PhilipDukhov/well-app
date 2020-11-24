@@ -314,3 +314,6 @@
 - name: KDOC_NO_CONSTRUCTOR_PROPERTY
   enabled: false
   configuration: {}
+- name: CUSTOM_GETTERS_SETTERS
+  enabled: false
+  configuration: {}

@@ -20,11 +20,15 @@ class PathView(context: Context) : View(context) {
 
     var path: com.well.serverModels.Path? = null
         set(value) {
-            if (value == field) return
+            if (value == field) {
+                return
+            }
             field = value
             graphicsPath.reset()
             invalidate()
-            if (value == null) return
+            if (value == null) {
+                return
+            }
             paint.color = value.color.colorInt()
 
             var lastPoint = value.points[0]

@@ -18,47 +18,34 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 import com.well.androidApp.R
 import com.well.androidApp.databinding.FragmentShareScreenBinding
 import com.well.androidApp.ui.customViews.BaseFragment
 import com.well.serverModels.Color
 import com.well.serverModels.Point
-import com.well.shared.leafs.SharingScreen.State.*
 import com.well.shared.leafs.SharingScreen
 import com.well.shared.leafs.SharingScreen.Msg.*
+import com.well.shared.leafs.SharingScreen.State.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.encodeToJsonElement
 import oolong.Dispatch
-import oolong.runtime
 import java.io.ByteArrayOutputStream
 
 class ShareScreenFragment : BaseFragment(R.layout.fragment_share_screen) {
-
-    private lateinit var viewBinding: FragmentShareScreenBinding// by viewBinding(createMethod = INFLATE)
-    private val sessionRef = Firebase.database.getReference("session")
+    private lateinit var viewBinding: FragmentShareScreenBinding  // by viewBinding(createMethod = INFLATE)
     private lateinit var job: Job
     private lateinit var renderDispatch: Dispatch<SharingScreen.Msg>
 
-    private lateinit var onSignOut: () -> Unit // TODO: move to oolong
+    private lateinit var onSignOut: () -> Unit  // TODO: move to oolong
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewBinding = FragmentShareScreenBinding.inflate(inflater, container, false);
+        viewBinding = FragmentShareScreenBinding.inflate(inflater, container, false)
         return viewBinding.root
     }
 
@@ -69,11 +56,11 @@ class ShareScreenFragment : BaseFragment(R.layout.fragment_share_screen) {
                 onSignOut()
             }
             chooseImage.setOnClickListener { onChooseImageClick() }
-            FirebaseAuth.getInstance().addAuthStateListener { auth ->
-                textView.apply {
-                    text = auth.currentUser?.description
-                }
-            }
+// FirebaseAuth.getInstance().addAuthStateListener { auth ->
+// textView.apply {
+// text = auth.currentUser?.description
+// }
+// }
             startSharing.setOnClickListener {
                 renderDispatch(BecomeHost)
             }
@@ -83,26 +70,26 @@ class ShareScreenFragment : BaseFragment(R.layout.fragment_share_screen) {
     override fun onResume() {
         super.onResume()
 
-        job = runtime(
-            SharingScreen.init(FirebaseAuth.getInstance().currentUser!!.uid),
-            SharingScreen.update,
-            SharingScreen.view,
-            render
-        )
-
-        sessionRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                renderDispatch(
-                    ServerScreenUpdated(
-                        (snapshot.value as? String)?.let { Json.decodeFromString(it) }
-                    )
-                )
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                println(error)
-            }
-        })
+// job = runtime(
+// SharingScreen.init(FirebaseAuth.getInstance().currentUser!!.uid),
+// SharingScreen.update,
+// SharingScreen.view,
+// render
+// )
+// 
+// sessionRef.addValueEventListener(object : ValueEventListener {
+// override fun onDataChange(snapshot: DataSnapshot) {
+// renderDispatch(
+// ServerScreenUpdated(
+// (snapshot.value as? String)?.let { Json.decodeFromString(it) }
+// )
+// )
+// }
+// 
+// override fun onCancelled(error: DatabaseError) {
+// println(error)
+// }
+// })
     }
 
     override fun onPause() {
@@ -110,7 +97,11 @@ class ShareScreenFragment : BaseFragment(R.layout.fragment_share_screen) {
         job.cancel()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?
+    ) {
         super.onActivityResult(requestCode, resultCode, data)
         when (resultCode) {
             pickImageRequestCode, RESULT_OK -> data?.data?.let(::updateImage)
@@ -125,57 +116,54 @@ class ShareScreenFragment : BaseFragment(R.layout.fragment_share_screen) {
             paths = props.screen?.paths
             setOnTouchListener(
                 if (props.state == Host) {
-                    listener@{ _, event ->
+                    listener@ { _, event ->
                         when (event?.action) {
-                            KeyEvent.ACTION_DOWN -> {
-                                dispatch(StartPath(Color(0xFF0000)))
-                            }
-                            MotionEvent.ACTION_MOVE -> {
-                                dispatch(AddPoint(Point(event.x, event.y)))
-                            }
-                            KeyEvent.ACTION_UP -> {
-                                return@listener false
-                            }
+                            KeyEvent.ACTION_DOWN -> dispatch(StartPath(Color(0xFF0_000)))
+                            MotionEvent.ACTION_MOVE -> dispatch(AddPoint(Point(event.x, event.y)))
+                            KeyEvent.ACTION_UP -> return@listener false
                         }
                         return@listener true
                     }
-                } else null
+                } else {
+                    null
+                }
             )
         }
 
         renderDispatch = dispatch
 
         onSignOut = {
-            if (props.state == Host) {
-                sessionRef.setValue(null) { _, _ ->
-                    FirebaseAuth.getInstance().signOut()
-                }
-            } else {
-                FirebaseAuth.getInstance().signOut()
-            }
+// if (props.state == Host) {
+// sessionRef.setValue(null) { _, _ ->
+// FirebaseAuth.getInstance().signOut()
+// }
+// } else {
+// FirebaseAuth.getInstance().signOut()
+// }
         }
 
         when (props.state) {
-            Idle, Guest -> {
-                Glide.with(requireContext())
+            Idle, Guest ->
+                Glide
+                    .with(requireContext())
                     .load(props.screen?.imageURL)
                     .into(viewBinding.imageView)
-            }
             Host -> {
-                sessionRef.setValue(props.screen?.let { Json.encodeToJsonElement(it).toString() })
+// sessionRef.setValue(props.screen?.let { Json.encodeToJsonElement(it).toString() })
             }
         }
         updateState(props.state)
     }
-
     private val pickImageRequestCode = 7230
     private fun onChooseImageClick() {
         val intents = listOf(
             Intent(ACTION_GET_CONTENT),
             Intent(ACTION_PICK, EXTERNAL_CONTENT_URI),
-        ).apply { forEach {
-            it.type = "image/*"
-        } }
+        ).apply {
+            forEach {
+                it.type = "image/*"
+            }
+        }
         startActivityForResult(createChooser(intents), pickImageRequestCode)
     }
 
@@ -231,16 +219,6 @@ class ShareScreenFragment : BaseFragment(R.layout.fragment_share_screen) {
         bitmap.compress(JPEG, 100, stream)
         renderDispatch(UploadImageData(stream.toByteArray(), fileExt))
     }
-
-    private val FirebaseUser.description: String
-        get() {
-            return "$displayName\n$email\n${
-                providerData
-                    .map { it.providerId }
-                    .filter { it != "firebase" }
-                    .joinToString("\n")
-            }"
-        }
 
     private fun createChooser(intents: List<Intent>): Intent {
         val chooserIntent = createChooser(intents.first(), "Select Image")

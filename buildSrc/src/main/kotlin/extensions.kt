@@ -1,5 +1,6 @@
 import org.codehaus.groovy.runtime.GStringImpl
 import org.gradle.api.plugins.ExtraPropertiesExtension
+import org.gradle.internal.impldep.com.amazonaws.services.kms.model.NotFoundException
 
 private fun ExtraPropertiesExtension.mapAt(
     path: String,
@@ -18,11 +19,11 @@ fun ExtraPropertiesExtension.libsAt(path: String) =
     mapAt(path, false)
         .first
         .values
-        .mapNotNull {
+        .map {
             when (it) {
                 is String -> it
                 is GStringImpl -> it.toString()
-                else -> null
+                else -> throw NotFoundException("$it")
             }
         }
 

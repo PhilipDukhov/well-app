@@ -35,7 +35,9 @@ class DrawingView(context: Context, attrs: AttributeSet?) : ViewGroup(context, a
                     pathView
                 }
             }
-            if (value == null) return
+            if (value == null) {
+                return
+            }
             pathViews.zip(value).forEach {
                 it.first.path = it.second
             }

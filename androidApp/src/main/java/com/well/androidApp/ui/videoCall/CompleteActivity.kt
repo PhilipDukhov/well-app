@@ -12,18 +12,9 @@ import com.well.androidApp.databinding.ActivitySamplePeerConnectionBinding
 import com.well.androidApp.utils.firstMapOrNull
 import com.well.serverModels.WebRTCMessage
 import com.well.serverModels.WebRTCMessage.*
-import io.ktor.client.*
-import io.ktor.client.features.websocket.*
-import io.ktor.http.HttpMethod.Companion.Get
-import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.webrtc.*
-import org.webrtc.SessionDescription.Type.ANSWER
-import org.webrtc.SessionDescription.Type.OFFER
 
 class CompleteActivity : AppCompatActivity() {
     private var isInitiator = false
@@ -37,17 +28,16 @@ class CompleteActivity : AppCompatActivity() {
     private lateinit var rootEglBase: EglBase
     private lateinit var factory: PeerConnectionFactory
     private lateinit var videoTrackFromCamera: VideoTrack
-
-    private val client = HttpClient {
-        install(WebSockets)
-    }
-
-    private var socketSession: DefaultClientWebSocketSession? = null
+// private val client = HttpClient {
+// install(WebSockets)
+// }
+// 
+// private var socketSession: DefaultClientWebSocketSession? = null
 
     private fun send(message: WebRTCMessage) {
-        GlobalScope.launch {
-            socketSession?.send(Json.encodeToString(message))
-        }
+// GlobalScope.launch {
+// socketSession?.send(Json.encodeToString(message))
+// }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,13 +47,14 @@ class CompleteActivity : AppCompatActivity() {
         start()
     }
 
-
     private val requestPermissionLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
             println("wtfff $isGranted")
-            if (isGranted) start()
+            if (isGranted) {
+                start()
+            }
         }
 
     private fun start() {
@@ -89,7 +80,7 @@ class CompleteActivity : AppCompatActivity() {
 
     private val permissions = listOf(CAMERA, RECORD_AUDIO)
 
-    //MirtDPM4
+    // MirtDPM4
     private fun doAnswer() {
         peerConnection.createAnswer(object : SimpleSdpObserver() {
             override fun onCreateSuccess(sessionDescription: SessionDescription) {
@@ -147,7 +138,8 @@ class CompleteActivity : AppCompatActivity() {
             true
         )
         val defaultVideoDecoderFactory = DefaultVideoDecoderFactory(rootEglBase.eglBaseContext)
-        factory = PeerConnectionFactory.builder()
+        factory = PeerConnectionFactory
+            .builder()
             .setOptions(PeerConnectionFactory.Options())
             .setVideoEncoderFactory(defaultVideoEncoderFactory)
             .setVideoDecoderFactory(defaultVideoDecoderFactory)
@@ -168,7 +160,7 @@ class CompleteActivity : AppCompatActivity() {
         videoTrackFromCamera.setEnabled(true)
         videoTrackFromCamera.addSink(binding.surfaceView)
 
-        //create an AudioSource instance
+        // create an AudioSource instance
         audioSource = factory.createAudioSource(audioConstraints)
         localAudioTrack = factory.createAudioTrack("101", audioSource)
     }
@@ -225,7 +217,7 @@ class CompleteActivity : AppCompatActivity() {
 
     private fun createCameraCapturer(enumerator: CameraEnumerator): VideoCapturer? =
         enumerator.deviceNames
-            .sortedBy { !enumerator.isFrontFacing(it) } // first try to find front camera
+            .sortedBy { !enumerator.isFrontFacing(it) }  // first try to find front camera
             .firstMapOrNull {
                 enumerator.createCapturer(it, null)
             }
@@ -234,63 +226,63 @@ class CompleteActivity : AppCompatActivity() {
         Camera2Enumerator.isSupported(this)
 
     private suspend fun connect() {
-        client.ws(
-            Get,
-            "well-env.eba-bzjcehdy.us-east-2.elasticbeanstalk.com",
-            8090,
-            "/socket"
-        )
-        {
-            socketSession = this
-            println("hello")
-            send(Frame.Ping(byteArrayOf()))
-            try {
-                for (data in incoming) {
-                    if (data !is Frame.Text) continue
-                    when (val message: WebRTCMessage = Json.decodeFromString(data.readText())) {
-                        is Created -> isInitiator = true
-                        is Join, is Joined -> {
-                            isChannelReady = true
-                            maybeStart()
-                        }
-                        is Offer -> {
-                            if (!isInitiator && !isStarted) {
-                                maybeStart()
-                            }
-                            peerConnection.setRemoteDescription(
-                                SimpleSdpObserver(),
-                                SessionDescription(
-                                    OFFER,
-                                    message.sdp
-                                )
-                            )
-                            doAnswer()
-                        }
-                        is Answer -> {
-                            if (!isStarted) throw IllegalStateException()
-                            peerConnection.setRemoteDescription(
-                                SimpleSdpObserver(),
-                                SessionDescription(
-                                    ANSWER,
-                                    message.sdp
-                                )
-                            )
-                        }
-                        is Candidate -> {
-                            if (!isStarted) throw IllegalStateException()
-                            val candidate = IceCandidate(
-                                message.id,
-                                message.label,
-                                message.candidate
-                            )
-                            peerConnection.addIceCandidate(candidate)
-                        }
-                    }
-                }
-            } finally {
-                socketSession = null
-            }
-        }
+// client.ws(
+// Get,
+// "well-env.eba-bzjcehdy.us-east-2.elasticbeanstalk.com",
+// 8090,
+// "/socket"
+// )
+// {
+// socketSession = this
+// println("hello")
+// send(Frame.Ping(byteArrayOf()))
+// try {
+// for (data in incoming) {
+// if (data !is Frame.Text) continue
+// when (val message: WebRTCMessage = Json.decodeFromString(data.readText())) {
+// is Created -> isInitiator = true
+// is Join, is Joined -> {
+// isChannelReady = true
+// maybeStart()
+// }
+// is Offer -> {
+// if (!isInitiator && !isStarted) {
+// maybeStart()
+// }
+// peerConnection.setRemoteDescription(
+// SimpleSdpObserver(),
+// SessionDescription(
+// OFFER,
+// message.sdp
+// )
+// )
+// doAnswer()
+// }
+// is Answer -> {
+// if (!isStarted) throw IllegalStateException()
+// peerConnection.setRemoteDescription(
+// SimpleSdpObserver(),
+// SessionDescription(
+// ANSWER,
+// message.sdp
+// )
+// )
+// }
+// is Candidate -> {
+// if (!isStarted) throw IllegalStateException()
+// val candidate = IceCandidate(
+// message.id,
+// message.label,
+// message.candidate
+// )
+// peerConnection.addIceCandidate(candidate)
+// }
+// }
+// }
+// } finally {
+// socketSession = null
+// }
+// }
     }
 
     companion object {

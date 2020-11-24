@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="0e6d44ab-248f-45b7-bce1-112b91e5041e" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../auth/build.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../auth/src/androidMain/AndroidManifest.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../auth/src/androidMain/kotlin/com/well/auth/Context.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../auth/src/androidMain/kotlin/com/well/auth/LoginView.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../auth/src/androidMain/kotlin/com/well/auth/SocialNetworkServiceExt.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../auth/src/androidMain/kotlin/com/well/auth/credentialProviders/CredentialProvider.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../auth/src/commonMain/kotlin/com/well/auth/AuthResult.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../auth/src/commonMain/kotlin/com/well/auth/Context.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../auth/src/commonMain/kotlin/com/well/auth/LoginView.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../auth/src/commonMain/kotlin/com/well/auth/credentialProviders/AuthCredential.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../auth/src/commonMain/kotlin/com/well/auth/credentialProviders/FacebookProvider.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../auth/src/commonMain/kotlin/com/well/auth/credentialProviders/GoogleProvider.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../auth/src/iosMain/kotlin/com/well/auth/Context.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../auth/src/iosMain/kotlin/com/well/auth/LoginView.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../auth/src/iosMain/kotlin/com/well/auth/NSErrorThrowable.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../auth/src/iosMain/kotlin/com/well/auth/Platform.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../auth/src/iosMain/kotlin/com/well/auth/credentialProviders/CredentialProvider.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../auth/src/iosMain/kotlin/com/well/auth/credentialProviders/FacebookProvider.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../auth/src/iosMain/kotlin/com/well/auth/credentialProviders/GoogleProvider.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../server/src/jvmMain/kotlin/com/well/server/Test.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../server/src/jvmMain/kotlin/com/well/server/utils/DateSerializer.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../server/src/jvmMain/kotlin/com/well/server/utils/JsonObjectExt.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../server/src/jvmMain/kotlin/com/well/server/utils/JwtConfig.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../server/src/jvmMain/resources/application.conf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/commonMain/kotlin/com/well/serverModels/Date.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/commonMain/kotlin/com/well/serverModels/serializers/DateSerializer.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/iosMain/kotlin/com/well/serverModels/Date.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/well/serverModels/ColorExt.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/jvmMain/kotlin/com/well/serverModels/Date.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../androidApp/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../androidApp/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../androidApp/dependencies.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../androidApp/dependencies.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../androidApp/src/debug/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../androidApp/src/debug/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../androidApp/src/main/java/com/well/androidApp/model/auth/SocialNetwork.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../auth/src/commonMain/kotlin/com/well/auth/SocialNetwork.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../androidApp/src/main/java/com/well/androidApp/model/auth/SocialNetworkService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../auth/src/commonMain/kotlin/com/well/auth/SocialNetworkService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../androidApp/src/main/java/com/well/androidApp/model/auth/credentialProviders/CredentialProvider.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../auth/src/commonMain/kotlin/com/well/auth/credentialProviders/CredentialProvider.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../androidApp/src/main/java/com/well/androidApp/model/auth/credentialProviders/FacebookProvider.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../auth/src/androidMain/kotlin/com/well/auth/credentialProviders/FacebookProvider.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../androidApp/src/main/java/com/well/androidApp/model/auth/credentialProviders/GoogleProvider.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../auth/src/androidMain/kotlin/com/well/auth/credentialProviders/GoogleProvider.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../androidApp/src/main/java/com/well/androidApp/ui/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../androidApp/src/main/java/com/well/androidApp/ui/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../androidApp/src/main/java/com/well/androidApp/ui/fragments/ShareScreenFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../androidApp/src/main/java/com/well/androidApp/ui/fragments/ShareScreenFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../androidApp/src/main/java/com/well/androidApp/ui/fragments/SignInStartFragment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../androidApp/src/main/java/com/well/androidApp/ui/fragments/SignInStartFragment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../androidApp/src/main/java/com/well/androidApp/ui/videoCall/CompleteActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../androidApp/src/main/java/com/well/androidApp/ui/videoCall/CompleteActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../buildSrc/src/main/kotlin/extensions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../buildSrc/src/main/kotlin/extensions.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../dependencies.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../dependencies.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../gradle.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../iosApp/Podfile" beforeDir="false" afterPath="$PROJECT_DIR$/../iosApp/Podfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../iosApp/Podfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../iosApp/Podfile.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../iosApp/Well.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/../iosApp/Well.xcodeproj/project.pbxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../iosApp/Well/Login/SocialNetworkServices/GoogleSigner.swift" beforeDir="false" afterPath="$PROJECT_DIR$/../iosApp/Well/Login/SocialNetworkServices/GoogleSigner.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../iosApp/Well/Supporting files/AppDelegate.swift" beforeDir="false" afterPath="$PROJECT_DIR$/../iosApp/Well/Supporting files/AppDelegate.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../server/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/resources/application.conf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/resources/logback.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/jvmMain/resources/logback.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/src/com/well/server/Application.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/jvmMain/kotlin/com/well/server/Application.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/src/com/well/server/Test.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/src/com/well/server/WebRTC.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/jvmMain/kotlin/com/well/server/WebRTC.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/androidMain/AndroidManifest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/androidMain/kotlin/com/well/serverModels/ColorExt.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../settings.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../shared/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../shared/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../shared/src/androidMain/kotlin/com/well/shared/FirebaseManager.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../shared/src/commonMain/kotlin/com/well/shared/FirebaseManager.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../shared/src/commonMain/kotlin/com/well/shared/leafs/SharingScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../shared/src/commonMain/kotlin/com/well/shared/leafs/SharingScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../shared/src/iosMain/kotlin/com/well/shared/FirebaseManager.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../shared/src/iosMain/kotlin/com/well/shared/Platform.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../shared/src/iosMain/kotlin/com/well/shared/Platform.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../shared/src/iosMain/kotlin/com/well/shared/SharingScreenExt.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../shared/src/iosMain/kotlin/com/well/shared/SharingScreenExt.kt" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="KotlinMultiplatform">
+    <allAvailableExecutables />
+  </component>
+  <component name="ProjectId" id="1khFWzO9tykzfbOtMgzenEEmpOQ" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="autoscrollToSource" value="true" />
+    <option name="compactDirectories" value="true" />
+    <option name="flattenPackages" value="true" />
+    <option name="foldersAlwaysOnTop" value="false" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="sortByType" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="android.sdk.path" value="$USER_HOME$/Library/Android/sdk" />
+    <property name="project.structure.last.edited" value="SDK Location" />
+    <property name="project.structure.proportion" value="0.17" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="settings.editor.selected.configurable" value="configurable.group.other" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0e6d44ab-248f-45b7-bce1-112b91e5041e" name="Default Changelist" comment="" />
+      <created>1606144951361</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1606144951361</updated>
+    </task>
+    <servers />
+  </component>
+</project>
