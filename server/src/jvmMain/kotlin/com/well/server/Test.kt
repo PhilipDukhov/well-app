@@ -164,7 +164,6 @@ fun Application.module() {
                         }
                 }
             }
-
             call.respond(HttpStatusCode.Created, mapOf("token" to jwtConfig.makeToken(userId)))
         }
 
@@ -177,7 +176,7 @@ fun Application.module() {
                     .getById(id)
                     .executeAsOne()
                     .run {
-                        "$id $firstName $lastName"
+                        "$id $firstName $lastName ${String.format("%.4f",createdDate)}"
                     }
                 call.respond(userName)
             }

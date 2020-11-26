@@ -22,8 +22,9 @@ SELECT id FROM user WHERE googleId = ?;
 
 insertFacebook:
 INSERT INTO user(firstName, lastName, createdDate, facebookId)
-VALUES (?, ?, 1000, ?);
+VALUES (?, ?, UNIX_TIMESTAMP(), ?);
 
 insertGoogle:
 INSERT INTO user(firstName, lastName, createdDate, googleId)
-VALUES (?, ?, 1000, ?);
+VALUES (?, ?, UNIX_TIMESTAMP(), ?);
+
