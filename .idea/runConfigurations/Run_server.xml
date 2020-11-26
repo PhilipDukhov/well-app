@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run server" type="GradleRunConfiguration" factoryName="Gradle" singleton="false">
+  <configuration default="false" name="Run server" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$/server" />
@@ -15,6 +15,7 @@
       </option>
       <option name="vmOptions" value="" />
     </ExternalSystemSettings>
+    <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
     <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
     <method v="2" />
   </configuration>

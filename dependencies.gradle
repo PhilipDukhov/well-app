@@ -7,8 +7,7 @@ def versions = [
         napier             : "1.4.1",
         nav                : "2.3.1",
         glide              : "4.11.0",
-        lint               : "27.2.0-alpha14",
-        kotest             : "4.3.0",
+        sqldelight         : "1.4.4",
 ]
 
 ext.Versions = versions
@@ -20,6 +19,7 @@ ext.Libs = [
                 googleServices     : "com.google.gms:google-services:4.3.4",
                 firebaseCrashlytics: "com.google.firebase:firebase-crashlytics-gradle:2.3.0",
                 dotenv             : "io.github.cdimascio:dotenv-kotlin:6.2.2",
+                sqldelight         : "com.squareup.sqldelight:gradle-plugin:$versions.sqldelight",
         ],
         kotlin                     : [
                 stdLib           : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin",
@@ -58,12 +58,6 @@ ext.Libs = [
                 glide   : "com.github.bumptech.glide:glide:$versions.glide",
                 compiler: "com.github.bumptech.glide:compiler:$versions.glide",
         ],
-        lint                       : [
-                lint  : "com.android.tools.lint:lint:$versions.lint",
-                api   : "com.android.tools.lint:lint-api:$versions.lint",
-                checks: "com.android.tools.lint:lint-checks:$versions.lint",
-                tests : "com.android.tools.lint:lint-tests:$versions.lint",
-        ],
         oolong                     : "org.oolong-kt:oolong:2.1.0",
         facebookLogin              : "com.facebook.android:facebook-login:8.0.0",
         napier                     : "com.github.aakira:napier:$versions.napier",
@@ -85,12 +79,13 @@ ext.Libs = [
                 metrics      : "io.ktor:ktor-metrics:$versions.ktor",
                 websockets   : "io.ktor:ktor-websockets:$versions.ktor",
         ],
-        klock                      : "com.soywiz.korlibs.klock:klock:2.0.0",
-        tests                      : [
-                utils : "com.android.tools:testutils:$versions.lint",
-                kotest: [
-                        runner        : "io.kotest:kotest-runner-junit5:$versions.kotest",
-                        assertionsCore: "io.kotest:kotest-assertions-core:$versions.kotest",
-                ]
+        server                     : [
+                sqldelight: [
+                        runtimeJvm          : "com.squareup.sqldelight:runtime-jvm:$versions.sqldelight",
+                        jdbcDriver          : "com.squareup.sqldelight:jdbc-driver:$versions.sqldelight",
+                        coroutinesExtensions: "com.squareup.sqldelight:coroutines-extensions:$versions.sqldelight",
+                ],
+                hikariCP  : "com.zaxxer:HikariCP:3.4.5",
+                h2database: "com.h2database:h2:1.4.200",
         ],
 ]

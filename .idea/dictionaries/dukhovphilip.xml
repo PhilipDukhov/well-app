@@ -3,11 +3,13 @@
     <words>
       <w>antilog</w>
       <w>crashlytics</w>
+      <w>deps</w>
       <w>firestore</w>
       <w>jetbrains</w>
       <w>jetpack</w>
       <w>ktor</w>
       <w>oolong</w>
+      <w>sqldelight</w>
     </words>
   </dictionary>
 </component>

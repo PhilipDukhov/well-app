@@ -1,8 +1,16 @@
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
-    application
     id("com.github.johnrengelman.shadow") version "6.1.0"
+    id("com.squareup.sqldelight")
+    application
+}
+
+sqldelight {
+    database("Database") {
+        packageName = "com.well.server"
+        dialect = "mysql"
+    }
 }
 
 kotlin {
@@ -30,7 +38,11 @@ kotlin {
                         "ktor.serialization",
                         "google.apiClient",
                         "google.httpClientApacheV2",
-//                        "klock",
+                        "server.sqldelight.runtimeJvm",
+                        "server.sqldelight.jdbcDriver",
+                        "server.sqldelight.coroutinesExtensions",
+                        "server.hikariCP",
+                        "server.h2database",
                         "kotlin.stdLib"
                     )
                 ).forEach { implementation(it) }

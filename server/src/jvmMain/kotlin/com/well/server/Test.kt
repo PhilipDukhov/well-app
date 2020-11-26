@@ -4,8 +4,11 @@ package com.well.server
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier
 import com.google.api.client.http.apache.v2.ApacheHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
+import com.squareup.sqldelight.sqlite.driver.asJdbcDriver
 import com.well.server.utils.JwtConfig
 import com.well.server.utils.getPrimitiveContent
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -24,8 +27,8 @@ import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
+import java.io.File
 import java.util.*
 
 @Suppress("unused") // Referenced in application.conf
@@ -71,12 +74,8 @@ fun Application.module() {
                 val status = response.status.value
                 if (status < 300) return@validateResponse
 
-                val exceptionResponse = try {
-                    val responseString = String(response.readBytes())
-                    Json.parseToJsonElement(responseString)
-                } catch (e: Throwable) {
-                    null
-                }
+                val responseString = String(response.readBytes())
+                val exceptionResponse = Json.parseToJsonElement(responseString)
 
                 when (status) {
                     in 300..399 -> throw Throwable(exceptionResponse.toString())
@@ -88,53 +87,58 @@ fun Application.module() {
         }
     }
 
+    val database = initialiseDatabase(this)
+
     routing {
-        get("/facebook") {
-            try {
-                val token = call.receive<String>()
-                val appId = environment.config.property("facebook.appId").getString()
-                val appSecret = environment.config.property("facebook.appSecret").getString()
-                val appAccessToken = client.get<JsonElement>(
-                    "https://graph.facebook.com/oauth/access_token?client_id=$appId&client_secret=$appSecret&grant_type=client_credentials"
-                ).jsonObject
-                    .getPrimitiveContent("access_token")
-                val userId = client.get<JsonElement>(
-                    "https://graph.facebook.com/debug_token?input_token=$token&access_token=$appAccessToken"
-                ).jsonObject
-                    .getValue("data")
-                    .jsonObject.getPrimitiveContent("user_id")
+        post("/facebook") {
+            val token = call.receive<String>()
+            println(token)
+            val appId = environment.config.property("facebook.appId").getString()
+            val appSecret = environment.config.property("facebook.appSecret").getString()
+            val appAccessToken = client.get<JsonElement>(
+                "https://graph.facebook.com/oauth/access_token?client_id=$appId&client_secret=$appSecret&grant_type=client_credentials"
+            ).jsonObject
+                .getPrimitiveContent("access_token")
+            val facebookUserId = client.get<JsonElement>(
+                "https://graph.facebook.com/debug_token?input_token=$token&access_token=$appAccessToken"
+            ).jsonObject
+                .getValue("data")
+                .jsonObject.getPrimitiveContent("user_id")
 
-                val fields = object {
-                    val id = "id"
-                    val firstName = "first_name"
-                    val lastName = "last_name"
-                }
-                val userInfo: JsonElement = client.get(
-                    "https://graph.facebook.com/v9.0/$userId?fields=${fields.firstName},${fields.lastName},${fields.id}&access_token=$appAccessToken"
-                )
-
-                val user = userInfo.jsonObject.run {
-                    getPrimitiveContent(fields.id).let { facebookId ->
-                        users.firstOrNull { it.facebookId == facebookId }
-                            ?: User(
-                                users.lastOrNull()?.id?.plus(1) ?: 0,
-                                getPrimitiveContent(fields.firstName),
-                                getPrimitiveContent(fields.lastName),
-                                Date(),
-                                facebookId = facebookId
-                            ).also { users.add(it) }
-                    }
-                }
-                call.respond(HttpStatusCode.Created, mapOf("token" to jwtConfig.makeToken(user.id)))
-
-            } catch (e: Throwable) {
-                call.respond(e.toString())
+            val fields = object {
+                val id = "id"
+                val firstName = "first_name"
+                val lastName = "last_name"
             }
+            val userInfo: JsonElement = client.get(
+                "https://graph.facebook.com/v9.0/$facebookUserId?fields=${fields.firstName},${fields.lastName},${fields.id}&access_token=$appAccessToken"
+            )
+
+            val userId = userInfo.jsonObject.let { json ->
+                val facebookId = json.getPrimitiveContent(fields.id)
+                database.userQueries.run {
+                    getByFacebookId(facebookId)
+                        .executeAsOneOrNull()
+                        ?: run {
+                            println("user created")
+                            insertFacebook(
+                                json.getPrimitiveContent(fields.firstName),
+                                json.getPrimitiveContent(fields.lastName),
+                                facebookId
+                            )
+                            lastInsertId()
+                                .executeAsOne()
+                                .toInt()
+                        }
+                }
+            }
+
+            call.respond(HttpStatusCode.Created, mapOf("token" to jwtConfig.makeToken(userId)))
         }
 
-        get("/google") {
+        post("/google") {
             val clientId = environment.config.property("google.clientId").getString()
-            val user = withContext(Dispatchers.IO) {
+            val userId = withContext(Dispatchers.IO) {
                 @Suppress("BlockingMethodInNonBlockingContext")
                 GoogleIdTokenVerifier.Builder(
                     ApacheHttpTransport(),
@@ -143,42 +147,68 @@ fun Application.module() {
                     .build()
                     .verify(call.receive<String>())
             }.payload.run {
-                users.firstOrNull { it.googleId == subject }
-                    ?: User(
-                        users.lastOrNull()?.id?.plus(1) ?: 0,
-                        getValue("given_name") as String,
-                        getValue("family_name") as String,
-                        Date(),
-                        googleId = subject
-                    ).also { users.add(it) }
+                val googleId = subject
+
+                database.userQueries.run {
+                    getByGoogleId(googleId)
+                        .executeAsOneOrNull()
+                        ?: run {
+                            insertGoogle(
+                                getValue("given_name") as String,
+                                getValue("family_name") as String,
+                                googleId
+                            )
+                            lastInsertId()
+                                .executeAsOne()
+                                .toInt()
+                        }
+                }
             }
 
-            try {
-                call.respond(HttpStatusCode.Created, mapOf("token" to jwtConfig.makeToken(user.id)))
-            } catch (e: Throwable) {
-                println("wtf $e")
-            }
+            call.respond(HttpStatusCode.Created, mapOf("token" to jwtConfig.makeToken(userId)))
         }
 
         authenticate {
             get("/") {
                 val principal = call.principal<JWTPrincipal>()!!
                 val id = principal.payload.claims["id"]!!.asInt()
-                call.respond(users.first { it.id == id })
+                val userName = database
+                    .userQueries
+                    .getById(id)
+                    .executeAsOne()
+                    .run {
+                        "$id $firstName $lastName"
+                    }
+                call.respond(userName)
             }
         }
     }
 }
 
-val users = mutableListOf<User>()
+fun initialiseDatabase(app: Application): Database {
+    val dbConfig = app.environment.config.config("database")
+    var connectionUrl = dbConfig.property("connection").getString()
 
-@Serializable
-data class User(
-    val id: Int,
-    val firstName: String,
-    val lastName: String,
-    @Serializable(com.well.server.utils.DateSerializer::class)
-    val created: Date,
-    val googleId: String? = null,
-    val facebookId: String? = null
-)
+    // If this is a local h2 database, ensure the directories exist
+    if (connectionUrl.startsWith("jdbc:h2:file:")) {
+        val dbFile = File(connectionUrl.removePrefix("jdbc:h2:file:")).absoluteFile
+        if (!dbFile.parentFile.exists()) {
+            dbFile.parentFile.mkdirs()
+        }
+        connectionUrl = "jdbc:h2:file:${dbFile.absolutePath}"
+    }
+
+    val datasourceConfig = HikariConfig().apply {
+        jdbcUrl = connectionUrl
+        dbConfig.propertyOrNull("username")?.getString()?.let(this::setUsername)
+        dbConfig.propertyOrNull("password")?.getString()?.let(this::setPassword)
+        dbConfig.propertyOrNull("poolSize")?.getString()?.toInt()?.let(this::setMaximumPoolSize)
+    }
+    val dataSource = HikariDataSource(datasourceConfig)
+    val driver = dataSource.asJdbcDriver()
+    Database.Schema.create(driver)
+    val db = Database(driver)
+    app.environment.monitor.subscribe(ApplicationStopped) { driver.close() }
+
+    return db
+}

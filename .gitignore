@@ -332,3 +332,7 @@ R.generated.swift
 
 # Config
 iosApp/Well/Supporting files/Shared.xcconfig
+
+# Database
+
+.database

@@ -2,7 +2,6 @@ dependencies {
     implementation(project(":shared"))
     implementation(project(":auth"))
     implementation(project(":serverModels"))
-//    lintChecks(project(":androidLintRules"))
 
     implementation(Libs.android.material)
     implementation(Libs.android.appCompat)

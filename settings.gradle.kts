@@ -1,11 +1,29 @@
 rootProject.name = "WELL"
 
-//include(":androidLintRules")
-include(":androidApp")
-include(":shared")
-include(":auth")
-include(":serverModels")
-include(":server")
+private enum class Env {
+    Full,
+    Server,
+    Mobile,
+}
+val serverPaths = listOf(
+    ":server"
+)
+val mobilePaths = listOf(
+    ":serverModels",
+    ":androidApp",
+    ":shared",
+    ":auth"
+)
+(listOf<String>(
+
+) + when (Env.Server) {
+    Env.Full -> serverPaths + mobilePaths
+    Env.Mobile -> mobilePaths
+    Env.Server -> serverPaths
+}).forEach {
+    include(it)
+}
+
 
 pluginManagement {
     repositories {
@@ -29,11 +47,6 @@ pluginManagement {
             when {
                 pluginId == "com.android" ->
                     useModule("com.android.tools.build:gradle:${gradlePluginVersion}")
-
-                pluginId.startsWith("com.avito.android") -> {
-                    val artifact = pluginId.replace("com.avito.android.", "")
-                    useModule("com.avito.android:$artifact:2020.28")
-                }
             }
         }
     }

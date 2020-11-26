@@ -21,10 +21,10 @@ buildscript {
     }
 
     apply(from = "dependencies.gradle")
-    val libs = extra.libsAt("build")
+    val libs: List<String> = extra.libsAt("build")
     dependencies {
         libs.forEach { classpath(it) }
-        classpath("com.github.ben-manes:gradle-versions-plugin:0.33.0")
+        classpath("com.github.ben-manes:gradle-versions-plugin:0.36.0")
     }
 }
 
@@ -32,26 +32,9 @@ repositories {
     mavenCentral()
 }
 
-plugins {
-    id("com.avito.android.buildchecks")
-    id("org.cqfn.diktat.diktat-gradle-plugin") version "0.1.5"
-}
-
-buildChecks {
-    androidSdk {
-        compileSdkVersion = 30
-        revision = 3
-    }
-    javaVersion {
-        version = Constants.javaVersion
-    }
-    uniqueRClasses {
-        enabled = false
-    }
-    macOSLocalhost { }
-    dynamicDependencies { }
-    gradleDaemon { }
-}
+//plugins {
+//    id("org.cqfn.diktat.diktat-gradle-plugin") version "0.1.5"
+//}
 
 allprojects {
     @Suppress("UnstableApiUsage")
@@ -70,10 +53,8 @@ allprojects {
             }
         }
     }
-
     apply(from = "${rootDir}/dependencies.gradle")
 }
-
 
 subprojects {
     group = Constants.group
@@ -132,44 +113,6 @@ subprojects {
     apply(from = "${rootDir}/dependencies.gradle")
 }
 
-apply(plugin = "com.github.ben-manes.versions")
-
-fun isNonStable(version: String): Boolean {
-    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
-    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
-    val isStable = stableKeyword || regex.matches(version)
-    return isStable.not()
-}
-
-tasks.named("dependencyUpdates", DependencyUpdatesTask::class.java).configure {
-
-    // Example 1: reject all non stable versions
-    rejectVersionIf {
-        isNonStable(candidate.version)
-    }
-
-    // Example 2: disallow release candidates as upgradable versions from stable versions
-    rejectVersionIf {
-        isNonStable(candidate.version) && !isNonStable(currentVersion)
-    }
-
-    // Example 3: using the full syntax
-    resolutionStrategy {
-        componentSelection {
-            all {
-                if (isNonStable(candidate.version) && !isNonStable(currentVersion)) {
-                    reject("Release candidate")
-                }
-            }
-        }
-    }
-
-    checkForGradleUpdate = true
-    outputFormatter = "json"
-    outputDir = "build/dependencyUpdates"
-    reportfileName = "report"
-}
-
 configurations.all {
     resolutionStrategy.eachDependency {
         when (requested.group to requested.name) {
@@ -178,20 +121,64 @@ configurations.all {
     }
 }
 
-val outputDir = "${project.buildDir}/reports/diktat/"
-val inputFiles = project.fileTree(mapOf("dir" to "src", "include" to "**/*.kt"))
-val checkLocations = listOf(
-    "androidApp",
-    "androidLintRules/src/main/java/com/well/androidlintrules/detectors"
-).map { "$it/**/*.kt" }
-
-diktat {
-    inputs = files("androidApp/**/*.kt")
-    debug = true
+// ./gradlew -q -PallDepsNeeded=1 allDeps
+val allDepsNeeded: String? by project
+if (allDepsNeeded != null) {
+    subprojects {
+        tasks.create<DependencyReportTask>("allDeps") {
+        }
+    }
 }
 
-subprojects {
-    tasks.create<DependencyReportTask>("allDeps") {
+// ./gradlew -q -PdiktatNeeded=1 diktatFix --stacktrace
+//val diktatNeeded: String? by project
+//if (diktatNeeded != null) {
+//    apply(plugin = "com.github.ben-manes.versions") {
+//        version = "0.1.5"
+//    }
+//    diktat {
+//        inputs = files("androidApp/**/*.kt")
+//    }
+//}
 
+// ./gradlew -q -PdependencyUpdatesNeeded=1 dependencyUpdates
+val dependencyUpdatesNeeded: String? by project
+if (dependencyUpdatesNeeded != null) {
+    apply(plugin = "com.github.ben-manes.versions")
+
+    fun isNonStable(version: String): Boolean {
+        val stableKeyword =
+            listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
+        val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+        val isStable = stableKeyword || regex.matches(version)
+        return isStable.not()
+    }
+
+    tasks.named("dependencyUpdates", DependencyUpdatesTask::class.java).configure {
+        // Example 1: reject all non stable versions
+        rejectVersionIf {
+            isNonStable(candidate.version)
+        }
+
+        // Example 2: disallow release candidates as upgradable versions from stable versions
+        rejectVersionIf {
+            isNonStable(candidate.version) && !isNonStable(currentVersion)
+        }
+
+        // Example 3: using the full syntax
+        resolutionStrategy {
+            componentSelection {
+                all {
+                    if (isNonStable(candidate.version) && !isNonStable(currentVersion)) {
+                        reject("Release candidate")
+                    }
+                }
+            }
+        }
+
+        checkForGradleUpdate = true
+        outputFormatter = "json"
+        outputDir = "build/dependencyUpdates"
+        reportfileName = "report"
     }
 }
