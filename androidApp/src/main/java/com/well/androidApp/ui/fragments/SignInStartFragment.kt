@@ -66,6 +66,9 @@ class SignInStartFragment : BaseFragment(R.layout.fragment_sign_in_start) {
             try {
                 val result = socialNetworkService.login(socialNetwork, this@SignInStartFragment)
                 println("yai $result")
+                MainScope().launch {
+                    MainActivity.Singleton.token = result.bearerToken
+                }
             } catch (e: CancellationException) {
             } catch (e: Exception) {
                 MainScope().launch {

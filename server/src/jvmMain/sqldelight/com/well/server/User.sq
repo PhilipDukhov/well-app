@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS  user(
+CREATE TABLE IF NOT EXISTS Users (
     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     firstName TEXT NOT NULL,
     lastName TEXT NOT NULL,
@@ -12,19 +12,22 @@ lastInsertId:
 SELECT LAST_INSERT_ID();
 
 getById:
-SELECT * FROM user WHERE id = ?;
+SELECT * FROM Users WHERE id = ?;
+
+getByIds:
+SELECT * FROM Users WHERE id IN ?;
 
 getByFacebookId:
-SELECT id FROM user WHERE facebookId = ?;
+SELECT id FROM Users WHERE facebookId = ?;
 
 getByGoogleId:
-SELECT id FROM user WHERE googleId = ?;
+SELECT id FROM Users WHERE googleId = ?;
 
 insertFacebook:
-INSERT INTO user(firstName, lastName, createdDate, facebookId)
+INSERT INTO Users(firstName, lastName, createdDate, facebookId)
 VALUES (?, ?, UNIX_TIMESTAMP(), ?);
 
 insertGoogle:
-INSERT INTO user(firstName, lastName, createdDate, googleId)
+INSERT INTO Users(firstName, lastName, createdDate, googleId)
 VALUES (?, ?, UNIX_TIMESTAMP(), ?);
 

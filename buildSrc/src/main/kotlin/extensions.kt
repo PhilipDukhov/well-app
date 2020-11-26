@@ -1,13 +1,16 @@
 import org.codehaus.groovy.runtime.GStringImpl
-import org.gradle.api.plugins.ExtraPropertiesExtension
-import org.gradle.internal.impldep.com.amazonaws.services.kms.model.NotFoundException
+import org.gradle.api.Project
+import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
+import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
+import org.gradle.kotlin.dsl.add
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
-private fun ExtraPropertiesExtension.mapAt(
+private fun Project.mapAt(
     path: String,
     skipLast: Boolean
 ): Pair<LinkedHashMap<*, *>, String> {
     val components = path.split('.')
-    var map = this["Libs"]!!.toLinkedHashMap()
+    var map = properties["Libs"]!!.toLinkedHashMap()
     val last = components.last()
     for (component in components.dropLast(if (skipLast) 1 else 0)) {
         map = map[component]!!.toLinkedHashMap()
@@ -15,7 +18,7 @@ private fun ExtraPropertiesExtension.mapAt(
     return Pair(map, last)
 }
 
-fun ExtraPropertiesExtension.libsAt(path: String) =
+fun Project.libsAt(path: String) =
     mapAt(path, false)
         .first
         .values
@@ -23,11 +26,11 @@ fun ExtraPropertiesExtension.libsAt(path: String) =
             when (it) {
                 is String -> it
                 is GStringImpl -> it.toString()
-                else -> throw NotFoundException("$it")
+                else -> throw java.lang.ClassNotFoundException("$it")
             }
         }
 
-fun ExtraPropertiesExtension.libAt(path: String): String {
+fun Project.libAt(path: String): String {
     val (map, last) = mapAt(path, true)
     return when (val lastValue = map[last]) {
         is String -> lastValue
@@ -36,10 +39,71 @@ fun ExtraPropertiesExtension.libAt(path: String): String {
     }
 }
 
-fun ExtraPropertiesExtension.libsAt(paths: List<String>): List<String> =
+fun Project.libsAt(paths: List<String>): List<String> =
     paths.map { libAt(it) }
 
 
-fun ExtraPropertiesExtension.version(path: String) = (this["Versions"]!!.toLinkedHashMap()[path] as String?)!!
+fun Project.version(path: String) =
+    (properties["Versions"]!!.toLinkedHashMap()[path] as String?)!!
 
 fun Any.toLinkedHashMap(): LinkedHashMap<*, *> = this as LinkedHashMap<*, *>
+
+fun KotlinSourceSet.libDependencies(vararg libs: String) =
+    dependencies {
+        (this as DefaultKotlinDependencyHandler).apply {
+            project.customDependencies(libs.asList())
+                .forEach {
+                    when (it) {
+                        is Dependency.Implementation -> {
+                            implementation(it.dependencyNotation) {
+                                it.strictVersion?.let {
+                                    version { strictly(it) }
+                                }
+                            }
+                        }
+                        is Dependency.Module -> {
+                            implementation(project(it.name))
+                        }
+                    }
+                }
+        }
+    }
+
+fun Project.libDependencies(vararg libs: String) =
+    customDependencies(libs.asList())
+        .forEach {
+            when (it) {
+                is Dependency.Implementation -> {
+                    dependencies.add("implementation", it.dependencyNotation) {
+                        it.strictVersion?.let {
+                            version { strictly(it) }
+                        }
+                    }
+                }
+                is Dependency.Module -> {
+                    dependencies.add("implementation", project(it.name))
+                }
+            }
+        }
+
+sealed class Dependency {
+    data class Implementation(
+        val dependencyNotation: String,
+        val strictVersion: String? = null
+    ): Dependency()
+    data class Module(
+        val name: String
+    ): Dependency()
+}
+
+private fun Project.customDependencies(libs: List<String>): List<Dependency> =
+    libs.map {
+        when {
+            it == "kotlin.coroutines.core" ->
+                Dependency.Implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core", "1.3.9-native-mt-2")
+            it.startsWith(":") ->
+                Dependency.Module(it)
+            else ->
+                Dependency.Implementation(libAt(it))
+        }
+    }

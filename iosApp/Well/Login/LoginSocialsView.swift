@@ -6,12 +6,12 @@
 //  Copyright © 2020 Well. All rights reserved.
 //
 
+#if !AUTH_DISABLED
 import UIKit
 import Auth
 
 class LoginSocialsView: UIStackView {
     private var socialButtons: [ActionButton]!
-    
     var action: ActionWith<SocialNetwork>?
     
     init() {
@@ -48,3 +48,4 @@ extension SocialNetwork {
         }
     }
 }
+#endif

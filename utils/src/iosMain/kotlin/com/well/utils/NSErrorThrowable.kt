@@ -1,4 +1,4 @@
-package com.well.auth
+package com.well.utils
 
 import platform.Foundation.NSError
 import kotlin.coroutines.Continuation

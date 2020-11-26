@@ -7,7 +7,7 @@ target 'Well' do
   use_frameworks!
   
   pod 'shared', :path => '../shared'
-  pod 'auth', :path => '../auth'
+#  pod 'auth', :path => '../auth'
 
   pod 'R.swift.Library'
   pod 'R.swift'
@@ -16,9 +16,7 @@ target 'Well' do
   
   pod 'Firebase/Analytics'
   pod 'Firebase/Crashlytics'
-  
-  pod 'GoogleSignIn'
-  
+
 #  pod 'GoogleWebRTC'
 end
 

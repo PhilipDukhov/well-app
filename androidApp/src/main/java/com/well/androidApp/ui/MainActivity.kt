@@ -13,8 +13,19 @@ import com.well.androidApp.databinding.ActivityMainBinding
 import com.well.androidApp.ui.MainActivity.State.Idle
 import com.well.androidApp.ui.MainActivity.State.Processing
 import com.well.androidApp.utils.CrashlyticsAntilog
+import kotlinx.coroutines.coroutineScope
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
+    object Singleton {
+        var token: String? = null
+            set(value) {
+                field = value
+                onChange?.invoke(token)
+            }
+
+        var onChange: ((String?) -> Unit)? = null
+    }
+
     enum class State {
         Idle, Processing
     }
@@ -46,9 +57,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
         setContentView(viewBinding.root)
         updateNavigationHost()
-// auth.addAuthStateListener {
-// signedIn = it.currentUser != null
-// }
+        Singleton.onChange = {
+            signedIn = Singleton.token != null
+        }
 // GlobalScope.launch(context = Dispatchers.Main) {
 // delay(300)
 // MainScope().launch {

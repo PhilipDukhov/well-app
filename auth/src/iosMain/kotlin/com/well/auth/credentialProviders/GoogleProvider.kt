@@ -3,7 +3,7 @@ package com.well.auth.credentialProviders
 import cocoapods.GoogleSignIn.*
 import com.well.auth.Context
 import com.well.auth.LoginView
-import com.well.auth.resumeWithException
+import com.well.utils.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.Foundation.NSError
 import platform.Foundation.NSURL

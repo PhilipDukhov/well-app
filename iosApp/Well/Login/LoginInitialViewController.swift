@@ -8,6 +8,7 @@
 
 import UIKit
 import PinLayout
+#if !AUTH_DISABLED
 import Auth
 
 class LoginInitialViewController: UIViewController {
@@ -92,3 +93,4 @@ class LoginInitialViewController: UIViewController {
         signInButton.action = props.signInAction
     }
 }
+#endif

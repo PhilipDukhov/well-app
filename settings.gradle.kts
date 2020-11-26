@@ -9,21 +9,20 @@ val serverPaths = listOf(
     ":server"
 )
 val mobilePaths = listOf(
-    ":serverModels",
-    ":androidApp",
     ":shared",
-    ":auth"
+    ":auth",
+    ":utils",
+    ":androidApp"
 )
-(listOf<String>(
-
-) + when (Env.Server) {
+(when (Env.Full) {
     Env.Full -> serverPaths + mobilePaths
     Env.Mobile -> mobilePaths
     Env.Server -> serverPaths
-}).forEach {
+} + listOf(
+    ":serverModels"
+)).forEach {
     include(it)
 }
-
 
 pluginManagement {
     repositories {
@@ -31,14 +30,10 @@ pluginManagement {
         google()
         jcenter()
         mavenCentral()
-        maven {
-            name = "Avito bintray"
-            setUrl("https://dl.bintray.com/avito/maven")
-        }
-        maven {
-            name = "ViewBindingPropertyDelegate"
-            setUrl("https://dl.bintray.com/kirich1409/maven")
-        }
+//        maven {
+//            name = "ViewBindingPropertyDelegate"
+//            setUrl("https://dl.bintray.com/kirich1409/maven")
+//        }
     }
     resolutionStrategy {
         eachPlugin {

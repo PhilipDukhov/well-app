@@ -43,14 +43,14 @@ class SocialNetworkService(private val context: Context) {
         }
         val tokenResponse: String = when (credentials) {
             is GoogleCredential -> {
-                client.get {
-                    url.encodedPath = "/google"
+                client.post {
+                    url.encodedPath = "/googleLogin"
                     body = credentials.token
                 }
             }
             is FacebookCredential -> {
-                client.get {
-                    url.encodedPath = "/facebook"
+                client.post {
+                    url.encodedPath = "/facebookLogin"
                     body = credentials.token
                 }
             }

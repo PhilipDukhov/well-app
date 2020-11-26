@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Well-iOS" type="KmmRunConfiguration" factoryName="iOS Application" XCODE_SCHEME="Firebase" EXEC_TARGET_ID="e9b37e3455348021178c93d8676501b7a30c85d7">
+    <method v="2">
+      <option name="com.jetbrains.kmm.ios.BuildIOSAppTask" enabled="true" />
+    </method>
+  </configuration>
+</component>

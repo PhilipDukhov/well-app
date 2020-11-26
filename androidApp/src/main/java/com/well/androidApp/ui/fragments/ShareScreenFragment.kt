@@ -20,9 +20,11 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.well.androidApp.R
 import com.well.androidApp.databinding.FragmentShareScreenBinding
+import com.well.androidApp.ui.MainActivity
 import com.well.androidApp.ui.customViews.BaseFragment
 import com.well.serverModels.Color
 import com.well.serverModels.Point
+import com.well.shared.OnlineNotifier
 import com.well.shared.leafs.SharingScreen
 import com.well.shared.leafs.SharingScreen.Msg.*
 import com.well.shared.leafs.SharingScreen.State.*
@@ -30,6 +32,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import oolong.Dispatch
 import java.io.ByteArrayOutputStream
 
@@ -40,11 +44,13 @@ class ShareScreenFragment : BaseFragment(R.layout.fragment_share_screen) {
 
     private lateinit var onSignOut: () -> Unit  // TODO: move to oolong
 
+    private val onlineNotifier = OnlineNotifier(MainActivity.Singleton.token!!)
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         viewBinding = FragmentShareScreenBinding.inflate(inflater, container, false)
         return viewBinding.root
     }
@@ -61,6 +67,17 @@ class ShareScreenFragment : BaseFragment(R.layout.fragment_share_screen) {
 // text = auth.currentUser?.description
 // }
 // }
+            GlobalScope.launch {
+                while (true) {
+                    try {
+                        onlineNotifier.subscribeOnOnlineUsers {
+                            println("websocket $it")
+                        }
+                    } catch (e: Throwable) {
+                        println("websocket error $e")
+                    }
+                }
+            }
             startSharing.setOnClickListener {
                 renderDispatch(BecomeHost)
             }

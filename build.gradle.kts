@@ -21,7 +21,7 @@ buildscript {
     }
 
     apply(from = "dependencies.gradle")
-    val libs: List<String> = extra.libsAt("build")
+    val libs: List<String> = project.libsAt("build")
     dependencies {
         libs.forEach { classpath(it) }
         classpath("com.github.ben-manes:gradle-versions-plugin:0.36.0")
@@ -116,7 +116,7 @@ subprojects {
 configurations.all {
     resolutionStrategy.eachDependency {
         when (requested.group to requested.name) {
-            "org.jetbrains.kotlin" to "kotlin-reflect" -> useVersion(extra.version("kotlin"))
+            "org.jetbrains.kotlin" to "kotlin-reflect" -> useVersion(project.version("kotlin"))
         }
     }
 }

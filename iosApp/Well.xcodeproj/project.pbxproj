@@ -227,7 +227,6 @@
 				7555FFB4242A642300829871 /* Embed Frameworks */,
 				D5157D55256D2948007BADD1 /* Copy GoogleService-Info */,
 				491238037572C75B2A859A9E /* [CP] Embed Pods Frameworks */,
-				9ADA97D69C59739FCF76E93A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -325,26 +324,9 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		9ADA97D69C59739FCF76E93A /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		D5157D55256D2948007BADD1 /* Copy GoogleService-Info */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
@@ -356,7 +338,7 @@
 			);
 			outputPaths = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "SUPPORTING_FILES=\"${PROJECT_DIR}/Well/Supporting files\"\n\n/usr/bin/xcrun --sdk macosx swift \"${SUPPORTING_FILES}/scripts/replacePlistEnvironmentVariables.swift\"  \"${SUPPORTING_FILES}/Firebase/GoogleService-Info.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\"\n";
 		};
@@ -592,6 +574,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D AUTH_DISABLED";
 				PRODUCT_BUNDLE_IDENTIFIER = com.well.iosApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -618,6 +601,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D AUTH_DISABLED";
 				PRODUCT_BUNDLE_IDENTIFIER = com.well.iosApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

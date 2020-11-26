@@ -1,11 +1,12 @@
 package com.well.auth.credentialProviders
 
 import cocoapods.FBSDKCoreKit.FBSDKApplicationDelegate
+import cocoapods.FBSDKCoreKit.FBSDKSettings
 import cocoapods.FBSDKLoginKit.FBSDKLoginManager
 import com.well.auth.Context
 import com.well.auth.LoginView
 import com.well.auth.credentialProviders.AuthCredential.FacebookCredential
-import com.well.auth.resumeWithException
+import com.well.utils.resumeWithException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.Foundation.NSURL
 import platform.UIKit.UIApplication
@@ -17,6 +18,7 @@ actual class FacebookProvider actual constructor(context: Context) : CredentialP
 
     init {
         context.apply {
+            FBSDKSettings.setAdvertiserIDCollectionEnabled(false)
             FBSDKApplicationDelegate.sharedInstance.application(
                 application,
                 launchOptions

@@ -8,6 +8,32 @@ plugins {
     id("com.google.gms.google-services")
 }
 
+libDependencies(
+    ":shared",
+    ":auth",
+    ":serverModels",
+
+    "android.material",
+    "android.appCompat",
+    "android.constraint",
+    "android.navigationFragment",
+    "android.navigationUi",
+    "android.coreCtx",
+    "android.activity",
+    "android.fragment",
+    "firebase.analytics",
+    "firebase.crashlytics",
+    "kotlin.coroutines.playServices",
+    "kotlin.serializationJson",
+    "kotlin.coroutines.core",
+    "glide.glide",
+    "glide.compiler",
+    "oolong",
+    "napier",
+    "viewbindingpropertydelegate",
+    "webrtc"
+)
+
 android {
     defaultConfig {
         applicationId = "com.well.androidApp"
@@ -38,12 +64,5 @@ android {
                 }
             }
         }
-    }
-}
-apply(from = "$projectDir/dependencies.gradle")
-
-dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core") {
-        version { strictly("1.3.9-native-mt-2") }
     }
 }

@@ -133,6 +133,7 @@ object SharingScreen {
 
     private fun uploadImageData(msg: UploadImageData): Effect<Msg> = {
         try {
+            println("not implemented $msg")
             TODO()
 //            val path = FirebaseManager.manager.upload(
 //                msg.data,

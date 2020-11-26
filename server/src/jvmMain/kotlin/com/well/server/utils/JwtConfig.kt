@@ -10,7 +10,7 @@ class JwtConfig(config: ApplicationConfig) {
     private val secret = config.property("jwt.accessTokenSecret").getString()
 
     val issuer = "ktor.io"
-    private val validityInMs = 10 * 60 * 60 * 1000 // 10 hours
+//    private val validityInMs = 10 * 60 * 60 * 1000 // 10 hours
     private val algorithm = Algorithm.HMAC512(secret)
 
     val verifier: JWTVerifier = JWT
@@ -22,8 +22,8 @@ class JwtConfig(config: ApplicationConfig) {
         .withSubject("Authentication")
         .withIssuer(issuer)
         .withClaim("id", id)
-        .withExpiresAt(getExpiration())
+//        .withExpiresAt(getExpiration())
         .sign(algorithm)
 
-    private fun getExpiration() = Date(System.currentTimeMillis() + validityInMs)
+//    private fun getExpiration() = Date(System.currentTimeMillis() + validityInMs)
 }
