@@ -4,31 +4,27 @@ package com.well.server
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier
 import com.google.api.client.http.apache.v2.ApacheHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
-import com.squareup.sqldelight.sqlite.driver.asJdbcDriver
 import com.well.server.utils.JwtConfig
 import com.well.server.utils.getPrimitiveContent
-import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 import io.ktor.client.*
 import io.ktor.client.features.*
+import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
-import io.ktor.response.*
-import io.ktor.request.*
+import io.ktor.client.statement.*
 import io.ktor.features.*
-import org.slf4j.event.*
+import io.ktor.http.*
+import io.ktor.request.*
+import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.serialization.*
-import io.ktor.client.statement.*
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
-import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.*
-import java.io.File
+import org.slf4j.event.*
 import java.util.*
 
 @Suppress("unused") // Referenced in application.conf
@@ -176,38 +172,10 @@ fun Application.module() {
                     .getById(id)
                     .executeAsOne()
                     .run {
-                        "$id $firstName $lastName ${String.format("%.4f",createdDate)}"
+                        "$id $firstName $lastName ${String.format("%.4f", createdDate)}"
                     }
                 call.respond(userName)
             }
         }
     }
-}
-
-fun initialiseDatabase(app: Application): Database {
-    val dbConfig = app.environment.config.config("database")
-    var connectionUrl = dbConfig.property("connection").getString()
-
-    // If this is a local h2 database, ensure the directories exist
-    if (connectionUrl.startsWith("jdbc:h2:file:")) {
-        val dbFile = File(connectionUrl.removePrefix("jdbc:h2:file:")).absoluteFile
-        if (!dbFile.parentFile.exists()) {
-            dbFile.parentFile.mkdirs()
-        }
-        connectionUrl = "jdbc:h2:file:${dbFile.absolutePath}"
-    }
-
-    val datasourceConfig = HikariConfig().apply {
-        jdbcUrl = connectionUrl
-        dbConfig.propertyOrNull("username")?.getString()?.let(this::setUsername)
-        dbConfig.propertyOrNull("password")?.getString()?.let(this::setPassword)
-        dbConfig.propertyOrNull("poolSize")?.getString()?.toInt()?.let(this::setMaximumPoolSize)
-    }
-    val dataSource = HikariDataSource(datasourceConfig)
-    val driver = dataSource.asJdbcDriver()
-    Database.Schema.create(driver)
-    val db = Database(driver)
-    app.environment.monitor.subscribe(ApplicationStopped) { driver.close() }
-
-    return db
 }
