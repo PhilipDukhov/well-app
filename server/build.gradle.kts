@@ -64,3 +64,12 @@ tasks.withType<Jar> {
         )
     }
 }
+
+tasks.named<JavaExec>("run") {
+    io.github.cdimascio.dotenv.dotenv {
+        directory = "${projectDir}/../iosApp/Well/Supporting files/"
+        filename = "Shared.xcconfig"
+    }.entries().forEach {
+        environment(it.key, it.value)
+    }
+}
