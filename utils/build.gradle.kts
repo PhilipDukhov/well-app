@@ -5,19 +5,26 @@ plugins {
 
 kotlin {
     android()
-    // Revert to just ios() when gradle plugin can properly resolve it
     ios()
-//    val onPhone = System.getenv("SDK_NAME")?.startsWith("iphoneos") ?: false
-//    if (onPhone) {
-//        iosArm64("ios")
-//    } else {
-//        iosX64("ios")
-//    }
     sourceSets {
         val commonMain by getting {
             libDependencies(
+                "kotlin.coroutines.core",
                 "kotlin.stdLib"
             )
+        }
+        val commonTest by getting {
+            libDependencies(
+                "tests.kotest.assertionsCore",
+                "tests.kotest.common"
+//                "tests.kotest.property",
+//                "tests.kotest.console"
+            )
+
+            dependencies {
+                implementation(kotlin("test-common"))
+                implementation(kotlin("test-annotations-common"))
+            }
         }
     }
 }
