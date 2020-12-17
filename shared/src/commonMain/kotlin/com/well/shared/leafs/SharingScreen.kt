@@ -1,5 +1,6 @@
 package com.well.shared.leafs
 
+import com.github.aakira.napier.Napier
 import com.well.serverModels.Color
 import com.well.serverModels.Path
 import com.well.serverModels.Point
@@ -21,7 +22,7 @@ object SharingScreen {
         data class Host(
             override val userId: String,
             val screen: Screen,
-//            val screensHistory: ArrayDeque<Screen> = ArrayDeque(listOf(screen)),
+//            val screensHistory: ArrayDeque<ScreenState> = ArrayDeque(listOf(screen)),
         ) : Model(userId)
 
         data class Guest(
@@ -133,7 +134,7 @@ object SharingScreen {
 
     private fun uploadImageData(msg: UploadImageData): Effect<Msg> = {
         try {
-            println("not implemented $msg")
+            Napier.d("not implemented $msg")
             TODO()
 //            val path = FirebaseManager.manager.upload(
 //                msg.data,

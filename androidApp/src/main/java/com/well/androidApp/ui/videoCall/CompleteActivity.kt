@@ -4,7 +4,6 @@ import android.Manifest.permission.CAMERA
 import android.Manifest.permission.RECORD_AUDIO
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -12,9 +11,34 @@ import com.well.androidApp.databinding.ActivitySamplePeerConnectionBinding
 import com.well.androidApp.utils.firstMapOrNull
 import com.well.serverModels.WebRTCMessage
 import com.well.serverModels.WebRTCMessage.*
+import com.well.shared.puerh.WebSocketManager
+//import com.well.shared.puerh.call.CallFeature
+import com.well.shared.puerh.onlineUsers.OnlineUsersFeature
+import com.well.utils.Closeable
+import com.well.utils.EffectHandler
+import io.ktor.client.*
+import io.ktor.client.features.websocket.*
+import io.ktor.http.HttpMethod.Companion.Get
+import io.ktor.http.cio.websocket.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.webrtc.*
+import kotlin.coroutines.CoroutineContext
+
+//class WebRTCManagerEffectHandler(
+//    private val webSocketManager: WebSocketManager,
+//    override val coroutineScope: CoroutineScope,
+//) : EffectHandler<CallFeature.Eff, CallFeature.Msg>(coroutineScope) {
+//
+//    override fun handleEffect(eff: CallFeature.Eff) {
+//
+//    }
+//}
 
 class CompleteActivity : AppCompatActivity() {
     private var isInitiator = false
@@ -28,16 +52,16 @@ class CompleteActivity : AppCompatActivity() {
     private lateinit var rootEglBase: EglBase
     private lateinit var factory: PeerConnectionFactory
     private lateinit var videoTrackFromCamera: VideoTrack
-// private val client = HttpClient {
-// install(WebSockets)
-// }
-// 
-// private var socketSession: DefaultClientWebSocketSession? = null
+    private val client = HttpClient {
+        install(WebSockets)
+    }
+
+    private var socketSession: DefaultClientWebSocketSession? = null
 
     private fun send(message: WebRTCMessage) {
-// GlobalScope.launch {
-// socketSession?.send(Json.encodeToString(message))
-// }
+        GlobalScope.launch {
+            socketSession?.send(Json.encodeToString(message))
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,7 +115,7 @@ class CompleteActivity : AppCompatActivity() {
     }
 
     private fun maybeStart() {
-        Log.e(TAG, "maybeStart: $isStarted $isChannelReady")
+        println("maybeStart: $isStarted $isChannelReady")
         if (!isStarted && isChannelReady) {
             isStarted = true
             if (isInitiator) {
@@ -110,7 +134,7 @@ class CompleteActivity : AppCompatActivity() {
         )
         peerConnection.createOffer(object : SimpleSdpObserver() {
             override fun onCreateSuccess(sessionDescription: SessionDescription) {
-                Log.e(TAG, "onCreateSuccess: ")
+                println("onCreateSuccess: ")
                 peerConnection.setLocalDescription(SimpleSdpObserver(), sessionDescription)
                 send(Offer(sessionDescription.description))
             }
@@ -151,7 +175,7 @@ class CompleteActivity : AppCompatActivity() {
         val videoCapturer = createVideoCapturer()!!
         val videoSource = factory.createVideoSource(videoCapturer.isScreencast)
         videoCapturer.initialize(
-            SurfaceTextureHelper.create("foo", rootEglBase.eglBaseContext),
+            SurfaceTextureHelper.create("WebRTC", rootEglBase.eglBaseContext),
             this,
             videoSource.capturerObserver
         )
@@ -166,23 +190,16 @@ class CompleteActivity : AppCompatActivity() {
     }
 
     private fun initializePeerConnections() {
-        peerConnection = createPeerConnection(factory)
-    }
-
-    private fun startStreamingVideo() {
-        val mediaStream = factory.createLocalMediaStream("ARDAMS")
-        mediaStream.addTrack(videoTrackFromCamera)
-        mediaStream.addTrack(localAudioTrack)
-        peerConnection.addStream(mediaStream)
-    }
-
-    private fun createPeerConnection(factory: PeerConnectionFactory) =
-        factory.createPeerConnection(
+        peerConnection = factory.createPeerConnection(
             PeerConnection.RTCConfiguration(
                 listOf(
-                    PeerConnection.IceServer.builder("stun:stun.l.google.com:19302")
+                    "stun:stun.l.google.com:19302",
+                ).map {
+                    PeerConnection
+                        .IceServer
+                        .builder(it)
                         .createIceServer()
-                )
+                }
             ),
             object : PeerConnectionObserver() {
                 override fun onIceCandidate(iceCandidate: IceCandidate) {
@@ -205,87 +222,84 @@ class CompleteActivity : AppCompatActivity() {
                     remoteVideoTrack.addSink(binding.surfaceView2)
                 }
             })!!
-
-    private fun createVideoCapturer(): VideoCapturer? =
-        createCameraCapturer(
-            if (useCamera2()) {
-                Camera2Enumerator(this)
-            } else {
-                Camera1Enumerator(true)
-            }
-        )
-
-    private fun createCameraCapturer(enumerator: CameraEnumerator): VideoCapturer? =
-        enumerator.deviceNames
-            .sortedBy { !enumerator.isFrontFacing(it) }  // first try to find front camera
-            .firstMapOrNull {
-                enumerator.createCapturer(it, null)
-            }
-
-    private fun useCamera2() =
-        Camera2Enumerator.isSupported(this)
-
-    private suspend fun connect() {
-// client.ws(
-// Get,
-// "well-env.eba-bzjcehdy.us-east-2.elasticbeanstalk.com",
-// 8090,
-// "/socket"
-// )
-// {
-// socketSession = this
-// println("hello")
-// send(Frame.Ping(byteArrayOf()))
-// try {
-// for (data in incoming) {
-// if (data !is Frame.Text) continue
-// when (val message: WebRTCMessage = Json.decodeFromString(data.readText())) {
-// is Created -> isInitiator = true
-// is Join, is Joined -> {
-// isChannelReady = true
-// maybeStart()
-// }
-// is Offer -> {
-// if (!isInitiator && !isStarted) {
-// maybeStart()
-// }
-// peerConnection.setRemoteDescription(
-// SimpleSdpObserver(),
-// SessionDescription(
-// OFFER,
-// message.sdp
-// )
-// )
-// doAnswer()
-// }
-// is Answer -> {
-// if (!isStarted) throw IllegalStateException()
-// peerConnection.setRemoteDescription(
-// SimpleSdpObserver(),
-// SessionDescription(
-// ANSWER,
-// message.sdp
-// )
-// )
-// }
-// is Candidate -> {
-// if (!isStarted) throw IllegalStateException()
-// val candidate = IceCandidate(
-// message.id,
-// message.label,
-// message.candidate
-// )
-// peerConnection.addIceCandidate(candidate)
-// }
-// }
-// }
-// } finally {
-// socketSession = null
-// }
-// }
     }
 
-    companion object {
-        private const val TAG = "CompleteActivity"
+    private fun startStreamingVideo() {
+        val mediaStream = factory.createLocalMediaStream("ARDAMS")
+        mediaStream.addTrack(videoTrackFromCamera)
+        mediaStream.addTrack(localAudioTrack)
+        peerConnection.addStream(mediaStream)
+    }
+
+    private fun createVideoCapturer(): VideoCapturer? =
+        if (Camera2Enumerator.isSupported(this)) {
+            Camera2Enumerator(this)
+        } else {
+            Camera1Enumerator(true)
+        }.let { enumerator ->
+            enumerator.deviceNames
+                .sortedBy { !enumerator.isFrontFacing(it) }  // first try to find front camera
+                .firstMapOrNull {
+                    enumerator.createCapturer(it, null)
+                }
+        }
+
+    private suspend fun connect() {
+        client.ws(
+            Get,
+            "well-env.eba-bzjcehdy.us-east-2.elasticbeanstalk.com",
+            8090,
+            "/socket"
+        )
+        {
+            socketSession = this
+            send(Frame.Ping(byteArrayOf()))
+            try {
+                for (data in incoming) {
+                    if (data !is Frame.Text) continue
+                    when (val message: WebRTCMessage = Json.decodeFromString(data.readText())) {
+                        is Created -> isInitiator = true
+                        is Join, is Joined -> {
+                            isChannelReady = true
+                            maybeStart()
+                        }
+                        is Offer -> {
+                            if (!isInitiator && !isStarted) {
+                                maybeStart()
+                            }
+                            peerConnection.setRemoteDescription(
+                                SimpleSdpObserver(),
+                                SessionDescription(
+                                    SessionDescription.Type.OFFER,
+                                    message.sdp
+                                )
+                            )
+                            doAnswer()
+                        }
+                        is Answer -> {
+                            if (!isStarted) throw IllegalStateException()
+                            peerConnection.setRemoteDescription(
+                                SimpleSdpObserver(),
+                                SessionDescription(
+                                    SessionDescription.Type.ANSWER,
+                                    message.sdp
+                                )
+                            )
+                        }
+                        is Candidate -> {
+                            if (!isStarted) throw IllegalStateException()
+                            val candidate = IceCandidate(
+                                message.id,
+                                message.label,
+                                message.candidate
+                            )
+                            peerConnection.addIceCandidate(candidate)
+                        }
+                    }
+                }
+            } finally {
+                socketSession = null
+            }
+        }
     }
 }

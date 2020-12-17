@@ -11,6 +11,8 @@ import com.well.auth.credentialProviders.GoogleProvider
 import io.ktor.client.*
 import io.ktor.client.features.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -43,14 +45,12 @@ class SocialNetworkService(private val context: Context) {
         }
         val tokenResponse: String = when (credentials) {
             is GoogleCredential -> {
-                client.post {
-                    url.encodedPath = "/googleLogin"
+                client.post(path = "/googleLogin") {
                     body = credentials.token
                 }
             }
             is FacebookCredential -> {
-                client.post {
-                    url.encodedPath = "/facebookLogin"
+                client.post(path = "/facebookLogin") {
                     body = credentials.token
                 }
             }

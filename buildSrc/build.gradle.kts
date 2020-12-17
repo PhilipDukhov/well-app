@@ -24,6 +24,16 @@ val kotlinVersion = (extra["Versions"] as Map<*, *>)["kotlin"] as String
 val gradlePluginVersion = extra["gradlePluginVersion"] as String
 
 dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-stdlib") {
+        version {
+            strictly(kotlinVersion)
+        }
+    }
+    implementation("org.jetbrains.kotlin:kotlin-reflect") {
+        version {
+            strictly(kotlinVersion)
+        }
+    }
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation("com.android.tools.build:gradle:$gradlePluginVersion")
     implementation(gradleApi())

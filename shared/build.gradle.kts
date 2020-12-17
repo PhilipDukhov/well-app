@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
@@ -9,13 +7,20 @@ plugins {
 
 kotlin {
     android()
-    ios()
+    val onPhone = System.getenv("SDK_NAME")?.startsWith("iphoneos") ?: false
+    if (onPhone) {
+        iosArm64("ios")
+    } else {
+        iosX64("ios")
+    }
     cocoapods {
         frameworkName = "Shared"
         summary = frameworkName
         homepage = "-"
         license = "-"
         ios.deploymentTarget = project.version("iosDeploymentTarget")
+
+//        pod("GoogleWebRTC", moduleName = "WebRTC", version = "1.1.31999")
     }
     sourceSets {
         val commonMain by getting {
@@ -25,23 +30,21 @@ kotlin {
                 "kotlin.serializationJson",
                 "napier",
                 "oolong",
-                "ktor.client.cio",
+                "ktor.client.core",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib"
             )
         }
         val androidMain by getting {
             libDependencies(
-                "kotlin.coroutines.playServices",
-                "okhttp3"
+                "android.activity",
+                "ktor.client.engine.cio",
+                "kotlin.coroutines.playServices"
             )
         }
         val iosMain by getting {
             libDependencies(
-                "kotlin.serializationJson",
-                "napier",
-                "kotlin.stdLib",
-                "oolong"
+                "ktor.client.engine.ios"
             )
         }
     }

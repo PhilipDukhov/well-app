@@ -29,6 +29,12 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
+        <meta-data
+            android:name="com.facebook.sdk.AutoLogAppEventsEnabled"
+            android:value="false"/>
+        <meta-data
+            android:name="com.facebook.sdk.AdvertiserIDCollectionEnabled"
+            android:value="false"/>
         <activity
             android:name="com.facebook.FacebookActivity"
             android:theme="@style/Translucent"
@@ -47,6 +53,6 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <!--Facebook Ends-->
+        <!--/Facebook-->
     </application>
 </manifest>

@@ -1,15 +1,11 @@
 package com.well.utils
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
+
 expect fun <T> T.freeze(): T
 
-internal fun <T> List<(T) -> Unit>.notifyAll(msg: T) = forEach { listener -> listener.invoke(msg) }
-
-internal fun <T> MutableList<(T) -> Unit>.addListenerAndMakeCancelable(listener: (T) -> Unit): Closeable =
-    listener.run {
-        add(this)
-        object : Closeable {
-            override fun close() {
-                remove(this@run)
-            }
-        }
-    }

@@ -3,6 +3,7 @@ import UIKit
 import Auth
 #endif
 import Shared
+import SwiftUI
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -30,16 +31,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         #endif
         window = initializeWindow()
         initializeLogging()
-        processToken(googleToken)
-        
         return true
     }
     
-    var onlineNotifier: OnlineNotifier?
-    
     func initializeWindow() -> UIWindow {
         let window = UIWindow(frame: UIScreen.main.bounds)
-        let navigationController = UINavigationController()
+        window.rootViewController = UIHostingController(
+            rootView: OnlineUsersList(viewModel: .init(token: googleToken))
+        )
         #if !AUTH_DISABLED
         let loginInitialViewController = LoginInitialViewController()
         loginInitialViewController.props = .init(
@@ -49,11 +48,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     loginView: loginInitialViewController
                 ) { result, error in
                     if let result = result {
-                        self.processToken(result.bearerToken)
+                        window.rootViewController = UIHostingController(
+                            rootView: OnlineUsersList(viewModel: .init(token: result.bearerToken))
+                        )
                     }
                     if let error = error {
                         if error.isKotlinCancellationException {
                             print("\(#function) cancelled")
+                            return
                         }
                         print("\(#function) \(error.sharedLocalizedDescription)")
                         return
@@ -62,19 +64,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             },
             createAccountAction: .zero,
             signInAction: .zero)
-        navigationController.viewControllers = [loginInitialViewController]
+        window.rootViewController = loginInitialViewController
         #endif
-        navigationController.setNavigationBarHidden(true, animated: false)
-        window.rootViewController = navigationController
         window.makeKeyAndVisible()
         return window
-    }
-    
-    func processToken(_ token: String) {
-        onlineNotifier = OnlineNotifier(token: token)
-        onlineNotifier!.subscribeOnOnlineUsers { users in
-            print("users \(users)")
-        }
     }
     
     func application(
@@ -92,7 +85,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private func initializeLogging() {
         #if DEBUG
-//        FirebaseConfiguration.shared.setLoggerLevel(.min)
         NapierProxy().buildDebug()
         #else
 //        NapierProxy().build(antilog: CrashlyticsAntilog

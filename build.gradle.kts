@@ -15,8 +15,8 @@ version = Constants.version
 buildscript {
     repositories {
         gradlePluginPortal()
-        jcenter()
         google()
+        jcenter()
         mavenCentral()
     }
 
@@ -24,7 +24,6 @@ buildscript {
     val libs: List<String> = project.libsAt("build")
     dependencies {
         libs.forEach { classpath(it) }
-        classpath("com.github.ben-manes:gradle-versions-plugin:0.36.0")
     }
 }
 
@@ -62,7 +61,7 @@ subprojects {
     plugins.matching { it is AppPlugin || it is LibraryPlugin }.whenPluginAdded {
         configure<BaseExtension> {
             setCompileSdkVersion(30)
-            buildToolsVersion = "30.0.0"
+            buildToolsVersion = "30.0.2"
 
             defaultConfig {
                 minSdkVersion(23)
@@ -104,10 +103,11 @@ subprojects {
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
         kotlinOptions.freeCompilerArgs += listOf(
-            "io.ktor.util.KtorExperimentalAPI"
-        ).map { "-Xuse-experimental=$it" } + listOf(
-            "kotlinx.serialization.ExperimentalSerializationApi"
-        ).map { "-Xopt-in=$it" }
+            // jetpack compose
+            "-Xallow-jvm-ir-dependencies", "-Xskip-prerelease-check",
+            "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI",
+            "-Xopt-in=kotlinx.serialization.ExperimentalSerializationApi"
+        )
     }
 
     apply(from = "${rootDir}/dependencies.gradle")
@@ -121,7 +121,7 @@ configurations.all {
     }
 }
 
-// ./gradlew -q -PallDepsNeeded=1 allDeps
+// ./gradlew -q -PallDepsNeeded=1 allDeps > deps.txt && open deps.txt
 val allDepsNeeded: String? by project
 if (allDepsNeeded != null) {
     subprojects {

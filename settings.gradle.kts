@@ -30,10 +30,6 @@ pluginManagement {
         google()
         jcenter()
         mavenCentral()
-//        maven {
-//            name = "ViewBindingPropertyDelegate"
-//            setUrl("https://dl.bintray.com/kirich1409/maven")
-//        }
     }
     resolutionStrategy {
         eachPlugin {

@@ -25,6 +25,8 @@
 		D5BFD5BD2524BFE000A94FCC /* Property.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5BC2524BFE000A94FCC /* Property.swift */; };
 		D5BFD5C62525845500A94FCC /* EnumDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5C52525845500A94FCC /* EnumDictionary.swift */; };
 		D5BFD5C9252584FE00A94FCC /* Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5C8252584FE00A94FCC /* Cancellable.swift */; };
+		D5F0A09C2578AC4D002A55DB /* OnlineUsersList.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F0A09B2578AC4D002A55DB /* OnlineUsersList.swift */; };
+		D5F0A09E2578AC7A002A55DB /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F0A09D2578AC7A002A55DB /* UserCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -70,6 +72,8 @@
 		D5BFD5C8252584FE00A94FCC /* Cancellable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cancellable.swift; sourceTree = "<group>"; };
 		D5ECE2C32523181C00207638 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D5ECE30225231ECB00207638 /* Well.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Well.entitlements; sourceTree = "<group>"; };
+		D5F0A09B2578AC4D002A55DB /* OnlineUsersList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineUsersList.swift; sourceTree = "<group>"; };
+		D5F0A09D2578AC7A002A55DB /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
 		E7C0F47F0D380B0A230F9888 /* Pods-Well-WellUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Well-WellUITests.debug.xcconfig"; path = "Target Support Files/Pods-Well-WellUITests/Pods-Well-WellUITests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -108,6 +112,7 @@
 			children = (
 				7555FF84242A565B00829871 /* Assets.xcassets */,
 				D519AFAB25245DF600C24377 /* Login */,
+				D5F0A09A2578AC29002A55DB /* OnlineUsersList */,
 				D5BFD57B2524AA8200A94FCC /* CustomViews */,
 				D5BFD57A2524AA7400A94FCC /* General */,
 				D51DA36A2503C0A700123642 /* Supporting files */,
@@ -158,8 +163,8 @@
 		D51DA36A2503C0A700123642 /* Supporting files */ = {
 			isa = PBXGroup;
 			children = (
-				D5ECE30225231ECB00207638 /* Well.entitlements */,
 				7555FF7E242A565900829871 /* AppDelegate.swift */,
+				D5ECE30225231ECB00207638 /* Well.entitlements */,
 				D51625602503C945009E103B /* R.generated.swift */,
 				7555FF8C242A565B00829871 /* Info.plist */,
 				7555FF89242A565B00829871 /* LaunchScreen.storyboard */,
@@ -208,6 +213,15 @@
 				D5ECE2C32523181C00207638 /* GoogleService-Info.plist */,
 			);
 			path = Firebase;
+			sourceTree = "<group>";
+		};
+		D5F0A09A2578AC29002A55DB /* OnlineUsersList */ = {
+			isa = PBXGroup;
+			children = (
+				D5F0A09B2578AC4D002A55DB /* OnlineUsersList.swift */,
+				D5F0A09D2578AC7A002A55DB /* UserCell.swift */,
+			);
+			path = OnlineUsersList;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -415,9 +429,11 @@
 				D5BFD5772524938400A94FCC /* Action.swift in Sources */,
 				D5BFD5BD2524BFE000A94FCC /* Property.swift in Sources */,
 				D5BFD5C62525845500A94FCC /* EnumDictionary.swift in Sources */,
+				D5F0A09E2578AC7A002A55DB /* UserCell.swift in Sources */,
 				D519AF87252441DC00C24377 /* LoginInitialViewController.swift in Sources */,
 				D5BFD57D2524B06900A94FCC /* NSError+description.swift in Sources */,
 				D5BFD5BA2524BFB900A94FCC /* Future.swift in Sources */,
+				D5F0A09C2578AC4D002A55DB /* OnlineUsersList.swift in Sources */,
 				D5BFD5492524670900A94FCC /* ActionButton.swift in Sources */,
 				D5BFD57F2524B0AB00A94FCC /* Bundle+displayName.swift in Sources */,
 			);

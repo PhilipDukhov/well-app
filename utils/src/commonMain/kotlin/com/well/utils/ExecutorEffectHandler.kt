@@ -8,18 +8,11 @@ typealias ExecutorEffectsInterpreter<Eff, Msg> = suspend CoroutineScope.(eff: Ef
 
 class ExecutorEffectHandler<Msg : Any, Eff : Any>(
     private val effectsInterpreter: ExecutorEffectsInterpreter<Eff, Msg>,
-    override val coroutineContext: CoroutineContext,
-) : EffectHandler<Eff, Msg> {
-    private var listener: ((Msg) -> Unit)? = null
-
-    override fun setListener(listener: suspend (Msg) -> Unit) {
-        this.listener = { msg ->
-            launch(coroutineContext) { listener(msg) }
-        }
-    }
+    override val coroutineScope: CoroutineScope,
+) : EffectHandler<Eff, Msg>(coroutineScope) {
 
     override fun handleEffect(eff: Eff) {
-        launch(coroutineContext) {
+        coroutineScope.launch {
             effectsInterpreter(eff, listener ?: {})
         }
     }

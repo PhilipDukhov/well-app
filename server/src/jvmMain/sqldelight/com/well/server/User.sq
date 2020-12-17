@@ -11,6 +11,9 @@ CREATE TABLE IF NOT EXISTS Users (
 lastInsertId:
 SELECT LAST_INSERT_ID();
 
+exists:
+SELECT EXISTS (SELECT * FROM Users WHERE id = ?);
+
 getById:
 SELECT * FROM Users WHERE id = ?;
 

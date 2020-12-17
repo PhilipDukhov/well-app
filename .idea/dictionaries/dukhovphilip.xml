@@ -2,13 +2,17 @@
   <dictionary name="dukhovphilip">
     <words>
       <w>antilog</w>
+      <w>capturer</w>
       <w>crashlytics</w>
       <w>deps</w>
+      <w>dotenv</w>
       <w>firestore</w>
       <w>jetbrains</w>
       <w>jetpack</w>
+      <w>kotest</w>
       <w>ktor</w>
       <w>oolong</w>
+      <w>reachability</w>
       <w>sqldelight</w>
     </words>
   </dictionary>

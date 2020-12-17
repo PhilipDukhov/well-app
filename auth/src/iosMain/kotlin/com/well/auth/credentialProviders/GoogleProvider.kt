@@ -21,6 +21,7 @@ actual class GoogleProvider actual constructor(context: Context) : CredentialPro
         suspendCancellableCoroutine { continuation ->
             signIn.presentingViewController = loginView
             signIn.delegate = object : NSObject(), GIDSignInDelegateProtocol {
+                @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
                 override fun signIn(
                     signIn: GIDSignIn?,
                     didSignInForUser: GIDGoogleUser?,

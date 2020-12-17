@@ -3,6 +3,7 @@ package com.well.server.routing
 import com.well.server.routing.auth.*
 import com.well.server.utils.Dependencies
 import com.well.server.utils.authUserId
+import com.well.server.utils.createPrincipal
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -40,11 +41,7 @@ fun Application.module() {
         jwt {
             verifier(dependencies.jwtConfig.verifier)
             realm = dependencies.jwtConfig.issuer
-            validate {
-                it.payload.run {
-                    if (claims.contains("id")) JWTPrincipal(this) else null
-                }
-            }
+            validate { it.payload.createPrincipal(dependencies) }
         }
     }
 
@@ -61,6 +58,7 @@ fun Application.module() {
 
         authenticate {
             webSocket(path = "/onlineUsers") {
+                println("starting")
                 onlineUsers(dependencies)
             }
             get("/") {

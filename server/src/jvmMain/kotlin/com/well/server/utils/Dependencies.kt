@@ -2,6 +2,8 @@ package com.well.server.utils
 
 import com.squareup.sqldelight.sqlite.driver.asJdbcDriver
 import com.well.server.Database
+import com.well.server.routing.Call
+import com.well.serverModels.UserId
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.util.DriverDataSource
@@ -11,18 +13,67 @@ import io.ktor.client.features.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.statement.*
+import io.ktor.http.cio.websocket.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.lang.IllegalStateException
 import java.util.*
+import kotlin.coroutines.CoroutineContext
 
 class Dependencies(app: Application) {
     val environment = app.environment
     val database = initialiseDatabase(app)
     val jwtConfig = JwtConfig(environment.config)
-    val connectedUserSessions = Collections.synchronizedMap(mutableMapOf<Int, WebSocketServerSession>())
+    private val webSocketPlug = object: WebSocketSession {
+        override val coroutineContext: CoroutineContext
+            get() = TODO("Not yet implemented")
+        override val incoming: ReceiveChannel<Frame>
+            get() = TODO("Not yet implemented")
+        override var masking: Boolean
+            get() = TODO("Not yet implemented")
+            set(value) {}
+        override var maxFrameSize: Long
+            get() = TODO("Not yet implemented")
+            set(value) {}
+
+        private val _outgoing = Channel<Frame>()
+
+        init {
+            GlobalScope.launch {
+                for (frame in _outgoing) {
+                    println("plug $frame")
+                }
+            }
+        }
+
+        override val outgoing: SendChannel<Frame>
+            get() = _outgoing
+
+        override suspend fun flush() {
+            TODO("Not yet implemented")
+        }
+
+        override fun terminate() {
+            TODO("Not yet implemented")
+        }
+
+    }
+    val connectedUserSessions = Collections.synchronizedMap(mutableMapOf<UserId, WebSocketSession>(
+        0 to webSocketPlug,
+        1 to webSocketPlug,
+        2 to webSocketPlug,
+        3 to webSocketPlug,
+    ))
+    val calls = Collections.synchronizedList(mutableListOf<Call>())
 
     val client = HttpClient {
         install(JsonFeature) {

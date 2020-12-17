@@ -4,15 +4,9 @@ plugins {
     id("com.android.application")
     kotlin("android")
     id("kotlin-android")
-    id("com.google.firebase.crashlytics")
-    id("com.google.gms.google-services")
 }
 
 libDependencies(
-    ":shared",
-    ":auth",
-    ":serverModels",
-
     "android.material",
     "android.appCompat",
     "android.constraint",
@@ -21,29 +15,51 @@ libDependencies(
     "android.coreCtx",
     "android.activity",
     "android.fragment",
-    "firebase.analytics",
-    "firebase.crashlytics",
+
+    "android.compose.ui",
+    "android.compose.uiTooling",
+    "android.compose.foundation",
+    "android.compose.material",
+    "android.compose.materialIconsCore",
+    "android.compose.materialIconsExtended",
+    "android.compose.accompanist.insets",
+
     "kotlin.coroutines.playServices",
     "kotlin.serializationJson",
     "kotlin.coroutines.core",
     "glide.glide",
     "glide.compiler",
-    "oolong",
     "napier",
-    "viewbindingpropertydelegate",
-    "webrtc"
+    "webrtc",
+
+    //tmp
+    "ktor.client.core",
+
+    ":shared",
+    ":serverModels",
+    ":utils",
+    ":auth"
 )
 
 android {
     defaultConfig {
         applicationId = "com.well.androidApp"
         multiDexEnabled = true
+        vectorDrawables.useSupportLibrary = true
     }
     buildFeatures {
         viewBinding = true
+        compose = true
     }
     lintOptions {
         isAbortOnError = false
+    }
+    kotlinOptions {
+        useIR = true
+    }
+    composeOptions {
+        kotlinCompilerVersion = project.version("kotlin")
+        kotlinCompilerExtensionVersion = project.version("compose")
     }
     buildTypes {
         val dotenv = dotenv {

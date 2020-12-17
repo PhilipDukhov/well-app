@@ -9,7 +9,7 @@ suspend fun DefaultWebSocketServerSession.call(dependencies: Dependencies) {
     val id = call.authUserId
     dependencies.connectedUserSessions[id] = this
 
-    fun otherConnections(): Collection<WebSocketServerSession> =
+    fun otherConnections() =
         dependencies.connectedUserSessions.filter { it.key != id }.values
 
     try {

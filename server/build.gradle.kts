@@ -3,7 +3,11 @@ plugins {
     kotlin("plugin.serialization")
     id("com.github.johnrengelman.shadow") version "6.1.0"
     id("com.squareup.sqldelight")
-        application
+    application
+}
+
+application {
+    mainClass.set("io.ktor.server.netty.EngineMain")
 }
 
 sqldelight {
@@ -27,7 +31,7 @@ kotlin {
                 "ktor.server.logback",
                 "ktor.serialization",
                 "ktor.client.serialization",
-                "ktor.client.cio",
+                "ktor.client.engine.cio",
                 "ktor.auth",
                 "ktor.metrics",
                 "ktor.websockets",
@@ -45,10 +49,6 @@ kotlin {
             )
         }
     }
-}
-
-application {
-    mainClass.set("io.ktor.server.netty.EngineMain")
 }
 
 tasks.withType<Jar> {

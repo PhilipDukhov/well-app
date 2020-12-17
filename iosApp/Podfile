@@ -13,11 +13,6 @@ target 'Well' do
   pod 'R.swift'
   
   pod 'PinLayout'
-  
-  pod 'Firebase/Analytics'
-  pod 'Firebase/Crashlytics'
-
-#  pod 'GoogleWebRTC'
 end
 
 

@@ -2,10 +2,9 @@ package com.well.serverModels
 
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 data class User(
-    val id: Int,
+    val id: UserId,
     val firstName: String,
     val lastName: String,
     val type: Type,
@@ -15,4 +14,7 @@ data class User(
         Facebook,
         Google,
     }
+
+    val fullName: String
+        get() = "$firstName $lastName"
 }
