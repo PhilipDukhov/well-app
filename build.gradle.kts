@@ -110,6 +110,27 @@ subprojects {
         )
     }
 
+    if (listOf(
+            "serverModels",
+            "utils",
+            "auth",
+            "shared"
+        ).contains(name)
+    ) {
+        configurations {
+            listOf(
+                "androidTestApi",
+                "androidTestDebugApi",
+                "androidTestReleaseApi",
+                "testApi",
+                "testDebugApi",
+                "testReleaseApi"
+            ).forEach {
+                create(it) {}
+            }
+        }
+    }
+
     apply(from = "${rootDir}/dependencies.gradle")
 }
 

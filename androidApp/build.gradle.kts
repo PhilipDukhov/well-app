@@ -17,7 +17,6 @@ libDependencies(
     "android.fragment",
 
     "android.compose.ui",
-    "android.compose.uiTooling",
     "android.compose.foundation",
     "android.compose.material",
     "android.compose.materialIconsCore",
