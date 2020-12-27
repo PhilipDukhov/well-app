@@ -10,12 +10,28 @@ sealed class WebSocketMessage {
     @Serializable
     data class InitiateCall(
         val userId: UserId,
-        val webRTCSessionDescriptor: String,
     ): WebSocketMessage()
 
     @Serializable
-    data class AcceptCall(
-        val webRTCSessionDescriptor: String,
+    data class IncomingCall(
+        val user: User,
+    ): WebSocketMessage()
+
+    @Serializable
+    data class Offer(
+        val sessionDescriptor: String,
+    ): WebSocketMessage()
+
+    @Serializable
+    data class Answer(
+        val sessionDescriptor: String,
+    ): WebSocketMessage()
+
+    @Serializable
+    data class Candidate(
+        val id: String,
+        val label: Int,
+        val candidate: String,
     ): WebSocketMessage()
 
     @Serializable
@@ -27,6 +43,9 @@ sealed class WebSocketMessage {
 
             @Serializable
             object Decline: Reason()
+
+            @Serializable
+            object Busy: Reason()
         }
     }
 }

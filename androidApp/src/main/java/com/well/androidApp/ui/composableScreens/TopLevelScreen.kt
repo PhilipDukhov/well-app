@@ -11,19 +11,19 @@ import com.well.shared.puerh.topLevel.TopLevelFeature.State.ScreenState.OnlineUs
 fun TopLevelScreen(
     state: TopLevelFeature.State,
     listener: (TopLevelFeature.Msg) -> Unit
-) = Crossfade(current = state.currentScreen) { screen ->
-    when (screen) {
-        is OnlineUsers -> OnlineUsersScreen(screen.state) {
-            listener(TopLevelFeature.Msg.OnlineUsersMsg(it))
+) = //Crossfade(current = state.currentScreen) { screen ->
+    state.currentScreen.let { screen ->
+
+        println("current screen $screen")
+        when (screen) {
+            is OnlineUsers -> OnlineUsersScreen(screen.state) {
+                listener(TopLevelFeature.Msg.OnlineUsersMsg(it))
+            }
+            is TopLevelFeature.State.ScreenState.Login -> Unit
+            is TopLevelFeature.State.ScreenState.Call -> {
+                CallScreen(screen.state) {
+                    listener(TopLevelFeature.Msg.CallMsg(it))
+                }
+            }
         }
-        TopLevelFeature.State.ScreenState.Login -> Unit
     }
-//    CallScreen(
-//        User(
-//            1,
-//            "Phil",
-//            "Dukhov aksdnkjansdkj ansjkd naksj dnkjas ndkja nskjd naksjdn akjsnd kjans dkja",
-//            User.Type.Google,
-//        )
-//    )
-}

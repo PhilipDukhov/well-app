@@ -40,10 +40,10 @@ class Dependencies(app: Application) {
             get() = TODO("Not yet implemented")
         override var masking: Boolean
             get() = TODO("Not yet implemented")
-            set(value) {}
+            set(_) {}
         override var maxFrameSize: Long
             get() = TODO("Not yet implemented")
-            set(value) {}
+            set(_) {}
 
         private val _outgoing = Channel<Frame>()
 

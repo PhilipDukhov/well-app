@@ -3,6 +3,7 @@ package com.well.shared.puerh.onlineUsers
 import com.well.serverModels.User
 import com.well.shared.puerh.WebSocketManager
 import com.well.shared.puerh.WebSocketManager.Status.Disconnected
+import com.well.shared.puerh.topLevel.TopLevelFeature
 
 object OnlineUsersFeature {
     fun initialState(): State = State(
@@ -10,7 +11,7 @@ object OnlineUsersFeature {
         Disconnected,
     )
 
-    fun initialEffects(): Set<Eff> = setOf(Eff.ConnectToServer)
+    fun initialEffects(): Set<Eff> = setOf()
 
     data class State(
         val users: List<User>,
@@ -24,17 +25,12 @@ object OnlineUsersFeature {
     }
 
     sealed class Eff {
-        object ConnectToServer : Eff()
         data class CallUser(val user: User) : Eff()
     }
 
     fun reducer(msg: Msg, state: State): Pair<State, Set<Eff>> = when (msg) {
         is Msg.OnConnectionStatusChange -> {
-            state.copy(connectionStatus = msg.connectionStatus) to
-                    if (msg.connectionStatus == Disconnected)
-                        setOf(Eff.ConnectToServer)
-                    else
-                        emptySet()
+            state.copy(connectionStatus = msg.connectionStatus) to emptySet()
         }
         is Msg.OnUsersUpdated ->  {
             println("tesststst3 ${msg.users}")

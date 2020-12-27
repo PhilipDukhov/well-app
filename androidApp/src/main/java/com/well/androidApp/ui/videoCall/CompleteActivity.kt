@@ -11,34 +11,16 @@ import com.well.androidApp.databinding.ActivitySamplePeerConnectionBinding
 import com.well.androidApp.utils.firstMapOrNull
 import com.well.serverModels.WebRTCMessage
 import com.well.serverModels.WebRTCMessage.*
-import com.well.shared.puerh.WebSocketManager
-//import com.well.shared.puerh.call.CallFeature
-import com.well.shared.puerh.onlineUsers.OnlineUsersFeature
-import com.well.utils.Closeable
-import com.well.utils.EffectHandler
 import io.ktor.client.*
 import io.ktor.client.features.websocket.*
 import io.ktor.http.HttpMethod.Companion.Get
 import io.ktor.http.cio.websocket.*
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.webrtc.*
-import kotlin.coroutines.CoroutineContext
-
-//class WebRTCManagerEffectHandler(
-//    private val webSocketManager: WebSocketManager,
-//    override val coroutineScope: CoroutineScope,
-//) : EffectHandler<CallFeature.Eff, CallFeature.Msg>(coroutineScope) {
-//
-//    override fun handleEffect(eff: CallFeature.Eff) {
-//
-//    }
-//}
 
 class CompleteActivity : AppCompatActivity() {
     private var isInitiator = false

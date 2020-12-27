@@ -37,6 +37,7 @@ kotlin {
         }
         val androidMain by getting {
             libDependencies(
+                "webrtc",
                 "android.activity",
                 "ktor.client.engine.cio",
                 "kotlin.coroutines.playServices"

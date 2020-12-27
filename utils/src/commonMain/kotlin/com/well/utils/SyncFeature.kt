@@ -1,10 +1,7 @@
 package com.well.utils
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.coroutineContext
 
 class SyncFeature<Msg : Any, Model : Any, Eff : Any>(
     initialState: Model,
@@ -15,8 +12,8 @@ class SyncFeature<Msg : Any, Model : Any, Eff : Any>(
     override var currentState: Model = initialState
         private set
 
-    private val stateListeners = SafeList(mutableListOf<(state: Model) -> Unit>())
-    private val effListeners = SafeList(mutableListOf<(eff: Eff) -> Unit>())
+    private val stateListeners = SafeListenersList(mutableListOf<(state: Model) -> Unit>())
+    private val effListeners = SafeListenersList(mutableListOf<(eff: Eff) -> Unit>())
 
     init {
         launch(coroutineContext) {
@@ -54,35 +51,5 @@ class SyncFeature<Msg : Any, Model : Any, Eff : Any>(
     override fun listenEffect(listener: (eff: Eff) -> Unit): Closeable =
         CloseableFuture(this) {
             effListeners.addListenerAndMakeCloseable(listener)
-        }
-}
-
-internal class SafeList<T, E: (T) -> Unit>(
-    private val list: MutableList<E>
-) {
-    private val mutex = Mutex()
-
-    private suspend fun access(handler: MutableList<E>.() -> Unit) =
-        mutex.withLock {
-            handler(list)
-        }
-
-    internal suspend fun notifyAll(msg: T) = access { forEach { listener -> listener.invoke(msg) } }
-
-    internal suspend fun addListenerAndMakeCloseable(listener: E, ): Closeable =
-        listener.run {
-            access {
-                add(this@run)
-            }
-            val context = coroutineContext
-            object : Closeable {
-                override fun close() {
-                    CoroutineScope(context).launch {
-                        access {
-                            remove(this@run)
-                        }
-                    }
-                }
-            }
         }
 }

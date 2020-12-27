@@ -31,11 +31,18 @@ fun <Msg : Any, State : Any, Eff : Any> Feature<Msg, State, Eff>.wrapWithEffectH
     effectHandler: EffectHandler<Eff, Msg>,
     initialEffects: Set<Eff> = emptySet()
 ) = apply {
+    addEffectHandler(effectHandler, initialEffects)
+}
+
+fun <Msg : Any, State : Any, Eff : Any> Feature<Msg, State, Eff>.addEffectHandler(
+    effectHandler: EffectHandler<Eff, Msg>,
+    initialEffects: Set<Eff> = emptySet()
+): Closeable {
     effectHandler.setListener { msg -> accept(msg) }
-    effectHandler.addCloseableChild(
-        listenEffect { eff ->
-            effectHandler.handleEffect(eff)
-        }
-    )
+    val closeable = listenEffect { eff ->
+        effectHandler.handleEffect(eff)
+    }
+    effectHandler.addCloseableChild(closeable)
     initialEffects.forEach(effectHandler::handleEffect)
+    return closeable
 }

@@ -6,6 +6,7 @@ import com.well.server.utils.send
 import com.well.server.utils.toUser
 import com.well.serverModels.UserId
 import com.well.serverModels.WebSocketMessage
+import com.well.serverModels.WebSocketMessage.EndCall.Reason.Busy
 import com.well.serverModels.WebSocketMessage.EndCall.Reason.Offline
 import io.ktor.http.cio.websocket.*
 import io.ktor.websocket.*
@@ -25,23 +26,39 @@ suspend fun DefaultWebSocketServerSession.onlineUsers(dependencies: Dependencies
             is Frame.Text -> Json.decodeFromString<WebSocketMessage>(frame.readText())
                 .let { msg ->
                     when (msg) {
-                        is WebSocketMessage.OnlineUsersList -> Unit
+                        is WebSocketMessage.OnlineUsersList,
+                        is WebSocketMessage.IncomingCall
+                        -> throw IllegalStateException("$msg can't be sent by users")
                         is WebSocketMessage.InitiateCall -> {
                             val session = dependencies.connectedUserSessions[msg.userId]
                             if (session == null) {
                                 send(WebSocketMessage.EndCall(Offline))
                                 return
                             }
-                            session.send(msg.copy(userId = currentUserId))
+                            if (dependencies.calls.any { it.userIds.contains(currentUserId) }) {
+                                send(WebSocketMessage.EndCall(Busy))
+                                return
+                            }
+                            session.send(
+                                WebSocketMessage.IncomingCall(
+                                    dependencies
+                                        .database
+                                        .userQueries
+                                        .getById(currentUserId)
+                                        .executeAsOne()
+                                        .toUser(),
+                                )
+                            )
                             dependencies.calls.add(Call(currentUserId, msg.userId))
                         }
-                        is WebSocketMessage.AcceptCall -> {
+                        is WebSocketMessage.Answer,
+                        is WebSocketMessage.Offer,
+                        is WebSocketMessage.Candidate ->
                             dependencies.callPartnerId(currentUserId)!!
                                 .run {
                                     dependencies.connectedUserSessions[value]!!
                                         .send(msg)
                                 }
-                        }
                         is WebSocketMessage.EndCall -> dependencies.endCall(currentUserId, msg.reason)
                     }
                 }

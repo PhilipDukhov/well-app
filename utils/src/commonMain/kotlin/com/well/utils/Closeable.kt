@@ -20,6 +20,12 @@ abstract class CloseableContainer: Closeable {
     }
 }
 
+fun Job.asCloseable() = object: Closeable {
+    override fun close() {
+        cancel()
+    }
+}
+
 class CloseableFuture(
     scope: CoroutineScope,
     task: suspend () -> Closeable,

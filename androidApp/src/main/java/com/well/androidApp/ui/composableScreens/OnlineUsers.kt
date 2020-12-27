@@ -13,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.well.androidApp.R
 import com.well.serverModels.User
@@ -21,12 +20,13 @@ import com.well.serverModels.User.Type.Facebook
 import com.well.serverModels.User.Type.Google
 import com.well.shared.puerh.WebSocketManager.Status.*
 import com.well.shared.puerh.onlineUsers.OnlineUsersFeature
+import com.well.shared.puerh.onlineUsers.OnlineUsersFeature.Msg
 import dev.chrisbanes.accompanist.insets.systemBarsPadding
 
 @Composable
 fun OnlineUsersScreen(
     state: OnlineUsersFeature.State,
-    listener: (OnlineUsersFeature.Msg) -> Unit,
+    listener: (Msg) -> Unit,
 ) = Column(
     horizontalAlignment = CenterHorizontally,
     modifier = Modifier
@@ -45,7 +45,7 @@ fun OnlineUsersScreen(
         UserCell(
             user,
             onClick = {
-                listener.invoke(OnlineUsersFeature.Msg.OnUserSelected(user))
+                listener.invoke(Msg.OnUserSelected(user))
             }
         )
     }
@@ -74,19 +74,6 @@ fun UserCell(user: User, onClick: () -> Unit) =
             maxLines = 1,
         )
     }
-
-@Preview
-@Composable
-fun PreviewGreeting() {
-    UserCell(
-        User(
-            1,
-            "Phil",
-            "Dukhov aksdnkjansdkj ansjkd naksj dnkjas ndkja nskjd naksjdn akjsnd kjans dkja",
-            Google,
-        )
-    ) {}
-}
 
 val User.drawable
     get() = when (type) {

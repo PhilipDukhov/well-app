@@ -6,22 +6,23 @@ private enum class Env {
     Mobile,
 }
 val serverPaths = listOf(
-    ":server"
+    "server"
 )
 val mobilePaths = listOf(
-    ":shared",
-    ":auth",
-    ":utils",
-    ":androidApp"
+    "shared",
+    "auth",
+    "utils",
+    "webrtc",
+    "androidApp"
 )
 (when (Env.Full) {
     Env.Full -> serverPaths + mobilePaths
     Env.Mobile -> mobilePaths
     Env.Server -> serverPaths
 } + listOf(
-    ":serverModels"
+    "serverModels"
 )).forEach {
-    include(it)
+    include(":$it")
 }
 
 pluginManagement {

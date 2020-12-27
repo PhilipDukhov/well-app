@@ -21,11 +21,16 @@ import com.well.androidApp.R
 import com.well.androidApp.ui.composableScreens.drawable
 import com.well.androidApp.ui.composableScreens.theme.Color.Green
 import com.well.androidApp.ui.composableScreens.theme.Color.Pink
-import com.well.serverModels.User
+import com.well.shared.puerh.call.CallFeature
+import com.well.shared.puerh.call.CallFeature.Msg
+import com.well.shared.puerh.call.CallFeature.State.Status
 import dev.chrisbanes.accompanist.insets.systemBarsPadding
 
 @Composable
-fun CallScreen(user: User) =
+fun CallScreen(
+    state: CallFeature.State,
+    listener: (Msg) -> Unit,
+) =
     Box {
         Image(
             vectorResource(R.drawable.ic_call_background),
@@ -33,6 +38,13 @@ fun CallScreen(user: User) =
             modifier = Modifier
                 .fillMaxSize()
         )
+        state.localVideoContext?.let { context ->
+            SurfaceView(
+                context,
+                modifier = Modifier
+                    .fillMaxSize()
+            )
+        }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
@@ -44,7 +56,7 @@ fun CallScreen(user: User) =
                     .height(16.dp)
             )
             Image(
-                vectorResource(user.drawable),
+                vectorResource(state.user.drawable),
                 colorFilter = ColorFilter.tint(Color.Blue),
                 modifier = Modifier
                     .fillMaxWidth(0.6F)
@@ -56,7 +68,7 @@ fun CallScreen(user: User) =
                     .height(40.dp)
             )
             Text(
-                user.fullName,
+                state.user.fullName,
                 color = Color.White,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.h4,
@@ -65,7 +77,12 @@ fun CallScreen(user: User) =
                     .padding(bottom = 11.dp)
             )
             Text(
-                "Calling...",
+                when (state.status) {
+                    Status.Calling -> "Calling..."
+                    Status.Incoming -> "Call"
+                    Status.Connecting -> "Connecting"
+                    Status.Ongoing -> "00:05"
+                },
                 color = Color.White,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.body1,
@@ -73,14 +90,37 @@ fun CallScreen(user: User) =
                     .fillMaxWidth(0.9F)
             )
             Spacer(modifier = Modifier.weight(1f))
+            state.remoteVideoContext?.let { context ->
+                Box(
+                    modifier = Modifier
+                        .height(200.dp)
+                        .background(Color.Red)
+                        .aspectRatio(1080F/1920)
+                        .align(Alignment.End)
+                        .padding(10.dp)
+                ) {
+                    SurfaceView(
+                        context,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
+                }
+            }
             Row {
                 Spacer(modifier = Modifier.weight(1f))
                 CallDownButton {
-
+                    listener.invoke(Msg.End)
                 }
-                Spacer(modifier = Modifier.weight(2f))
-                CallUpButton {
-
+                when (state.status) {
+                    Status.Calling -> Unit
+                    Status.Incoming -> {
+                        Spacer(modifier = Modifier.weight(2f))
+                        CallUpButton {
+                            listener.invoke(Msg.Accept)
+                        }
+                    }
+                    Status.Connecting -> Unit
+                    Status.Ongoing -> Unit
                 }
                 Spacer(modifier = Modifier.weight(1f))
             }
@@ -89,37 +129,4 @@ fun CallScreen(user: User) =
                     .height(32.dp)
             )
         }
-    }
-
-@Composable
-private fun CallDownButton(onClick: () -> Unit) =
-    CallButton(
-        R.drawable.ic_phone_down,
-        Pink,
-        onClick
-    )
-
-@Composable
-private fun CallUpButton(onClick: () -> Unit) =
-    CallButton(
-        R.drawable.ic_phone_up,
-        Green,
-        onClick,
-    )
-
-@Composable
-private fun CallButton(
-    drawable: Int,
-    background: Color,
-    onClick: () -> Unit,
-) =
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .size(68.dp)
-            .clip(CircleShape)
-            .background(background)
-            .clickable(onClick = onClick)
-    ) {
-        Image(vectorResource(drawable))
     }

@@ -2,12 +2,12 @@ package com.well.shared.puerh.login
 
 //typealias ReducerResult = Pair<LoginFeature.State, Set<LoginFeature.Eff>>
 //
-//object LoginFeature {
+object LoginFeature {
 //    fun initialState(): State = State()
 //
 //    fun initialEffects(): Set<Eff> = setOf(Eff.GenerateRandomCounterChange)
 //
-//    class State()
+    class State()
 //
 //    sealed class Msg {
 //        object OnSocialNetworkClick : Msg()
@@ -31,4 +31,4 @@ package com.well.shared.puerh.login
 //    }
 //
 //    private fun State.addToCounter(newValue: Int) = copy(counter = counter + newValue)
-//}
+}
