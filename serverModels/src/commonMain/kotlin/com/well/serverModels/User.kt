@@ -9,6 +9,9 @@ data class User(
     val lastName: String,
     val type: Type,
 ) {
+    @kotlinx.serialization.Transient
+    val imageUrl: String = "https://i.picsum.photos/id/1016/300/300.jpg?hmac=bjfLAoQLUHytpHr4nBTho_zxJd0gRuvCAv9U5rXpnNA"
+
     @Serializable
     enum class Type {
         Facebook,

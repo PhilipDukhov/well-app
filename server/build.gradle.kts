@@ -19,6 +19,9 @@ sqldelight {
 
 kotlin {
     jvm {
+        compilations.all {
+            kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
+        }
         withJava()
     }
     sourceSets {
@@ -26,25 +29,16 @@ kotlin {
             libDependencies(
                 ":serverModels",
                 "kotlin.serializationJson",
-                "ktor.server.netty",
-                "ktor.server.core",
-                "ktor.server.logback",
+                "ktor.server.*",
                 "ktor.serialization",
                 "ktor.client.serialization",
                 "ktor.client.engine.cio",
-                "ktor.auth",
                 "ktor.metrics",
                 "ktor.websockets",
                 "kotlin.serializationJson",
-                "ktor.authJwt",
-                "ktor.serialization",
                 "google.apiClient",
                 "google.httpClientApacheV2",
-                "server.sqldelight.runtimeJvm",
-                "server.sqldelight.jdbcDriver",
-                "server.sqldelight.coroutinesExtensions",
-                "server.hikariCP",
-                "server.h2database",
+                "server.*",
                 "kotlin.stdLib"
             )
         }

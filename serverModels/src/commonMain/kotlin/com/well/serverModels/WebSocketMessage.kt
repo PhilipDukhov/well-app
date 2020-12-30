@@ -29,9 +29,9 @@ sealed class WebSocketMessage {
 
     @Serializable
     data class Candidate(
-        val id: String,
-        val label: Int,
-        val candidate: String,
+        val sdpMid: String,
+        val sdpMLineIndex: Int,
+        val sdp: String,
     ): WebSocketMessage()
 
     @Serializable

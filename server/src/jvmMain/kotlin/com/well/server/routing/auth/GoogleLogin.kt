@@ -9,40 +9,56 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.util.pipeline.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-suspend fun PipelineContext<*, ApplicationCall>.googleLogin(dependencies: Dependencies) {
-    val clientIds = dependencies
-        .environment
-        .config
-        .property("google.clientIds")
-        .getList()
-        .map { "$it.apps.googleusercontent.com" }
-    val userId = withContext(Dispatchers.IO) {
-        @Suppress("BlockingMethodInNonBlockingContext")
-        GoogleIdTokenVerifier.Builder(
-            ApacheHttpTransport(),
-            JacksonFactory()
-        ).setAudience(clientIds)
-            .build()
-            .verify(call.receive<String>())
-    }.payload.run {
-        val googleId = subject
-        dependencies.database.userQueries.run {
-            getByGoogleId(googleId)
-                .executeAsOneOrNull()
-                ?: run {
-                    insertGoogle(
-                        getValue("given_name") as String,
-                        getValue("family_name") as String,
-                        googleId
-                    )
-                    lastInsertId()
-                        .executeAsOne()
-                        .toInt()
-                }
+suspend fun PipelineContext<*, ApplicationCall>.googleLogin(dependencies: Dependencies) =
+    dependencies.run {
+        val clientIds = environment
+            .config
+            .property("google.clientIds")
+            .getList()
+            .map { "$it.apps.googleusercontent.com" }
+        val userId = withContext(Dispatchers.IO) {
+            @Suppress("BlockingMethodInNonBlockingContext")
+            GoogleIdTokenVerifier.Builder(
+                ApacheHttpTransport(),
+                JacksonFactory()
+            )
+                .setAudience(clientIds)
+                .build()
+                .verify(call.receive<String>())
+        }.payload.run {
+            val googleId = subject
+            database.userQueries.run {
+                getByGoogleId(googleId)
+                    .executeAsOneOrNull()
+                    ?: run {
+                        insertGoogle(
+                            getValue("given_name") as String,
+                            getValue("family_name") as String,
+                            googleId
+                        )
+                        val id = lastInsertId()
+                            .executeAsOne()
+                            .toInt()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            database
+                                .userQueries
+                                .updateProfileImage(
+                                    getRandomPicture()
+                                        .toString(),
+                                    id
+                                )
+                        }
+                        id
+                    }
+            }
         }
+        call.respond(
+            HttpStatusCode.Created,
+            mapOf("token" to dependencies.jwtConfig.makeToken(userId))
+        )
     }
-    call.respond(HttpStatusCode.Created, mapOf("token" to dependencies.jwtConfig.makeToken(userId)))
-}

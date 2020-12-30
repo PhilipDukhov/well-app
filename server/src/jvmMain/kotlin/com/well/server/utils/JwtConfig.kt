@@ -6,9 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.config.*
 import java.util.*
 
-class JwtConfig(config: ApplicationConfig) {
-    private val secret = config.property("jwt.accessTokenSecret").getString()
-
+class JwtConfig(secret: String) {
     val issuer = "ktor.io"
 //    private val validityInMs = 10 * 60 * 60 * 1000 // 10 hours
     private val algorithm = Algorithm.HMAC512(secret)
