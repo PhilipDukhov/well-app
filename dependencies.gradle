@@ -1,8 +1,8 @@
 def versions = [
         iosDeploymentTarget: "13.0",
         kotlin             : "1.4.21",
-        compose            : "1.0.0-alpha08",
-        accompanist        : "0.4.0",
+        compose            : "1.0.0-alpha09",
+        accompanist        : "0.4.1",
         kotlinSerialization: "1.0.1",
         kotlinCoroutines   : "1.4.2-native-mt",
         ktor               : "1.4.3",
@@ -51,6 +51,8 @@ ext.Libs = [
                         materialIconsExtended: "androidx.compose.material:material-icons-extended:$versions.compose",
                         accompanist          : [
                                 insets: "dev.chrisbanes.accompanist:accompanist-insets:${versions.accompanist}",
+                                coil  : "dev.chrisbanes.accompanist:accompanist-coil:${versions.accompanist}",
+
                         ],
                 ],
         ],
@@ -72,20 +74,20 @@ ext.Libs = [
                 server       : [
                         netty  : "io.ktor:ktor-server-netty:$versions.ktor",
                         core   : "io.ktor:ktor-server-core:$versions.ktor",
+                        auth   : "io.ktor:ktor-auth:$versions.ktor",
+                        authJwt: "io.ktor:ktor-auth-jwt:$versions.ktor",
                         logback: "ch.qos.logback:logback-classic:1.2.3",
                 ],
                 client       : [
                         core         : "io.ktor:ktor-client-core:$versions.ktor",
                         engine       : [
-                                cio    : "io.ktor:ktor-client-cio:$versions.ktor",
-                                ios    : "io.ktor:ktor-client-ios:$versions.ktor",
+                                cio: "io.ktor:ktor-client-cio:$versions.ktor",
+                                ios: "io.ktor:ktor-client-ios:$versions.ktor",
                         ],
                         serialization: "io.ktor:ktor-client-serialization-jvm:$versions.ktor",
 
                 ],
                 serialization: "io.ktor:ktor-serialization:$versions.ktor",
-                auth         : "io.ktor:ktor-auth:$versions.ktor",
-                authJwt      : "io.ktor:ktor-auth-jwt:$versions.ktor",
                 metrics      : "io.ktor:ktor-metrics:$versions.ktor",
                 websockets   : "io.ktor:ktor-websockets:$versions.ktor",
         ],
@@ -97,5 +99,9 @@ ext.Libs = [
                 ],
                 hikariCP  : "com.zaxxer:HikariCP:3.4.5",
                 h2database: "com.h2database:h2:1.4.200",
+                aws       : [
+                        s3: "com.amazonaws:aws-java-sdk-s3:1.11.7",
+
+                ]
         ],
 ]

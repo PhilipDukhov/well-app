@@ -12,22 +12,30 @@ private fun Project.mapAt(
     var map = properties["Libs"]?.toLinkedHashMap() ?: throw IllegalStateException("Libs missing")
     val last = components.last()
     for (component in components.dropLast(if (skipLast) 1 else 0)) {
-        map = map[component]?.toLinkedHashMap() ?: throw IllegalStateException("Wrong path: $component missing at $path")
+        map = map[component]?.toLinkedHashMap()
+            ?: throw IllegalStateException("Wrong path: $component missing at $path")
     }
     return Pair(map, last)
 }
 
-fun Project.libsAt(path: String) =
+fun Project.libsAt(path: String): List<String> =
     mapAt(path, false)
         .first
         .values
-        .map {
-            when (it) {
-                is String -> it
-                is GStringImpl -> it.toString()
-                else -> throw java.lang.ClassNotFoundException("$it")
-            }
+        .fold(listOf()) { res, lib ->
+            res + libsMapper(lib)
         }
+
+private fun libsMapper(libs: Any): List<String> =
+    when (libs) {
+        is String -> listOf(libs)
+        is GStringImpl -> listOf(libs.toString())
+        is Collection<*> -> libs.fold(listOf()) { res, lib ->
+            lib?.let { res + libsMapper(lib) } ?: res
+        }
+        is LinkedHashMap<*, *> -> libsMapper(libs.values)
+        else -> throw ClassNotFoundException("$libs")
+    }
 
 fun Project.libAt(path: String): String {
     val (map, last) = mapAt(path, true)
@@ -40,7 +48,6 @@ fun Project.libAt(path: String): String {
 
 fun Project.libsAt(paths: List<String>): List<String> =
     paths.map { libAt(it) }
-
 
 fun Project.version(name: String) =
     (properties["Versions"]!!.toLinkedHashMap()[name] as String?)!!
@@ -85,33 +92,46 @@ fun Project.libDependencies(vararg libs: String) =
                 is Dependency.Module -> {
                     dependencies.add("implementation", project(it.name))
                 }
-                is Dependency.Test -> dependencies.add("testImplementation", it.dependencyNotation)
+                is Dependency.Test -> dependencies.add(
+                    "testImplementation",
+                    it.dependencyNotation
+                )
             }
         }
 
 sealed class Dependency {
     data class Implementation(
         val dependencyNotation: String,
-        val strictVersion: String? = null
-    ): Dependency()
+        val strictVersion: String?
+    ) : Dependency() {
+        constructor(dependencyNotation: String) : this(dependencyNotation, null)
+    }
+
     data class Module(
         val name: String
-    ): Dependency()
+    ) : Dependency()
+
     data class Test(
         val dependencyNotation: String
-    ): Dependency()
+    ) : Dependency()
 }
 
 private fun Project.customDependencies(libs: List<String>): List<Dependency> =
-    libs.map {
+    libs.fold(listOf()) { result: List<Dependency>, dep ->
         when {
-            it.startsWith("test.") ->
-                Dependency.Test(it)
-            it.startsWith(":") ->
-                Dependency.Module(it)
-            it == "kotlin.coroutines.core" ->
-                Dependency.Implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core", version("kotlinCoroutines"))
+            dep.startsWith("test.") ->
+                result + Dependency.Test(dep)
+            dep.startsWith(":") ->
+                result + Dependency.Module(dep)
+            dep == "kotlin.coroutines.core" ->
+                result + Dependency.Implementation(
+                    "org.jetbrains.kotlinx:kotlinx-coroutines-core",
+                    version("kotlinCoroutines")
+                )
+            dep.endsWith(".*") -> {
+                result + libsAt(dep.dropLast(2)).map(Dependency::Implementation)
+            }
             else ->
-                Dependency.Implementation(libAt(it))
+                result + Dependency.Implementation(libAt(dep))
         }
     }

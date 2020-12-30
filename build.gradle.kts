@@ -4,7 +4,7 @@ import com.android.build.gradle.LibraryPlugin
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 object Constants {
-    val javaVersion = JavaVersion.VERSION_1_8
+    val javaVersion = JavaVersion.VERSION_11
     const val group = "com.well"
     const val version = "1.0-SNAPSHOT"
 }
@@ -34,6 +34,8 @@ repositories {
 //plugins {
 //    id("org.cqfn.diktat.diktat-gradle-plugin") version "0.1.5"
 //}
+
+val gradlePluginVersion = extra["gradlePluginVersion"] as String
 
 allprojects {
     @Suppress("UnstableApiUsage")
@@ -106,27 +108,30 @@ subprojects {
             // jetpack compose
             "-Xallow-jvm-ir-dependencies", "-Xskip-prerelease-check",
             "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI",
+            "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
             "-Xopt-in=kotlinx.serialization.ExperimentalSerializationApi"
         )
     }
 
-    if (listOf(
-            "serverModels",
-            "utils",
-            "auth",
-            "shared"
-        ).contains(name)
-    ) {
-        configurations {
-            listOf(
-                "androidTestApi",
-                "androidTestDebugApi",
-                "androidTestReleaseApi",
-                "testApi",
-                "testDebugApi",
-                "testReleaseApi"
-            ).forEach {
-                create(it) {}
+    if (gradlePluginVersion.first() == '7') {
+        if (listOf(
+                "serverModels",
+                "utils",
+                "auth",
+                "shared"
+            ).contains(name)
+        ) {
+            configurations {
+                listOf(
+                    "androidTestApi",
+                    "androidTestDebugApi",
+                    "androidTestReleaseApi",
+                    "testApi",
+                    "testDebugApi",
+                    "testReleaseApi"
+                ).forEach {
+                    create(it) {}
+                }
             }
         }
     }

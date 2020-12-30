@@ -16,12 +16,7 @@ libDependencies(
     "android.activity",
     "android.fragment",
 
-    "android.compose.ui",
-    "android.compose.foundation",
-    "android.compose.material",
-    "android.compose.materialIconsCore",
-    "android.compose.materialIconsExtended",
-    "android.compose.accompanist.insets",
+    "android.compose.*",
 
     "kotlin.coroutines.playServices",
     "kotlin.serializationJson",
