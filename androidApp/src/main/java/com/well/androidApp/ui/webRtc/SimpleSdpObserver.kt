@@ -1,4 +1,4 @@
-package com.well.androidApp.ui.videoCall
+package com.well.androidApp.ui.webRtc
 
 import com.github.aakira.napier.Napier
 import org.webrtc.SdpObserver

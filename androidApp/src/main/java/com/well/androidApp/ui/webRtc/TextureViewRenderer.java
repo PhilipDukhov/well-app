@@ -1,4 +1,4 @@
-package com.well.androidApp.ui.videoCall;
+package com.well.androidApp.ui.webRtc;
 
 import android.content.Context;
 import android.content.res.Resources;

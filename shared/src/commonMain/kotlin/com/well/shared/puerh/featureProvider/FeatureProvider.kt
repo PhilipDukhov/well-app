@@ -5,6 +5,8 @@ import com.well.serverModels.WebSocketMessage
 import com.well.shared.puerh.AlertHelper
 import com.well.shared.puerh.WebSocketManager
 import com.well.shared.puerh.call.CallFeature
+import com.well.shared.puerh.call.WebRtcEffectHandler
+import com.well.shared.puerh.call.WebRtcManagerI
 import com.well.shared.puerh.onlineUsers.OnlineUsersApiEffectHandler
 import com.well.shared.puerh.onlineUsers.OnlineUsersFeature
 import com.well.shared.puerh.topLevel.TestDevice
@@ -24,7 +26,7 @@ import kotlinx.coroutines.launch
 class FeatureProvider(
     val context: Context,
     testDevice: TestDevice,
-    val webRTCManagerGenerator: (WebSocketManager) -> EffectHandler<CallFeature.Eff, CallFeature.Msg>,
+    private val webRtcManagerGenerator: (WebRtcManagerI.Listener) -> WebRtcManagerI,
 ) {
     private val permissionsHandler = PermissionsHandler(context.permissionsHandlerContext)
     private val coroutineContext = Dispatchers.Default
@@ -119,7 +121,11 @@ class FeatureProvider(
     ) =
         feature
             .addEffectHandler(
-                webRTCManagerGenerator(webSocketManager)
+                WebRtcEffectHandler(
+                    webSocketManager,
+                    webRtcManagerGenerator,
+                    coroutineScope,
+                )
                     .apply {
                         initiateEffect?.let(::handleEffect)
                     }.adapt(
