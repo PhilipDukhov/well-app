@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ActionButton: UIButton {
+final class ActionButton: UIButton {
     var action: Action?
     
     init(action: Action? = nil) {

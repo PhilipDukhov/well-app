@@ -12,7 +12,7 @@ protocol Cancellable {
     func cancel()
 }
 
-class CancellableContainer: Cancellable {
+final class CancellableContainer: Cancellable {
     var cancellable: Cancellable {
         didSet {
             oldValue.cancel()

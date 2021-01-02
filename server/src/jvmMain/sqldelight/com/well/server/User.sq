@@ -3,10 +3,11 @@ CREATE TABLE IF NOT EXISTS Users (
     firstName TEXT NOT NULL,
     lastName TEXT NOT NULL,
     createdDate REAL NOT NULL,
-    profileImage TEXT,
+    profileImageUrl TEXT,
 
     facebookId TEXT,
-    googleId TEXT
+    googleId TEXT,
+    testId TEXT
 );
 
 lastInsertId:
@@ -21,14 +22,16 @@ SELECT * FROM Users WHERE id = ?;
 getByIds:
 SELECT * FROM Users WHERE id IN ?;
 
-deleteByFacebookId:
-DELETE FROM Users WHERE facebookId = ?;
-
 getByFacebookId:
 SELECT id FROM Users WHERE facebookId = ?;
 
 getByGoogleId:
 SELECT id FROM Users WHERE googleId = ?;
+
+getByTestId:
+SELECT id FROM Users WHERE testId = ?;
+
+-- Create user
 
 insertFacebook:
 INSERT INTO Users(firstName, lastName, createdDate, facebookId)
@@ -38,8 +41,14 @@ insertGoogle:
 INSERT INTO Users(firstName, lastName, createdDate, googleId)
 VALUES (?, ?, UNIX_TIMESTAMP(), ?);
 
+insertTestId:
+INSERT INTO Users(firstName, lastName, createdDate, testId)
+VALUES (?, ?, UNIX_TIMESTAMP(), ?);
+
+-- Update user
+
 updateProfileImage:
 UPDATE Users
-SET profileImage = ?
+SET profileImageUrl = ?
 WHERE id = ?;
 

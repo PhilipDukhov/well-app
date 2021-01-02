@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Future<Value>: Hashable, Cancellable {
+final class Future<Value>: Hashable, Cancellable {
     typealias Promise = (Value) -> Void
     
     private let createdDate = Date()

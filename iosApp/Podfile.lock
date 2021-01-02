@@ -1,29 +1,32 @@
 PODS:
   - GoogleWebRTC (1.1.31999)
-  - PinLayout (1.9.2)
   - R.swift (5.3.0):
     - R.swift.Library (~> 5.3.0)
   - R.swift.Library (5.3.0)
+  - sharedMobile (1.0-SNAPSHOT):
+    - GoogleWebRTC
 
 DEPENDENCIES:
-  - GoogleWebRTC
-  - PinLayout
   - R.swift
   - R.swift.Library
+  - sharedMobile (from `../sharedMobile`)
 
 SPEC REPOS:
   trunk:
     - GoogleWebRTC
-    - PinLayout
     - R.swift
     - R.swift.Library
 
+EXTERNAL SOURCES:
+  sharedMobile:
+    :path: "../sharedMobile"
+
 SPEC CHECKSUMS:
   GoogleWebRTC: b39a78c4f5cc6b0323415b9233db03a2faa7b0f0
-  PinLayout: 0d96022e46e8b80468d819f182a393b97ca038da
   R.swift: 4170fb7161c67be3bc1a847040b79367d69c419f
   R.swift.Library: 0fc583cb55a99e28901299cc451614cad1161962
+  sharedMobile: a9721b52ec60b33041a0ab8b4319b02c82ff7549
 
-PODFILE CHECKSUM: f1248f963a9b8d87d0faa9e8a89375452cbe7588
+PODFILE CHECKSUM: 00cb49d1a1f19422dea184a83830af4188bba442
 
 COCOAPODS: 1.10.0

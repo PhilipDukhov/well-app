@@ -20,7 +20,7 @@ sqldelight {
 kotlin {
     jvm {
         compilations.all {
-            kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
+            kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
         }
         withJava()
     }

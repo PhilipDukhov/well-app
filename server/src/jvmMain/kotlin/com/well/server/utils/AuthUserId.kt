@@ -11,7 +11,6 @@ val ApplicationCall.authUserId: UserId
 
 fun Payload.createPrincipal(dependencies: Dependencies) : JWTPrincipal? =
     claims["id"]?.asInt()?.let {
-        println("$it")
         val userExists = dependencies.database
             .userQueries
             .exists(it)

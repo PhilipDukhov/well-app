@@ -37,10 +37,7 @@ suspend fun PipelineContext<*, ApplicationCall>.facebookLogin(
             }.also {
                 updateUserProfile(it, facebookId, dependencies)
             }
-        call.respond(
-            HttpStatusCode.Created,
-            mapOf("token" to jwtConfig.makeToken(id))
-        )
+        call.respondAuthenticated(id, dependencies)
     }
 }
 

@@ -118,7 +118,7 @@ subprojects {
                 "serverModels",
                 "utils",
                 "auth",
-                "shared"
+                "sharedMobile"
             ).contains(name)
         ) {
             configurations {

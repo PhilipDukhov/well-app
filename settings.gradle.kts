@@ -9,10 +9,9 @@ val serverPaths = listOf(
     "server"
 )
 val mobilePaths = listOf(
-    "shared",
+    "sharedMobile",
     "auth",
     "utils",
-    "webrtc",
     "androidApp"
 )
 (when (Env.Full) {

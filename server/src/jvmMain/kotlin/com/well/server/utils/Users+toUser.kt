@@ -12,6 +12,8 @@ fun Users.toUser(): User =
         when {
             facebookId != null -> Facebook
             googleId != null -> Google
+            testId != null -> Test
             else -> throw IllegalStateException()
-        }
+        },
+        profileImageUrl,
     )

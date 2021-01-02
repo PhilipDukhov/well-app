@@ -57,8 +57,5 @@ suspend fun PipelineContext<*, ApplicationCall>.googleLogin(dependencies: Depend
                     }
             }
         }
-        call.respond(
-            HttpStatusCode.Created,
-            mapOf("token" to dependencies.jwtConfig.makeToken(userId))
-        )
+        call.respondAuthenticated(userId, dependencies)
     }

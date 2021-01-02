@@ -5,47 +5,55 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class WebSocketMessage {
     @Serializable
-    data class OnlineUsersList(val users: List<User>): WebSocketMessage()
+    data class OnlineUsersList(
+        val users: List<User>
+    ) : WebSocketMessage()
 
+    @Serializable
+    data class CurrentUser(
+        val user: User,
+    ) : WebSocketMessage()
+
+    // Call
     @Serializable
     data class InitiateCall(
         val userId: UserId,
-    ): WebSocketMessage()
+    ) : WebSocketMessage()
 
     @Serializable
     data class IncomingCall(
         val user: User,
-    ): WebSocketMessage()
+    ) : WebSocketMessage()
 
     @Serializable
     data class Offer(
         val sessionDescriptor: String,
-    ): WebSocketMessage()
+    ) : WebSocketMessage()
 
     @Serializable
     data class Answer(
         val sessionDescriptor: String,
-    ): WebSocketMessage()
+    ) : WebSocketMessage()
 
     @Serializable
     data class Candidate(
         val sdpMid: String,
         val sdpMLineIndex: Int,
         val sdp: String,
-    ): WebSocketMessage()
+    ) : WebSocketMessage()
 
     @Serializable
-    data class EndCall(val reason: Reason): WebSocketMessage() {
+    data class EndCall(val reason: Reason) : WebSocketMessage() {
         @Serializable
         sealed class Reason {
             @Serializable
-            object Offline: Reason()
+            object Offline : Reason()
 
             @Serializable
-            object Decline: Reason()
+            object Decline : Reason()
 
             @Serializable
-            object Busy: Reason()
+            object Busy : Reason()
         }
     }
 }

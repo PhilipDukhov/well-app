@@ -1,5 +1,7 @@
 package com.well.utils
 
+import com.well.utils.atomic.AtomicMutableList
+import com.well.utils.atomic.AtomicRef
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -8,11 +10,14 @@ interface Closeable {
     fun close()
 }
 
-abstract class CloseableContainer: Closeable {
-    private val closeables = mutableListOf<Closeable>()
+open class CloseableContainer: Closeable {
+    private val closeables = AtomicMutableList<Closeable>()
 
     fun addCloseableChild(closeable: Closeable) =
         closeables.add(closeable)
+
+    fun finalize() =
+        close()
 
     override fun close() {
         closeables.forEach(Closeable::close)
@@ -30,18 +35,15 @@ class CloseableFuture(
     scope: CoroutineScope,
     task: suspend () -> Closeable,
 ) : Closeable {
-    private var job: Job
+    private val closeable = AtomicRef<Closeable?>(null)
 
     init {
-        job = scope.launch {
-            closeable = task()
-        }
+        closeable.value = scope.launch {
+            closeable.value = task().freeze()
+        }.asCloseable().freeze()
     }
 
-    var closeable: Closeable? = null
-
     override fun close() {
-        job.cancel()
-        closeable?.close()
+        closeable.value?.close()
     }
 }

@@ -24,9 +24,9 @@ import com.well.androidApp.ui.MainActivity
 import com.well.androidApp.ui.customViews.BaseFragment
 import com.well.serverModels.Color
 import com.well.serverModels.Point
-import com.well.shared.leafs.SharingScreen
-import com.well.shared.leafs.SharingScreen.Msg.*
-import com.well.shared.leafs.SharingScreen.State.*
+import com.well.sharedMobile.leafs.SharingScreen
+import com.well.sharedMobile.leafs.SharingScreen.Msg.*
+import com.well.sharedMobile.leafs.SharingScreen.State.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope

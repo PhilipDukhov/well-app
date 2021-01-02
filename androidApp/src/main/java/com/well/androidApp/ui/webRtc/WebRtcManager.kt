@@ -4,8 +4,8 @@ import android.content.Context
 import com.well.androidApp.utils.Utilities
 import com.well.androidApp.utils.firstMapOrNull
 import com.well.serverModels.WebSocketMessage
-import com.well.shared.puerh.call.SurfaceViewContext
-import com.well.shared.puerh.call.WebRtcManagerI
+import com.well.sharedMobile.puerh.call.VideoViewContext
+import com.well.sharedMobile.puerh.call.WebRtcManagerI
 import com.well.utils.CloseableContainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,9 +14,10 @@ import kotlinx.coroutines.launch
 import org.webrtc.*
 
 class WebRtcManager(
+    iceServers: List<String>,
     private val applicationContext: Context,
     private val listener: WebRtcManagerI.Listener,
-): CloseableContainer(), WebRtcManagerI {
+) : CloseableContainer(), WebRtcManagerI {
     init {
         PeerConnectionFactory.initialize(
             PeerConnectionFactory
@@ -25,15 +26,18 @@ class WebRtcManager(
                 .createInitializationOptions()
         )
     }
+
     private val rootEglBase = EglBase.create()!!
     private val factory = PeerConnectionFactory
         .builder()
         .setOptions(PeerConnectionFactory.Options())
-        .setVideoEncoderFactory(DefaultVideoEncoderFactory(
-            rootEglBase.eglBaseContext,
-            true,
-            true
-        ))
+        .setVideoEncoderFactory(
+            DefaultVideoEncoderFactory(
+                rootEglBase.eglBaseContext,
+                true,
+                true
+            )
+        )
         .setVideoDecoderFactory(DefaultVideoDecoderFactory(rootEglBase.eglBaseContext))
         .createPeerConnectionFactory()!!
     private val localVideoTrack = factory.createVideoTrack(
@@ -52,16 +56,17 @@ class WebRtcManager(
             videoSource
         }
     )
-    override val localVideoContext = SurfaceViewContext(
+    override val localVideoContext = VideoViewContext(
         rootEglBase,
         localVideoTrack
     )
     private val localAudioTrack = factory.createAudioTrack(
         "101",
         factory.createAudioSource(MediaConstraints())
-    )?.apply {
-        this.setVolume(0.0)
-    }
+    )
+        ?.apply {
+            this.setVolume(0.0)
+        }
     private val localMediaStream = factory.createLocalMediaStream("ARDAMS")
         .apply {
             addTrack(localVideoTrack)
@@ -72,6 +77,14 @@ class WebRtcManager(
             field?.dispose()
             field = value
             field?.setEnabled(true)
+            listener.updateRemoveVideoContext(
+                field?.let {
+                    VideoViewContext(
+                        rootEglBase,
+                        it
+                    )
+                }
+            )
         }
     private var remoteAudioTrack: AudioTrack? = null
         set(value) {
@@ -82,9 +95,7 @@ class WebRtcManager(
     private val peerConnection by lazy {
         factory.createPeerConnection(
             PeerConnection.RTCConfiguration(
-                listOf(
-                    "stun:stun.l.google.com:19302",
-                ).map {
+                iceServers.map {
                     PeerConnection
                         .IceServer
                         .builder(it)
@@ -109,14 +120,12 @@ class WebRtcManager(
                     super.onAddStream(mediaStream)
                     remoteVideoTrack = mediaStream.videoTracks.firstOrNull()
                     remoteAudioTrack = mediaStream.audioTracks.firstOrNull()
-                    listener.updateRemoveVideoContext(
-                        remoteVideoTrack?.let {
-                            SurfaceViewContext(
-                                rootEglBase,
-                                it
-                            )
-                        }
-                    )
+                }
+
+                override fun onRemoveStream(mediaStream: MediaStream) {
+                    super.onRemoveStream(mediaStream)
+                    remoteVideoTrack = null
+                    remoteAudioTrack = null
                 }
             })!!
     }
@@ -136,25 +145,13 @@ class WebRtcManager(
         }
 
     override fun sendOffer() {
-        peerConnection.addStream(localMediaStream)
-        val sdpMediaConstraints = MediaConstraints()
-        sdpMediaConstraints.mandatory.add(
-            MediaConstraints.KeyValuePair("OfferToReceiveAudio", "true")
+        createOfferOrAnswer(
+            PeerConnection::createOffer,
+            listener::sendOffer,
         )
-        sdpMediaConstraints.mandatory.add(
-            MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true")
-        )
-        peerConnection.createOffer(object : SimpleSdpObserver() {
-            override fun onCreateSuccess(sessionDescription: SessionDescription) {
-                super.onCreateSuccess(sessionDescription)
-                peerConnection.setLocalDescription(SimpleSdpObserver(), sessionDescription)
-                listener.sendOffer(sessionDescription.description)
-            }
-        }, sdpMediaConstraints)
     }
 
     override fun acceptOffer(webRTCSessionDescriptor: String) {
-        peerConnection.addStream(localMediaStream)
         peerConnection.setRemoteDescription(
             SimpleSdpObserver(),
             SessionDescription(
@@ -162,12 +159,10 @@ class WebRtcManager(
                 webRTCSessionDescriptor,
             )
         )
-        peerConnection.createAnswer(object : SimpleSdpObserver() {
-            override fun onCreateSuccess(sessionDescription: SessionDescription) {
-                peerConnection.setLocalDescription(SimpleSdpObserver(), sessionDescription)
-                listener.sendAnswer(sessionDescription.description)
-            }
-        }, MediaConstraints())
+        createOfferOrAnswer(
+            PeerConnection::createAnswer,
+            listener::sendAnswer,
+        )
     }
 
     override fun acceptAnswer(webRTCSessionDescriptor: String) {
@@ -183,10 +178,31 @@ class WebRtcManager(
     override fun acceptCandidate(candidate: WebSocketMessage.Candidate) {
         peerConnection.addIceCandidate(
             IceCandidate(
-                candidate.id,
-                candidate.label,
-                candidate.candidate
+                candidate.sdpMid,
+                candidate.sdpMLineIndex,
+                candidate.sdp
             )
         )
+    }
+
+    private fun createOfferOrAnswer(
+        create: PeerConnection.(SdpObserver, MediaConstraints) -> Unit,
+        completion: (String) -> Unit
+    ) {
+        peerConnection.addStream(localMediaStream)
+        val sdpMediaConstraints = MediaConstraints()
+        sdpMediaConstraints.mandatory.add(
+            MediaConstraints.KeyValuePair("OfferToReceiveAudio", "true")
+        )
+        sdpMediaConstraints.mandatory.add(
+            MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true")
+        )
+        peerConnection.create(object : SimpleSdpObserver() {
+            override fun onCreateSuccess(sessionDescription: SessionDescription) {
+                super.onCreateSuccess(sessionDescription)
+                peerConnection.setLocalDescription(SimpleSdpObserver(), sessionDescription)
+                completion(sessionDescription.description)
+            }
+        }, sdpMediaConstraints)
     }
 }

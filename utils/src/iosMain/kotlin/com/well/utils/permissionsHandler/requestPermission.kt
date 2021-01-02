@@ -1,5 +1,6 @@
 package com.well.utils.permissionsHandler
 
+import com.well.utils.freeze
 import com.well.utils.permissionsHandler.PermissionsHandler.Result
 import com.well.utils.permissionsHandler.PermissionsHandler.Type.*
 import com.well.utils.permissionsHandler.PermissionsHandler.Result.*
@@ -22,9 +23,9 @@ private suspend fun requestAVCaptureDevicePermission(mediaType: AVMediaType): Re
     AVCaptureDevice.run {
         when (authorizationStatusForMediaType(mediaType)) {
             AVAuthorizationStatusNotDetermined -> suspendCancellableCoroutine { continuation ->
-                requestAccessForMediaType(mediaType) {
-                    continuation.resume(if (it) Authorized else Denied)
-                }
+                requestAccessForMediaType(mediaType, { success: Boolean ->
+                    continuation.resume(if (success) Authorized else Denied)
+                }.freeze())
             }
             AVAuthorizationStatusDenied -> Denied
             AVAuthorizationStatusAuthorized -> Authorized
@@ -32,7 +33,7 @@ private suspend fun requestAVCaptureDevicePermission(mediaType: AVMediaType): Re
         }
     }
 
-private inline fun <T : Type, R : Pair<Type, Result>> Array<out T>.mapWhileAuthorized(transform: (T) -> R): List<R> {
+private suspend fun <T : Type, R : Pair<Type, Result>> Array<out T>.mapWhileAuthorized(transform: suspend (T) -> R): List<R> {
     val destination = ArrayList<R>(size)
     for (item in this) {
         val transformed = transform(item)

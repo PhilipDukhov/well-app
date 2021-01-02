@@ -7,16 +7,18 @@ kotlin {
     android()
     ios()
     sourceSets {
-        val androidMain by getting {
-            libDependencies(
-                "android.appCompat",
-                "android.activity"
-            )
-        }
         val commonMain by getting {
             libDependencies(
                 "kotlin.coroutines.core",
+                "napier",
                 "kotlin.stdLib"
+            )
+        }
+        val androidMain by getting {
+            libDependencies(
+                "android.appCompat",
+                "android.dataStore",
+                "android.activity"
             )
         }
     }

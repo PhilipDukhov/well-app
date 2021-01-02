@@ -7,33 +7,26 @@ import com.well.androidApp.R
 import com.well.androidApp.ui.composableScreens.TopLevelScreen
 import com.well.androidApp.ui.composableScreens.theme.Theme
 import com.well.androidApp.ui.webRtc.WebRtcManager
-import com.well.androidApp.utils.Utilities
-import com.well.shared.napier.NapierProxy
-import com.well.shared.puerh.featureProvider.Context
-import com.well.shared.puerh.featureProvider.FeatureProvider
-import com.well.shared.puerh.topLevel.TestDevice
+import com.well.sharedMobile.napier.NapierProxy
+import com.well.sharedMobile.puerh.featureProvider.FeatureProvider
+import com.well.utils.Context
 import dev.chrisbanes.accompanist.insets.ProvideWindowInsets
-import io.ktor.client.*
-import java.util.*
+import kotlinx.coroutines.InternalCoroutinesApi
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private val featureProvider = FeatureProvider(
         Context(this),
-        if (Utilities.isProbablyAnEmulator()) TestDevice.Emulator else TestDevice.Android,
-        webRtcManagerGenerator = { listener ->
+        webRtcManagerGenerator = { iceServers, listener ->
             WebRtcManager(
+                iceServers,
                 applicationContext,
                 listener,
             )
         }
     )
 
+    @InternalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
-        val engines: List<HttpClientEngineContainer> = HttpClientEngineContainer::class.java.let {
-            ServiceLoader.load(it, it.classLoader).toList()
-        }
-        println("engines $engines")
-
         super.onCreate(savedInstanceState)
         NapierProxy.initializeLogging()
 

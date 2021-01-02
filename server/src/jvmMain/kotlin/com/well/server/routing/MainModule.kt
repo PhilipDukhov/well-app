@@ -4,6 +4,7 @@ import com.well.server.routing.auth.*
 import com.well.server.utils.Dependencies
 import com.well.server.utils.authUserId
 import com.well.server.utils.createPrincipal
+import com.well.server.utils.toUser
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -27,7 +28,10 @@ fun Application.module() {
 
     install(CallLogging) {
         level = Level.INFO
-        filter { call -> call.request.path().startsWith("/") }
+        filter { call ->
+            call.request.path()
+                .startsWith("/")
+        }
     }
 
     install(ContentNegotiation) {
@@ -58,21 +62,11 @@ fun Application.module() {
     routing {
         post("/facebookLogin") { facebookLogin(dependencies) }
         post("/googleLogin") { googleLogin(dependencies) }
+        post("/testLogin") { testLogin(dependencies) }
 
         authenticate {
-            webSocket(path = "/onlineUsers") {
-                println("starting")
-                onlineUsers(dependencies)
-            }
-            get("/") {
-                val userName = dependencies.database
-                    .userQueries
-                    .getById(call.authUserId)
-                    .executeAsOne()
-                    .run {
-                        "$id $firstName $lastName ${String.format("%.4f", createdDate)}"
-                    }
-                call.respond(userName)
+            webSocket(path = "/mainWebSocket") {
+                mainWebSocket(dependencies)
             }
         }
     }

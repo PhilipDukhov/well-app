@@ -79,23 +79,22 @@ class AwsManager(
 suspend fun Dependencies.uploadToS3FromUrl(
     url: Url,
     path: String,
-) =
-    localClient.get<HttpStatement>(url)
-        .execute { response ->
-            val fileExtension = response.contentType()
-                ?.let { contentType ->
-                    contentType.fileExtensions()
-                        .first {
-                            listOf(
-                                "jpeg",
-                                "jpg",
-                                "png",
-                            ).contains(it)
-                        }
-                } ?: return@execute null
-            awsManager
-                .upload(
-                    response.readBytes(),
-                    "$path.$fileExtension"
-                )
-        }
+) = client.get<HttpStatement>(url)
+    .execute { response ->
+        val fileExtension = response.contentType()
+            ?.let { contentType ->
+                contentType.fileExtensions()
+                    .first {
+                        listOf(
+                            "jpeg",
+                            "jpg",
+                            "png",
+                        ).contains(it)
+                    }
+            } ?: return@execute null
+        awsManager
+            .upload(
+                response.readBytes(),
+                "$path.$fileExtension"
+            )
+    }

@@ -1,22 +1,34 @@
-import UIKit
 #if !AUTH_DISABLED
 import Auth
 #endif
-import Shared
+import UIKit
+import SharedMobile
 import SwiftUI
+import WebRTC
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+final class AppDelegate: UIResponder, UIApplicationDelegate {
+    let rootViewController = UIHostingController(
+        rootView: TopLevelView(
+            state: TopLevelFeature().initialState()
+        ) { _ in}
+    )
+    private let featureProvider: FeatureProvider
+    
+    override init() {
+        NapierProxy().initializeLogging()
+        featureProvider = FeatureProvider(
+            context: .init(rootController: rootViewController),
+            webRtcManagerGenerator: WebRtcManager.init
+        )
+    }
     
     var window: UIWindow?
-    
-    let facebookToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImlzcyI6Imt0b3IuaW8iLCJpZCI6Mn0.IE6mMsjdWMzkuBnEHqI9LcS67C8BT7O_Ooe4KzRCULFtLwduhbDy7-e0VMOZEwZtbWJV8MbFMYfkZ1FQj0np6A"
-    let googleToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImlzcyI6Imt0b3IuaW8iLCJpZCI6M30.prOmXoRUj22v6VYwX6iDLIZc60J706T8GXxvYGhHj86kGoS7mjiZ36f5EKft-J3u8TK83YfDz9E5W_GPFhzRMA"
         
     #if !AUTH_DISABLED
     private var socialNetworkService: SocialNetworkService!
     #endif
-    
+
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -29,16 +41,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             )
         )
         #endif
+        UITableView.appearance().separatorColor = .clear
         window = initializeWindow()
         initializeLogging()
         return true
     }
     
-    func initializeWindow() -> UIWindow {
+    func initializeWindow(
+    ) -> UIWindow {
         let window = UIWindow(frame: UIScreen.main.bounds)
-        window.rootViewController = UIHostingController(
-            rootView: OnlineUsersList(viewModel: .init(token: googleToken))
-        )
+        window.rootViewController = rootViewController
+        featureProvider.feature.listenState { [self] state in
+            rootViewController.rootView = TopLevelView(
+                state: state,
+                listener: featureProvider.feature.accept
+            )
+        }
         #if !AUTH_DISABLED
         let loginInitialViewController = LoginInitialViewController()
         loginInitialViewController.props = .init(
@@ -83,21 +101,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         #endif
     }
     
+    // MARK: Privates
+    
     private func initializeLogging() {
-        #if DEBUG
-        NapierProxy().buildDebug()
-        #else
-//        NapierProxy().build(antilog: CrashlyticsAntilog
-//        { _, tag, message in
-//            let args = [tag, message].compactMap { $0 }
-//            Crashlytics.crashlytics().log(args.joined(separator: " "))
-//        }
-//        crashlyticsSendLog: { throwable in
-//            Crashlytics.crashlytics().record(
-//                error: NSError(description: throwable.description())
-//            )
-//        })
-        #endif
+        NapierProxy().initializeLogging()
     }
 }
 

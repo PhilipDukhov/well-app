@@ -5,16 +5,15 @@ ios_deployment_target = '13.0'
 target 'Well' do
   platform :ios, ios_deployment_target
   use_frameworks!
-  
-  pod 'shared', :path => '../shared'
-#  pod 'auth', :path => '../auth'
+
+  pod 'sharedMobile', :path => '../sharedMobile'
+  #  pod 'auth', :path => '../auth'
 
   pod 'R.swift.Library'
   pod 'R.swift'
-  
-  pod 'PinLayout'
-end
 
+  #  pod 'Colorful'
+end
 
 post_install do |installer|
   installer.pods_project.build_configurations.each do |config|
@@ -28,13 +27,13 @@ post_install do |installer|
       end
     end
   end
-  
+
   # This removes the warning about swift conversion, hopefuly forever!
   # discussion: https://github.com/CocoaPods/CocoaPods/issues/8674
   installer.pods_project.root_object.attributes['LastSwiftMigration'] = 99999
   installer.pods_project.root_object.attributes['LastSwiftUpdateCheck'] = 99999
   installer.pods_project.root_object.attributes['LastUpgradeCheck'] = 99999
-  
+
   shared_data_dir = Xcodeproj::XCScheme.user_data_dir(installer.pods_project.path)
   Dir["#{shared_data_dir}/*.xcscheme"].each do |scheme_path|
     scheme = Xcodeproj::XCScheme.new scheme_path

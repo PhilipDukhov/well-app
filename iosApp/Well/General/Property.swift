@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Property<T> {
+final class Property<T> {
     
     var value: T {
         didSet {

@@ -9,3 +9,4 @@ fun ByteArray.toNSData() : NSData = memScoped {
     NSData.create(bytes = allocArrayOf(this@toNSData),
         length = this@toNSData.size.toULong())
 }
+

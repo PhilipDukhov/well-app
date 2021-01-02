@@ -10,7 +10,7 @@
 import UIKit
 import Auth
 
-class LoginSocialsView: UIStackView {
+final class LoginSocialsView: UIStackView {
     private var socialButtons: [ActionButton]!
     var action: ActionWith<SocialNetwork>?
     

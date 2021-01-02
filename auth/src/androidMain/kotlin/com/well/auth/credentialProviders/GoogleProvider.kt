@@ -50,11 +50,11 @@ actual class GoogleProvider actual constructor(context: Context) : CredentialPro
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             val account = task.getResult(ApiException::class.java)!!
             continuation.resume(AuthCredential.GoogleCredential(account.idToken!!))
-        } catch (e: Throwable) {
-            when ((e as? ApiException)?.statusCode) {
+        } catch (t: Throwable) {
+            when ((t as? ApiException)?.statusCode) {
                 SIGN_IN_CANCELLED -> continuation.cancel()
                 SIGN_IN_CURRENTLY_IN_PROGRESS -> return false
-                else -> continuation.resumeWithException(e)
+                else -> continuation.resumeWithException(t)
             }
         }
         this.continuation = null

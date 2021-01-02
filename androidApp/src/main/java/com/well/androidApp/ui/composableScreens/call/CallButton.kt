@@ -14,21 +14,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.well.androidApp.R
-
-@Composable
-fun CallDownButton(onClick: () -> Unit) =
-    CallButton(
-        R.drawable.ic_phone_down,
-        com.well.androidApp.ui.composableScreens.theme.Color.Pink,
-        onClick
-    )
+import com.well.androidApp.ui.composableScreens.theme.Color.Green
+import com.well.androidApp.ui.composableScreens.theme.Color.Pink
 
 @Composable
 fun CallUpButton(onClick: () -> Unit) =
     CallButton(
         R.drawable.ic_phone_up,
-        com.well.androidApp.ui.composableScreens.theme.Color.Green,
+        Green,
         onClick,
+    )
+
+@Composable
+fun CallDownButton(onClick: () -> Unit) =
+    CallButton(
+        R.drawable.ic_phone_down,
+        Pink,
+        onClick
     )
 
 @Composable

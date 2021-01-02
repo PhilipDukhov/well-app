@@ -18,7 +18,7 @@ suspend fun Dependencies.getFacebookAuthenticatedClient(): HttpClient {
     val appId = environment.configProperty("facebook.appId")
     val appSecret = environment.configProperty("facebook.appSecret")
     val host = "graph.facebook.com"
-    val client = localClient.config {
+    val client = this.client.config {
         defaultRequest {
             if (url.host == "localhost") {
                 url.host = host

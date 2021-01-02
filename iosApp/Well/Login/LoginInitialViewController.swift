@@ -7,11 +7,10 @@
 //
 
 import UIKit
-import PinLayout
 #if !AUTH_DISABLED
 import Auth
 
-class LoginInitialViewController: UIViewController {
+final class LoginInitialViewController: UIViewController {
     struct Props {
         let socialNetworkAction: ActionWith<SocialNetwork>
         let createAccountAction: Action

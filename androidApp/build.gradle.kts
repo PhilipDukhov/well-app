@@ -29,7 +29,7 @@ libDependencies(
     //tmp
     "ktor.client.core",
 
-    ":shared",
+    ":sharedMobile",
     ":serverModels",
     ":utils",
     ":auth"

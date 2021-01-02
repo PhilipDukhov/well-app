@@ -3,10 +3,14 @@ package com.well.utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
+import com.github.aakira.napier.Napier
+import com.well.utils.atomic.AtomicRef
 
 abstract class EffectHandler<Eff : Any, Msg : Any>(open val coroutineScope: CoroutineScope) : CloseableContainer() {
-    var listener: ((Msg) -> Unit)? = null
-        private set
+    private val _listener = AtomicRef<((Msg) -> Unit)?>(null)
+    var listener: ((Msg) -> Unit)?
+        get() = _listener.value
+        set(value) { _listener.value = value }
 
     open fun setListener(listener: suspend (Msg) -> Unit) {
         this.listener = { msg -> coroutineScope.launch { listener(msg) } }
