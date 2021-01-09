@@ -4,14 +4,16 @@ import com.well.serverModels.User
 import com.well.serverModels.WebSocketMessage
 import com.well.sharedMobile.networking.LoginNetworkManager
 import com.well.sharedMobile.networking.webSocketManager.NetworkManager
-import com.well.sharedMobile.puerh.AlertHelper
 import com.well.sharedMobile.puerh.call.CallFeature
 import com.well.sharedMobile.puerh.call.WebRtcEffectHandler
 import com.well.sharedMobile.puerh.call.WebRtcManagerI
+import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature
 import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersApiEffectHandler
 import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersFeature
+import com.well.sharedMobile.puerh.topLevel.Alert
+import com.well.sharedMobile.puerh.topLevel.Alert.CameraOrMicDenied
+import com.well.sharedMobile.puerh.topLevel.ContextHelper
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature
-import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.Alert.CameraOrMicDenied
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.Eff
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.Msg
 import com.well.utils.*
@@ -34,7 +36,7 @@ class FeatureProvider(
     private val permissionsHandler = PermissionsHandler(context.permissionsHandlerContext)
     private val coroutineContext = Dispatchers.Default
     private val coroutineScope = CoroutineScope(coroutineContext)
-    private val alertHelper = AlertHelper(context)
+    private val contextHelper = ContextHelper(context)
     private val sessionCloseableContainer = object : CloseableContainer() {}
     private var networkManager = AtomicLateInitRef<NetworkManager>()
     private var callEventHandlerCloseable = AtomicCloseableRef()
@@ -43,7 +45,7 @@ class FeatureProvider(
         interpreter@{ eff, listener ->
             when (eff) {
                 is Eff.ShowAlert ->
-                    alertHelper.showAlert(eff.alert)
+                    contextHelper.showAlert(eff.alert)
                 is Eff.OnlineUsersEff -> when (eff.eff) {
                     is OnlineUsersFeature.Eff.CallUser -> {
                         handleCall(eff.eff.user, listener)
@@ -60,6 +62,10 @@ class FeatureProvider(
                         )
                         endCall(listener)
                     }
+                    CallFeature.Eff.StartImageSharing -> {
+                        listener(Msg.StartImageSharing(ImageSharingFeature.State.Role.Viewer))
+                    }
+                    is CallFeature.Eff.UpdateDeviceState -> TODO()
                 }
                 is Eff.GotLogInToken -> {
                     loggedIn(eff.token, listener)
@@ -68,6 +74,25 @@ class FeatureProvider(
                 Eff.TestLogin -> {
                     listener.invoke(Msg.LoggedIn)
                     loggedIn(getTestLoginToken(), listener)
+                }
+                is Eff.ImageSharingEff -> when (eff.eff) {
+                    is ImageSharingFeature.Eff.NotifyViewSizeUpdate,
+                    is ImageSharingFeature.Eff.UploadImage,
+                    ImageSharingFeature.Eff.Init -> Unit
+
+                    ImageSharingFeature.Eff.RequestImageUpdate -> {
+                        val msg = try {
+                            ImageSharingFeature.Msg.LocalUpdateImage(
+                                contextHelper.pickSystemImage()
+                            )
+                        } catch (t: Throwable) {
+                            ImageSharingFeature.Msg.ImageUpdateCancelled
+                        }
+                        listener(Msg.ImageSharingMsg(msg))
+                    }
+                    ImageSharingFeature.Eff.Close -> {
+                        listener(Msg.StopImageSharing)
+                    }
                 }
             }
         }
@@ -100,7 +125,11 @@ class FeatureProvider(
                     platform.dataStore.deviceUUID = it
                 }
             }
-        return LoginNetworkManager().testLogin(deviceUUID)
+        return LoginNetworkManager()
+            .testLogin(deviceUUID)
+            .also {
+                platform.dataStore.loginToken = it
+            }
     }
 
     private fun loggedIn(
@@ -181,16 +210,12 @@ class FeatureProvider(
                     coroutineScope,
                 )
                     .apply {
-                        initiateEffect?.let(::handleEffect)
+                        initiateEffect?.let { handleEffect(Eff.CallEff(it)) }
                     }
-                    .adapt(
-                        effAdapter = { (it as? Eff.CallEff)?.eff },
-                        msgAdapter = { Msg.CallMsg(it) }
-                    )
             )
     }
 
-    private val PermissionsHandler.Type.alert: TopLevelFeature.Alert
+    private val PermissionsHandler.Type.alert: Alert
         get() = when (this) {
             Camera, Microphone -> CameraOrMicDenied
         }

@@ -20,9 +20,6 @@ struct UserCell: View {
                 .padding()
             Text(viewModel.fullName)
             Spacer()
-            Image(systemName: "phone.fill")
-                .renderingMode(.template)
-                .foregroundColor(.green)
         }
     }
 }

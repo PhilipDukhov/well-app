@@ -41,19 +41,17 @@ suspend fun PipelineContext<*, ApplicationCall>.googleLogin(dependencies: Depend
                             getValue("family_name") as String,
                             googleId
                         )
-                        val id = lastInsertId()
+                        lastInsertId()
                             .executeAsOne()
                             .toInt()
-                        CoroutineScope(Dispatchers.IO).launch {
-                            database
-                                .userQueries
-                                .updateProfileImage(
-                                    getRandomPicture()
-                                        .toString(),
-                                    id
-                                )
-                        }
-                        id
+                    }.also {
+                        database
+                            .userQueries
+                            .updateProfileImage(
+                                getRandomPicture()
+                                    .toString(),
+                                it
+                            )
                     }
             }
         }

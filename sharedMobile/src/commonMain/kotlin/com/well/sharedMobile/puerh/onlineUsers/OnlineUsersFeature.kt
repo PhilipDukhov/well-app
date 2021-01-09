@@ -3,6 +3,8 @@ package com.well.sharedMobile.puerh.onlineUsers
 import com.well.serverModels.User
 import com.well.sharedMobile.networking.webSocketManager.NetworkManager
 import com.well.sharedMobile.networking.webSocketManager.NetworkManager.Status.Disconnected
+import com.well.utils.toSetOf
+import com.well.utils.withEmptySet
 
 object OnlineUsersFeature {
     fun initialState(): State = State(
@@ -29,16 +31,16 @@ object OnlineUsersFeature {
 
     fun reducer(msg: Msg, state: State): Pair<State, Set<Eff>> = when (msg) {
         is Msg.OnConnectionStatusChange -> {
-            state.copy(connectionStatus = msg.connectionStatus) to emptySet()
+            state.copy(connectionStatus = msg.connectionStatus).withEmptySet()
         }
         is Msg.OnUsersUpdated ->  {
-            state.copy(users = msg.users) to emptySet()
+            state.copy(users = msg.users).withEmptySet()
         }
         is Msg.OnUserSelected -> {
-            state to setOf(Eff.CallUser(msg.user))
+            state toSetOf Eff.CallUser(msg.user)
         }
         is Msg.OnCurrentUserUpdated -> {
-            state.copy(currentUser = msg.user) to emptySet()
+            state.copy(currentUser = msg.user).withEmptySet()
         }
     }
 }

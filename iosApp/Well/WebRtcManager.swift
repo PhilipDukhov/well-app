@@ -30,9 +30,6 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
         kRTCMediaConstraintsOfferToReceiveVideo: rtcTrue,
     ])
 
-    let candidates: Kotlinx_coroutines_coreSharedFlow
-    private let _candidates: MutableSharedFlowWrapper<ServerModelsWebSocketMessage.Candidate>
-
     private let videoCapturer: RTCVideoCapturer
 
     private let localAudioTrack: RTCAudioTrack
@@ -69,8 +66,6 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
         try! AVAudioSession.sharedInstance()
             .setActive(true)
         self.listener = listener
-        _candidates = .init(replay: .max)
-        candidates = _candidates
         let config = RTCConfiguration()
         config.iceServers = [RTCIceServer(urlStrings: iceServers)]
 
@@ -145,7 +140,10 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
         capturer.startCapture(with: frontCamera,
             format: format,
             fps: Int(fps.maxFrameRate))
-        print("initialized \(self)")
+    }
+
+    func close() {
+        peerConnection.close()
     }
 
     func acceptAnswer(
@@ -216,8 +214,7 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
         peerConnection.add(localVideoTrack, streamIds: streamIds)
         create(
             rtcMedia
-        ) { [weak self] description,
-                        error in
+        ) { [weak self] description, error in
             if let description = description {
                 self?.peerConnection.setLocalDescription(
                     description
@@ -226,12 +223,18 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
                         print(#function, "setLocalDescription", error)
                         return
                     }
-                        completion(description.sdp)
+                    completion(description.sdp)
                 }
             } else {
                 debugPrint(#function, error as Any)
             }
         }
+    }
+
+    func sendData(
+        data: UtilsData
+    ) {
+        localDataChannel.sendData(.init(data: data.data, isBinary: false))
     }
 }
 
@@ -240,7 +243,7 @@ extension WebRtcManager: RTCPeerConnectionDelegate {
         _ peerConnection: RTCPeerConnection,
         didChange stateChanged: RTCSignalingState
     ) {
-        debugPrint(#function + ": \(stateChanged)")
+        debugPrint(#function + ": \(stateChanged.rawValue)")
     }
 
     func peerConnection(
@@ -269,21 +272,21 @@ extension WebRtcManager: RTCPeerConnectionDelegate {
         _ peerConnection: RTCPeerConnection,
         didChange newState: RTCIceConnectionState
     ) {
-        debugPrint(#function + ": \(newState)")
+        debugPrint(#function + ":RTCIceConnectionState \(newState.rawValue)")
     }
 
     func peerConnection(
         _ peerConnection: RTCPeerConnection,
         didChange newState: RTCIceGatheringState
     ) {
-        debugPrint(#function + ": \(newState)")
+        debugPrint(#function + ":RTCIceGatheringState \(newState.rawValue)")
     }
 
     func peerConnection(
         _ peerConnection: RTCPeerConnection,
         didGenerate candidate: RTCIceCandidate
     ) {
-        _candidates.emit(value: candidate.toMessage())
+        listener.addCandidate(candidate: candidate.toMessage())
     }
 
     func peerConnection(
@@ -299,6 +302,7 @@ extension WebRtcManager: RTCPeerConnectionDelegate {
     ) {
         debugPrint("peerConnection did open data channel")
         remoteDataChannel = dataChannel
+        dataChannel.delegate = self
     }
 }
 
@@ -309,6 +313,21 @@ extension RTCIceCandidate {
             sdpMLineIndex: sdpMLineIndex,
             sdp: sdp
         )
+    }
+}
+
+extension WebRtcManager: RTCDataChannelDelegate {
+    func dataChannelDidChangeState(
+        _ dataChannel: RTCDataChannel
+    ) {
+        debugPrint(#function, dataChannel.readyState.rawValue)
+    }
+
+    func dataChannel(
+        _ dataChannel: RTCDataChannel,
+        didReceiveMessageWith buffer: RTCDataBuffer
+    ) {
+        listener.receiveData(data: .init(data: buffer.data))
     }
 }
 
@@ -324,21 +343,6 @@ extension WebRtcManager {
             .forEach {
                 $0.isEnabled = isEnabled
             }
-    }
-}
-
-extension WebRtcManager: RTCDataChannelDelegate {
-    func dataChannelDidChangeState(
-        _ dataChannel: RTCDataChannel
-    ) {
-        debugPrint(#function)
-    }
-
-    func dataChannel(
-        _ dataChannel: RTCDataChannel,
-        didReceiveMessageWith buffer: RTCDataBuffer
-    ) {
-        debugPrint(#function)
     }
 }
 

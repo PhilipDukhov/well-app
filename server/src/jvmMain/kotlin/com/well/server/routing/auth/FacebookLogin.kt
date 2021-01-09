@@ -97,21 +97,19 @@ private fun Dependencies.createFacebookUser(
             .toInt()
     }
 
-private fun HttpClient.updateUserProfile(
+private suspend fun HttpClient.updateUserProfile(
     id: UserId,
     facebookId: String,
     dependencies: Dependencies,
-) = CoroutineScope(Dispatchers.IO).launch {
-    dependencies.run {
-        (getProfilePicture(facebookId)
-            ?.let { url -> uploadToS3FromUrl(url, "profilePictures/$id") }
-            ?: getRandomPicture())
-            .let {
-                database
-                    .userQueries
-                    .updateProfileImage(it.toString(), id)
-            }
-    }
+) = dependencies.apply {
+    (getProfilePicture(facebookId)
+        ?.let { url -> uploadToS3FromUrl(url, "profilePictures/$id") }
+        ?: getRandomPicture())
+        .let {
+            database
+                .userQueries
+                .updateProfileImage(it.toString(), id)
+        }
 }
 
 private fun JsonObject.getPrimitiveContent(field: UserFields) =

@@ -9,6 +9,9 @@ kotlin {
     android()
     jvm()
     sourceSets {
+        all {
+            languageSettings.useExperimentalAnnotation("kotlinx.serialization.ExperimentalSerializationApi")
+        }
         val commonMain by getting {
             libDependencies(
                 "kotlin.serializationJson",

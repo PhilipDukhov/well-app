@@ -2,9 +2,9 @@ package com.well.androidApp.ui.composableScreens.call
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -13,21 +13,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import coil.transform.CircleCropTransformation
 import com.well.androidApp.R
 import com.well.androidApp.ui.composableScreens.zCustomViews.UserProfileImage
 import com.well.sharedMobile.puerh.call.CallFeature
 import com.well.sharedMobile.puerh.call.CallFeature.Msg
+import com.well.sharedMobile.puerh.call.CallFeature.State
 import com.well.sharedMobile.puerh.call.CallFeature.State.Status
-import dev.chrisbanes.accompanist.coil.CoilImage
 import dev.chrisbanes.accompanist.insets.systemBarsPadding
 
 @Composable
 fun CallScreen(
-    state: CallFeature.State,
+    state: State,
     listener: (Msg) -> Unit,
 ) = Box {
         Image(
@@ -114,6 +114,13 @@ fun CallScreen(
                 }
                 Spacer(modifier = Modifier.weight(1f))
             }
+            Image(
+                imageResource(R.drawable.ic_screen_sharing),
+                modifier = Modifier
+                    .clickable {
+                        listener(Msg.StartImageSharing)
+                    }
+            )
             Spacer(
                 modifier = Modifier
                     .height(32.dp)

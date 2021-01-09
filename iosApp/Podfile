@@ -1,6 +1,6 @@
 inhibit_all_warnings!
 
-ios_deployment_target = '13.0'
+ios_deployment_target = '13.4'
 
 target 'Well' do
   platform :ios, ios_deployment_target

@@ -9,9 +9,9 @@ import com.well.sharedMobile.puerh.call.WebRtcManagerI
 import com.well.utils.CloseableContainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import org.webrtc.*
+import java.nio.ByteBuffer
 
 class WebRtcManager(
     iceServers: List<String>,
@@ -106,7 +106,7 @@ class WebRtcManager(
                 override fun onIceCandidate(iceCandidate: IceCandidate) {
                     super.onIceCandidate(iceCandidate)
                     CoroutineScope(Dispatchers.IO).launch {
-                        candidates.emit(
+                        listener.addCandidate(
                             WebSocketMessage.Candidate(
                                 iceCandidate.sdpMid,
                                 iceCandidate.sdpMLineIndex,
@@ -127,9 +127,39 @@ class WebRtcManager(
                     remoteVideoTrack = null
                     remoteAudioTrack = null
                 }
+
+                override fun onDataChannel(dataChannel: DataChannel) {
+                    super.onDataChannel(dataChannel)
+                    dataChannel.registerObserver(
+                        object : DataChannelObserver() {
+                            override fun onMessage(p0: DataChannel.Buffer?) {
+                                super.onMessage(p0)
+                                p0?.data?.let {
+                                    val byteArray = ByteArray(it.capacity())
+                                    it.get(byteArray)
+                                    listener.receiveData(byteArray)
+                                }
+                            }
+                        }
+                    )
+                }
             })!!
     }
-    override var candidates = MutableSharedFlow<WebSocketMessage.Candidate>(replay = Int.MAX_VALUE)
+    private val localDataChannel = peerConnection.createDataChannel(
+        "WebRTCData",
+        DataChannel.Init()
+    ).apply {
+        registerObserver(
+            object : DataChannelObserver() {
+                override fun onStateChange() {
+                    super.onStateChange()
+                    if (state() == DataChannel.State.OPEN) {
+//                        sendData(Data("onStateChange open"))
+                    }
+                }
+            }
+        )
+    }
 
     private fun createVideoCapturer(): VideoCapturer? =
         if (Camera2Enumerator.isSupported(applicationContext)) {
@@ -183,6 +213,14 @@ class WebRtcManager(
                 candidate.sdp
             )
         )
+    }
+
+    override fun sendData(data: ByteArray) {
+        if (localDataChannel.state() == DataChannel.State.OPEN) {
+            localDataChannel.send(DataChannel.Buffer(ByteBuffer.wrap(data), false))
+        } else {
+            println("didn't sendData state ${localDataChannel.state()}")
+        }
     }
 
     private fun createOfferOrAnswer(

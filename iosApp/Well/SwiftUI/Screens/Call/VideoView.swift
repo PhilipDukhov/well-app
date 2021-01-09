@@ -11,34 +11,51 @@ import WebRTC
 import SharedMobile
 
 #if arch(arm64)
-typealias UIVideoView = RTCMTLVideoView
+typealias RTCVideoView = RTCMTLVideoView
 #else
-typealias UIVideoView = RTCEAGLVideoView
+typealias RTCVideoView = RTCEAGLVideoView
 #endif
 
-struct VideoView: UIViewRepresentable {
-    struct Coordinator {
-        let parent: VideoView
+final class UIVideoView: RTCVideoView {
+    var videoTrack: RTCVideoTrack? {
+        didSet {
+            guard oldValue != videoTrack else {
+                return
+            }
+            oldValue?.remove(self)
+            videoTrack?.add(self)
+        }
     }
 
-    let model: VideoViewContext
+    init() {
+        super.init(frame: UIScreen.main.bounds)
+        clipsToBounds = true
+        #if arch(arm64)
+        videoContentMode = .scaleAspectFill
+        #endif
+    }
+
+    required init?(
+        coder: NSCoder
+    ) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+struct VideoView: UIViewRepresentable {
+    let context: VideoViewContext?
 
     func makeUIView(
         context: UIViewRepresentableContext<VideoView>
     ) -> UIVideoView {
-        UIVideoView().apply { videoView in
-            #if arch(arm64)
-            videoView.videoContentMode = .scaleAspectFill
-            #endif
-            videoView.frame = UIScreen.main.bounds
-        }
+        .init()
     }
 
     func updateUIView(
         _ uiView: UIVideoView,
         context: UIViewRepresentableContext<VideoView>
     ) {
-        model.videoTrack.add(uiView)
+        uiView.videoTrack = self.context?.videoTrack
     }
 
     func makeCoordinator() -> Coordinator {
@@ -46,9 +63,12 @@ struct VideoView: UIViewRepresentable {
     }
 
     static func dismantleUIView(
-        _ uiView: RTCMTLVideoView,
+        _ uiView: UIVideoView,
         coordinator: Coordinator
     ) {
-        coordinator.parent.model.videoTrack.remove(uiView)
+        uiView.videoTrack = nil
+    }
+    struct Coordinator {
+        let parent: VideoView
     }
 }

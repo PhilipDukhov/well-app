@@ -9,3 +9,6 @@ fun <T> AtomicRef<T>.getAndSet(newValue: T): T {
     value = newValue
     return result
 }
+
+@Suppress("FunctionName")
+fun <T> AtomicRef(): AtomicRef<T?> = AtomicRef(null)

@@ -16,4 +16,15 @@ extension View {
             alignment: alignment
         )
     }
+
+    @inline(__always) func frame(
+        size: CGSize,
+        alignment: Alignment = .center
+    ) -> some View {
+        frame(
+            width: size.width,
+            height: size.height,
+            alignment: alignment
+        )
+    }
 }

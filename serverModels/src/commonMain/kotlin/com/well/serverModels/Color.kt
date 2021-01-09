@@ -28,4 +28,8 @@ data class Color(
         blue = (colorRGB.shr(0) and 0xFF).toInt(),
         alpha = alpha
     )
+
+    companion object {
+        val red = Color(0xFF0000)
+    }
 }

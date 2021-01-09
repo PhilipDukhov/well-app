@@ -25,15 +25,13 @@ suspend fun PipelineContext<*, ApplicationCall>.testLogin(
             deviceId,
             client.getRandomUser()
         ).also { id ->
-            CoroutineScope(Dispatchers.IO).launch {
-                dependencies.run {
-                    getRandomPicture()
-                        .let {
-                            database
-                                .userQueries
-                                .updateProfileImage(it.toString(), id)
-                        }
-                }
+            dependencies.run {
+                getRandomPicture()
+                    .let {
+                        database
+                            .userQueries
+                            .updateProfileImage(it.toString(), id)
+                    }
             }
         }
 

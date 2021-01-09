@@ -104,11 +104,16 @@ class NetworkManager(
         listeners.addListenerAndMakeCloseable(listener)
             .also(::addCloseableChild)
 
-    suspend fun send(message: WebSocketMessage) =
-        webSocketSession.value?.send(
-            Json.encodeToString(
-                WebSocketMessage.serializer(),
-                message
+    suspend fun send(message: WebSocketMessage) {
+        try {
+            webSocketSession.value?.send(
+                Json.encodeToString(
+                    WebSocketMessage.serializer(),
+                    message
+                )
             )
-        )
+        } catch (t: Throwable) {
+            println("failed to send $message $t")
+        }
+    }
 }

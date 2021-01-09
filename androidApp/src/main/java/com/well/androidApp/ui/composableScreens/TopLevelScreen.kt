@@ -2,6 +2,7 @@ package com.well.androidApp.ui.composableScreens
 
 import androidx.compose.runtime.Composable
 import com.well.androidApp.ui.composableScreens.call.CallScreen
+import com.well.androidApp.ui.composableScreens.call.screenSharing.ImageSharingScreen
 import com.well.androidApp.ui.composableScreens.onlineUsers.OnlineUsersScreen
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.State.ScreenState.OnlineUsers
@@ -20,6 +21,11 @@ fun TopLevelScreen(
         is TopLevelFeature.State.ScreenState.Call -> {
             CallScreen(screen.state) {
                 listener(TopLevelFeature.Msg.CallMsg(it))
+            }
+        }
+        is TopLevelFeature.State.ScreenState.ImageSharing -> {
+            ImageSharingScreen(screen.state) {
+                listener(TopLevelFeature.Msg.ImageSharingMsg(it))
             }
         }
     }

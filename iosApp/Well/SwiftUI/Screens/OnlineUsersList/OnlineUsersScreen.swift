@@ -26,11 +26,16 @@ struct OnlineUsersScreen: View {
             .frame(height: 45)
             .padding()
         Divider()
-        List(state.users, id: \.id) { user in
-            UserCell(viewModel: user)
-                .onTapGesture {
-                    listener(OnlineUsersFeature.MsgOnUserSelected(user: user))
-                }
+        List {
+            ForEach(state.users, id: \.id) { user in
+                UserCell(viewModel: user)
+                    .listRowInsets(.zero)
+                    .frame(maxWidth: .infinity)
+                    .onTapGesture {
+                        print("tap ok \(Date().timeIntervalSince1970)")
+                        listener(OnlineUsersFeature.MsgOnUserSelected(user: user))
+                    }
+            }
         }
     }
 }

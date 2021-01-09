@@ -21,7 +21,7 @@ object LoginFeature {
 //
 //    fun reducer(msg: Msg, state: State): ReducerResult = when (msg) {
 //        is Msg.OnCounterChange -> state.addToCounter(msg.value) to emptySet()
-//        is Msg.OnRandomClick -> state to setOf(Eff.GenerateRandomCounterChange)
+//        is Msg.OnRandomClick -> state toSetOf Eff.GenerateRandomCounterChange
 //        is Msg.OnIncreaseClick -> state.addToCounter(1) to emptySet()
 //        is Msg.OnDecreaseClick -> state.addToCounter(-1) to emptySet()
 //        is Msg.OnProgressPublish -> when (msg.progress) {

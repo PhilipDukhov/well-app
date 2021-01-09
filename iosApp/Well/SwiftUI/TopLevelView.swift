@@ -14,10 +14,18 @@ struct TopLevelView: View {
     let listener: (TopLevelFeature.Msg) -> Void
     
     var body: some View {
+        content
+            .environment(\.defaultMinListRowHeight, 0)
+    }
+
+    @ViewBuilder
+    var content: some View {
         switch state.currentScreen {
         case let state as TopLevelFeature.StateScreenStateOnlineUsers:
             OnlineUsersScreen(state: state.state) {
                 listener(TopLevelFeature.MsgOnlineUsersMsg(msg: $0))
+            }.onTapGesture {
+                print("OnlineUsersScreen tap")
             }
 
         case let state as TopLevelFeature.StateScreenStateCall:

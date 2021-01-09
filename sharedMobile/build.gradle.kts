@@ -5,7 +5,6 @@ plugins {
     id("kotlinx-serialization")
 }
 
-
 kotlin {
     android()
     val frameworkName = project.name.capitalize()
@@ -31,13 +30,16 @@ kotlin {
         pod("GoogleWebRTC", moduleName = "WebRTC")
     }
     sourceSets {
+        all {
+            languageSettings.useExperimentalAnnotation("io.ktor.util.InternalAPI")
+        }
+
         val commonMain by getting {
             libDependencies(
                 ":serverModels",
                 ":utils",
                 "kotlin.serializationJson",
                 "napier",
-                "oolong",
                 "ktor.client.core",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib"

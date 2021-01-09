@@ -1,19 +1,21 @@
 package com.well.sharedMobile.puerh.call
 
 import com.well.serverModels.WebSocketMessage
-import kotlinx.coroutines.flow.SharedFlow
+import com.well.utils.Closeable
 
-interface WebRtcManagerI {
+interface WebRtcManagerI: Closeable {
     interface Listener {
         fun updateRemoveVideoContext(viewContext: VideoViewContext?)
+        fun addCandidate(candidate: WebSocketMessage.Candidate)
         fun sendOffer(webRTCSessionDescriptor: String)
         fun sendAnswer(webRTCSessionDescriptor: String)
+        fun receiveData(data: ByteArray)
     }
 
     val localVideoContext: VideoViewContext
-    val candidates: SharedFlow<WebSocketMessage.Candidate>
     fun sendOffer()
     fun acceptOffer(webRTCSessionDescriptor: String)
     fun acceptAnswer(webRTCSessionDescriptor: String)
     fun acceptCandidate(candidate: WebSocketMessage.Candidate)
+    fun sendData(data: ByteArray)
 }
