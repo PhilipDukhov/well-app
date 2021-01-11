@@ -8,7 +8,7 @@ import android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
 import com.well.utils.Context
-import com.well.utils.Image
+import com.well.sharedMobile.utils.ImageContainer
 import kotlinx.coroutines.*
 import kotlin.coroutines.resume
 
@@ -45,8 +45,8 @@ actual class ContextHelper actual constructor(actual val context: Context) {
             )
     }
 
-    actual suspend fun pickSystemImage(): Image =
-        suspendCancellableCoroutine<Image> { continuation ->
+    actual suspend fun pickSystemImage(): ImageContainer =
+        suspendCancellableCoroutine<ImageContainer> { continuation ->
             this.continuation = continuation
             val intents = listOf(
                 Intent(ACTION_GET_CONTENT),
@@ -54,13 +54,7 @@ actual class ContextHelper actual constructor(actual val context: Context) {
             ).onEach {
                 it.type = "image/*"
             }
-            val intent = createChooser(intents)
-            imagePickerLauncher.launch(intent)
-
-            GlobalScope.launch {
-                delay(2000L)
-                context.componentActivity.stopService(intent)
-            }
+            imagePickerLauncher.launch(createChooser(intents))
         }.also {
             continuation = null
         }
@@ -68,16 +62,15 @@ actual class ContextHelper actual constructor(actual val context: Context) {
     private val imagePickerLauncher = context.componentActivity.registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
-        val dataString = it.data?.dataString
-        if (dataString != null) {
-            continuation?.resume(Image(dataString))
+        val data = it.data?.data
+        if (data != null) {
+            continuation?.resume(ImageContainer(data, context.componentActivity))
         } else {
-
             continuation?.cancel(IllegalStateException("imagePickerLauncher result: ${it.resultCode}"))
         }
     }
 
-    private var continuation: CancellableContinuation<Image>? = null
+    private var continuation: CancellableContinuation<ImageContainer>? = null
 
     private fun createChooser(intents: List<Intent>): Intent {
         val chooserIntent = createChooser(intents.first(), "Select Image")

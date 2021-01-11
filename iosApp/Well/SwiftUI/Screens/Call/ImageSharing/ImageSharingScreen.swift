@@ -8,7 +8,7 @@ import SharedMobile
 
 extension CGSize {
     func toSize() -> ServerModelsSize {
-        .init(width: Double(width), height: Double(height))
+        .init(width: Double(width), height_: Double(height))
     }
 }
 
@@ -17,19 +17,24 @@ struct ImageSharingScreen: View {
     let listener: (ImageSharingFeature.Msg) -> Void
 
     var body: some View {
-        GeometryReader { geometry in
-            onAppear {
-                listener(
-                    ImageSharingFeature.MsgUpdateLocalViewSize.init(
-                        size: geometry.size.toSize()
-                    )
-                )
-            }
-            state.image.map {
+        Text("ok")
+//        GeometryReader { geometry in
+//            onAppear {
+//                )
+//            }
+        state.image.map {
                 Image(uiImage: $0.uiImage)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }
-        }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            }.frame(maxWidth: .infinity, maxHeight: .infinity)
             .edgesIgnoringSafeArea(.all)
+        onAppear {
+            print("test1")
+//            listener(
+//                ImageSharingFeature.MsgUpdateLocalViewSize(
+//                    size: UIScreen.main.bounds.size.toSize()//geometry.size.toSize()
+//                )
+//            )
+//            print("test2")
+        }
     }
 }

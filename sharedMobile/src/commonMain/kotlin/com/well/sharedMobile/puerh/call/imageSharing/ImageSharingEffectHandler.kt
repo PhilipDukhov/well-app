@@ -2,13 +2,12 @@ package com.well.sharedMobile.puerh.call.imageSharing
 
 import com.well.serverModels.Date
 import com.well.serverModels.compareTo
-import com.well.sharedMobile.puerh.call.WebRtcEffectHandler
 import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature.Eff
 import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature.Msg
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.Msg as TopLevelMsg
 import com.well.sharedMobile.puerh.call.resizedImageBase64Encoding
 import com.well.utils.atomic.AtomicRef
-import com.well.utils.decodeBase64Image
+import com.well.sharedMobile.utils.decodeBase64Image
 import com.well.sharedMobile.puerh.call.WebRtcEffectHandler.SharingStateDataChannelMessage as RtcMsg
 
 class ImageSharingEffectHandler(

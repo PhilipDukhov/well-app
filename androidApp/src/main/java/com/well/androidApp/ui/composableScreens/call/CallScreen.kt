@@ -36,7 +36,7 @@ fun CallScreen(
             modifier = Modifier
                 .fillMaxSize()
         )
-        state.localVideoContext?.let { context ->
+        state.remoteVideoContext?.let { context ->
             VideoView(
                 context,
                 modifier = Modifier
@@ -49,42 +49,14 @@ fun CallScreen(
                 .fillMaxWidth()
                 .systemBarsPadding()
         ) {
-            Spacer(
-                modifier = Modifier
-                    .height(16.dp)
-            )
-            UserProfileImage(
-                state.user,
-                modifier = Modifier
-                    .fillMaxWidth(0.6F)
-            )
-            Spacer(
-                modifier = Modifier
-                    .height(40.dp)
-            )
-            Text(
-                state.user.fullName,
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.h4,
-                modifier = Modifier
-                    .fillMaxWidth(0.9F)
-                    .padding(bottom = 11.dp)
-            )
-            Text(
-                state.status.stringRepresentation,
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier
-                    .fillMaxWidth(0.9F)
-            )
+            if (state.status != Status.Ongoing) {
+                IncomingInfo(state)
+            }
             Spacer(modifier = Modifier.weight(1f))
-            state.remoteVideoContext?.let { context ->
+            state.localVideoContext?.let { context ->
                 Box(
                     modifier = Modifier
                         .height(200.dp)
-                        .background(Color.Red)
                         .aspectRatio(1080F/1920)
                         .align(Alignment.End)
                         .padding(10.dp)
@@ -117,6 +89,7 @@ fun CallScreen(
             Image(
                 imageResource(R.drawable.ic_screen_sharing),
                 modifier = Modifier
+                    .padding()
                     .clickable {
                         listener(Msg.StartImageSharing)
                     }
@@ -127,3 +100,39 @@ fun CallScreen(
             )
         }
     }
+
+@Composable
+private fun IncomingInfo(
+    state: State,
+) {
+    Spacer(
+        modifier = Modifier
+            .height(16.dp)
+    )
+    UserProfileImage(
+        state.user,
+        modifier = Modifier
+            .fillMaxWidth(0.6F)
+    )
+    Spacer(
+        modifier = Modifier
+            .height(40.dp)
+    )
+    Text(
+        state.user.fullName,
+        color = Color.White,
+        textAlign = TextAlign.Center,
+        style = MaterialTheme.typography.h4,
+        modifier = Modifier
+            .fillMaxWidth(0.9F)
+            .padding(bottom = 11.dp)
+    )
+    Text(
+        state.status.stringRepresentation,
+        color = Color.White,
+        textAlign = TextAlign.Center,
+        style = MaterialTheme.typography.body1,
+        modifier = Modifier
+            .fillMaxWidth(0.9F)
+    )
+}

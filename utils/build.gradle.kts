@@ -7,6 +7,7 @@ kotlin {
     android()
     ios()
     sourceSets {
+        usePredefinedExperimentalAnnotations()
         val commonMain by getting {
             libDependencies(
                 ":serverModels",

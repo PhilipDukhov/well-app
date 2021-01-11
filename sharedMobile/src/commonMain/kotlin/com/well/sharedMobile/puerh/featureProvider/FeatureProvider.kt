@@ -63,7 +63,7 @@ class FeatureProvider(
                         endCall(listener)
                     }
                     CallFeature.Eff.StartImageSharing -> {
-                        listener(Msg.StartImageSharing(ImageSharingFeature.State.Role.Viewer))
+                        listener(Msg.StartImageSharing(ImageSharingFeature.State.Role.Editor))
                     }
                     is CallFeature.Eff.UpdateDeviceState -> TODO()
                 }

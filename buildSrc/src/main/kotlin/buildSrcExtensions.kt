@@ -1,5 +1,7 @@
 import org.codehaus.groovy.runtime.GStringImpl
+import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
 import org.gradle.kotlin.dsl.add
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
@@ -55,9 +57,12 @@ fun Project.version(name: String) =
 fun Any.toLinkedHashMap(): LinkedHashMap<*, *> = this as LinkedHashMap<*, *>
 
 fun KotlinSourceSet.libDependencies(vararg libs: String) =
+    libDependencies(libs.asList())
+
+fun KotlinSourceSet.libDependencies(libs: List<String>) =
     dependencies {
         (this as DefaultKotlinDependencyHandler).apply {
-            project.customDependencies(libs.asList())
+            project.customDependencies(libs)
                 .forEach {
                     when (it) {
                         is Dependency.Implementation -> {
@@ -77,6 +82,30 @@ fun KotlinSourceSet.libDependencies(vararg libs: String) =
                 }
         }
     }
+
+fun NamedDomainObjectCollection<KotlinSourceSet>.usePredefinedExperimentalAnnotations(
+    vararg annotations: String
+) {
+    all {
+        listOf(
+            "kotlin.ExperimentalUnsignedTypes",
+            "io.ktor.util.InternalAPI"
+        ).forEach {
+            languageSettings.useExperimentalAnnotation(it)
+        }
+    }
+}
+
+fun NamedDomainObjectCollection<KotlinSourceSet>.iosMainsBuild(
+    targetNames: List<String>,
+    build: KotlinSourceSet.() -> Unit
+) {
+    targetNames.forEach {
+        named(it + "Main") {
+            build(this)
+        }
+    }
+}
 
 fun Project.libDependencies(vararg libs: String) =
     customDependencies(libs.asList())

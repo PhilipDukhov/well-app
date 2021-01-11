@@ -232,9 +232,9 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
     }
 
     func sendData(
-        data: UtilsData
+        data: KotlinByteArray
     ) {
-        localDataChannel.sendData(.init(data: data.data, isBinary: false))
+        localDataChannel.sendData(.init(data: data.toNSData(), isBinary: false))
     }
 }
 
@@ -327,7 +327,7 @@ extension WebRtcManager: RTCDataChannelDelegate {
         _ dataChannel: RTCDataChannel,
         didReceiveMessageWith buffer: RTCDataBuffer
     ) {
-        listener.receiveData(data: .init(data: buffer.data))
+        listener.receiveData(data: UtilsKt.toByteArray(buffer.data))
     }
 }
 

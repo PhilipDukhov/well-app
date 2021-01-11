@@ -4,7 +4,7 @@ import com.well.serverModels.Color
 import com.well.serverModels.Path
 import com.well.serverModels.Point
 import com.well.serverModels.Size
-import com.well.utils.Image
+import com.well.sharedMobile.utils.ImageContainer
 import com.well.utils.toSetOf
 import com.well.utils.withEmptySet
 
@@ -21,7 +21,7 @@ object ImageSharingFeature {
         val role: Role,
         val localViewSize: Size? = null,
         val remoteViewSize: Size? = null,
-        val image: Image? = null,
+        val image: ImageContainer? = null,
         val currentColor: Color = Color.red,
         val paths: List<Path> = listOf(),
     ) {
@@ -36,8 +36,8 @@ object ImageSharingFeature {
         data class UpdateLocalViewSize(val size: Size) : Msg()
         data class UpdateRemoteViewSize(val size: Size) : Msg()
         object ImageUpdateCancelled : Msg()
-        data class LocalUpdateImage(val image: Image) : Msg()
-        data class RemoteUpdateImage(val image: Image) : Msg()
+        data class LocalUpdateImage(val image: ImageContainer) : Msg()
+        data class RemoteUpdateImage(val image: ImageContainer) : Msg()
         data class UpdateColor(val color: Color) : Msg()
         object StartPath : Msg()
         data class AddPoint(val point: Point) : Msg()
@@ -51,7 +51,7 @@ object ImageSharingFeature {
         object Close : Eff()
         data class NotifyViewSizeUpdate(val size: Size) : Eff()
         data class UploadImage(
-            val image: Image,
+            val image: ImageContainer,
             val remoteViewSize: Size
         ) : Eff()
     }

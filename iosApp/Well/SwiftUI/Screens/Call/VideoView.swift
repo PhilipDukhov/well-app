@@ -10,38 +10,6 @@ import SwiftUI
 import WebRTC
 import SharedMobile
 
-#if arch(arm64)
-typealias RTCVideoView = RTCMTLVideoView
-#else
-typealias RTCVideoView = RTCEAGLVideoView
-#endif
-
-final class UIVideoView: RTCVideoView {
-    var videoTrack: RTCVideoTrack? {
-        didSet {
-            guard oldValue != videoTrack else {
-                return
-            }
-            oldValue?.remove(self)
-            videoTrack?.add(self)
-        }
-    }
-
-    init() {
-        super.init(frame: UIScreen.main.bounds)
-        clipsToBounds = true
-        #if arch(arm64)
-        videoContentMode = .scaleAspectFill
-        #endif
-    }
-
-    required init?(
-        coder: NSCoder
-    ) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-
 struct VideoView: UIViewRepresentable {
     let context: VideoViewContext?
 
@@ -72,3 +40,58 @@ struct VideoView: UIViewRepresentable {
         let parent: VideoView
     }
 }
+
+#if arch(arm64)
+final class UIVideoView: RTCMTLVideoView {
+    var videoTrack: RTCVideoTrack? {
+        didSet {
+            guard oldValue != videoTrack else {
+                return
+            }
+            oldValue?.remove(self)
+            videoTrack?.add(self)
+        }
+    }
+
+    init() {
+        super.init(frame: UIScreen.main.bounds)
+        videoContentMode = .scaleAspectFill
+        clipsToBounds = true
+    }
+
+    required init?(
+        coder: NSCoder
+    ) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+#else
+final class UIVideoView: UIView {
+    var videoTrack: RTCVideoTrack? {
+        didSet {
+            guard oldValue != videoTrack else {
+                return
+            }
+            oldValue?.remove(videoView)
+            videoTrack?.add(videoView)
+        }
+    }
+    private let videoView = RTCEAGLVideoView()
+
+    init() {
+        super.init(frame: UIScreen.main.bounds)
+        clipsToBounds = true
+    }
+
+    required init?(
+        coder: NSCoder
+    ) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        videoView.frame = bounds
+    }
+}
+#endif

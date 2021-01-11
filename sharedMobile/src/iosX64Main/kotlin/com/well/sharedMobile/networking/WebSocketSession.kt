@@ -1,7 +1,7 @@
 package com.well.sharedMobile.networking
 
+import com.well.sharedMobile.puerh.toNSData
 import com.well.utils.resumeWithException
-import com.well.utils.toNSData
 import com.well.utils.toThrowable
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
@@ -10,7 +10,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.Foundation.*
 import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 import kotlin.native.concurrent.freeze
 
 actual class WebSocketSession(

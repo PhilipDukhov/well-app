@@ -173,10 +173,19 @@ class WebRtcEffectHandler(
 
     @Serializable
     sealed class SharingStateDataChannelMessage {
+        @Serializable
         data class InitiateSession(val date: Date) : SharingStateDataChannelMessage()
+
+        @Serializable
         object EndSession : SharingStateDataChannelMessage()
+
+        @Serializable
         data class UpdateViewSize(val size: Size) : SharingStateDataChannelMessage()
+
+        @Serializable
         data class UpdateImage(val imageData64String: String) : SharingStateDataChannelMessage()
+
+        @Serializable
         data class UpdatePaths(val paths: List<Path>) : SharingStateDataChannelMessage()
     }
 

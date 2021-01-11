@@ -12,7 +12,7 @@ import SharedMobile
 struct TopLevelView: View {
     let state: TopLevelFeature.State
     let listener: (TopLevelFeature.Msg) -> Void
-    
+
     var body: some View {
         content
             .environment(\.defaultMinListRowHeight, 0)
@@ -31,6 +31,11 @@ struct TopLevelView: View {
         case let state as TopLevelFeature.StateScreenStateCall:
             CallScreen(state: state.state) {
                 listener(TopLevelFeature.MsgCallMsg(msg: $0))
+            }
+
+        case let state as TopLevelFeature.StateScreenStateImageSharing:
+            ImageSharingScreen(state: state.state) {
+                listener(TopLevelFeature.MsgImageSharingMsg(msg: $0))
             }
 
         default:

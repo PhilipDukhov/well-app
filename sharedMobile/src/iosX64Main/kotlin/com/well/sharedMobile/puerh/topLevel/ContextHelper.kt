@@ -1,7 +1,7 @@
 package com.well.sharedMobile.puerh.topLevel
 
 import com.well.utils.Context
-import com.well.utils.Image
+import com.well.sharedMobile.utils.ImageContainer
 import com.well.utils.freeze
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -49,7 +49,7 @@ actual class ContextHelper actual constructor(actual val context: Context) {
         }
     }
 
-    actual suspend fun pickSystemImage(): Image =
+    actual suspend fun pickSystemImage(): ImageContainer =
         suspendCancellableCoroutine { continuation ->
             MainScope().launch {
                 val imagePicker = UIImagePickerController()
@@ -60,7 +60,7 @@ actual class ContextHelper actual constructor(actual val context: Context) {
                         didFinishPickingMediaWithInfo: Map<Any?, *>
                     ) {
                         val url = didFinishPickingMediaWithInfo[UIImagePickerControllerImageURL] as NSURL
-                        continuation.resume(Image(url.absoluteString!!))
+                        continuation.resume(ImageContainer(url.absoluteString!!))
                     }
 
                     override fun imagePickerControllerDidCancel(picker: UIImagePickerController) {

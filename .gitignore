@@ -333,3 +333,5 @@ iosApp/Well/Supporting files/Shared.xcconfig
 # Database
 
 .database
+
+deps.txt

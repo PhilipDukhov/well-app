@@ -8,17 +8,14 @@ plugins {
 kotlin {
     android()
     val frameworkName = project.name.capitalize()
-    val onPhone = System.getenv("SDK_NAME")?.startsWith("iphoneos") ?: false
-    if (onPhone) {
-        iosArm64("ios") {
-            binaries {
-                framework(frameworkName) {
-                    freeCompilerArgs += listOf("-Xobjc-generics")
-                }
+    val iosTargets = listOf(iosX64(), iosArm64())
+    val iosTargetNames = iosTargets.map { it.name }
+    configure(iosTargets) {
+        binaries {
+            framework(frameworkName) {
+                freeCompilerArgs += listOf("-Xobjc-generics")
             }
         }
-    } else {
-        iosX64("ios")
     }
     cocoapods {
         this.frameworkName = frameworkName
@@ -30,9 +27,7 @@ kotlin {
         pod("GoogleWebRTC", moduleName = "WebRTC")
     }
     sourceSets {
-        all {
-            languageSettings.useExperimentalAnnotation("io.ktor.util.InternalAPI")
-        }
+        usePredefinedExperimentalAnnotations()
 
         val commonMain by getting {
             libDependencies(
@@ -49,11 +44,12 @@ kotlin {
             libDependencies(
                 "webrtc",
                 "android.activity",
+                "android.compose.accompanist.coil",
                 "ktor.client.engine.cio",
                 "kotlin.coroutines.playServices"
             )
         }
-        val iosMain by getting {
+        iosMainsBuild(iosTargetNames) {
             libDependencies(
                 "ktor.client.engine.ios"
             )

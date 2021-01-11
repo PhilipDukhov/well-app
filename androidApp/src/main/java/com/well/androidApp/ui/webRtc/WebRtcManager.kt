@@ -18,13 +18,21 @@ class WebRtcManager(
     private val applicationContext: Context,
     private val listener: WebRtcManagerI.Listener,
 ) : CloseableContainer(), WebRtcManagerI {
+
+    companion object {
+        private var initialized = false
+    }
+
     init {
-        PeerConnectionFactory.initialize(
-            PeerConnectionFactory
-                .InitializationOptions
-                .builder(applicationContext)
-                .createInitializationOptions()
-        )
+        if (!initialized) {
+            PeerConnectionFactory.initialize(
+                PeerConnectionFactory
+                    .InitializationOptions
+                    .builder(applicationContext)
+                    .createInitializationOptions()
+            )
+            initialized = true
+        }
     }
 
     private val rootEglBase = EglBase.create()!!
@@ -153,9 +161,6 @@ class WebRtcManager(
             object : DataChannelObserver() {
                 override fun onStateChange() {
                     super.onStateChange()
-                    if (state() == DataChannel.State.OPEN) {
-//                        sendData(Data("onStateChange open"))
-                    }
                 }
             }
         )

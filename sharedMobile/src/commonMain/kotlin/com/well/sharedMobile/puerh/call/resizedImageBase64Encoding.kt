@@ -2,7 +2,6 @@ package com.well.sharedMobile.puerh.call
 
 import com.well.serverModels.Size
 import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature
-import com.well.utils.Image
 
 fun ImageSharingFeature.Eff.UploadImage.resizedImageBase64Encoding(): String {
     if (image.size.width <= remoteViewSize.width && image.size.height <= remoteViewSize.width) {
