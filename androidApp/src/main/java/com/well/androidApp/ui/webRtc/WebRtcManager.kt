@@ -1,11 +1,14 @@
 package com.well.androidApp.ui.webRtc
 
 import android.content.Context
+import android.util.Log
 import com.well.androidApp.utils.Utilities
 import com.well.androidApp.utils.firstMapOrNull
 import com.well.serverModels.WebSocketMessage
 import com.well.sharedMobile.puerh.call.VideoViewContext
 import com.well.sharedMobile.puerh.call.WebRtcManagerI
+import com.well.sharedMobile.puerh.call.WebRtcManagerI.Listener.DataChannelState
+import com.well.utils.Closeable
 import com.well.utils.CloseableContainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +36,25 @@ class WebRtcManager(
             )
             initialized = true
         }
+        Log.e("webrtcmanager", "start${this@WebRtcManager}")
+        addCloseableChild(object : Closeable {
+            override fun close() {
+                Log.e("webrtcmanager", "Close start $this ${this@WebRtcManager}")
+                try {
+                    peerConnection.dispose()
+                    listOf(
+                        localAudioTrack,
+                        localVideoTrack,
+                        remoteAudioTrack,
+                        remoteVideoTrack,
+                    ).forEach {
+                        it?.dispose()
+                    }
+                } catch (t: Throwable) {
+                    Log.e("webrtcmanager", "close failed ${t.stackTraceToString()}")
+                }
+            }
+        })
     }
 
     private val rootEglBase = EglBase.create()!!
@@ -139,7 +161,7 @@ class WebRtcManager(
                 override fun onDataChannel(dataChannel: DataChannel) {
                     super.onDataChannel(dataChannel)
                     dataChannel.registerObserver(
-                        object : DataChannelObserver() {
+                        object : DataChannelObserver(dataChannel, "remote") {
                             override fun onMessage(p0: DataChannel.Buffer?) {
                                 super.onMessage(p0)
                                 p0?.data?.let {
@@ -157,13 +179,12 @@ class WebRtcManager(
         "WebRTCData",
         DataChannel.Init()
     ).apply {
-        registerObserver(
-            object : DataChannelObserver() {
-                override fun onStateChange() {
-                    super.onStateChange()
-                }
+        registerObserver(object : DataChannelObserver(this, "local") {
+            override fun onStateChange(state: DataChannel.State) {
+                super.onStateChange(state)
+                listener.dataChannelStateChanged(state.toDataChannelState())
             }
-        )
+        })
     }
 
     private fun createVideoCapturer(): VideoCapturer? =
@@ -248,4 +269,12 @@ class WebRtcManager(
             }
         }, sdpMediaConstraints)
     }
+
+    private fun DataChannel.State.toDataChannelState() : DataChannelState =
+        when(this) {
+            DataChannel.State.CONNECTING -> DataChannelState.Connecting
+            DataChannel.State.OPEN -> DataChannelState.Open
+            DataChannel.State.CLOSING -> DataChannelState.Closing
+            DataChannel.State.CLOSED -> DataChannelState.Closed
+        }
 }

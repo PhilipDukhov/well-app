@@ -48,5 +48,5 @@ fun <Msg : Any, State : Any, Eff : Any> Feature<Msg, State, Eff>.addEffectHandle
     }
     effectHandler.addCloseableChild(closeable)
     initialEffects.forEach(effectHandler::handleEffect)
-    return closeable
+    return effectHandler
 }

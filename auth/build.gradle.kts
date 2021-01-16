@@ -6,7 +6,16 @@ plugins {
 
 kotlin {
     android()
-    ios()
+    val frameworkName = project.name.capitalize()
+    val iosTargets = listOf(iosX64(), iosArm64())
+    val iosTargetNames = iosTargets.map { it.name }
+    configure(iosTargets) {
+        binaries {
+            framework(frameworkName) {
+                freeCompilerArgs += listOf("-Xobjc-generics")
+            }
+        }
+    }
     cocoapods {
         frameworkName = "Auth"
         summary = frameworkName
@@ -38,7 +47,7 @@ kotlin {
                 "kotlin.coroutines.playServices"
             )
         }
-        val iosMain by getting {
+        iosMainsBuild(iosTargetNames) {
             libDependencies(
                 "ktor.client.engine.ios"
             )

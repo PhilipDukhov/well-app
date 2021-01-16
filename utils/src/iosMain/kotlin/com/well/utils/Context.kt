@@ -6,4 +6,6 @@ import platform.UIKit.UIViewController
 actual data class Context(val rootController: UIViewController) {
     actual val permissionsHandlerContext: Context
         get() = Context()
+
+    actual fun systemBack() {}
 }

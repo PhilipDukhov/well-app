@@ -29,10 +29,10 @@ libDependencies(
     //tmp
     "ktor.client.core",
 
-    ":sharedMobile",
+//    ":auth",
     ":serverModels",
     ":utils",
-    ":auth"
+    ":sharedMobile"
 )
 
 android {

@@ -6,4 +6,5 @@ import kotlinx.serialization.Serializable
 data class Path(
     val points: List<Point>,
     val color: Color,
+    val lineWidth: Float,
 )

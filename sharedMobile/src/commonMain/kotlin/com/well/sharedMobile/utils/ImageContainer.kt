@@ -5,7 +5,7 @@ import com.well.serverModels.Size
 expect class ImageContainer {
     val size: Size
     fun resized(targetSize: Size): ImageContainer
-    fun encodeBase64(): String
+    fun asByteArray(): ByteArray
 }
 
-expect fun String.decodeBase64Image(): ImageContainer
+expect fun ByteArray.asImageContainer(): ImageContainer

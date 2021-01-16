@@ -25,7 +25,7 @@ fun ImageSharingScreen(
             .displayMetrics
             .apply {
                 listener(Msg.UpdateLocalViewSize(Size(widthPixels, heightPixels)))
-        }
+            }
     }
     state.image?.let {
         CoilImage(

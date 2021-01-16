@@ -8,6 +8,8 @@ target 'Well' do
 
   pod 'sharedMobile', :path => '../sharedMobile'
   #  pod 'auth', :path => '../auth'
+  #
+  pod 'GoogleWebRTC'
 
   pod 'R.swift.Library'
   pod 'R.swift'

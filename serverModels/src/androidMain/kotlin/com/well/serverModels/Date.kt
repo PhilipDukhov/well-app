@@ -4,7 +4,11 @@ import kotlinx.serialization.Serializable
 import com.well.serverModels.serializers.DateSerializer
 
 @Serializable(with = DateSerializer::class)
-actual data class Date actual constructor(actual val millis: Long) {
-    constructor(date: java.util.Date): this(date.time)
+actual data class Date(val date: java.util.Date) {
+    actual constructor(millis: Long) : this(java.util.Date(millis))
     actual constructor() : this(java.util.Date())
+
+    actual val millis: Long = date.time
+
+    override fun toString(): String = date.toString()
 }

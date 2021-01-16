@@ -4,8 +4,10 @@ import com.well.serverModels.*
 import com.well.sharedMobile.networking.webSocketManager.NetworkManager
 import com.well.sharedMobile.puerh.call.CallFeature.Eff
 import com.well.sharedMobile.puerh.call.CallFeature.Msg
+import com.well.sharedMobile.puerh.call.CallFeature.State
+import com.well.sharedMobile.puerh.call.WebRtcManagerI.Listener.DataChannelState
 import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingEffectHandler
-import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature
+import com.well.sharedMobile.puerh.call.imageSharing.DataChannelMessage
 import com.well.utils.EffectHandler
 import com.well.utils.asCloseable
 import com.well.utils.atomic.AtomicCloseableRef
@@ -16,7 +18,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.Eff as TopLevelEff
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.Msg as TopLevelMsg
@@ -36,6 +37,27 @@ class WebRtcEffectHandler(
     private val imageSharingEffectHandler = ImageSharingEffectHandler(
         ::send,
     )
+    private val dataChannelChunkManager = DataChannelChunkManager()
+
+    enum class RawDataMsgId {
+        Json,
+        Image,
+        ;
+
+        fun wrapByteArray(byteArray: ByteArray): ByteArray =
+            ordinal.toByteArray() + byteArray
+
+        companion object {
+            fun unwrapByteArray(byteArray: ByteArray): Pair<RawDataMsgId, ByteArray> =
+                values()
+                    .first {
+                        it.ordinal == byteArray.readInt()
+                    }
+                    .let {
+                        it to byteArray.copyOfRange(Int.SIZE_BYTES, byteArray.count())
+                    }
+        }
+    }
 
     fun invokeCallMsg(msg: Msg) {
         listener?.invoke(TopLevelMsg.CallMsg(msg))
@@ -46,7 +68,6 @@ class WebRtcEffectHandler(
             lateinit var handler: WebRtcEffectHandler
 
             override fun updateRemoveVideoContext(viewContext: VideoViewContext?) {
-                handler.invokeCallMsg(Msg.UpdateStatus(CallFeature.State.Status.Ongoing))
                 viewContext?.let {
                     handler.invokeCallMsg(
                         Msg.UpdateRemoteVideoContext(viewContext)
@@ -66,6 +87,16 @@ class WebRtcEffectHandler(
 
             override fun sendAnswer(webRTCSessionDescriptor: String) {
                 handler.send(WebSocketMessage.Answer(webRTCSessionDescriptor))
+            }
+
+            override fun dataChannelStateChanged(state: DataChannelState) {
+                handler.invokeCallMsg(
+                    if (state == DataChannelState.Open) {
+                        Msg.DataConnectionEstablished
+                    } else {
+                        Msg.UpdateStatus(State.Status.Connecting)
+                    }
+                )
             }
 
             override fun receiveData(data: ByteArray) {
@@ -151,49 +182,58 @@ class WebRtcEffectHandler(
             )
         )
 
-    fun send(message: WebSocketMessage) =
-        message.freeze()
+    fun send(msg: WebSocketMessage) =
+        msg.freeze()
             .let {
                 coroutineScope.launch {
-                    networkManager.send(message)
+                    networkManager.send(msg)
                 }
             }
+            .also {
+                println("WebRtcEffectHandler send ws $msg")
+            }
 
-    private fun send(message: SharingStateDataChannelMessage) =
+    private fun send(msg: DataChannelMessage) =
         runWebRtcManager {
-            message.freeze()
-            sendData(
-                Json.encodeToString(
-                    SharingStateDataChannelMessage.serializer(),
-                    message,
+            msg.freeze()
+            dataChannelChunkManager
+                .splitByteArrayIntoChunks(
+                    when (msg) {
+                        is DataChannelMessage.UpdateImage -> {
+                            println("send image: ${msg.imageData.count()}")
+                            RawDataMsgId.Image.wrapByteArray(msg.imageData)
+                        }
+                        else ->
+                            RawDataMsgId.Json.wrapByteArray(
+                                Json.encodeToString(
+                                    DataChannelMessage.serializer(),
+                                    msg.freeze(),
+                                ).encodeToByteArray()
+                            )
+                    }
                 )
-                    .encodeToByteArray()
-            )
+                .forEach {
+                    sendData(it)
+                }
+        }.also {
+            println("WebRtcEffectHandler send dt $msg")
         }
 
-    @Serializable
-    sealed class SharingStateDataChannelMessage {
-        @Serializable
-        data class InitiateSession(val date: Date) : SharingStateDataChannelMessage()
-
-        @Serializable
-        object EndSession : SharingStateDataChannelMessage()
-
-        @Serializable
-        data class UpdateViewSize(val size: Size) : SharingStateDataChannelMessage()
-
-        @Serializable
-        data class UpdateImage(val imageData64String: String) : SharingStateDataChannelMessage()
-
-        @Serializable
-        data class UpdatePaths(val paths: List<Path>) : SharingStateDataChannelMessage()
-    }
-
     private fun handleDataChannelMessage(data: ByteArray) {
-        val msg = Json.decodeFromString(
-            SharingStateDataChannelMessage.serializer(),
-            data.decodeToString()
-        )
+        val fullMessageByteArray = dataChannelChunkManager
+            .processByteArrayChunk(
+                data
+            ) ?: return
+        val (msgId, unwrappedData) = RawDataMsgId.unwrapByteArray(fullMessageByteArray)
+        val msg = when (msgId) {
+            RawDataMsgId.Image -> {
+                DataChannelMessage.UpdateImage(unwrappedData)
+            }
+            RawDataMsgId.Json -> Json.decodeFromString(
+                DataChannelMessage.serializer(),
+                unwrappedData.decodeToString()
+            )
+        }
         imageSharingEffectHandler
             .handleDataChannelMessage(msg)
             ?.let {
@@ -204,7 +244,7 @@ class WebRtcEffectHandler(
     private fun listenWebSocketMessage(msg: WebSocketMessage) = runWebRtcManager {
         when (msg) {
             is WebSocketMessage.Offer -> {
-                invokeCallMsg(Msg.UpdateStatus(CallFeature.State.Status.Connecting))
+                invokeCallMsg(Msg.UpdateStatus(State.Status.Connecting))
                 acceptOffer(msg.sessionDescriptor)
             }
             is WebSocketMessage.Answer -> {

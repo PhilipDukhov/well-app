@@ -10,6 +10,13 @@ import SwiftUI
 import WebRTC
 import SharedMobile
 
+extension VideoViewContext {
+    // hack to decrease build time
+    var videoTrack: RTCVideoTrack {
+        videoTrackAny as! RTCVideoTrack
+    }
+}
+
 struct VideoView: UIViewRepresentable {
     let context: VideoViewContext?
 

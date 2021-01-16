@@ -1,10 +1,11 @@
 package com.well.sharedMobile.puerh.topLevel
 
+import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.State
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.State.*
 
-typealias ReducerResult = Pair<TopLevelFeature.State, Set<TopLevelFeature.Eff>>
+typealias ReducerResult = Pair<State, Set<TopLevelFeature.Eff>>
 
-inline fun <reified R : ScreenState> Map<Tab, List<ScreenState>>.screenAndPositionOfFirstOrNull(
+internal inline fun <reified R : ScreenState> Map<Tab, List<ScreenState>>.screenAndPositionOfFirstOrNull(
 ): Pair<R, ScreenPosition>? {
     for ((tab, screens) in this) {
         for ((index, screen) in screens.withIndex()) {
@@ -16,38 +17,77 @@ inline fun <reified R : ScreenState> Map<Tab, List<ScreenState>>.screenAndPositi
     return null
 }
 
-fun Map<Tab, List<ScreenState>>.push(
+internal fun State.copyPush(
     tab: Tab,
-    screen: ScreenState
-): Map<Tab, List<ScreenState>> =
-    toMutableMap()
-        .also { mutableTabs ->
-            mutableTabs[tab] = (mutableTabs[tab] ?: listOf()) + screen
-        }
+    screen: ScreenState,
+): State {
+    val (tabs, screenPosition) = tabs.push(tab, screen)
+    return copy(
+        tabs = tabs,
+        selectedScreenPosition = screenPosition
+    )
+}
 
-fun Map<Tab, List<ScreenState>>.pop(
-    tab: Tab,
-): Map<Tab, List<ScreenState>> =
-    toMutableMap()
-        .also { mutableTabs ->
-            mutableTabs[tab]?.also {
-                if (it.count() > 1) {
-                    mutableTabs[tab] = it.dropLast(1)
-                } else {
-                    mutableTabs.remove(tab)
-                }
-            }
-        }
+internal fun State.copyPop(
+    tab: Tab = selectedScreenPosition.tab,
+    fallbackTab: Tab = Tab.Main,
+): State {
+    val (tabs, screenPosition) = tabs.pop(tab, fallbackTab)
+    return copy(
+        tabs = tabs,
+        selectedScreenPosition = screenPosition
+    )
+}
 
-fun Map<Tab, List<ScreenState>>.remove(
+internal fun State.copyHideTab(
     tab: Tab,
-): Map<Tab, List<ScreenState>> =
-    toMutableMap()
-        .also { mutableTabs ->
+    fallbackTab: Tab = Tab.Main,
+): State {
+    val (tabs, screenPosition) = tabs.modify(tab, fallbackTab) {
+        listOf()
+    }
+    return copy(
+        tabs = tabs,
+        selectedScreenPosition = screenPosition
+    )
+}
+
+private fun Map<Tab, List<ScreenState>>.push(
+    tab: Tab,
+    screen: ScreenState,
+) = modify(tab) {
+    it + screen
+}
+
+private fun Map<Tab, List<ScreenState>>.pop(
+    tab: Tab,
+    fallbackTab: Tab,
+) = modify(tab, fallbackTab) {
+    it.dropLast(1)
+}
+
+private fun Map<Tab, List<ScreenState>>.modify(
+    tab: Tab,
+    fallbackTab: Tab? = null,
+    block: (List<ScreenState>) -> List<ScreenState>,
+) = toMutableMap()
+    .let { mutableTabs ->
+        val newTabList = block(mutableTabs[tab] ?: listOf())
+        val resultTab: Tab
+        if (newTabList.isEmpty()) {
             mutableTabs.remove(tab)
+            resultTab = fallbackTab!!
+        } else {
+            mutableTabs[tab] = newTabList
+            resultTab = tab
         }
+        mutableTabs.toMap() to ScreenPosition(
+            resultTab,
+            mutableTabs.getValue(resultTab).lastIndex
+        )
+    }
 
-fun <T : ScreenState> Map<Tab, List<ScreenState>>.copy(
+internal fun <T : ScreenState> Map<Tab, List<ScreenState>>.copy(
     screenPosition: ScreenPosition,
     block: T.() -> T,
 ): Map<Tab, List<ScreenState>> =

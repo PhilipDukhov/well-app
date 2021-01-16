@@ -3,10 +3,12 @@ package com.well.sharedMobile.utils
 import com.well.serverModels.Size
 import com.well.serverModels.toCGSize
 import com.well.serverModels.toSize
+import com.well.sharedMobile.puerh.toByteArray
+import com.well.sharedMobile.puerh.toNSData
 import platform.CoreGraphics.CGRectMake
-import platform.Foundation.*
 import platform.UIKit.*
 
+@Suppress("MemberVisibilityCanBePrivate")
 actual class ImageContainer(val uiImage: UIImage) {
     constructor(path: String) : this(UIImage.imageWithContentsOfFile(path)!!)
 
@@ -21,17 +23,13 @@ actual class ImageContainer(val uiImage: UIImage) {
         return ImageContainer(newImage)
     }
 
-    actual fun encodeBase64(): String =
-        UIImagePNGRepresentation(uiImage)!!.base64Encoding()
+    actual fun asByteArray(): ByteArray =
+        UIImagePNGRepresentation(uiImage)!!.toByteArray()
 }
 
-@Suppress("CAST_NEVER_SUCCEEDS", "EXPERIMENTAL_UNSIGNED_LITERALS")
-actual fun String.decodeBase64Image() =
+actual fun ByteArray.asImageContainer(): ImageContainer =
     ImageContainer(
         UIImage(
-            NSData.create(
-                base64EncodedString = this,
-                options = 0
-            )!!
+            toNSData()
         )
     )

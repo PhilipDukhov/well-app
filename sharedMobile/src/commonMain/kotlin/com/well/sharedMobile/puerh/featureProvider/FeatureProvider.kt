@@ -38,8 +38,8 @@ class FeatureProvider(
     private val coroutineScope = CoroutineScope(coroutineContext)
     private val contextHelper = ContextHelper(context)
     private val sessionCloseableContainer = object : CloseableContainer() {}
-    private var networkManager = AtomicLateInitRef<NetworkManager>()
-    private var callEventHandlerCloseable = AtomicCloseableRef()
+    private val networkManager = AtomicLateInitRef<NetworkManager>()
+    private val callEventHandlerCloseable = AtomicCloseableRef()
 
     private val effectInterpreter: ExecutorEffectsInterpreter<Eff, Msg> =
         interpreter@{ eff, listener ->
@@ -58,7 +58,7 @@ class FeatureProvider(
                     }
                     is CallFeature.Eff.End -> {
                         networkManager.value.send(
-                            WebSocketMessage.EndCall(WebSocketMessage.EndCall.Reason.Busy)
+                            WebSocketMessage.EndCall(WebSocketMessage.EndCall.Reason.Decline)
                         )
                         endCall(listener)
                     }
@@ -78,7 +78,7 @@ class FeatureProvider(
                 is Eff.ImageSharingEff -> when (eff.eff) {
                     is ImageSharingFeature.Eff.NotifyViewSizeUpdate,
                     is ImageSharingFeature.Eff.UploadImage,
-                    ImageSharingFeature.Eff.Init -> Unit
+                    ImageSharingFeature.Eff.SendInit -> Unit
 
                     ImageSharingFeature.Eff.RequestImageUpdate -> {
                         val msg = try {
@@ -93,6 +93,9 @@ class FeatureProvider(
                     ImageSharingFeature.Eff.Close -> {
                         listener(Msg.StopImageSharing)
                     }
+                }
+                Eff.SystemBack -> {
+                    context.systemBack()
                 }
             }
         }
@@ -185,6 +188,7 @@ class FeatureProvider(
     private fun endCall(
         listener: (Msg) -> Unit,
     ) {
+        println("end call ${callEventHandlerCloseable.value}")
         listener.invoke(Msg.EndCall)
         callEventHandlerCloseable.value = null
     }

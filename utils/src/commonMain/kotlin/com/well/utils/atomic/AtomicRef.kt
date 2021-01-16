@@ -12,3 +12,9 @@ fun <T> AtomicRef<T>.getAndSet(newValue: T): T {
 
 @Suppress("FunctionName")
 fun <T> AtomicRef(): AtomicRef<T?> = AtomicRef(null)
+
+fun AtomicRef<Int>.inc(): Int {
+    val newValue = value + 1
+    value = newValue
+    return newValue
+}

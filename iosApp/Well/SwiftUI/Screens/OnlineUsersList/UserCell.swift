@@ -21,5 +21,8 @@ struct UserCell: View {
             Text(viewModel.fullName)
             Spacer()
         }
+            .listRowInsets(.zero)
+            .frame(maxWidth: .infinity)
+            .background(Color.white)
     }
 }

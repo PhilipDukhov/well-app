@@ -87,10 +87,12 @@ fun NamedDomainObjectCollection<KotlinSourceSet>.usePredefinedExperimentalAnnota
     vararg annotations: String
 ) {
     all {
-        listOf(
-            "kotlin.ExperimentalUnsignedTypes",
-            "io.ktor.util.InternalAPI"
-        ).forEach {
+        (annotations.toList() +
+            listOf(
+                "kotlinx.coroutines.InternalCoroutinesApi",
+                "kotlin.ExperimentalUnsignedTypes",
+                "io.ktor.util.InternalAPI"
+            )).forEach {
             languageSettings.useExperimentalAnnotation(it)
         }
     }

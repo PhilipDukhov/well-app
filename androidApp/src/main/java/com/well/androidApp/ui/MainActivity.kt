@@ -9,9 +9,9 @@ import com.well.androidApp.ui.composableScreens.theme.Theme
 import com.well.androidApp.ui.webRtc.WebRtcManager
 import com.well.sharedMobile.napier.NapierProxy
 import com.well.sharedMobile.puerh.featureProvider.FeatureProvider
+import com.well.sharedMobile.puerh.topLevel.TopLevelFeature
 import com.well.utils.Context
 import dev.chrisbanes.accompanist.insets.ProvideWindowInsets
-import kotlinx.coroutines.InternalCoroutinesApi
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private val featureProvider = FeatureProvider(
@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
     )
 
-    @InternalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         NapierProxy.initializeLogging()
@@ -41,5 +40,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 }
             }
         }
+    }
+
+    override fun onBackPressed() {
+        featureProvider.feature.accept(TopLevelFeature.Msg.Back)
+//        onBackPressedDispatcher.onBackPressed()
     }
 }

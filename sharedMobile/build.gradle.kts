@@ -8,9 +8,7 @@ plugins {
 kotlin {
     android()
     val frameworkName = project.name.capitalize()
-    val iosTargets = listOf(iosX64(), iosArm64())
-    val iosTargetNames = iosTargets.map { it.name }
-    configure(iosTargets) {
+    ios() {
         binaries {
             framework(frameworkName) {
                 freeCompilerArgs += listOf("-Xobjc-generics")
@@ -23,8 +21,6 @@ kotlin {
         homepage = "-"
         license = "-"
         ios.deploymentTarget = project.version("iosDeploymentTarget")
-
-        pod("GoogleWebRTC", moduleName = "WebRTC")
     }
     sourceSets {
         usePredefinedExperimentalAnnotations()
@@ -40,6 +36,12 @@ kotlin {
                 "kotlin.stdLib"
             )
         }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test-common"))
+                implementation(kotlin("test-annotations-common"))
+            }
+        }
         val androidMain by getting {
             libDependencies(
                 "webrtc",
@@ -49,7 +51,13 @@ kotlin {
                 "kotlin.coroutines.playServices"
             )
         }
-        iosMainsBuild(iosTargetNames) {
+        val androidTest by getting {
+            dependencies {
+                implementation(kotlin("test-junit"))
+                implementation("junit:junit:4.12")
+            }
+        }
+        val iosMain by getting {
             libDependencies(
                 "ktor.client.engine.ios"
             )

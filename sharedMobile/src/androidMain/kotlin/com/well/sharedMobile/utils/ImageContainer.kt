@@ -12,7 +12,7 @@ import coil.request.ImageRequest
 import coil.size.Scale
 import com.well.serverModels.Size
 import java.io.ByteArrayOutputStream
-import java.io.File
+import java.io.InputStream
 
 actual class ImageContainer(private val content: Content) {
     sealed class Content {
@@ -20,7 +20,10 @@ actual class ImageContainer(private val content: Content) {
         data class Uri(
             val uri: android.net.Uri,
             val context: Context
-        ) : Content()
+        ) : Content() {
+            val inputStream: InputStream
+                get() = context.contentResolver.openInputStream(uri)!!
+        }
     }
 
     constructor(
@@ -33,7 +36,7 @@ actual class ImageContainer(private val content: Content) {
     actual val size: Size
 
     val data: Any
-        get() = when(content) {
+        get() = when (content) {
             is Content.Bitmap -> content.bitmap
             is Content.Uri -> content.uri
         }
@@ -47,9 +50,7 @@ actual class ImageContainer(private val content: Content) {
                 BitmapFactory.Options()
                     .run {
                         inJustDecodeBounds = true
-
-                        val inputStream = content.context.contentResolver.openInputStream(content.uri)!!
-                        BitmapFactory.decodeStream(inputStream, null, this)
+                        BitmapFactory.decodeStream(content.inputStream, null, this)
                         if (outWidth <= 0 || outHeight <= 0) {
                             throw IllegalStateException("decodeStream failed")
                         }
@@ -66,56 +67,58 @@ actual class ImageContainer(private val content: Content) {
             return this
         }
 
-        return ImageContainer(Content.Bitmap(when (content) {
-            is Content.Bitmap -> {
-                if (size.width <= targetSize.width && size.height <= targetSize.width) {
-                    content.bitmap
-                } else {
-                    Bitmap.createScaledBitmap(
-                        content.bitmap,
-                        targetSize.width.toInt(),
-                        targetSize.height.toInt(),
-                        true
-                    )!!
+        return ImageContainer(
+            Content.Bitmap(
+                when (content) {
+                    is Content.Bitmap -> {
+                        if (size.width <= targetSize.width && size.height <= targetSize.width) {
+                            content.bitmap
+                        } else {
+                            Bitmap.createScaledBitmap(
+                                content.bitmap,
+                                targetSize.width.toInt(),
+                                targetSize.height.toInt(),
+                                true
+                            )!!
+                        }
+                    }
+                    is Content.Uri -> {
+                        content
+                            .context
+                            .imageLoader
+                            .executeBlocking(
+                                ImageRequest.Builder(content.context)
+                                    .data(content.uri)
+                                    .size(targetSize.width.toInt(), targetSize.height.toInt())
+                                    .scale(Scale.FIT)
+                                    .build()
+                            )
+                            .drawable!!
+                            .toBitmap()
+                    }
                 }
+            )
+        )
+    }
+
+    actual fun asByteArray(): ByteArray =
+        when (content) {
+            is Content.Bitmap -> {
+                val output = ByteArrayOutputStream()
+                content.bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
+                output.toByteArray()
             }
             is Content.Uri -> {
-                content
-                    .context
-                    .imageLoader
-                    .executeBlocking(
-                        ImageRequest.Builder(content.context)
-                            .data(content.uri)
-                            .size(targetSize.width.toInt(), targetSize.height.toInt())
-                            .scale(Scale.FIT)
-                            .build()
-                    )
-                    .drawable!!
-                    .toBitmap()
+                content.inputStream.readBytes()
             }
-        }))
-    }
-
-    actual fun encodeBase64(): String = when (content) {
-        is Content.Bitmap -> {
-            val output = ByteArrayOutputStream()
-            content.bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
-            Base64.encodeToString(output.toByteArray(), Base64.DEFAULT)
         }
-        is Content.Uri -> {
-            val bytes = File(content.uri.path!!).readBytes()
-            Base64.encodeToString(bytes, Base64.DEFAULT)
-        }
-    }
 }
 
-actual fun String.decodeBase64Image(): ImageContainer {
-    val byteArray = Base64.decode(this, Base64.DEFAULT)
-    return ImageContainer(
+actual fun ByteArray.asImageContainer(): ImageContainer =
+    ImageContainer(
         BitmapFactory.decodeByteArray(
-            byteArray,
+            this,
             0,
-            byteArray.count()
+            count()
         )
     )
-}

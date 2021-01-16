@@ -9,27 +9,6 @@
 import SwiftUI
 import SharedMobile
 
-struct DrawShape: Shape {
-
-    var points: [CGPoint]
-
-    // drawing is happening here
-    func path(
-        in rect: CGRect
-    ) -> Path {
-        var path = Path()
-        guard let firstPoint = points.first else {
-            return path
-        }
-
-        path.move(to: firstPoint)
-        for pointIndex in 1..<points.count {
-            path.addLine(to: points[pointIndex])
-        }
-        return path
-    }
-}
-
 struct CallScreen: View {
     let state: CallFeature.State
     let listener: (CallFeature.Msg) -> Void
@@ -51,32 +30,10 @@ struct CallScreen: View {
                     .padding()
                     .frame(width: geometry.size.width)
             } // GeometryReader
-
-            DrawShape(points: points)
-                .stroke(lineWidth: 5) // here you put width of lines
-                .foregroundColor(.blue)
         } // ZStack
             .foregroundColor(.white)
             .statusBar(style: .lightContent)
-            .gesture(
-                DragGesture()
-                    .onChanged { value in
-                        addNewPoint(value)
-                    }
-                    .onEnded { _ in
-                        // here you perform what you need at the end
-                    }
-            )
     }
-
-    private func addNewPoint(
-        _ value: DragGesture.Value
-    ) {
-        // here you can make some calculations based on previous points
-        points.append(value.location)
-    }
-
-    @State var points: [CGPoint] = []
 
     private func fullScreenVideoView(
         _ context: VideoViewContext?

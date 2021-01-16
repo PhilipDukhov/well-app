@@ -5,10 +5,17 @@ import com.well.utils.Closeable
 
 interface WebRtcManagerI: Closeable {
     interface Listener {
+        enum class DataChannelState {
+            Connecting,
+            Open,
+            Closing,
+            Closed,
+        }
         fun updateRemoveVideoContext(viewContext: VideoViewContext?)
         fun addCandidate(candidate: WebSocketMessage.Candidate)
         fun sendOffer(webRTCSessionDescriptor: String)
         fun sendAnswer(webRTCSessionDescriptor: String)
+        fun dataChannelStateChanged(state: DataChannelState)
         fun receiveData(data: ByteArray)
     }
 

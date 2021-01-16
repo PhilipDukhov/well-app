@@ -3,10 +3,10 @@ PODS:
   - R.swift (5.3.0):
     - R.swift.Library (~> 5.3.0)
   - R.swift.Library (5.3.0)
-  - sharedMobile (1.0-SNAPSHOT):
-    - GoogleWebRTC
+  - sharedMobile (1.0-SNAPSHOT)
 
 DEPENDENCIES:
+  - GoogleWebRTC
   - R.swift
   - R.swift.Library
   - sharedMobile (from `../sharedMobile`)
@@ -25,8 +25,8 @@ SPEC CHECKSUMS:
   GoogleWebRTC: b39a78c4f5cc6b0323415b9233db03a2faa7b0f0
   R.swift: 4170fb7161c67be3bc1a847040b79367d69c419f
   R.swift.Library: 0fc583cb55a99e28901299cc451614cad1161962
-  sharedMobile: 2917c0c4e2fcca5eae5e75e57fe68d35f8a04511
+  sharedMobile: b7f3bfb4c4a14e0a0f2533d9a7e4315fe76b8c8d
 
-PODFILE CHECKSUM: cac07ba2753fd01fd96ded77685d1acf896cc731
+PODFILE CHECKSUM: 1f492e1cf3087712839471a94cdafaee462d58ae
 
 COCOAPODS: 1.10.0

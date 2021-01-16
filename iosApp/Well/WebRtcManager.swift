@@ -35,7 +35,6 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
     private let localAudioTrack: RTCAudioTrack
     private let localVideoTrack: RTCVideoTrack
     private let localDataChannel: RTCDataChannel
-    private let localMediaStream: RTCMediaStream
     let localVideoContext: VideoViewContext
 
     private var remoteAudioTrack: RTCAudioTrack? {
@@ -50,7 +49,7 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
             remoteVideoTrack?.isEnabled = true
             listener.updateRemoveVideoContext(
                 viewContext: remoteVideoTrack.map {
-                    .init(videoTrack: $0)
+                    .init(videoTrackAny: $0)
                 }
             )
         }
@@ -61,10 +60,6 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
         iceServers: [String],
         listener: WebRtcManagerIListener
     ) {
-        try! AVAudioSession.sharedInstance()
-            .setCategory(.playAndRecord)
-        try! AVAudioSession.sharedInstance()
-            .setActive(true)
         self.listener = listener
         let config = RTCConfiguration()
         config.iceServers = [RTCIceServer(urlStrings: iceServers)]
@@ -103,15 +98,12 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
         #endif
 
         localVideoTrack = Self.factory.videoTrack(with: videoSource, trackId: "video0")
-        localVideoContext = .init(videoTrack: localVideoTrack)
+        localVideoContext = .init(videoTrackAny: localVideoTrack)
         // Data
         localDataChannel = peerConnection.dataChannel(
             forLabel: "WebRTCData",
             configuration: RTCDataChannelConfiguration()
         )!
-        localMediaStream = Self.factory.mediaStream(withStreamId: "stream")
-        localMediaStream.addAudioTrack(localAudioTrack)
-        localMediaStream.addVideoTrack(localVideoTrack)
         super.init()
         localDataChannel.delegate = self
         peerConnection.delegate = self
@@ -144,6 +136,13 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
 
     func close() {
         peerConnection.close()
+        [localAudioTrack,
+         localVideoTrack,
+         remoteAudioTrack,
+         remoteVideoTrack,
+        ].forEach {
+            $0?.isEnabled = false
+        }
     }
 
     func acceptAnswer(
@@ -320,7 +319,7 @@ extension WebRtcManager: RTCDataChannelDelegate {
     func dataChannelDidChangeState(
         _ dataChannel: RTCDataChannel
     ) {
-        debugPrint(#function, dataChannel.readyState.rawValue)
+        listener.dataChannelStateChanged(state: dataChannel.readyState.toDataChannelState())
     }
 
     func dataChannel(
@@ -358,5 +357,22 @@ extension RTCMediaConstraints {
         optional: [String: String]? = nil
     ) {
         self.init(mandatoryConstraints: mandatory, optionalConstraints: optional)
+    }
+}
+
+extension RTCDataChannelState {
+    func toDataChannelState() -> WebRtcManagerIListenerDataChannelState {
+        switch self {
+        case .connecting:
+            return .connecting
+        case .open:
+            return .open
+        case .closing:
+            return .closing
+        case .closed:
+            return .closed
+        @unknown default:
+            return .closed
+        }
     }
 }

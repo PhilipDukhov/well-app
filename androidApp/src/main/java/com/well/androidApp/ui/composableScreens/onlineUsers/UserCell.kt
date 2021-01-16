@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.well.androidApp.ui.composableScreens.zCustomViews.UserProfileImage
+import com.well.androidApp.ui.composableScreens.πCustomViews.UserProfileImage
 import com.well.serverModels.User
 
 private val padding = 16.dp

@@ -10,7 +10,7 @@ interface Closeable {
     fun close()
 }
 
-open class CloseableContainer: Closeable {
+open class CloseableContainer : Closeable {
     private val closeables = AtomicMutableList<Closeable>()
 
     fun addCloseableChild(closeable: Closeable) =
@@ -20,14 +20,17 @@ open class CloseableContainer: Closeable {
         close()
 
     override fun close() {
-        closeables.forEach(Closeable::close)
-        closeables.clear()
+        closeables
+            .dropAll()
+            .forEach(Closeable::close)
     }
 }
 
-fun Job.asCloseable() = object: Closeable {
+fun Job.asCloseable() = object : Closeable {
     override fun close() {
-        cancel()
+        if (isActive) {
+            cancel()
+        }
     }
 }
 
@@ -46,4 +49,7 @@ class CloseableFuture(
     override fun close() {
         closeable.value?.close()
     }
+
+    override fun toString(): String =
+        closeable.value.toString()
 }

@@ -32,7 +32,6 @@ class SyncFeature<Msg : Any, Model : Any, Eff : Any>(
         }
     }
 
-    @InternalCoroutinesApi
     override fun accept(msg: Msg) {
         if (!NonCancellable.isActive) return
         val (newState, commands) = reducer(msg, currentState)

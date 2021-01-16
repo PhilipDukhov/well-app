@@ -28,12 +28,20 @@ sealed class WebSocketMessage {
     @Serializable
     data class Offer(
         val sessionDescriptor: String,
-    ) : WebSocketMessage()
+    ) : WebSocketMessage() {
+        override fun toString(): String =
+            super.toString()
+                .prepareToDebug()
+    }
 
     @Serializable
     data class Answer(
         val sessionDescriptor: String,
-    ) : WebSocketMessage()
+    ) : WebSocketMessage() {
+        override fun toString(): String =
+            super.toString()
+                .prepareToDebug()
+    }
 
     @Serializable
     data class Candidate(

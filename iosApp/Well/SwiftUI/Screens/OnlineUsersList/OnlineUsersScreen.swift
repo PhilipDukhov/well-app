@@ -29,8 +29,6 @@ struct OnlineUsersScreen: View {
         List {
             ForEach(state.users, id: \.id) { user in
                 UserCell(viewModel: user)
-                    .listRowInsets(.zero)
-                    .frame(maxWidth: .infinity)
                     .onTapGesture {
                         print("tap ok \(Date().timeIntervalSince1970)")
                         listener(OnlineUsersFeature.MsgOnUserSelected(user: user))

@@ -7,6 +7,7 @@ import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature
 import com.well.sharedMobile.puerh.login.LoginFeature
 import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersFeature
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.State.*
+import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.reduceCall
 import com.well.utils.map
 import com.well.utils.toSetOf
 import com.well.utils.withEmptySet
@@ -28,7 +29,7 @@ object TopLevelFeature {
     ) {
         val currentScreen = tabs.getValue(selectedScreenPosition.tab)[selectedScreenPosition.index]
         override fun toString() =
-            "State(it at $selectedScreenPosition; tabs=$tabs)"
+            "State($currentScreen at $selectedScreenPosition; tabs=$tabs)"
 
         fun <T : ScreenState> changeCurrentScreen(block: T.() -> T): State =
             changeScreen(selectedScreenPosition, block)
@@ -73,10 +74,12 @@ object TopLevelFeature {
 
         data class ShowAlert(val alert: Alert) : Msg()
         object LoggedIn : Msg()
+        object Back : Msg()
     }
 
     sealed class Eff {
         data class ShowAlert(val alert: Alert) : Eff()
+        object SystemBack : Eff()
         object TestLogin : Eff()
         data class GotLogInToken(val token: String) : Eff()
         data class OnlineUsersEff(val eff: OnlineUsersFeature.Eff) : Eff()
@@ -87,71 +90,65 @@ object TopLevelFeature {
     fun reducer(
         msg: Msg,
         state: State
-    ): ReducerResult {
-        println("Top level reducer: $msg")
-        return when (msg) {
-            is Msg.ShowAlert -> state toSetOf Eff.ShowAlert(msg.alert)
-            is Msg.IncomingCall -> {
-                state.copyShowCall(
-                    CallFeature.incomingInitialState(msg.incomingCall)
-                )
-                    .withEmptySet()
-            }
-            is Msg.OnlineUsersMsg -> {
-                reduceOnlineUsers(
-                    state.tabs
-                        .screenAndPositionOfFirstOrNull()
-                        ?: throw IllegalStateException("$msg | $state"),
-                    msg.msg,
-                    state
-                )
-            }
-            is Msg.EndCall -> {
-                state.copyHideOverlay()
-                    .withEmptySet()
-            }
-            is Msg.StartImageSharing -> {
-                state.reduceStartImageSharing(msg)
-            }
-            is Msg.StopImageSharing -> {
-                state.copy(tabs = state.tabs.pop(Tab.Overlay))
-                    .withEmptySet()
-            }
-            else -> when (state.currentScreen) {
-                is ScreenState.Login -> when (msg) {
-                    Msg.LoggedIn -> {
-                        state.copyLogin()
-                            .withEmptySet()
+    ): ReducerResult = run state@{
+        return@reducer state toSetOf (run eff@{
+            when (msg) {
+                is Msg.ShowAlert -> {
+                    return@reducer state toSetOf Eff.ShowAlert(msg.alert)
+                }
+                is Msg.Back -> {
+                    when (state.currentScreen) {
+                        is ScreenState.OnlineUsers, is ScreenState.Login -> {
+                            return@eff Eff.SystemBack
+                        }
+                        is ScreenState.Call -> {
+                            return@reducer state.reduceCall(CallFeature.Msg.End)
+                        }
+                        is ScreenState.ImageSharing -> {
+                            return@reducer state.reduceImageSharing(ImageSharingFeature.Msg.Close)
+                        }
                     }
-                    else -> throw IllegalStateException("$msg $state")
                 }
-                is ScreenState.OnlineUsers -> when (msg) {
-                    is Msg.StartCall ->
-                        CallFeature.callInitiateStateAndEffects(msg.user)
-                            .map(
-                                { state.copyShowCall(it) },
-                                {
-                                    it.map(Eff::CallEff)
-                                        .toSet()
-                                },
-                            )
-                    else -> throw IllegalStateException("$msg $state")
+                is Msg.LoggedIn -> {
+                    return@state state.copyLogin()
                 }
-                is ScreenState.Call -> when (msg) {
-                    is Msg.CallMsg -> reduceCall(state.currentScreen, msg.msg, state)
-                    else -> throw IllegalStateException("$msg $state")
-                }
-                is ScreenState.ImageSharing -> when (msg) {
-                    is Msg.ImageSharingMsg -> reduceImageSharing(
-                        state.currentScreen,
-                        msg.msg,
-                        state
+                is Msg.IncomingCall -> {
+                    return@state state.copyShowCall(
+                        CallFeature.incomingInitialState(msg.incomingCall)
                     )
-                    else -> throw IllegalStateException("$msg $state")
+                }
+                is Msg.StartCall -> {
+                    return@reducer CallFeature.callInitiateStateAndEffects(msg.user)
+                        .map(
+                            { state.copyShowCall(it) },
+                            {
+                                it.map(Eff::CallEff)
+                                    .toSet()
+                            },
+                        )
+                }
+                is Msg.OnlineUsersMsg -> {
+                    return@reducer state.reduceOnlineUsers(msg.msg)
+                }
+                is Msg.CallMsg -> {
+                    return@reducer state.reduceCall(msg.msg)
+                }
+                is Msg.StartImageSharing -> {
+                    return@reducer state.reduceStartImageSharing(msg)
+                }
+                is Msg.ImageSharingMsg ->
+                    return@reducer state.reduceImageSharing(
+                        msg.msg,
+                    )
+                is Msg.StopImageSharing -> {
+                    return@state state.copyPop(Tab.Overlay)
+                }
+                is Msg.EndCall -> {
+                    return@state state.copyHideOverlay()
                 }
             }
-        }
-    }
+        })
+    }.withEmptySet()
 
     private fun State.copyLogin(): State =
         copy(
@@ -162,61 +159,59 @@ object TopLevelFeature {
         )
 
     private fun State.copyShowCall(callState: CallFeature.State): State =
-        copy(
-            tabs = tabs.push(Tab.Overlay, ScreenState.Call(callState)),
-            selectedScreenPosition = ScreenPosition(Tab.Overlay, 0),
+        copyPush(
+            Tab.Overlay,
+            ScreenState.Call(callState),
         )
 
-    private fun State.copyHideOverlay() =
-        copy(
-            tabs = tabs.remove(Tab.Overlay),
-            selectedScreenPosition = ScreenPosition(
-                Tab.Main,
-                (tabs[Tab.Main]
-                    ?: throw IllegalStateException("copyHideOverlay: main tab is unexpectedly empty"))
-                    .lastIndex
-            ),
+    private fun State.copyHideOverlay(): State =
+        copyHideTab(
+            Tab.Overlay
         )
 
-    // Screen reducers
+    // ScreenState reducers
 
     private fun State.reduceStartImageSharing(msg: Msg.StartImageSharing): ReducerResult {
         val (state, effs) = ImageSharingFeature.initialState(msg.role)
-        return copy(
-            tabs = tabs.push(Tab.Overlay, ScreenState.ImageSharing(state)),
-            selectedScreenPosition = ScreenPosition(Tab.Overlay, 0),
+        return copyPush(
+            Tab.Overlay,
+            ScreenState.ImageSharing(state),
         ) to effs.mapTo(HashSet(), Eff::ImageSharingEff)
     }
 
-    private fun reduceOnlineUsers(
-        screenAndPosition: Pair<ScreenState.OnlineUsers, ScreenPosition>,
+    private fun State.reduceOnlineUsers(
         msg: OnlineUsersFeature.Msg,
-        state: State
     ): ReducerResult {
-        val (newScreenState, effs) = OnlineUsersFeature.reducer(msg, screenAndPosition.first.state)
+        val (screen, position) = tabs.screenAndPositionOfFirstOrNull<ScreenState.OnlineUsers>()
+            ?: throw IllegalStateException("$msg | $this")
+        val (newScreenState, effs) = OnlineUsersFeature.reducer(msg, screen.state)
         val newEffs = effs.mapTo(HashSet(), Eff::OnlineUsersEff)
-        return state.changeScreen<ScreenState.OnlineUsers>(screenAndPosition.second) {
+        return changeScreen<ScreenState.OnlineUsers>(position) {
             copy(state = newScreenState)
         } to newEffs
     }
 
-    private fun reduceCall(
-        currentScreen: ScreenState.Call,
+    private fun State.reduceCall(
         msg: CallFeature.Msg,
-        state: State
     ): ReducerResult {
-        val (newScreenState, effs) = CallFeature.reducer(msg, currentScreen.state)
+        val (screen, position) = tabs.screenAndPositionOfFirstOrNull<ScreenState.Call>()
+            ?: throw IllegalStateException("$msg | $this")
+        val (newScreenState, effs) = CallFeature.reducer(msg, screen.state)
         val newEffs = effs.mapTo(HashSet(), Eff::CallEff)
-        return state.changeCurrentScreen<ScreenState.Call> { copy(state = newScreenState) } to newEffs
+        return changeScreen<ScreenState.Call>(position) {
+            copy(state = newScreenState)
+        } to newEffs
     }
 
-    private fun reduceImageSharing(
-        currentScreen: ScreenState.ImageSharing,
+    private fun State.reduceImageSharing(
         msg: ImageSharingFeature.Msg,
-        state: State
     ): ReducerResult {
-        val (newScreenState, effs) = ImageSharingFeature.reducer(msg, currentScreen.state)
+        val (screen, position) = tabs.screenAndPositionOfFirstOrNull<ScreenState.ImageSharing>()
+            ?: throw IllegalStateException("$msg | $this")
+        val (newScreenState, effs) = ImageSharingFeature.reducer(msg, screen.state)
         val newEffs = effs.mapTo(HashSet(), Eff::ImageSharingEff)
-        return state.changeCurrentScreen<ScreenState.ImageSharing> { copy(state = newScreenState) } to newEffs
+        return changeScreen<ScreenState.ImageSharing>(position) {
+            copy(state = newScreenState)
+        } to newEffs
     }
 }

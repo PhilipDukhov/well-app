@@ -28,17 +28,17 @@ kotlin {
         val jvmMain by getting {
             libDependencies(
                 ":serverModels",
-                "kotlin.serializationJson",
+                "server.*",
                 "ktor.server.*",
                 "ktor.serialization",
                 "ktor.client.serialization",
                 "ktor.client.engine.cio",
                 "ktor.metrics",
                 "ktor.websockets",
-                "kotlin.serializationJson",
                 "google.apiClient",
                 "google.httpClientApacheV2",
-                "server.*",
+                "logback",
+                "kotlin.serializationJson",
                 "kotlin.stdLib"
             )
         }

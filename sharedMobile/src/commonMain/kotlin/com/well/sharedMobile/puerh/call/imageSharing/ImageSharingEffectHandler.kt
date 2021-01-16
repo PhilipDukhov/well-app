@@ -6,19 +6,20 @@ import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature.Eff
 import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature.Msg
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.Msg as TopLevelMsg
 import com.well.sharedMobile.puerh.call.resizedImageBase64Encoding
+import com.well.sharedMobile.utils.asImageContainer
 import com.well.utils.atomic.AtomicRef
-import com.well.sharedMobile.utils.decodeBase64Image
-import com.well.sharedMobile.puerh.call.WebRtcEffectHandler.SharingStateDataChannelMessage as RtcMsg
+import com.well.sharedMobile.puerh.call.imageSharing.DataChannelMessage as RtcMsg
 
 class ImageSharingEffectHandler(
     val webRtcSendListener: (RtcMsg) -> Unit,
 ) {
     private val initiatedSessionDate = AtomicRef<Date?>()
 
-    fun handleEffect(eff: Eff)  {
+    fun handleEffect(eff: Eff) {
+        println("ImageSharingEffectHandler handleEffect $eff")
         when (eff) {
             Eff.RequestImageUpdate -> Unit
-            Eff.Init -> {
+            Eff.SendInit -> {
                 val date = Date()
                 initiatedSessionDate.value = date
                 webRtcSendListener(RtcMsg.InitiateSession(date))
@@ -41,7 +42,7 @@ class ImageSharingEffectHandler(
         }
     }
 
-    fun handleDataChannelMessage(msg: RtcMsg) : TopLevelMsg? =
+    fun handleDataChannelMessage(msg: RtcMsg): TopLevelMsg? =
         TopLevelMsg.ImageSharingMsg(when (msg) {
             is RtcMsg.InitiateSession -> {
                 initiatedSessionDate.value.let {
@@ -60,7 +61,7 @@ class ImageSharingEffectHandler(
                 Msg.Close
             }
             is RtcMsg.UpdateImage -> {
-                Msg.RemoteUpdateImage(msg.imageData64String.decodeBase64Image())
+                Msg.RemoteUpdateImage(msg.imageData.asImageContainer())
             }
             is RtcMsg.UpdatePaths -> {
                 Msg.UpdatePaths(msg.paths)
@@ -68,5 +69,7 @@ class ImageSharingEffectHandler(
             is RtcMsg.UpdateViewSize -> {
                 Msg.UpdateRemoteViewSize(msg.size)
             }
-        })
+        }).also {
+            println("ImageSharingEffectHandler handleDataChannelMessage $msg $it")
+        }
 }

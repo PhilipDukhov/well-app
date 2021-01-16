@@ -19,8 +19,10 @@ class AtomicMutableList<T>(value: List<T>): AbstractList<T>() {
             set(index, element)
         }
 
-    fun clear() {
+    fun dropAll(): List<T> {
+        val result = atomicReference.value
         atomicReference.value = listOf()
+        return result
     }
 
     override val size: Int get() = atomicReference.value.size

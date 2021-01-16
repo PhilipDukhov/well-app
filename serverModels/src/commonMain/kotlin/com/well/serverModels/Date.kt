@@ -7,6 +7,7 @@ import com.well.serverModels.serializers.DateSerializer
 expect class Date {
     constructor()
     constructor(millis: Long)
+
     val millis: Long
 }
 

@@ -10,7 +10,6 @@ kotlin {
         usePredefinedExperimentalAnnotations()
         val commonMain by getting {
             libDependencies(
-                ":serverModels",
                 "kotlin.coroutines.core",
                 "napier",
                 "kotlin.stdLib"

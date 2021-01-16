@@ -41,7 +41,7 @@ private suspend fun WebSocketClient.webSocket(
             override fun URLSession(
                 session: NSURLSession,
                 webSocketTask: NSURLSessionWebSocketTask,
-                didOpenWithProtocol: String?
+                didOpenWithProtocol: String?,
             ) {
                 webSocketSession.listenMessages()
                 continuation.resume(webSocketSession)
@@ -49,9 +49,30 @@ private suspend fun WebSocketClient.webSocket(
 
             override fun URLSession(
                 session: NSURLSession,
+                webSocketTask: NSURLSessionWebSocketTask,
+                didCloseWithCode: NSURLSessionWebSocketCloseCode,
+                reason: NSData?,
+            ) {
+                webSocketSession.close(
+                    Throwable(
+                        "NSURLSessionWebSocketTask closed code: $didCloseWithCode reason: ${
+                            reason?.let {
+                                NSString.create(
+                                    it,
+                                    NSUTF8StringEncoding
+                                )
+                            }
+                        }"
+                    )
+                )
+            }
+
+            override fun URLSession(
+                session: NSURLSession,
                 task: NSURLSessionTask,
                 didCompleteWithError: NSError?,
             ) {
+                println("didCompleteWithError $didCompleteWithError")
                 if (continuation.isActive) {
                     didCompleteWithError
                         ?.let { continuation.resumeWithException(it) }
