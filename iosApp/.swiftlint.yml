@@ -12,6 +12,7 @@ disabled_rules:
  - force_cast
  - force_try
  - let_var_whitespace
+ - operator_whitespace
 opt_in_rules:
  - empty_count
  - empty_string
@@ -42,6 +43,6 @@ custom_rules:
     severity: warning # violation severity. optional.
   final_class:
     name: "Final Class"
-    regex: "^((?!final).)*class"
+    regex: "^((?!final).)*(^| )class ((?!var).)+"
     message: "Class should be marked as final"
     severity: error

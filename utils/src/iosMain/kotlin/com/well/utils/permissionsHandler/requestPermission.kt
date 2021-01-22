@@ -14,14 +14,14 @@ actual suspend fun PermissionsHandler.requestPermissions(vararg types: Type) =
         it to requestPermission(it)
     }
 
-actual suspend fun PermissionsHandler.requestPermission(type: Type): Result = when (type) {
+/*actual*/ suspend fun PermissionsHandler.requestPermission(type: Type): Result = when (type) {
     Camera -> requestAVCaptureDevicePermission(AVMediaTypeVideo)
     Microphone -> requestAVCaptureDevicePermission(AVMediaTypeAudio)
 }
 
 private suspend fun requestAVCaptureDevicePermission(mediaType: AVMediaType): Result =
     AVCaptureDevice.run {
-        when (authorizationStatusForMediaType(mediaType)) {
+        when (val status = authorizationStatusForMediaType(mediaType)) {
             AVAuthorizationStatusNotDetermined -> suspendCancellableCoroutine { continuation ->
                 requestAccessForMediaType(mediaType, { success: Boolean ->
                     continuation.resume(if (success) Authorized else Denied)
@@ -29,7 +29,7 @@ private suspend fun requestAVCaptureDevicePermission(mediaType: AVMediaType): Re
             }
             AVAuthorizationStatusDenied -> Denied
             AVAuthorizationStatusAuthorized -> Authorized
-            else -> TODO()
+            else -> throw IllegalStateException("AVAuthorizationStatus $status unhandled")
         }
     }
 

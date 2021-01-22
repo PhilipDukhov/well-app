@@ -8,19 +8,22 @@
 
 import SwiftUI
 
-struct AsyncImage<Placeholder: View>: View {
+struct AsyncImage<Placeholder: View, ResImage: View>: View, Equatable {
+    typealias ImageGenerator = (UIImage) -> ResImage
     @ObservedObject private var loader: ImageLoader
 
     init(
         url: URL,
-        cache: ImageCache? = nil,
         @ViewBuilder placeholder: () -> Placeholder,
-        @ViewBuilder image: @escaping (UIImage) -> Image
-        // = Image.init(uiImage:)
+        @ViewBuilder image: @escaping ImageGenerator
     ) {
-        loader = ImageLoader(url: url, cache: cache)
+        loader = ImageLoader(url: url)
         self.placeholder = placeholder()
         self.image = image
+    }
+
+    static func ==(lhs: Self, rhs: Self) -> Bool {
+        lhs.loader.url == rhs.loader.url
     }
 
     var body: some View {
@@ -30,13 +33,15 @@ struct AsyncImage<Placeholder: View>: View {
     }
 
     private let placeholder: Placeholder
-    private let image: (UIImage) -> Image
+    private let image: ImageGenerator
 
     @ViewBuilder
     private var content: some View {
         if let image = loader.image {
+            printUI("AsyncImage image")
             self.image(image)
         } else {
+            printUI("AsyncImage placeholder")
             placeholder
         }
     }

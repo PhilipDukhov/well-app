@@ -28,8 +28,7 @@ actual suspend fun PermissionsHandler.requestPermissions(vararg types: Type): Li
         }
     }
 
-actual suspend fun PermissionsHandler.requestPermission(type: Type): Result {
-    TODO()
+//actual suspend fun PermissionsHandler.requestPermission(type: Type): Result {
 //    val permission = when (type) {
 //        Camera -> CAMERA
 //        Microphone -> RECORD_AUDIO
@@ -46,7 +45,7 @@ actual suspend fun PermissionsHandler.requestPermission(type: Type): Result {
 //        }
 //        launcher.launch(permission)
 //    }
-}
+//}
 
 private fun Type(permission: String): Type =
     when (permission) {

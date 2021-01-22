@@ -7,4 +7,5 @@ data class Path(
     val points: List<Point>,
     val color: Color,
     val lineWidth: Float,
+    val date: Date,
 )

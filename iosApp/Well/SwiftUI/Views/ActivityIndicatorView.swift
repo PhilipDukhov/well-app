@@ -6,17 +6,18 @@
 import SwiftUI
 
 struct ActivityIndicator: UIViewRepresentable {
+    typealias UIViewType = UIActivityIndicatorView
     let style: UIActivityIndicatorView.Style = .medium
 
     func makeUIView(
-        context: UIViewRepresentableContext<ActivityIndicator>
-    ) -> UIActivityIndicatorView {
+        context: UIViewRepresentableContext<Self>
+    ) -> UIViewType {
         UIActivityIndicatorView(style: style)
     }
 
     func updateUIView(
-        _ uiView: UIActivityIndicatorView,
-        context: UIViewRepresentableContext<ActivityIndicator>
+        _ uiView: UIViewType,
+        context: UIViewRepresentableContext<Self>
     ) {
         uiView.startAnimating()
     }

@@ -1,12 +1,12 @@
 package com.well.sharedMobile.puerh.call.imageSharing
 
-import com.well.serverModels.Color
-import com.well.serverModels.Path
-import com.well.serverModels.Point
-import com.well.serverModels.Size
+import com.well.serverModels.*
 import com.well.sharedMobile.utils.ImageContainer
+import com.well.utils.map
 import com.well.utils.toSetOf
 import com.well.utils.withEmptySet
+import kotlin.time.Duration
+import kotlin.time.measureTimedValue
 
 object ImageSharingFeature {
     fun initialState(role: State.Role) =
@@ -16,27 +16,108 @@ object ImageSharingFeature {
             setOf()
         }
 
+    fun testState(imageContainer: ImageContainer?) =
+        initialState(State.Role.Editor)
+            .first
+            .copy(
+                image = imageContainer,
+            )
+
     data class State(
         val role: Role,
         val localViewSize: Size? = null,
         val remoteViewSize: Size? = null,
         val image: ImageContainer? = null,
         val currentColor: Color = Color.drawingColors.first(),
-        val lineWidth: Float = 2F,
-        val paths: List<Path> = listOf(),
-        val pathsHistory: List<List<Path>> = listOf(listOf()),
-        val pathHistoryIndex: Int = 0,
-        val undoAvailable: Boolean = false,
-        val redoAvailable: Boolean = false,
+        val lineWidth: Float = 4F,
+        val nativeStrokeStyle: StrokeStyle = StrokeStyle.default,
+        val selectedBrush: Brush = Brush.Pen,
+        internal val drawingPaths: List<Path> = emptyList(),
+        internal val pathsHistory: List<List<Path>> = listOf(listOf()),
+        internal val pathsHistoryIndex: Int = 0,
+        internal val remotePaths: List<Path> = listOf(),
+        val lastReduceDurations: List<Duration> = listOf(),
     ) {
+        private val historyEditingAvailable = role == Role.Editor && pathsHistory.isNotEmpty()
+        val undoAvailable = historyEditingAvailable && pathsHistoryIndex != 0
+        val redoAvailable = historyEditingAvailable && pathsHistoryIndex != pathsHistory.lastIndex
+        internal val drawingConverter =
+            image?.size?.let { imageSize ->
+                localViewSize?.let { localViewSize ->
+                    DrawingConverter(localViewSize, imageSize)
+                }
+            }
+        internal val localPaths = pathsHistory[pathsHistoryIndex] + drawingPaths
+        internal val currentPaths = (localPaths + remotePaths).sortedBy { it.date.millis }
+        val canvasPaths = drawingConverter?.let { drawingConverter ->
+            currentPaths.map { path ->
+                path.copy(
+                    points = path.points.map(drawingConverter::denormalize)
+                )
+            }
+        } ?: listOf()
+
         companion object {
             val drawingColors = Color.drawingColors
-            val lineWidthRange = 1.0..10.0
+            val lineWidthRange = 1F..50F
         }
 
         enum class Role {
             Editor,
             Viewer,
+        }
+
+        data class StrokeStyle(
+            val lineCap: LineCap,
+            val lineJoin: LineJoin
+        ) {
+            enum class LineCap {
+                Butt,
+                Round,
+                Square,
+            }
+
+            enum class LineJoin {
+                Miter,
+                Round,
+                Bevel,
+            }
+
+            companion object {
+                val default = StrokeStyle(LineCap.Round, LineJoin.Round)
+            }
+        }
+
+        sealed class Brush {
+            object Pen : Brush()
+            object Eraser : Brush()
+        }
+
+        internal class DrawingConverter(
+            containerSize: Size,
+            imageSize: Size
+        ) {
+            private val containerImageSize = containerSize.aspectFit(imageSize)
+            private val imageOffset = Point(
+                x = (containerSize.width - containerImageSize.width) / 2,
+                y = (containerSize.height - containerImageSize.height) / 2,
+            )
+
+            init {
+                println("containerImageSize $containerImageSize imageOffset $imageOffset")
+            }
+
+            fun normalize(point: Point) =
+                Point(
+                    x = (point.x - imageOffset.x) / containerImageSize.width,
+                    y = (point.y - imageOffset.y) / containerImageSize.height
+                )
+
+            fun denormalize(point: Point) =
+                Point(
+                    x = point.x * containerImageSize.width + imageOffset.x,
+                    y = point.y * containerImageSize.height + imageOffset.y,
+                )
         }
     }
 
@@ -49,10 +130,9 @@ object ImageSharingFeature {
         data class RemoteUpdateImage(val image: ImageContainer) : Msg()
         data class UpdateColor(val color: Color) : Msg()
         data class UpdateLineWidth(val lineWidth: Float) : Msg()
-        object StartPath : Msg()
-        data class AddPoint(val point: Point) : Msg()
-        object EndPath : Msg()
-        data class Erase(val point: Point) : Msg()
+        data class NewDragPoint(val point: Point) : Msg()
+        data class SelectBrush(val brush: State.Brush): Msg()
+        object EndDrag : Msg()
         data class UpdatePaths(val paths: List<Path>) : Msg()
         object Undo : Msg()
         object Redo : Msg()
@@ -73,6 +153,20 @@ object ImageSharingFeature {
             val paths: List<Path>
         ) : Eff()
     }
+
+    fun reducerMeasuring(
+        msg: Msg,
+        state: State
+    ): Pair<State, Set<Eff>> =
+        state.copy(lastReduceDurations = listOf()).let {
+            measureTimedValue {
+                reducer(msg, it)
+            }.run {
+                value.map(
+                    { it.copy(lastReduceDurations = it.lastReduceDurations + duration) },
+                    { it })
+            }
+        }
 
     fun reducer(
         msg: Msg,
@@ -112,34 +206,25 @@ object ImageSharingFeature {
                 is Msg.UpdateLineWidth -> {
                     return@state state.copy(lineWidth = msg.lineWidth)
                 }
-                Msg.StartPath -> {
-                    return@state state.copy(
-                        paths = state.paths + Path(
-                            listOf(),
-                            state.currentColor,
-                            state.lineWidth
-                        )
-                    )
+                is Msg.NewDragPoint -> {
+                    return@reducer state.reduceDragPoint(msg.point)
                 }
-                is Msg.AddPoint -> {
-                    return@reducer state.copyAddPoint(msg.point).reduceSendPathsUpdate()
-                }
-                Msg.EndPath -> {
-                    return@state state.copyAddPathsToHistory()
-                }
-                is Msg.Erase -> {
-                    return@reducer state.reduceErasePoint(msg.point)
+                Msg.EndDrag -> {
+                    return@state state.copyEndPath()
                 }
                 is Msg.UpdatePaths -> {
-                    return@state state.copy(paths = msg.paths)
+                    return@state state.copy(remotePaths = msg.paths)
                 }
                 Msg.Undo -> {
                     if (!state.undoAvailable) throw IllegalStateException("undo unavailable")
-                    return@state state.copyPathsHistoryIndexDiff(diff = -1)
+                    return@reducer state.reducePathsHistoryIndexDiff(diff = -1)
                 }
                 Msg.Redo -> {
                     if (!state.redoAvailable) throw IllegalStateException("redo unavailable")
-                    return@state state.copyPathsHistoryIndexDiff(diff = +1)
+                    return@reducer state.reducePathsHistoryIndexDiff(diff = +1)
+                }
+                is Msg.SelectBrush -> {
+                    return@state state.copy(selectedBrush = msg.brush)
                 }
             }
         })
@@ -161,54 +246,88 @@ object ImageSharingFeature {
 
     private fun State.reduceSendPathsUpdate() =
         this toSetOf if (role == State.Role.Editor) {
-            Eff.UploadPaths(paths)
+            Eff.UploadPaths(localPaths)
         } else {
             null
         }
 
-    private fun State.copyAddPathsToHistory(): State =
+    private fun State.copyStartPath(point: Point): State =
         copy(
-            pathsHistory = pathsHistory + listOf(paths),
-        ).copyPathsHistoryIndexDiff(diff = +1)
+            pathsHistory = pathsHistory.subList(0, pathsHistoryIndex + 1),
+            drawingPaths = listOf(
+                Path(
+                    listOf(point),
+                    currentColor,
+                    lineWidth,
+                    Date(),
+                )
+            )
+        )
+
+    private fun State.copyEndPath(): State =
+        if (drawingPaths.isNotEmpty()) {
+            copy(
+                pathsHistory = pathsHistory + listOf(currentPaths),
+                drawingPaths = listOf(),
+            ).copyPathsHistoryIndexDiff(diff = +1)
+        } else this
 
     private fun State.copyPathsHistoryIndexDiff(diff: Int): State =
-        (pathHistoryIndex + diff).let { newIndex ->
-            copy(
-                pathHistoryIndex = newIndex,
-                undoAvailable = role == State.Role.Editor && pathsHistory.isNotEmpty() && newIndex > 0,
-                redoAvailable = role == State.Role.Editor && pathsHistory.isNotEmpty() && newIndex < pathsHistory.lastIndex
-            )
-        }
+        copy(pathsHistoryIndex = pathsHistoryIndex + diff)
 
-    private fun State.copyAddPoint(point: Point): State {
-        val currentPath = paths.last()
-        val paths = paths.toMutableList()
-//        if (currentPath.points.count() > 100) {
-//            paths.add(
-//                currentPath.copy(
-//                    points = listOf(
-//                        currentPath.points.last(),
-//                        msg.point
-//                    )
-//                )
-//            )
-//        } else {
-        paths[paths.count() - 1] =
-            currentPath.copy(points = currentPath.points + point)
-//        }
-        return copy(paths = paths)
-    }
+    private fun State.reducePathsHistoryIndexDiff(diff: Int): Pair<State, Set<Eff>> =
+        copyPathsHistoryIndexDiff(diff).reduceSendPathsUpdate()
 
     private fun State.reduceErasePoint(point: Point): Pair<State, Set<Eff>> {
-        val filtered = paths.filter { path ->
+        val filtered = currentPaths.filter { path ->
             path.points.any {
                 it.intersects(point, path.lineWidth + 4)
             }
         }
-        return if (filtered.count() != paths.count()) {
-            copy(paths = filtered).reduceSendPathsUpdate()
+        if (filtered.count() != currentPaths.count()) {
+            println("wasd")
+        }
+        return if (filtered.count() != currentPaths.count()) {
+            copy(
+                pathsHistory = pathsHistory + listOf(filtered),
+            ).copyPathsHistoryIndexDiff(diff = +1)
+                .reduceSendPathsUpdate()
         } else {
             this.withEmptySet()
         }
+    }
+
+    private fun State.reduceDragPoint(point: Point): Pair<State, Set<Eff>> {
+        if (drawingConverter == null) {
+            return this.withEmptySet()
+        }
+        val normalizedPoint = drawingConverter.normalize(point)
+        return when (selectedBrush) {
+            State.Brush.Pen -> reduceAddPoint(normalizedPoint)
+            State.Brush.Eraser -> reduceErasePoint(normalizedPoint)
+        }
+    }
+
+    private fun State.reduceAddPoint(point: Point): Pair<State, Set<Eff>> {
+        if (drawingPaths.isEmpty()) {
+            return copyStartPath(point).withEmptySet()
+        }
+        val newDrawingPaths = drawingPaths.toMutableList()
+        val last = drawingPaths.last()
+        if (last.points.count() < 70) {
+            newDrawingPaths[drawingPaths.lastIndex] =
+                last.copy(
+                    points = last.points + point
+                )
+        } else {
+            newDrawingPaths.add(
+                last.copy(
+                    color = Color.drawingColors[(Color.drawingColors.indexOf(last.color) + 1) % Color.drawingColors.count()],
+                    points = last.points.takeLast(2) + listOf(point),
+                    date = Date(),
+                )
+            )
+        }
+        return copy(drawingPaths = newDrawingPaths).reduceSendPathsUpdate()
     }
 }

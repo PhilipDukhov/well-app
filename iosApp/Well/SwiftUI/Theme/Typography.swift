@@ -5,7 +5,7 @@
 
 import SwiftUI
 
-struct TextStyle {
+struct TextStyle: Equatable {
     let fontWeight: Font.Weight
     let fontSize: CGFloat
 
@@ -15,9 +15,27 @@ struct TextStyle {
 
 extension Text {
     @inline(__always) func style(
-            _ style: TextStyle
+        _ style: TextStyle
     ) -> some View {
         font(.system(size: style.fontSize))
-                .fontWeight(style.fontWeight)
+            .fontWeight(style.fontWeight)
+    }
+}
+
+extension Font.Weight {
+    func toUIWeight() -> UIFont.Weight {
+        switch self {
+        case .ultraLight: return .ultraLight
+        case .thin: return .thin
+        case .light: return .light
+        case .regular: return .regular
+        case .medium: return .medium
+        case .semibold: return .semibold
+        case .bold: return .bold
+        case .heavy: return .heavy
+        case .black: return .black
+        default:
+            fatalError()
+        }
     }
 }

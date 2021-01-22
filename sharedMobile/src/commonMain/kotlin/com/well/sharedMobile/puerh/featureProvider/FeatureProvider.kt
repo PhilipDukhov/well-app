@@ -24,6 +24,8 @@ import com.well.utils.permissionsHandler.PermissionsHandler.Result.Authorized
 import com.well.utils.permissionsHandler.PermissionsHandler.Type.*
 import com.well.utils.permissionsHandler.requestPermissions
 import com.well.utils.platform.Platform
+import com.well.utils.platform.isDebug
+import io.ktor.client.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -57,6 +59,7 @@ class FeatureProvider(
                             createWebRtcManagerHandler(eff.eff).freeze()
                     }
                     is CallFeature.Eff.End -> {
+                        println("WebRtcEffectHandler close $this")
                         networkManager.value.send(
                             WebSocketMessage.EndCall(WebSocketMessage.EndCall.Reason.Decline)
                         )
@@ -78,12 +81,21 @@ class FeatureProvider(
                 is Eff.ImageSharingEff -> when (eff.eff) {
                     is ImageSharingFeature.Eff.NotifyViewSizeUpdate,
                     is ImageSharingFeature.Eff.UploadImage,
-                    ImageSharingFeature.Eff.SendInit -> Unit
+                    ImageSharingFeature.Eff.SendInit,
+                    is ImageSharingFeature.Eff.UploadPaths
+                    -> Unit
 
                     ImageSharingFeature.Eff.RequestImageUpdate -> {
-                        val msg = try {
+                        val msg = if (Platform.isDebug) {
                             ImageSharingFeature.Msg.LocalUpdateImage(
-                                contextHelper.pickSystemImage()
+                                networkManager.value.downloadTestImage()
+                            )
+                        } else try {
+                            ImageSharingFeature.Msg.LocalUpdateImage(
+                                if (Platform.isDebug)
+                                    networkManager.value.downloadTestImage()
+                                else
+                                    contextHelper.pickSystemImage()
                             )
                         } catch (t: Throwable) {
                             ImageSharingFeature.Msg.ImageUpdateCancelled
@@ -180,10 +192,9 @@ class FeatureProvider(
     private suspend fun handleCall(
         user: User,
         listener: (Msg) -> Unit
-    ) =
-        handleCallPermissions()?.also {
-            listener(Msg.ShowAlert(it.first.alert))
-        } ?: listener(Msg.StartCall(user))
+    ) = handleCallPermissions()?.also {
+        listener(Msg.ShowAlert(it.first.alert))
+    } ?: listener(Msg.StartCall(user))
 
     private fun endCall(
         listener: (Msg) -> Unit,

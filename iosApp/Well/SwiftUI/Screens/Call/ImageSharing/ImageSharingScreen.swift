@@ -6,99 +6,161 @@
 import SwiftUI
 import SharedMobile
 
-extension CGSize {
-    func toSize() -> ServerModelsSize {
-        .init(width: Double(width), height_: Double(height))
-    }
-}
-
-extension CGSize {
-    func toNativeScaleSize() -> ServerModelsSize {
-        .init(
-            width: Double(width * UIScreen.main.nativeScale),
-            height_: Double(height * UIScreen.main.nativeScale)
-        )
-    }
-}
-
 struct ImageSharingScreen: View {
-    let state: ImageSharingFeature.State
-    let listener: (ImageSharingFeature.Msg) -> Void
+    typealias Listener = (ImageSharingFeature.Msg) -> Void
+    private let state: ImageSharingFeature.State
+    private let listener: Listener
+
+    init(
+        state: ImageSharingFeature.State,
+        listener: @escaping Listener
+    ) {
+        self.state = state
+        self.listener = listener
+    }
 
     var body: some View {
-        ZStack {
-            topPanel()
-//        GeometryReader { geometry in
-//            onAppear {
-//                )
-//            }
-//            if let image = state.image {
-//                Image(uiImage: $0.uiImage)
-//                    .resizable()
-//                    .aspectRatio(contentMode: .fit)
-//                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-//            } else {
-//                Text("ok")
-//            }
-        }
-            .onAppear {
-                listener(
-                    ImageSharingFeature.MsgUpdateLocalViewSize(
-                        size: UIScreen.main.bounds.size.toNativeScaleSize()
-                    )
-                )
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                topPanel(geometry)
+                drawingContent().fillMaxSize().clipped()
+                bottomPanel(geometry)
             }
-    }
-
-    @ViewBuilder
-    func topPanel() -> some View {
-        HStack {
-            Image(systemName: "chevron.left")
-                .frame(size: 45)
-                .onTapGesture {
-                }
-            Spacer()
-            Image(systemName: "arrow.uturn.left")
-                .frame(size: 45)
-                .onTapGesture {
-                }
-            Image(systemName: "arrow.uturn.right")
-                .frame(size: 45)
-                .onTapGesture {
-                }
-            Spacer()
-            Text("Done")
-                .onTapGesture {
-                }
+                .background(Color.black)
+                .foregroundColor(.white)
+                .edgesIgnoringSafeArea(.all)
+                .statusBar(style: .lightContent)
         }
     }
 
     @ViewBuilder
-    func bottomPanel() -> some View {
+    func topPanel(_ geometry: GeometryProxy) -> some View {
+        ZStack(alignment: .center) {
+            HStack {
+                Control(systemName: "chevron.left", enabled: true) {
+                    listener(ImageSharingFeature.MsgRedo())
+                }
+                Spacer()
+            }
+            HStack {
+                Control(systemName: "arrow.uturn.left", enabled: state.undoAvailable) {
+                    listener(ImageSharingFeature.MsgUndo())
+                }
+                Control(systemName: "arrow.uturn.right", enabled: state.redoAvailable) {
+                    listener(ImageSharingFeature.MsgRedo())
+                }
+            }
+        }.padding(.top, geometry.safeAreaInsets.top)
+    }
 
+    @ViewBuilder
+    func drawingContent() -> some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .leading) {
+                if let image = state.image {
+                    Image(uiImage: image.uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .fillMaxSize()
+                } else if state.role == .viewer {
+                    Text("Waiting for an image")
+                        .style(.h4)
+                        .background(Color.green)
+                }
+                drawer()
+                    .onAppear {
+                        listener(
+                            ImageSharingFeature.MsgUpdateLocalViewSize(
+                                size: geometry.size.toSize()
+                            )
+                        )
+                    }
+                WidthSlider(
+                    value: state.lineWidth,
+                    range: ImageSharingFeature.StateCompanion().lineWidthRange.toClosedRange(),
+                    color: state.currentColor.toColor()
+                ) {
+                    listener(
+                        ImageSharingFeature.MsgUpdateLineWidth(lineWidth: $0)
+                    )
+                }.frame(width: geometry.size.width / 2, height: geometry.size.height / 2)
+            }
+        }
+    }
+
+    @ViewBuilder
+    func bottomPanel(_ geometry: GeometryProxy) -> some View {
+        let drawingColors = ImageSharingFeature.StateCompanion().drawingColors
+        let spacing: CGFloat = 5
+        let padding: CGFloat = 8
+        Group {
+            HStack(spacing: spacing) {
+                ForEach(drawingColors, id: \.self) { color in
+                    let selected = state.currentColor == color
+                    Circle()
+                        .stroke(lineWidth: 2)
+                        .foregroundColor(selected ? .blue : .clear)
+                        .scaledToFit()
+                        .overlay(
+                            Circle()
+                                .foregroundColor(color.toColor())
+                                .padding(3)
+                        )
+                        .onTapGesture {
+                            listener(ImageSharingFeature.MsgUpdateColor(color: color))
+                        }
+                        .allowsHitTesting(!selected)
+                }
+            }
+                .padding([.trailing, .leading, .top], padding)
+                .padding(.bottom, padding + geometry.safeAreaInsets.bottom)
+        }
+            .background(Color.green)
+    }
+
+    @ViewBuilder
+    func drawer() -> some View {
+        ZStack {
+            ForEach(state.canvasPaths, id: \.self) { (path: ServerModelsPath) in
+                DrawShape(
+                    points: path.points.map {
+                        $0.toCGPoint()
+                    },
+                    touchTolerance: path.lineWidth.toCGFloat()
+                )
+                    .stroke(style: state.strokeStyle(lineWidth: path.lineWidth.toCGFloat()))
+                    .foregroundColor(path.color.toColor())
+                    .allowsHitTesting(false)
+            }
+        }.fillMaxSize().contentShape(Rectangle())
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        listener(
+                            ImageSharingFeature.MsgNewDragPoint(
+                                point: value.location.toServerModelsPoint()
+                            )
+                        )
+                    }
+                    .onEnded { _ in
+                        listener(
+                            ImageSharingFeature.MsgEndDrag()
+                        )
+                    }
+            )
     }
 }
 
-//            DrawShape(points: points)
-//                .stroke(lineWidth: 5) // here you put width of lines
-//                .foregroundColor(.blue)
-//
+private struct Control: View {
+    let systemName: String
+    let enabled: Bool
+    let onTap: () -> Void
 
-//            .gesture(
-//                DragGesture()
-//                    .onChanged { value in
-//                        addNewPoint(value)
-//                    }
-//                    .onEnded { _ in
-//                        // here you perform what you need at the end
-//                    }
-//            )
-
-//            private func addNewPoint(
-//                _ value: DragGesture.Value
-//            ) {
-//                // here you can make some calculations based on previous points
-//                points.append(value.location)
-//            }
-//
-//            @State var points: [CGPoint] = []
+    var body: some View {
+        Image(systemName: systemName)
+            .frame(size: 45)
+            .onTapGesture(perform: onTap)
+            .opacity(enabled ? 1 : 0.4)
+            .allowsHitTesting(enabled)
+    }
+}

@@ -15,7 +15,7 @@ actual class ImageContainer(val uiImage: UIImage) {
     actual val size = uiImage.size.toSize()
 
     actual fun resized(targetSize: Size): ImageContainer {
-        val rect = CGRectMake(0.0, 0.0, targetSize.width, targetSize.height)
+        val rect = CGRectMake(0.0, 0.0, targetSize.width.toDouble(), targetSize.height.toDouble())
         UIGraphicsBeginImageContextWithOptions(targetSize.toCGSize(), false, 1.0)
         uiImage.drawInRect(rect)
         val newImage = UIGraphicsGetImageFromCurrentImageContext()!!

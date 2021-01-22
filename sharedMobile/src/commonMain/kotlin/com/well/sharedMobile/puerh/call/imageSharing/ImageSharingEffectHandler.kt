@@ -1,6 +1,7 @@
 package com.well.sharedMobile.puerh.call.imageSharing
 
 import com.well.serverModels.Date
+import com.well.serverModels.Path
 import com.well.serverModels.compareTo
 import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature.Eff
 import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature.Msg
@@ -14,6 +15,8 @@ class ImageSharingEffectHandler(
     val webRtcSendListener: (RtcMsg) -> Unit,
 ) {
     private val initiatedSessionDate = AtomicRef<Date?>()
+    private val waitingForPathConfirmation = AtomicRef(false)
+    private val pendingPaths = AtomicRef<List<Path>?>()
 
     fun handleEffect(eff: Eff) {
         println("ImageSharingEffectHandler handleEffect $eff")
@@ -39,6 +42,16 @@ class ImageSharingEffectHandler(
                 )
             }
             Eff.Close -> webRtcSendListener(RtcMsg.EndSession)
+            is Eff.UploadPaths -> {
+                if (!waitingForPathConfirmation.value) {
+                    waitingForPathConfirmation.value = true
+                    pendingPaths.value = null
+                    webRtcSendListener(RtcMsg.UpdatePaths(eff.paths))
+                    println("apthssss: uploding ${eff.paths}")
+                } else {
+                    pendingPaths.value = eff.paths
+                }
+            }
         }
     }
 
@@ -64,10 +77,22 @@ class ImageSharingEffectHandler(
                 Msg.RemoteUpdateImage(msg.imageData.asImageContainer())
             }
             is RtcMsg.UpdatePaths -> {
+                println("apthssss: get ${msg.paths}")
+                webRtcSendListener(RtcMsg.ConfirmUpdatePaths)
                 Msg.UpdatePaths(msg.paths)
             }
             is RtcMsg.UpdateViewSize -> {
                 Msg.UpdateRemoteViewSize(msg.size)
+            }
+            RtcMsg.ConfirmUpdatePaths -> {
+                waitingForPathConfirmation.value = false
+                val pendingPaths = pendingPaths.value
+                if (pendingPaths != null) {
+                    handleEffect(Eff.UploadPaths(pendingPaths))
+                }
+                run {
+                    return null
+                }
             }
         }).also {
             println("ImageSharingEffectHandler handleDataChannelMessage $msg $it")

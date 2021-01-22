@@ -21,6 +21,7 @@ libDependencies(
     "kotlin.coroutines.playServices",
     "kotlin.serializationJson",
     "kotlin.coroutines.core",
+    "kotlin.reflect",
     "glide.glide",
     "glide.compiler",
     "napier",
@@ -46,6 +47,7 @@ android {
         compose = true
     }
     lintOptions {
+        disable("PackageName")
         isAbortOnError = false
     }
     kotlinOptions {

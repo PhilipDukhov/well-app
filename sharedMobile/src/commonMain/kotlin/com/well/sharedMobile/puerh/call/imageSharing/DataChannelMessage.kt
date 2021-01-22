@@ -23,4 +23,7 @@ sealed class DataChannelMessage {
 
     @Serializable
     data class UpdatePaths(val paths: List<Path>) : DataChannelMessage()
+
+    @Serializable
+    object ConfirmUpdatePaths : DataChannelMessage()
 }

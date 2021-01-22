@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.setContent
 import com.well.androidApp.R
+import com.well.androidApp.ui.composableScreens.TestComposeScreen
 import com.well.androidApp.ui.composableScreens.TopLevelScreen
+import com.well.androidApp.ui.composableScreens.testing
 import com.well.androidApp.ui.composableScreens.theme.Theme
 import com.well.androidApp.ui.webRtc.WebRtcManager
 import com.well.sharedMobile.napier.NapierProxy
@@ -34,7 +36,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 setContent {
                     Theme {
                         ProvideWindowInsets {
-                            TopLevelScreen(it, ::accept)
+                            if (testing) {
+                                TestComposeScreen()
+                            } else {
+                                TopLevelScreen(it, ::accept)
+                            }
                         }
                     }
                 }
@@ -44,6 +50,5 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     override fun onBackPressed() {
         featureProvider.feature.accept(TopLevelFeature.Msg.Back)
-//        onBackPressedDispatcher.onBackPressed()
     }
 }

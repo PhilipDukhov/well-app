@@ -21,10 +21,10 @@ kotlin {
             )
         }
 
-        val androidMain by getting {
-            libDependencies(
-                "android.annotation"
-            )
-        }
+//        val androidMain by getting {
+//            libDependencies(
+//                "android.annotation"
+//            )
+//        }
     }
 }

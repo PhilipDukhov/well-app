@@ -4,15 +4,20 @@ import com.github.aakira.napier.Napier
 import com.well.serverModels.User
 import com.well.serverModels.WebSocketMessage
 import com.well.serverModels.WebSocketMessage.*
-import com.well.sharedMobile.networking.Constants
+import com.well.serverModels.createBaseHttpClient
+import com.well.sharedMobile.networking.*
 import com.well.sharedMobile.networking.WebSocketClient
-import com.well.sharedMobile.networking.WebSocketSession
-import com.well.sharedMobile.networking.ws
 import com.well.sharedMobile.networking.webSocketManager.NetworkManager.Status.*
+import com.well.sharedMobile.networking.ws
+import com.well.sharedMobile.utils.ImageContainer
+import com.well.sharedMobile.utils.asImageContainer
 import com.well.utils.Closeable
 import com.well.utils.CloseableContainer
 import com.well.utils.atomic.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.utils.io.bits.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.Json
@@ -114,6 +119,35 @@ class NetworkManager(
             )
         } catch (t: Throwable) {
             println("failed to send $message $t")
+        }
+    }
+
+    suspend fun downloadTestImage(): ImageContainer {
+        try {
+//            val statement = httpClient.request<HttpStatement>(url) {
+//                range?.let {
+//                    header(HttpHeaders.Range, range)
+//                }
+//            }
+            val url = currentUser.value!!.profileImageUrl!!
+            val statement = createBaseHttpClient()
+                .get<HttpStatement>(url)
+            return statement.execute {
+                val contentLength = it.contentLength()?.lowInt ?: 0
+                val byteArray = ByteArray(contentLength)
+                var offset = 0
+                do {
+                    val currentRead = it.content.readAvailable(
+                        byteArray,
+                        offset,
+                        byteArray.size - offset
+                    )
+                    offset += currentRead
+                } while (offset < contentLength)
+                return@execute byteArray
+            }.asImageContainer()
+        } catch (t: Throwable) {
+            throw t
         }
     }
 }

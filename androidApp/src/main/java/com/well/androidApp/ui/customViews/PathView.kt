@@ -6,7 +6,6 @@ import android.graphics.Paint
 import android.view.View
 import android.graphics.Path
 import com.well.serverModels.Point
-import com.well.serverModels.colorInt
 import kotlin.math.absoluteValue
 import kotlin.math.min
 
@@ -29,7 +28,8 @@ class PathView(context: Context) : View(context) {
             if (value == null) {
                 return
             }
-            paint.color = value.color.colorInt()
+            paint.color = value.color.argb.toInt()
+
 
             var lastPoint = value.points[0]
             graphicsPath.moveTo(lastPoint)

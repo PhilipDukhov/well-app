@@ -6,10 +6,10 @@ import platform.CoreGraphics.CGSize
 import platform.CoreGraphics.CGSizeMake
 
 fun Size.toCGSize() =
-    CGSizeMake(width, height)
+    CGSizeMake(width.toDouble(), height.toDouble())
 
 fun CValue<CGSize>.toSize() =
     useContents {
-        Size(width, height)
+        Size(width.toFloat(), height.toFloat())
     }
 

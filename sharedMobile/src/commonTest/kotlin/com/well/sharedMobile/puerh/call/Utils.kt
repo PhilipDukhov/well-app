@@ -1,5 +1,8 @@
 package com.well.sharedMobile.puerh.call
 
+import com.well.serverModels.Point
+import com.well.serverModels.Size
+import kotlin.random.Random
 import kotlin.test.assertEquals
 
 fun assertByteArrayEquals(
@@ -29,3 +32,12 @@ fun ByteArray.toHexString() = asUByteArray()
         it.toString(16)
             .padStart(2, '0')
     }
+
+fun Random.nextFloat(from: Float, until: Float) =
+    Random.nextDouble(from.toDouble(), until.toDouble()).toFloat()
+
+fun Random.nextPoint(size: Size) =
+    Point(
+        nextFloat(from = 0F, until = size.width),
+        nextFloat(from = 0F, until = size.height),
+    )

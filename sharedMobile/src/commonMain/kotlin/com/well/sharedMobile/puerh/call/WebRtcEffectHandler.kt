@@ -8,9 +8,12 @@ import com.well.sharedMobile.puerh.call.CallFeature.State
 import com.well.sharedMobile.puerh.call.WebRtcManagerI.Listener.DataChannelState
 import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingEffectHandler
 import com.well.sharedMobile.puerh.call.imageSharing.DataChannelMessage
+import com.well.utils.Closeable
 import com.well.utils.EffectHandler
 import com.well.utils.asCloseable
 import com.well.utils.atomic.AtomicCloseableRef
+import com.well.utils.atomic.AtomicLateInitRef
+import com.well.utils.atomic.AtomicRef
 import com.well.utils.freeze
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -64,12 +67,21 @@ class WebRtcEffectHandler(
     }
 
     init {
-        val webRtcManagerListener = object : WebRtcManagerI.Listener {
-            lateinit var handler: WebRtcEffectHandler
+        val webRtcManagerListener = object : WebRtcManagerI.Listener, Closeable {
+            lateinit var handlerRef: WebRtcEffectHandler
+
+            private val closed = AtomicRef(false)
+            private val handler: WebRtcEffectHandler?
+                get() = if (closed.value) null else handlerRef
+
+            override fun close() {
+                println("webRtcManagerListener set close")
+                closed.value = true
+            }
 
             override fun updateRemoveVideoContext(viewContext: VideoViewContext?) {
                 viewContext?.let {
-                    handler.invokeCallMsg(
+                    handler?.invokeCallMsg(
                         Msg.UpdateRemoteVideoContext(viewContext)
                     )
                 }
@@ -77,20 +89,21 @@ class WebRtcEffectHandler(
 
             override fun addCandidate(candidate: WebSocketMessage.Candidate) {
                 coroutineScope.launch {
-                    handler.candidates.emit(candidate)
+                    handler?.candidates?.emit(candidate)
                 }
             }
 
             override fun sendOffer(webRTCSessionDescriptor: String) {
-                handler.send(WebSocketMessage.Offer(webRTCSessionDescriptor))
+                handler?.send(WebSocketMessage.Offer(webRTCSessionDescriptor))
             }
 
             override fun sendAnswer(webRTCSessionDescriptor: String) {
-                handler.send(WebSocketMessage.Answer(webRTCSessionDescriptor))
+                handler?.send(WebSocketMessage.Answer(webRTCSessionDescriptor))
             }
 
             override fun dataChannelStateChanged(state: DataChannelState) {
-                handler.invokeCallMsg(
+                println("dataChannelStateChanged $state")
+                handler?.invokeCallMsg(
                     if (state == DataChannelState.Open) {
                         Msg.DataConnectionEstablished
                     } else {
@@ -100,10 +113,10 @@ class WebRtcEffectHandler(
             }
 
             override fun receiveData(data: ByteArray) {
-                handler.handleDataChannelMessage(data)
+                handler?.handleDataChannelMessage(data)
             }
         }
-        webRtcManagerListener.handler = this
+        webRtcManagerListener.handlerRef = this
         webRtcManager = webRtcManagerGenerator(
             listOf(
                 "stun:stun.l.google.com:19302",
@@ -116,6 +129,8 @@ class WebRtcEffectHandler(
         ).apply {
             localVideoContext.freeze()
         }
+        webRtcManagerListener.freeze()
+        addCloseableChild(webRtcManagerListener)
         addCloseableChild(
             coroutineScope.launch {
                 candidatesSendState
@@ -137,7 +152,6 @@ class WebRtcEffectHandler(
                 networkManager.addListener(::listenWebSocketMessage)
             )
         }
-        webRtcManagerListener.freeze()
         addCloseableChild(webRtcManager)
     }
 
@@ -152,7 +166,9 @@ class WebRtcEffectHandler(
                             sendOffer()
                         }
                     }
-                    Eff.End -> close()
+                    Eff.End -> {
+                        close()
+                    }
                     Eff.StartImageSharing -> Unit
                     is Eff.UpdateDeviceState -> TODO()
                 }

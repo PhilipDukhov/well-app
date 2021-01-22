@@ -22,9 +22,8 @@ struct ToggleStillButton: View {
 
     let systemImage: String
     let size: Size
+    let selected: Bool
     let handler: () -> Void
-
-    var selected = true
 
     private let secondaryColor = Color.white.opacity(0.3)
 

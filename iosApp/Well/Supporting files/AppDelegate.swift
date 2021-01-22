@@ -52,13 +52,15 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> UIWindow {
         let window = UIWindow(frame: UIScreen.main.bounds)
         window.rootViewController = rootViewController
-        featureProvider.feature.listenState { [self] state in
-            rootViewController.updateWrapperView(
-                TopLevelView(
-                    state: state,
-                    listener: featureProvider.feature.accept
+        if !TopLevelView.testing {
+            featureProvider.feature.listenState { [self] state in
+                rootViewController.updateWrapperView(
+                    TopLevelView(
+                        state: state,
+                        listener: featureProvider.feature.accept
+                    )
                 )
-            )
+            }
         }
         #if !AUTH_DISABLED
         let loginInitialViewController = LoginInitialViewController()

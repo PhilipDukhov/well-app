@@ -2,8 +2,12 @@ package com.well.sharedMobile.puerh.call
 
 import com.well.serverModels.*
 import com.well.sharedMobile.puerh.call.CallFeature.State.Status.*
+import com.well.utils.nativeFormat
 import com.well.utils.toSetOf
 import com.well.utils.withEmptySet
+import com.well.utils.nextEnumValue
+
+private val testDate = Date()
 
 object CallFeature {
     fun callInitiateStateAndEffects(user: User) =
@@ -12,20 +16,58 @@ object CallFeature {
     fun incomingInitialState(incomingCall: WebSocketMessage.IncomingCall) =
         State(incomingCall, incomingCall.user, Incoming)
 
+    fun testState(status: State.Status) =
+        callInitiateStateAndEffects(
+            User(
+                1,
+                "12",
+                "12",
+                User.Type.Test,
+                "https://i.imgur.com/StXm8nf.jpg"
+            )
+        ).first.run {
+            copy(
+                status = status,
+                callStartedDateInfo = State.CallStartedDateInfo(testDate),
+                deviceState = deviceState.copy(cameraEnabled = false)
+            )
+        }
+
     data class State(
         val incomingCall: WebSocketMessage.IncomingCall? = null,
         val user: User,
         val status: Status,
         val deviceState: DeviceState = DeviceState(),
-        val callStartedDate: Date? = null,
+        val callStartedDateInfo: CallStartedDateInfo? = null,
         val localVideoContext: VideoViewContext? = null,
         val remoteVideoContext: VideoViewContext? = null,
     ) {
+        data class CallStartedDateInfo(val date: Date) {
+            val secondsPassedFormatted: String
+                get() = date.secondsSinceNow().toInt().let {
+                    String.nativeFormat("%02d:%02d", it / 60, it % 60)
+                }
+        }
+
         data class DeviceState(
             val micEnabled: Boolean = true,
             val cameraEnabled: Boolean = true,
+            val audioSpeakerEnabled: Boolean = false,
             val isFrontCamera: Boolean = true,
-        )
+        ) {
+            fun toggleMicMsg(): Msg =
+                Msg.SetMicEnabled(!micEnabled)
+
+            fun toggleCameraMsg(): Msg =
+                Msg.SetCameraEnabled(!cameraEnabled)
+
+            fun toggleAudioSpeakerMsg(): Msg =
+                Msg.SetAudioSpeakerEnabled(!audioSpeakerEnabled)
+
+            fun toggleIsFrontCameraMsg(): Msg =
+                Msg.SetIsFrontCamera(!isFrontCamera)
+        }
+
         enum class Status {
             Calling,
             Incoming,
@@ -35,18 +77,20 @@ object CallFeature {
 
             val stringRepresentation: String
                 get() = when (this) {
-                    Calling -> "Calling"
+                    Calling -> "Calling..."
                     Incoming -> "Incoming"
-                    Connecting -> "Connecting"
+                    Connecting -> "Connecting..."
                     Ongoing -> "Ongoing"
                 }
         }
 
-        fun copyDeviceState(
+        fun reduceCopyDeviceState(
             modifier: DeviceState.() -> DeviceState
         ) = modifier(deviceState).let {
             copy(deviceState = it) toSetOf Eff.UpdateDeviceState(it)
         }
+
+        fun testIncStatus() = copy(status = status.nextEnumValue())
     }
 
     sealed class Msg {
@@ -58,8 +102,9 @@ object CallFeature {
         data class UpdateRemoteVideoContext(val viewContext: VideoViewContext) : Msg()
         data class SetMicEnabled(val enabled: Boolean) : Msg()
         data class SetCameraEnabled(val enabled: Boolean) : Msg()
+        data class SetAudioSpeakerEnabled(val enabled: Boolean) : Msg()
         data class SetIsFrontCamera(val isFrontCamera: Boolean) : Msg()
-        object StartImageSharing: Msg()
+        object StartImageSharing : Msg()
     }
 
     sealed class Eff {
@@ -88,13 +133,16 @@ object CallFeature {
             state.copy(status = msg.status).withEmptySet()
         }
         is Msg.SetMicEnabled -> {
-            state.copyDeviceState { copy(micEnabled = msg.enabled) }
+            state.reduceCopyDeviceState { copy(micEnabled = msg.enabled) }
         }
         is Msg.SetCameraEnabled -> {
-            state.copyDeviceState { copy(cameraEnabled = msg.enabled) }
+            state.reduceCopyDeviceState { copy(cameraEnabled = msg.enabled) }
+        }
+        is Msg.SetAudioSpeakerEnabled -> {
+            state.reduceCopyDeviceState { copy(audioSpeakerEnabled = msg.enabled) }
         }
         is Msg.SetIsFrontCamera -> {
-            state.copyDeviceState { copy(isFrontCamera = msg.isFrontCamera) }
+            state.reduceCopyDeviceState { copy(isFrontCamera = msg.isFrontCamera) }
         }
         is Msg.StartImageSharing -> {
             state toSetOf Eff.StartImageSharing
@@ -102,7 +150,7 @@ object CallFeature {
         is Msg.DataConnectionEstablished -> {
             state.copy(
                 status = Ongoing,
-                callStartedDate = state.callStartedDate ?: Date()
+                callStartedDateInfo = state.callStartedDateInfo ?: State.CallStartedDateInfo(Date())
             ).withEmptySet()
         }
     }

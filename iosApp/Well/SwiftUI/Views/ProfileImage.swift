@@ -8,29 +8,37 @@ import SharedMobile
 
 struct ProfileImage: View {
     let viewModel: ServerModelsUser
+    let clipCircle: Bool
 
     init(
-        _ viewModel: ServerModelsUser
+        _ viewModel: ServerModelsUser,
+        clipCircle: Bool = true
     ) {
         self.viewModel = viewModel
+        self.clipCircle = clipCircle
     }
 
     var body: some View {
+        let shape = PartCircleShape(part: clipCircle ? 1 : 0)
         if let profileImageURL = viewModel.profileImageURL {
+            printUI("ProfileImage update")
             AsyncImage(
                 url: profileImageURL,
                 placeholder: {
                     ActivityIndicator()
                 },
                 image: {
+                    printUI("AsyncImage update")
                     Image(uiImage: $0)
                         .resizable()
+                        .scaledToFill()
                 }
             )
-                .clipShape(Circle())
+                .clipShape(shape)
         } else {
-            Circle()
+            Rectangle()
                 .foregroundColor(.orange)
+                .clipShape(shape)
         }
     }
 }
