@@ -2,6 +2,8 @@ package com.well.sharedMobile.puerh.call
 
 import com.well.serverModels.*
 import com.well.sharedMobile.puerh.call.CallFeature.State.Status.*
+import com.well.sharedMobile.puerh.call.webRtc.LocalDeviceState
+import com.well.sharedMobile.puerh.call.webRtc.RemoteDeviceState
 import com.well.utils.nativeFormat
 import com.well.utils.toSetOf
 import com.well.utils.withEmptySet
@@ -10,14 +12,20 @@ import com.well.utils.nextEnumValue
 private val testDate = Date()
 
 object CallFeature {
-    fun callInitiateStateAndEffects(user: User) =
-        State(user = user, status = Calling) toSetOf Eff.Initiate(user.id)
+    fun callingStateAndEffects(user: User) =
+        (State(user = user, status = Calling) toSetOf Eff.Initiate(user.id))
+            .reduceInitialState()
 
-    fun incomingInitialState(incomingCall: WebSocketMessage.IncomingCall) =
+    fun incomingStateAndEffects(incomingCall: WebSocketMessage.IncomingCall) =
         State(incomingCall, incomingCall.user, Incoming)
+            .withEmptySet<State, Eff>()
+            .reduceInitialState()
+
+    private fun Pair<State, Set<Eff>>.reduceInitialState(): Pair<State, Set<Eff>> =
+        first to (second + Eff.SyncLocalDeviceState(first.localDeviceState))
 
     fun testState(status: State.Status) =
-        callInitiateStateAndEffects(
+        callingStateAndEffects(
             User(
                 1,
                 "12",
@@ -29,7 +37,7 @@ object CallFeature {
             copy(
                 status = status,
                 callStartedDateInfo = State.CallStartedDateInfo(testDate),
-                deviceState = deviceState.copy(cameraEnabled = false)
+                localDeviceState = localDeviceState.copy(cameraEnabled = false)
             )
         }
 
@@ -37,35 +45,19 @@ object CallFeature {
         val incomingCall: WebSocketMessage.IncomingCall? = null,
         val user: User,
         val status: Status,
-        val deviceState: DeviceState = DeviceState(),
+        val localDeviceState: LocalDeviceState = LocalDeviceState.default,
+        val remoteDeviceState: RemoteDeviceState? = null,
         val callStartedDateInfo: CallStartedDateInfo? = null,
-        val localVideoContext: VideoViewContext? = null,
-        val remoteVideoContext: VideoViewContext? = null,
+        internal val localVideoContextRef: VideoViewContext? = null,
+        internal val remoteVideoContextRef: VideoViewContext? = null,
     ) {
+        val localVideoContext = if (localDeviceState.cameraEnabled) localVideoContextRef else null
+        val remoteVideoContext = if (remoteDeviceState?.cameraEnabled == false) null else remoteVideoContextRef
         data class CallStartedDateInfo(val date: Date) {
             val secondsPassedFormatted: String
                 get() = date.secondsSinceNow().toInt().let {
                     String.nativeFormat("%02d:%02d", it / 60, it % 60)
                 }
-        }
-
-        data class DeviceState(
-            val micEnabled: Boolean = true,
-            val cameraEnabled: Boolean = true,
-            val audioSpeakerEnabled: Boolean = false,
-            val isFrontCamera: Boolean = true,
-        ) {
-            fun toggleMicMsg(): Msg =
-                Msg.SetMicEnabled(!micEnabled)
-
-            fun toggleCameraMsg(): Msg =
-                Msg.SetCameraEnabled(!cameraEnabled)
-
-            fun toggleAudioSpeakerMsg(): Msg =
-                Msg.SetAudioSpeakerEnabled(!audioSpeakerEnabled)
-
-            fun toggleIsFrontCameraMsg(): Msg =
-                Msg.SetIsFrontCamera(!isFrontCamera)
         }
 
         enum class Status {
@@ -85,9 +77,12 @@ object CallFeature {
         }
 
         fun reduceCopyDeviceState(
-            modifier: DeviceState.() -> DeviceState
-        ) = modifier(deviceState).let {
-            copy(deviceState = it) toSetOf Eff.UpdateDeviceState(it)
+            modifier: LocalDeviceState.() -> LocalDeviceState
+        ) = modifier(localDeviceState).let {
+            copy(localDeviceState = it) to setOf(
+                Eff.SyncLocalDeviceState(it),
+                Eff.NotifyDeviceStateChanged(RemoteDeviceState(it)),
+            )
         }
 
         fun testIncStatus() = copy(status = status.nextEnumValue())
@@ -100,6 +95,7 @@ object CallFeature {
         data class UpdateStatus(val status: State.Status) : Msg()
         data class UpdateLocalVideoContext(val viewContext: VideoViewContext) : Msg()
         data class UpdateRemoteVideoContext(val viewContext: VideoViewContext) : Msg()
+        data class UpdateRemoteDeviceState(val deviceState: RemoteDeviceState) : Msg()
         data class SetMicEnabled(val enabled: Boolean) : Msg()
         data class SetCameraEnabled(val enabled: Boolean) : Msg()
         data class SetAudioSpeakerEnabled(val enabled: Boolean) : Msg()
@@ -112,7 +108,8 @@ object CallFeature {
         data class Accept(val incomingCall: WebSocketMessage.IncomingCall) : Eff()
         object End : Eff()
         object StartImageSharing : Eff()
-        data class UpdateDeviceState(val deviceState: State.DeviceState) : Eff()
+        data class SyncLocalDeviceState(val localDeviceState: LocalDeviceState) : Eff()
+        data class NotifyDeviceStateChanged(val deviceState: RemoteDeviceState) : Eff()
     }
 
     fun reducer(
@@ -124,10 +121,10 @@ object CallFeature {
         } ?: throw IllegalStateException("$msg | $state")
         is Msg.End -> state toSetOf Eff.End
         is Msg.UpdateLocalVideoContext -> {
-            state.copy(localVideoContext = msg.viewContext).withEmptySet()
+            state.copy(localVideoContextRef = msg.viewContext).withEmptySet()
         }
         is Msg.UpdateRemoteVideoContext -> {
-            state.copy(remoteVideoContext = msg.viewContext).withEmptySet()
+            state.copy(remoteVideoContextRef = msg.viewContext).withEmptySet()
         }
         is Msg.UpdateStatus -> {
             state.copy(status = msg.status).withEmptySet()
@@ -146,6 +143,9 @@ object CallFeature {
         }
         is Msg.StartImageSharing -> {
             state toSetOf Eff.StartImageSharing
+        }
+        is Msg.UpdateRemoteDeviceState -> {
+            state.copy(remoteDeviceState = msg.deviceState).withEmptySet()
         }
         is Msg.DataConnectionEstablished -> {
             state.copy(

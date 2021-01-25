@@ -1,4 +1,4 @@
-package com.well.androidApp.ui.webRtc;
+package com.well.androidApp.call.webRtc;
 
 import android.content.Context;
 import android.content.res.Resources;

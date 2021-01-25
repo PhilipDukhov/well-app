@@ -1,12 +1,13 @@
 package com.well.sharedMobile.puerh.featureProvider
 
+import com.well.serverModels.Date
 import com.well.serverModels.User
 import com.well.serverModels.WebSocketMessage
 import com.well.sharedMobile.networking.LoginNetworkManager
 import com.well.sharedMobile.networking.webSocketManager.NetworkManager
 import com.well.sharedMobile.puerh.call.CallFeature
-import com.well.sharedMobile.puerh.call.WebRtcEffectHandler
-import com.well.sharedMobile.puerh.call.WebRtcManagerI
+import com.well.sharedMobile.puerh.call.webRtc.WebRtcEffectHandler
+import com.well.sharedMobile.puerh.call.webRtc.WebRtcManagerI
 import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature
 import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersApiEffectHandler
 import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersFeature
@@ -28,7 +29,9 @@ import com.well.utils.platform.isDebug
 import io.ktor.client.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 class FeatureProvider(
     val context: Context,
@@ -54,6 +57,9 @@ class FeatureProvider(
                     }
                 }
                 is Eff.CallEff -> when (eff.eff) {
+                    is CallFeature.Eff.NotifyDeviceStateChanged,
+                    is CallFeature.Eff.SyncLocalDeviceState,
+                    -> Unit
                     is CallFeature.Eff.Initiate, is CallFeature.Eff.Accept -> {
                         callEventHandlerCloseable.value =
                             createWebRtcManagerHandler(eff.eff).freeze()
@@ -68,7 +74,6 @@ class FeatureProvider(
                     CallFeature.Eff.StartImageSharing -> {
                         listener(Msg.StartImageSharing(ImageSharingFeature.State.Role.Editor))
                     }
-                    is CallFeature.Eff.UpdateDeviceState -> TODO()
                 }
                 is Eff.GotLogInToken -> {
                     loggedIn(eff.token, listener)
@@ -82,25 +87,25 @@ class FeatureProvider(
                     is ImageSharingFeature.Eff.NotifyViewSizeUpdate,
                     is ImageSharingFeature.Eff.UploadImage,
                     ImageSharingFeature.Eff.SendInit,
-                    is ImageSharingFeature.Eff.UploadPaths
+                    is ImageSharingFeature.Eff.UploadPaths,
                     -> Unit
 
                     ImageSharingFeature.Eff.RequestImageUpdate -> {
-                        val msg = if (Platform.isDebug) {
-                            ImageSharingFeature.Msg.LocalUpdateImage(
-                                networkManager.value.downloadTestImage()
-                            )
-                        } else try {
-                            ImageSharingFeature.Msg.LocalUpdateImage(
-                                if (Platform.isDebug)
-                                    networkManager.value.downloadTestImage()
-                                else
+                        println("${Date()} handle RequestImageUpdate")
+                        CoroutineScope(Dispatchers.Default).launch {
+                            val msg = try {
+                                ImageSharingFeature.Msg.LocalUpdateImage(
+//                                if (Platform.isDebug)
+//                                    networkManager.value.downloadTestImage()
+//                                else
                                     contextHelper.pickSystemImage()
-                            )
-                        } catch (t: Throwable) {
-                            ImageSharingFeature.Msg.ImageUpdateCancelled
+                                )
+                            } catch (t: Throwable) {
+                                println("LocalUpdateImage failed $t")
+                                ImageSharingFeature.Msg.ImageUpdateCancelled
+                            }
+                            listener(Msg.ImageSharingMsg(msg))
                         }
-                        listener(Msg.ImageSharingMsg(msg))
                     }
                     ImageSharingFeature.Eff.Close -> {
                         listener(Msg.StopImageSharing)

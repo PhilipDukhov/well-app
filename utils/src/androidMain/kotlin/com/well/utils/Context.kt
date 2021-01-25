@@ -1,6 +1,7 @@
 package com.well.utils
 
 import androidx.activity.ComponentActivity
+import androidx.core.content.ContextCompat
 import com.well.utils.permissionsHandler.Context
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -15,3 +16,6 @@ actual class Context(val componentActivity: ComponentActivity) {
         }
     }
 }
+
+inline fun <reified T> android.content.Context.getSystemService(): T? =
+    ContextCompat.getSystemService(this, T::class.java)

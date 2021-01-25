@@ -45,6 +45,12 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         UITableView.appearance().separatorColor = .clear
         window = initializeWindow()
         initializeLogging()
+//        let pickerTest = PickerTest(controller: rootViewController)
+//        pickerTest.showPicker()
+//
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+//            pickerTest.showPicker2()
+//        }
         return true
     }
 

@@ -21,10 +21,10 @@ data class Call(val userIds: List<UserId>) {
 
 suspend fun DefaultWebSocketServerSession.mainWebSocket(dependencies: Dependencies) {
     val currentUserId = call.authUserId
-    dependencies.connectedUserSessions[currentUserId] = this
-    dependencies.notifyOnline()
-    dependencies.notifyUserUpdated(currentUserId, this)
     try {
+        dependencies.connectedUserSessions[currentUserId] = this
+        dependencies.notifyOnline()
+        dependencies.notifyUserUpdated(currentUserId, this)
         incoming@ for (frame in incoming) when (frame) {
             is Frame.Text -> Json.decodeFromString<WebSocketMessage>(frame.readText())
                 .let { msg ->
@@ -71,6 +71,8 @@ suspend fun DefaultWebSocketServerSession.mainWebSocket(dependencies: Dependenci
                 }
             else -> Unit
         }
+    } catch (t: Throwable) {
+        println("mainWebSocket $t ${t.stackTraceToString()}")
     } finally {
         dependencies.userDisconnected(currentUserId)
     }

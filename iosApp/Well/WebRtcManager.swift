@@ -14,6 +14,7 @@ import AVFoundation
 private let rtcTrue = kRTCMediaConstraintsValueTrue
 
 final class WebRtcManager: NSObject, WebRtcManagerI {
+    private var deviceState = LocalDeviceState.Companion().default_
     private let listener: WebRtcManagerIListener
     private static let factory: RTCPeerConnectionFactory = {
         RTCInitializeSSL()
@@ -31,6 +32,9 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
     ])
 
     private let videoCapturer: RTCVideoCapturer
+    private var cameraVideoCapturer: RTCCameraVideoCapturer? {
+        videoCapturer as? RTCCameraVideoCapturer
+    }
 
     private let localAudioTrack: RTCAudioTrack
     private let localVideoTrack: RTCVideoTrack
@@ -55,6 +59,15 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
         }
     }
     private var remoteDataChannel: RTCDataChannel?
+    var manyCamerasAvailable: Bool {
+//        AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInDualCamera], mediaType: <#T##AVMediaType?##AVFoundation.AVMediaType?#>, position: <#T##Position##AVFoundation.AVCaptureDevice.Position#>)
+        return Set(AVCaptureDevice.devices(for: .video)
+            .map {
+                $0.position == .front
+            })
+                   .count == 2
+    }
+    private let streamIds = ["track"]
 
     init(
         iceServers: [String],
@@ -87,6 +100,7 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
 
         let audioSource = Self.factory.audioSource(with: .init())
         localAudioTrack = Self.factory.audioTrack(with: audioSource, trackId: "audio0")
+        localAudioTrack.isEnabled = deviceState.micEnabled
         // Video
 
         let videoSource = Self.factory.videoSource()
@@ -108,30 +122,8 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
         localDataChannel.delegate = self
         peerConnection.delegate = self
 
-        guard
-            let capturer = videoCapturer as? RTCCameraVideoCapturer,
-            let frontCamera = (RTCCameraVideoCapturer.captureDevices()
-                .first {
-                    $0.position == .front
-                }),
-
-            // choose highest res
-            let format = (RTCCameraVideoCapturer.supportedFormats(for: frontCamera)
-                .sorted {
-                    $0.formatDescription.size.width
-                    < $1.formatDescription.size.width
-                }).last,
-
-            // choose highest fps
-            let fps = (format.videoSupportedFrameRateRanges.sorted {
-                $0.maxFrameRate < $1.maxFrameRate
-            }.last) else {
-            return
-        }
-
-        capturer.startCapture(with: frontCamera,
-            format: format,
-            fps: Int(fps.maxFrameRate))
+        startCapture(position: deviceState.isFrontCamera ? .front : .back)
+        setSpeakerEnabled(enabled: deviceState.audioSpeakerEnabled)
     }
 
     func close() {
@@ -204,13 +196,13 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
         }
     }
 
+    private var localVideoTrackSender: RTCRtpSender?
     func createOfferOrAnswer(
         create: (RTCMediaConstraints, ((RTCSessionDescription?, Error?) -> Void)?) -> Void,
         completion: @escaping (String) -> Void
     ) {
-        let streamIds = ["track"]
         peerConnection.add(localAudioTrack, streamIds: streamIds)
-        peerConnection.add(localVideoTrack, streamIds: streamIds)
+        localVideoTrackSender = peerConnection.add(localVideoTrack, streamIds: streamIds)
         create(
             rtcMedia
         ) { [weak self] description, error in
@@ -234,6 +226,93 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
         data: KotlinByteArray
     ) {
         localDataChannel.sendData(.init(data: data.toNSData(), isBinary: false))
+    }
+
+    func syncDeviceState(deviceState: LocalDeviceState) {
+        var startCaptureNeeded = false
+        if self.deviceState.isFrontCamera != deviceState.isFrontCamera {
+            startCaptureNeeded = true
+            startCapture(position: deviceState.isFrontCamera ? .front : .back)
+        }
+        if self.deviceState.micEnabled != deviceState.micEnabled {
+            localAudioTrack.isEnabled = deviceState.micEnabled
+        }
+        if self.deviceState.audioSpeakerEnabled != deviceState.audioSpeakerEnabled {
+            setSpeakerEnabled(enabled: deviceState.audioSpeakerEnabled)
+        }
+        if self.deviceState.cameraEnabled != deviceState.cameraEnabled {
+            if deviceState.cameraEnabled {
+//                localVideoTrackSender = peerConnection.add(localAudioTrack, streamIds: streamIds)
+            } else {
+//                localVideoTrackSender.map {
+//                    peerConnection.removeTrack($0)
+//                }
+                cameraVideoCapturer?.stopCapture()
+            }
+            startCaptureNeeded = deviceState.cameraEnabled
+            localVideoTrack.isEnabled = deviceState.cameraEnabled
+//            peerConnection.add(localVideoTrack, streamIds: streamIds)
+        }
+        if startCaptureNeeded {
+            startCapture(position: deviceState.isFrontCamera ? .front : .back)
+        }
+        self.deviceState = deviceState
+    }
+
+    private func startCapture(position: AVCaptureDevice.Position) {
+        guard
+            let capturer = cameraVideoCapturer,
+            let camera = (RTCCameraVideoCapturer.captureDevices()
+                .first {
+                    $0.position == position
+                }),
+            case let formats = ((RTCCameraVideoCapturer.supportedFormats(for: camera)
+                .sorted {
+                    $0.formatDescription.size.width < $1.formatDescription.size.width
+                })
+                .filter {
+                !$0.description.contains("x420")
+            }),
+            let format = (formats.first { format in
+                let dimensions = format.formatDescription.dimensions
+                return dimensions.width == 1280 && dimensions.height == 720 &&
+                       format.videoFieldOfView > 60 &&
+                       format.videoSupportedFrameRateRanges.last?.maxFrameRate == 30
+            } ?? formats.first { format in
+                let dimensions = format.formatDescription.dimensions
+                return dimensions.width >= 1000 && dimensions.height >= 1000
+            } ?? formats.last) ,
+            let maxFps = (format.videoSupportedFrameRateRanges
+                .map {
+                    $0.maxFrameRate
+                }
+                .max()
+            )
+            else {
+            return
+        }
+
+        capturer.startCapture(
+            with: camera,
+            format: format,
+            fps: min(Int(maxFps), 30)
+        )
+    }
+
+    private func setSpeakerEnabled(enabled: Bool) {
+        audioQueue.async { [weak self] in
+            guard let self = self else {
+                return
+            }
+
+            self.rtcAudioSession.lockForConfiguration()
+            do {
+                try self.rtcAudioSession.overrideOutputAudioPort(enabled ? .speaker : .none)
+            } catch let error {
+                debugPrint("Couldn't force audio to speaker: \(error)")
+            }
+            self.rtcAudioSession.unlockForConfiguration()
+        }
     }
 }
 

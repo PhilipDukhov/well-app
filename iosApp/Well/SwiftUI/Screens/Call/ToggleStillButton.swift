@@ -23,7 +23,6 @@ struct ToggleStillButton: View {
     let systemImage: String
     let size: Size
     let selected: Bool
-    let handler: () -> Void
 
     private let secondaryColor = Color.white.opacity(0.3)
 
@@ -40,7 +39,6 @@ struct ToggleStillButton: View {
                 .overlay(image)
                 .frame(size: size.size)
                 .foregroundColor(secondaryColor)
-                .onTapGesture(perform: handler)
         }
     }
 

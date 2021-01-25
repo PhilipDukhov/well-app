@@ -16,20 +16,21 @@ struct CallBottomBar: View {
         ZStack(alignment: .top) {
             gradientBackground()
             HStack {
+                printUI("state update", state.localDeviceState)
                 ToggleStillButton(
                     systemImage: "pencil",
                     size: .standard,
                     selected: false
-                ) {
+                ).onTapGesture {
                     listener(CallFeature.MsgStartImageSharing())
                 }.frame(maxWidth: .infinity)
                 // MARK: - micEnabled
                 ToggleStillButton(
                     systemImage: "mic.slash.fill",
                     size: .standard,
-                    selected: state.deviceState.micEnabled
-                ) {
-                    listener(state.deviceState.toggleMicMsg())
+                    selected: !state.localDeviceState.micEnabled
+                ).onTapGesture {
+                    listener(state.localDeviceState.toggleMicMsg())
                 }.frame(maxWidth: .infinity)
                 // MARK: - Counter label
                 CallTimePassedLabel(
@@ -40,17 +41,17 @@ struct CallBottomBar: View {
                 ToggleStillButton(
                     systemImage: "video.slash.fill",
                     size: .standard,
-                    selected: state.deviceState.cameraEnabled
-                ) {
-                    listener(state.deviceState.toggleCameraMsg())
+                    selected: !state.localDeviceState.cameraEnabled
+                ).onTapGesture {
+                    listener(state.localDeviceState.toggleCameraMsg())
                 }.frame(maxWidth: .infinity)
                 // MARK: - audioSpeakerEnabled
                 ToggleStillButton(
                     systemImage: "speaker.1.fill",
                     size: .standard,
-                    selected: state.deviceState.audioSpeakerEnabled
-                ) {
-                    listener(state.deviceState.toggleAudioSpeakerMsg())
+                    selected: state.localDeviceState.audioSpeakerEnabled
+                ).onTapGesture {
+                    listener(state.localDeviceState.toggleAudioSpeakerMsg())
                 }.frame(maxWidth: .infinity)
             }.frame(height: Self.baseHeight)
         }.frame(maxWidth: .infinity)

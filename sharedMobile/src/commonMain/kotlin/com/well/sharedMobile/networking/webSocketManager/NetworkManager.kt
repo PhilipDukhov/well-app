@@ -124,11 +124,6 @@ class NetworkManager(
 
     suspend fun downloadTestImage(): ImageContainer {
         try {
-//            val statement = httpClient.request<HttpStatement>(url) {
-//                range?.let {
-//                    header(HttpHeaders.Range, range)
-//                }
-//            }
             val url = currentUser.value!!.profileImageUrl!!
             val statement = createBaseHttpClient()
                 .get<HttpStatement>(url)

@@ -28,9 +28,6 @@ import com.well.sharedMobile.ViewConstants.CallScreen.BottomBar.Height
 import com.well.sharedMobile.ViewConstants.CallScreen.CallButtonRadius
 import com.well.sharedMobile.puerh.call.CallFeature.Msg
 import com.well.sharedMobile.puerh.call.CallFeature.State
-import dev.chrisbanes.accompanist.insets.AmbientWindowInsets
-import dev.chrisbanes.accompanist.insets.navigationBarsPadding
-import dev.chrisbanes.accompanist.insets.toPaddingValues
 
 @Composable
 fun BottomBar(
@@ -60,7 +57,7 @@ fun BottomBar(
             .height(Height.dp)
             .fillMaxWidth()
     ) {
-        state.deviceState.apply {
+        state.localDeviceState.apply {
             ToggleStillButton(
                 R.drawable.ic_screen_sharing,
                 false,

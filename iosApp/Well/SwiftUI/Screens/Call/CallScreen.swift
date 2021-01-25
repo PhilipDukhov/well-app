@@ -70,12 +70,11 @@ struct CallScreen: View {
                         width: width,
                         height: width * 1920 / 1080
                     )
-                    .background(Color.green)
                 Image(systemName: "camera.rotate.fill")
                     .font(.system(size: 30))
                     .frame(size: 45)
                     .onTapGesture {
-                        listener(state.deviceState.toggleIsFrontCameraMsg())
+                        listener(state.localDeviceState.toggleIsFrontCameraMsg())
                     }
             }
         }.padding()

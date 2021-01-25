@@ -15,6 +15,5 @@ fun Payload.createPrincipal(dependencies: Dependencies) : JWTPrincipal? =
             .userQueries
             .exists(it)
             .executeAsOne()
-        println("found $userExists")
         if (userExists) JWTPrincipal(this) else null
     }

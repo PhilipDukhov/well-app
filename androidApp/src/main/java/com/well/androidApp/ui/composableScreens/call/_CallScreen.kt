@@ -141,7 +141,7 @@ private fun ColumnScope.SmallVideoView(
                 .size(45.dp)
                 .clickable(
                     onClick = {
-                        listener(state.deviceState.toggleIsFrontCameraMsg())
+                        listener(state.localDeviceState.toggleIsFrontCameraMsg())
                     },
                     indication = rememberRipple(
                         radius = 22.dp,

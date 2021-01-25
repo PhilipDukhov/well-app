@@ -7,7 +7,6 @@ import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature
 import com.well.sharedMobile.puerh.login.LoginFeature
 import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersFeature
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.State.*
-import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.reduceCall
 import com.well.utils.map
 import com.well.utils.toSetOf
 import com.well.utils.withEmptySet
@@ -113,12 +112,12 @@ object TopLevelFeature {
                     return@state state.copyLogin()
                 }
                 is Msg.IncomingCall -> {
-                    return@state state.copyShowCall(
-                        CallFeature.incomingInitialState(msg.incomingCall)
-                    )
+                    val (callState, effs) = CallFeature.incomingStateAndEffects(msg.incomingCall)
+                    return@reducer state.copyShowCall(callState) to
+                        effs.mapTo(HashSet(), Eff::CallEff)
                 }
                 is Msg.StartCall -> {
-                    return@reducer CallFeature.callInitiateStateAndEffects(msg.user)
+                    return@reducer CallFeature.callingStateAndEffects(msg.user)
                         .map(
                             { state.copyShowCall(it) },
                             {
@@ -207,7 +206,7 @@ object TopLevelFeature {
         msg: ImageSharingFeature.Msg,
     ): ReducerResult {
         val (screen, position) = tabs.screenAndPositionOfFirstOrNull<ScreenState.ImageSharing>()
-            ?: throw IllegalStateException("$msg | $this")
+            ?: return this.withEmptySet()
         val (newScreenState, effs) = ImageSharingFeature.reducer(msg, screen.state)
         val newEffs = effs.mapTo(HashSet(), Eff::ImageSharingEff)
         return changeScreen<ScreenState.ImageSharing>(position) {

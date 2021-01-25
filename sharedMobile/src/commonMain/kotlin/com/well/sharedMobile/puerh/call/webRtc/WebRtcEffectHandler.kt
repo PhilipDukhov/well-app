@@ -1,18 +1,20 @@
-package com.well.sharedMobile.puerh.call
+package com.well.sharedMobile.puerh.call.webRtc
 
 import com.well.serverModels.*
 import com.well.sharedMobile.networking.webSocketManager.NetworkManager
+import com.well.sharedMobile.puerh.call.*
 import com.well.sharedMobile.puerh.call.CallFeature.Eff
 import com.well.sharedMobile.puerh.call.CallFeature.Msg
 import com.well.sharedMobile.puerh.call.CallFeature.State
-import com.well.sharedMobile.puerh.call.WebRtcManagerI.Listener.DataChannelState
+import com.well.sharedMobile.puerh.call.webRtc.WebRtcManagerI.Listener.DataChannelState
 import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingEffectHandler
-import com.well.sharedMobile.puerh.call.imageSharing.DataChannelMessage
+import com.well.sharedMobile.puerh.call.imageSharing.RtcMsg
+import com.well.sharedMobile.puerh.call.readInt
+import com.well.sharedMobile.puerh.call.toByteArray
 import com.well.utils.Closeable
 import com.well.utils.EffectHandler
 import com.well.utils.asCloseable
 import com.well.utils.atomic.AtomicCloseableRef
-import com.well.utils.atomic.AtomicLateInitRef
 import com.well.utils.atomic.AtomicRef
 import com.well.utils.freeze
 import kotlinx.coroutines.CoroutineScope
@@ -22,6 +24,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import com.well.sharedMobile.puerh.call.imageSharing.RtcMsg.ImageSharingContainer.Msg.UpdateImage as ImgSharingUpdateImage
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.Eff as TopLevelEff
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.Msg as TopLevelMsg
 
@@ -37,9 +40,9 @@ class WebRtcEffectHandler(
     private val candidates = MutableSharedFlow<WebSocketMessage.Candidate>(replay = Int.MAX_VALUE)
     private val candidatesSendCloseable = AtomicCloseableRef()
     private val webRtcManager: WebRtcManagerI
-    private val imageSharingEffectHandler = ImageSharingEffectHandler(
-        ::send,
-    )
+    private val imageSharingEffectHandler = ImageSharingEffectHandler {
+        send(RtcMsg.ImageSharingContainer(it))
+    }
     private val dataChannelChunkManager = DataChannelChunkManager()
 
     enum class RawDataMsgId {
@@ -155,12 +158,13 @@ class WebRtcEffectHandler(
         addCloseableChild(webRtcManager)
     }
 
+    @Suppress("NAME_SHADOWING")
     override fun handleEffect(eff: TopLevelEff) {
         when (eff) {
             is TopLevelEff.CallEff -> {
-                when (eff.eff) {
+                when (val eff = eff.eff) {
                     is Eff.Initiate ->
-                        initiateCall(eff.eff.userId)
+                        initiateCall(eff.userId)
                     is Eff.Accept -> {
                         runWebRtcManager {
                             sendOffer()
@@ -170,7 +174,12 @@ class WebRtcEffectHandler(
                         close()
                     }
                     Eff.StartImageSharing -> Unit
-                    is Eff.UpdateDeviceState -> TODO()
+                    is Eff.SyncLocalDeviceState -> {
+                        webRtcManager.syncDeviceState(eff.localDeviceState)
+                    }
+                    is Eff.NotifyDeviceStateChanged -> {
+                        send(RtcMsg.UpdateDeviceState(eff.deviceState))
+                    }
                 }
             }
             is TopLevelEff.ImageSharingEff -> {
@@ -209,24 +218,27 @@ class WebRtcEffectHandler(
                 println("WebRtcEffectHandler send ws $msg")
             }
 
-    private fun send(msg: DataChannelMessage) =
+    private fun send(msg: RtcMsg) =
         runWebRtcManager {
             msg.freeze()
             dataChannelChunkManager
                 .splitByteArrayIntoChunks(
                     when (msg) {
-                        is DataChannelMessage.UpdateImage -> {
-                            println("send image: ${msg.imageData.count()}")
-                            RawDataMsgId.Image.wrapByteArray(msg.imageData)
+                        is RtcMsg.ImageSharingContainer -> {
+                            when (msg.msg) {
+                                is ImgSharingUpdateImage -> {
+                                    RawDataMsgId.Image.wrapByteArray(msg.msg.imageData)
+                                }
+                                else -> null
+                            }
                         }
-                        else ->
-                            RawDataMsgId.Json.wrapByteArray(
-                                Json.encodeToString(
-                                    DataChannelMessage.serializer(),
-                                    msg.freeze(),
-                                ).encodeToByteArray()
-                            )
-                    }
+                        else -> null
+                    } ?: RawDataMsgId.Json.wrapByteArray(
+                        Json.encodeToString(
+                            RtcMsg.serializer(),
+                            msg.freeze(),
+                        ).encodeToByteArray()
+                    )
                 )
                 .forEach {
                     sendData(it)
@@ -243,18 +255,26 @@ class WebRtcEffectHandler(
         val (msgId, unwrappedData) = RawDataMsgId.unwrapByteArray(fullMessageByteArray)
         val msg = when (msgId) {
             RawDataMsgId.Image -> {
-                DataChannelMessage.UpdateImage(unwrappedData)
+                RtcMsg.ImageSharingContainer(ImgSharingUpdateImage(unwrappedData))
             }
             RawDataMsgId.Json -> Json.decodeFromString(
-                DataChannelMessage.serializer(),
+                RtcMsg.serializer(),
                 unwrappedData.decodeToString()
             )
         }
-        imageSharingEffectHandler
-            .handleDataChannelMessage(msg)
-            ?.let {
-                listener?.invoke(it)
+        when (msg) {
+            is RtcMsg.ImageSharingContainer -> {
+                imageSharingEffectHandler
+                    .handleDataChannelMessage(msg.msg)
+                    ?.let {
+                        listener?.invoke(it)
+                    }
             }
+            is RtcMsg.UpdateDeviceState -> {
+                invokeCallMsg(Msg.UpdateRemoteDeviceState(msg.deviceState))
+            }
+        }
+
     }
 
     private fun listenWebSocketMessage(msg: WebSocketMessage) = runWebRtcManager {

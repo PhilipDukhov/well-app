@@ -38,7 +38,7 @@ struct ImageSharingScreen: View {
         ZStack(alignment: .center) {
             HStack {
                 Control(systemName: "chevron.left", enabled: true) {
-                    listener(ImageSharingFeature.MsgRedo())
+                    listener(ImageSharingFeature.MsgClose())
                 }
                 Spacer()
             }

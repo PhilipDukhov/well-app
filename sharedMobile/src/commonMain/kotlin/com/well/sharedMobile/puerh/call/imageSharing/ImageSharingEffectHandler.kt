@@ -9,7 +9,7 @@ import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.Msg as TopLevelMsg
 import com.well.sharedMobile.puerh.call.resizedImageBase64Encoding
 import com.well.sharedMobile.utils.asImageContainer
 import com.well.utils.atomic.AtomicRef
-import com.well.sharedMobile.puerh.call.imageSharing.DataChannelMessage as RtcMsg
+import com.well.sharedMobile.puerh.call.imageSharing.RtcMsg.ImageSharingContainer.Msg as RtcMsg
 
 class ImageSharingEffectHandler(
     val webRtcSendListener: (RtcMsg) -> Unit,

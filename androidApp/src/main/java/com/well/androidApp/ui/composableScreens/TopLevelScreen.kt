@@ -14,10 +14,10 @@ fun TopLevelScreen(
 ) = state.currentScreen.let { screen ->
     println("current screen $screen")
     when (screen) {
+        is TopLevelFeature.State.ScreenState.Login -> Unit
         is OnlineUsers -> OnlineUsersScreen(screen.state) {
             listener(TopLevelFeature.Msg.OnlineUsersMsg(it))
         }
-        is TopLevelFeature.State.ScreenState.Login -> Unit
         is TopLevelFeature.State.ScreenState.Call -> {
             CallScreen(screen.state) {
                 listener(TopLevelFeature.Msg.CallMsg(it))

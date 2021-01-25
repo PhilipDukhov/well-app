@@ -3,13 +3,17 @@ package com.well.sharedMobile.puerh.topLevel
 import com.well.utils.Context
 import com.well.sharedMobile.utils.ImageContainer
 import com.well.utils.freeze
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.*
+import platform.Foundation.NSLog
 import platform.Foundation.NSURL
 import platform.UIKit.*
 import platform.darwin.NSObject
+import platform.darwin.dispatch_async
+import platform.darwin.dispatch_get_main_queue
+import platform.darwin.dispatch_queue_t
+import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 actual class ContextHelper actual constructor(actual val context: Context) {
     actual fun showAlert(alert: Alert) {
@@ -50,26 +54,33 @@ actual class ContextHelper actual constructor(actual val context: Context) {
     }
 
     actual suspend fun pickSystemImage(): ImageContainer =
-        suspendCancellableCoroutine { continuation ->
-            MainScope().launch {
+        Dispatchers.Main {
+            suspendCancellableCoroutine { continuation ->
                 val imagePicker = UIImagePickerController()
-                imagePicker.delegate = object : NSObject(), UINavigationControllerDelegateProtocol,
+                @Suppress("NOTHING_TO_OVERRIDE")
+                imagePicker.delegate = object : NSObject(),
+                    UINavigationControllerDelegateProtocol,
                     UIImagePickerControllerDelegateProtocol {
+
                     override fun imagePickerController(
                         picker: UIImagePickerController,
                         didFinishPickingMediaWithInfo: Map<Any?, *>
                     ) {
                         val url = didFinishPickingMediaWithInfo[UIImagePickerControllerImageURL] as NSURL
-                        continuation.resume(ImageContainer(url.absoluteString!!))
+                        picker.dismissViewControllerAnimated(true) {}
+                        continuation.resume(ImageContainer(url.path!!))
                     }
 
                     override fun imagePickerControllerDidCancel(picker: UIImagePickerController) {
                         continuation.cancel()
+                        picker.dismissViewControllerAnimated(true) {}
                     }
                 }.freeze()
                 context
                     .rootController
-                    .presentViewController(imagePicker, true) {}
+                    .presentViewController(imagePicker, true) {
+                        NSLog("presentViewController finished")
+                    }
             }
         }
 }

@@ -8,7 +8,7 @@ import com.well.androidApp.ui.composableScreens.TestComposeScreen
 import com.well.androidApp.ui.composableScreens.TopLevelScreen
 import com.well.androidApp.ui.composableScreens.testing
 import com.well.androidApp.ui.composableScreens.theme.Theme
-import com.well.androidApp.ui.webRtc.WebRtcManager
+import com.well.androidApp.call.webRtc.WebRtcManager
 import com.well.sharedMobile.napier.NapierProxy
 import com.well.sharedMobile.puerh.featureProvider.FeatureProvider
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature

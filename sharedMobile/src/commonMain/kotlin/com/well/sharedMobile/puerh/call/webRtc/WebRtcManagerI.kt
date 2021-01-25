@@ -1,6 +1,7 @@
-package com.well.sharedMobile.puerh.call
+package com.well.sharedMobile.puerh.call.webRtc
 
 import com.well.serverModels.WebSocketMessage
+import com.well.sharedMobile.puerh.call.VideoViewContext
 import com.well.utils.Closeable
 
 interface WebRtcManagerI: Closeable {
@@ -20,9 +21,11 @@ interface WebRtcManagerI: Closeable {
     }
 
     val localVideoContext: VideoViewContext
+    val manyCamerasAvailable: Boolean
     fun sendOffer()
     fun acceptOffer(webRTCSessionDescriptor: String)
     fun acceptAnswer(webRTCSessionDescriptor: String)
     fun acceptCandidate(candidate: WebSocketMessage.Candidate)
     fun sendData(data: ByteArray)
+    fun syncDeviceState(deviceState: LocalDeviceState)
 }

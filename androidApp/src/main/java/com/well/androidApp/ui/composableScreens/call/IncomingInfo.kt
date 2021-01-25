@@ -32,7 +32,7 @@ fun IncomingInfo(
     )
     Spacer(
         modifier = Modifier
-            .height(40.dp)
+            .preferredHeight(40.dp)
     )
     FullNameText(
         state.user,
