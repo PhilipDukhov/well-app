@@ -1,13 +1,14 @@
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
-    id("com.github.johnrengelman.shadow") version "6.1.0"
     id("com.squareup.sqldelight")
     application
+    id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
+    mainClassName = mainClass.get()
 }
 
 sqldelight {
@@ -61,5 +62,6 @@ tasks.named<JavaExec>("run") {
         filename = "Shared.xcconfig"
     }.entries().forEach {
         environment(it.key, it.value)
+        System.setProperty(it.value, it.key)
     }
 }

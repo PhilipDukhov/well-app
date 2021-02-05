@@ -20,11 +20,5 @@ kotlin {
                 "kotlin.stdLib"
             )
         }
-
-//        val androidMain by getting {
-//            libDependencies(
-//                "android.annotation"
-//            )
-//        }
     }
 }
