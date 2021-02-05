@@ -47,6 +47,7 @@ fun BottomBar(
 ) {
     Image(
         vectorResource(R.drawable.ic_call_background),
+        contentDescription = null,
         contentScale = ContentScale.FillBounds,
         modifier = Modifier
     )

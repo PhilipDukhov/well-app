@@ -1,6 +1,7 @@
 package com.well.androidApp.ui.composableScreens.call
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.onDispose
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -27,9 +28,15 @@ fun VideoView(
         { customView },
         modifier = modifier
     ) {
-        videoViewContext.videoTrack.addSink(it)
+        try {
+            videoViewContext.videoTrack.addSink(it)
+        } catch (t: Throwable) { }
     }
-    onDispose {
-        videoViewContext.videoTrack.removeSink(customView)
+    DisposableEffect(videoViewContext.videoTrack.id()) {
+        onDispose {
+            try {
+                videoViewContext.videoTrack.removeSink(customView)
+            } catch (t: Throwable) { }
+        }
     }
 }

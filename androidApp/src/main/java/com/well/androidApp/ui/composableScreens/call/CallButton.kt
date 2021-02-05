@@ -55,5 +55,5 @@ private fun CallButton(
         .background(background)
         .clickable(onClick = onClick)
 ) {
-    Image(vectorResource(drawable))
+    Image(vectorResource(drawable), contentDescription = null)
 }

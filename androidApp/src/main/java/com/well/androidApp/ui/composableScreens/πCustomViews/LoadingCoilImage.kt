@@ -16,6 +16,7 @@ fun LoadingCoilImage(
     modifier: Modifier,
 ) = CoilImage(
     data = data,
+    contentDescription = null,
     loading = {
         Box {
             CircularProgressIndicator(

@@ -1,17 +1,12 @@
 package com.well.androidApp.ui.composableScreens.call.screenSharing
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.WithConstraints
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.unit.dp
 import com.well.androidApp.ui.composableScreens.πExt.toColor
 import com.well.serverModels.Size
 import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature.Msg
@@ -37,16 +32,17 @@ fun ImageSharingScreen(
             .fillMaxWidth()
             .weight(1F)
     ) {
-        WithConstraints(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
                 .onSizeChanged {
                     listener(Msg.UpdateLocalViewSize(Size(it.width, it.height)))
-                }
-        ) {
+                })
+        {
             state.image?.let {
                 CoilImage(
                     it.data,
+                    contentDescription = null,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .fillMaxSize()

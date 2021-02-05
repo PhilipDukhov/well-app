@@ -8,7 +8,7 @@ import com.well.sharedMobile.puerh.topLevel.TopLevelFeature
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.State.ScreenState.OnlineUsers
 
 @Composable
-fun TopLevelScreen(
+fun TopLevelScreenImpl(
     state: TopLevelFeature.State,
     listener: (TopLevelFeature.Msg) -> Unit,
 ) = state.currentScreen.let { screen ->

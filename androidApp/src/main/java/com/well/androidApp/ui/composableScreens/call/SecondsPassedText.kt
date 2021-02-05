@@ -1,10 +1,7 @@
 package com.well.androidApp.ui.composableScreens.call
 
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.onDispose
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import com.well.androidApp.ui.composableScreens.πExt.TextW
 import com.well.androidApp.ui.helpers.NextSecondNotifier
 import com.well.serverModels.Color
@@ -22,8 +19,10 @@ fun SecondsPassedText(
         }
     }
     nextSecondNotifier.date = info.date.date
-    onDispose {
-        nextSecondNotifier.close()
+    DisposableEffect(Unit) {
+        onDispose {
+            nextSecondNotifier.close()
+        }
     }
     TextW(
         text = secondsPassed.value,

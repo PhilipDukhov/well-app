@@ -17,7 +17,6 @@ import androidx.compose.ui.gesture.pressIndicatorGestureFilter
 import androidx.compose.ui.gesture.scrollorientationlocking.Orientation
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.layout.WithConstraints
 import androidx.compose.ui.platform.AmbientAnimationClock
 import androidx.compose.ui.platform.AmbientDensity
 import androidx.compose.ui.semantics.semantics
@@ -45,7 +44,7 @@ fun WidthSlider(
     }
     position.onValueChange = onValueChange
     position.scaledValue = state.value
-    WithConstraints(modifier.sliderSemantics(state.value, position, onValueChange, thumbRadiusRange)) {
+    BoxWithConstraints(modifier.sliderSemantics(state.value, position, onValueChange, thumbRadiusRange)) {
         val maxPy = constraints.maxHeight.toFloat()
         val pressPadding = 45.dp / 2 - ThumbRadius
         val pressPaddingPx = with(AmbientDensity.current) { pressPadding.toPx() }
@@ -80,7 +79,7 @@ fun WidthSlider(
         val heightDp = with(AmbientDensity.current) {
             maxPy.toDp()
         }
-        Box {
+        Box(modifier = Modifier.fillMaxSize()) {
             val thumbSize = ThumbRadius * 2
             val center = Modifier.align(Alignment.TopStart)
             val offset = (heightDp - thumbSize - pressPadding * 2) * (1 - fraction)
@@ -173,49 +172,41 @@ private val ThumbPressedElevation = 6.dp
 private const val TrackWidth = 4F
 private val TriangleWidth = (ThumbRadius.value * 6F)
 
-private val topWidth = FloatPropKey(label = "")
-private val bottomWidth = FloatPropKey(label = "")
-val transitionDefinition = transitionDefinition<InteractionStateWrapper> {
-    state(InteractionStateWrapper.Idle) {
-        this[topWidth] = TrackWidth
-        this[bottomWidth] = TrackWidth
-        println("-> $TrackWidth")
-    }
-
-    state(InteractionStateWrapper.Interacting) {
-        this[topWidth] = TriangleWidth
-        this[bottomWidth] = 0F
-        println("-> $TriangleWidth")
-    }
-
-    transition {
-        topWidth using tween(durationMillis = 150)
-    }
-}
-
 @Composable
 private fun Track(
     modifier: Modifier,
     inactiveColor: Color,
     interactionState: InteractionState,
 ) {
-    val interactionStateWrapper = remember { mutableStateOf(InteractionStateWrapper(interactionState)) }
-    val initState = interactionStateWrapper.value
-    interactionStateWrapper.value = InteractionStateWrapper(interactionState)
-    val state = transition(
-        definition = transitionDefinition,
-        initState = initState,
-        toState = interactionStateWrapper.value,
-    )
-    println("${interactionStateWrapper.value} -> $initState ${state[topWidth]}")
+    val transition = updateTransition(InteractionStateWrapper(interactionState))
+    val topWidth by transition.animateFloat {
+        when (it) {
+            InteractionStateWrapper.Idle -> {
+                TrackWidth
+            }
+            InteractionStateWrapper.Interacting -> {
+                TriangleWidth
+            }
+        }
+    }
+    val bottomWidth by transition.animateFloat {
+        when (it) {
+            InteractionStateWrapper.Idle -> {
+                TrackWidth
+            }
+            InteractionStateWrapper.Interacting -> {
+                0F
+            }
+        }
+    }
     Canvas(modifier) {
         drawPath(
             Path().apply {
                 val center = TriangleWidth / 2
-                moveTo(x = center - state[bottomWidth] / 2, y = size.height)
-                lineTo(x = center + state[bottomWidth] / 2, y = size.height)
-                lineTo(x = center + state[topWidth] / 2, y = 0F)
-                lineTo(x = center - state[topWidth] / 2, y = 0F)
+                moveTo(x = center - bottomWidth / 2, y = size.height)
+                lineTo(x = center + bottomWidth / 2, y = size.height)
+                lineTo(x = center + topWidth / 2, y = 0F)
+                lineTo(x = center - topWidth / 2, y = 0F)
                 close()
             },
             inactiveColor,
