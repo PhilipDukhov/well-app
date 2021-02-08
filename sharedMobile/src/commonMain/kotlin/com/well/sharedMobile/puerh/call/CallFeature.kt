@@ -6,10 +6,7 @@ import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.State as DrawingS
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature
 import com.well.sharedMobile.puerh.call.webRtc.LocalDeviceState
 import com.well.sharedMobile.puerh.call.webRtc.RemoteDeviceState
-import com.well.utils.nativeFormat
-import com.well.utils.toSetOf
-import com.well.utils.withEmptySet
-import com.well.utils.nextEnumValue
+import com.well.utils.*
 
 object CallFeature {
     fun callingStateAndEffects(user: User) =
@@ -125,16 +122,7 @@ object CallFeature {
             ;
         }
 
-        fun reduceCopyDeviceState(
-            modifier: LocalDeviceState.() -> LocalDeviceState
-        ) = modifier(localDeviceState).let {
-            copy(localDeviceState = it) to setOf(
-                Eff.SyncLocalDeviceState(it),
-                Eff.NotifyDeviceStateChanged(RemoteDeviceState(it)),
-            )
-        }
-
-        fun testIncStatus() = copy(status = status.nextEnumValue())
+//        fun testIncStatus() = copy(status = status.nextEnumValue())
     }
 
     sealed class Msg {
@@ -226,7 +214,7 @@ object CallFeature {
             state.reduceUpdateViewPoint(msg.viewPoint)
         }
         is Msg.RemoteUpdateViewPoint -> {
-            state.copyRemoteUpdateViewPoint(msg.viewPoint).withEmptySet()
+            state.reduceRemoteUpdateViewPoint(msg.viewPoint)
         }
         is Msg.UpdateControlSet -> {
             state.reduceUpdateControlSet(msg.controlSet)
@@ -235,7 +223,6 @@ object CallFeature {
             state.copy(remoteDeviceState = msg.deviceState).withEmptySet()
         }
         is Msg.DataConnectionEstablished -> {
-            println("DataConnectionEstablished NotifyLocalCaptureDimensionsChanged")
             state.copy(
                 status = Ongoing,
                 callStartedDateInfo = state.callStartedDateInfo ?: State.CallStartedDateInfo(Date())
@@ -268,7 +255,7 @@ object CallFeature {
         }
     }
 
-    private fun State.copyRemoteUpdateViewPoint(viewPoint: State.ViewPoint) =
+    private fun State.reduceRemoteUpdateViewPoint(viewPoint: State.ViewPoint) =
         copy(
             viewPoint = viewPoint,
             controlSet = if (viewPoint == State.ViewPoint.Both)
@@ -276,7 +263,7 @@ object CallFeature {
             else
                 controlSet,
             drawingState = drawingStateCopyViewPoint(viewPoint),
-        )
+        ).reduceUpdateLocalDeviceState()
 
     private fun State.reduceUpdateViewPoint(viewPoint: State.ViewPoint) =
         copy(
@@ -286,7 +273,7 @@ object CallFeature {
             else
                 State.ControlSet.Drawing,
             drawingState = drawingStateCopyViewPoint(viewPoint),
-        ) toSetOf Eff.NotifyUpdateViewPoint(viewPoint)
+        ).reduceUpdateLocalDeviceState() plus Eff.NotifyUpdateViewPoint(viewPoint)
 
     private fun State.drawingStateCopyViewPoint(viewPoint: State.ViewPoint) =
         drawingState.copy(
@@ -308,4 +295,22 @@ object CallFeature {
         copy(
             controlSet = controlSet
         ).withEmptySet()
+
+    private fun State.reduceCopyDeviceState(
+        modifier: LocalDeviceState.() -> LocalDeviceState
+    ) = reduceUpdateLocalDeviceState(modifier(localDeviceState))
+
+    private fun State.reduceUpdateLocalDeviceState(
+        state: LocalDeviceState = localDeviceState
+    ) = copy(localDeviceState = state) to setOf(
+            Eff.SyncLocalDeviceState(
+                when (viewPoint) {
+                    State.ViewPoint.Both,
+                    State.ViewPoint.Mine -> state
+                    State.ViewPoint.Partner -> state.copy(cameraEnabled = false)
+                }
+            ),
+            if (state != localDeviceState) Eff.NotifyDeviceStateChanged(RemoteDeviceState(state)) else null,
+        ).filterNotNull().toSet()
 }
+

@@ -44,6 +44,20 @@ extension View {
             alignment: alignment
         )
     }
+    
+    @inline(__always)
+    func frameInfinitable(
+        size: CGSize,
+        alignment: Alignment = .center
+    ) -> some View {
+        frame(
+            minWidth: size.width == .infinity ? nil : size.width,
+            maxWidth: size.width,
+            minHeight: size.height == .infinity ? nil : size.height,
+            maxHeight: size.height,
+            alignment: alignment
+        )
+    }
 
     @inline(__always)
     func doBlock(block: () -> Void) -> some View {

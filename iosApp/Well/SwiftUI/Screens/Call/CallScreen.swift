@@ -99,9 +99,7 @@ struct CallScreen: View {
                     Spacer() // move view to the bottom
                 }
                 VideoView(context: videoView.context)
-                    .frame(
-                        size: videoView.position.sizeIn(geometry: geometry)
-                    )
+                    .frameInfinitable(size: videoView.position.sizeIn(geometry: geometry))
                 if let onFlip = onFlip {
                     Image(systemName: "camera.rotate.fill")
                         .font(.system(size: 30))
@@ -112,7 +110,6 @@ struct CallScreen: View {
         }.padding(.all, fullscreen ? 0 : nil)
         .padding(.bottom, fullscreen ? 0 : minimizedBottomPadding)
         .opacity(videoView.hidden ? 0 : 1)
-        
     }
 
     @ViewBuilder

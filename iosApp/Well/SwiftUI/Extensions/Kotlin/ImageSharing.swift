@@ -44,7 +44,7 @@ extension CallFeature.StateVideoViewPosition {
     func sizeIn(geometry: GeometryProxy) -> CGSize {
         switch self {
         case .fullscreen:
-            return geometry.size
+            return CGSize(size: .infinity)
             
         case .minimized:
             let width = geometry.size.width / 3

@@ -11,8 +11,11 @@ inline fun <A, B, RA, RB> Pair<A, B>.map(
     return f to s
 }
 
-infix fun <A, B> A.toSetOf(that: B?): Pair<A, Set<B>> =
+infix fun <S, E> S.toSetOf(that: E?): Pair<S, Set<E>> =
     Pair(this, if (that != null) setOf(that) else emptySet())
+
+infix fun <S, E> Pair<S, Set<E>>.plus(that: E?): Pair<S, Set<E>> =
+    Pair(first, second + if (that != null) setOf(that) else emptySet())
 
 fun <A, B> A.withEmptySet(): Pair<A, Set<B>> = Pair(this, setOf())
 
