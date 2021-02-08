@@ -4,6 +4,7 @@ import com.well.serverModels.*
 import com.well.sharedMobile.puerh.call.CallFeature.State.Status.*
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.State as DrawingState
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.copyClear
 import com.well.sharedMobile.puerh.call.webRtc.LocalDeviceState
 import com.well.sharedMobile.puerh.call.webRtc.RemoteDeviceState
 import com.well.utils.*
@@ -281,8 +282,8 @@ object CallFeature {
                 State.ViewPoint.Both -> null
                 State.ViewPoint.Mine -> localCaptureDimensions
                 State.ViewPoint.Partner -> remoteCaptureDimensions
-            }
-        )
+            },
+        ).copyClear(saveHistory = false)
 
     private fun State.reduceDrawingMsg(msg: DrawingFeature.Msg): Pair<State, Set<Eff>> {
         val (state, effs) = DrawingFeature.reducer(msg, drawingState)

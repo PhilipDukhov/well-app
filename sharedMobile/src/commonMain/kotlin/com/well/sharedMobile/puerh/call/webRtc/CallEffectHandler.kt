@@ -185,7 +185,6 @@ class CallEffectHandler(
                         webRtcManager.syncDeviceState(eff.localDeviceState)
                     }
                     is Eff.NotifyLocalCaptureDimensionsChanged -> {
-                        println("handle NotifyLocalCaptureDimensionsChanged")
                         send(RtcMsg.UpdateCaptureDimensions(eff.dimensions))
                     }
                     is Eff.NotifyDeviceStateChanged -> {

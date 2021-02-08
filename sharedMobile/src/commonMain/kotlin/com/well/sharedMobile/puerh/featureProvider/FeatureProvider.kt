@@ -18,6 +18,8 @@ import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.Eff
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.Msg
 import com.well.utils.*
 import com.well.utils.atomic.AtomicLateInitRef
+import com.well.utils.dataStore.authToken
+import com.well.utils.dataStore.deviceUUID
 import com.well.utils.permissionsHandler.PermissionsHandler
 import com.well.utils.permissionsHandler.PermissionsHandler.Result.Authorized
 import com.well.utils.permissionsHandler.PermissionsHandler.Type.*
@@ -57,6 +59,7 @@ class FeatureProvider(
                     is CallFeature.Eff.SyncLocalDeviceState,
                     is CallFeature.Eff.NotifyUpdateViewPoint,
                     is CallFeature.Eff.DrawingEff,
+                    is CallFeature.Eff.NotifyLocalCaptureDimensionsChanged,
                     -> Unit
                     is CallFeature.Eff.Initiate, is CallFeature.Eff.Accept -> {
                         callCloseableContainer.addCloseableChild(
@@ -132,7 +135,7 @@ class FeatureProvider(
     }
 
     private suspend fun getTestLoginToken(): String {
-        val loginToken = platform.dataStore.loginToken
+        val loginToken = platform.dataStore.authToken
         if (loginToken != null) return loginToken
         val deviceUUID = platform.dataStore.deviceUUID
             ?: run {
@@ -143,7 +146,7 @@ class FeatureProvider(
         return LoginNetworkManager()
             .testLogin(deviceUUID)
             .also {
-                platform.dataStore.loginToken = it
+                platform.dataStore.authToken = it
             }
     }
 

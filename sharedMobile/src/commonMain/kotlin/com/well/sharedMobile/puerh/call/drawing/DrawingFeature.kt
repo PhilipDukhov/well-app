@@ -325,14 +325,15 @@ object DrawingFeature {
         return copy(drawingPaths = newDrawingPaths).reduceSendPathsUpdate()
     }
 
-    private fun State.copyClear(saveHistory: Boolean, date: Date? = null) =
+    internal fun State.copyClear(saveHistory: Boolean, date: Date? = null) =
         copy(
+            drawingPaths = drawingPaths.newer(date),
             pathsHistory = if (saveHistory)
                 pathsHistory + listOf(pathsHistory.last().newer(date))
             else
                 listOf(listOf()),
-            drawingPaths = drawingPaths.newer(date),
             pathsHistoryIndex = if (saveHistory) pathsHistory.count() else 0,
+            remotePaths = remotePaths.newer(date),
         )
 
     private fun List<Path>.newer(date: Date?): List<Path> =

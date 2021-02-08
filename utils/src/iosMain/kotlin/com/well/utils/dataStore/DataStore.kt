@@ -6,14 +6,22 @@ import platform.Foundation.NSUserDefaults
 actual class DataStore actual constructor(context: Context) {
     private val userDefaults = NSUserDefaults.standardUserDefaults
 
-    // Fields
-    private val deviceUUIDKey = "deviceUUID"
-    actual var deviceUUID: String?
-        get() = userDefaults.stringForKey(deviceUUIDKey)
-        set(value) = userDefaults.setObject(value, deviceUUIDKey)
+    internal actual inline fun <reified T> getValue(
+        key: Key<T>
+    ): T? = when (T::class) {
+        String::class -> userDefaults.stringForKey(key.name) as T?
+        else -> throw IllegalStateException()
+    }
 
-    private val loginTokenKey = "loginTokenKey"
-    actual var loginToken: String?
-        get() = userDefaults.stringForKey(loginTokenKey)
-        set(value) = userDefaults.setObject(value, loginTokenKey)
+    internal actual inline fun <reified T> setValue(
+        value: T?,
+        key: Key<T>
+    ) = when (T::class) {
+        String::class -> userDefaults.setObject(value, key.name)
+        else -> throw IllegalStateException()
+    }
 }
+
+actual data class Key<T>(actual val name: String)
+
+actual inline fun <reified T : Any> createKey(name: String) = Key<T>(name)

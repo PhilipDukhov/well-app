@@ -38,7 +38,7 @@ struct TopLevelView: View {
                 }
 
             default:
-                Text("not handler state: \(state.currentScreen)")
+                Text("")
             }
         }
     }
