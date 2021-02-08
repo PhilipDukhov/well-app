@@ -1,6 +1,8 @@
 package com.well.sharedMobile.puerh.call.webRtc
 
+import com.well.serverModels.Size
 import com.well.serverModels.WebSocketMessage
+import com.well.sharedMobile.puerh.call.CallFeature
 import com.well.sharedMobile.puerh.call.VideoViewContext
 import com.well.utils.Closeable
 
@@ -12,6 +14,7 @@ interface WebRtcManagerI: Closeable {
             Closing,
             Closed,
         }
+        fun updateCaptureDimensions(dimensions: Size)
         fun updateRemoveVideoContext(viewContext: VideoViewContext?)
         fun addCandidate(candidate: WebSocketMessage.Candidate)
         fun sendOffer(webRTCSessionDescriptor: String)

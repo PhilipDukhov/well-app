@@ -23,8 +23,8 @@ actual class ImageContainer(val uiImage: UIImage) {
         return ImageContainer(newImage)
     }
 
-    actual fun asByteArray(): ByteArray =
-        UIImagePNGRepresentation(uiImage)!!.toByteArray()
+    actual fun asByteArray(compressionQuality: Float): ByteArray =
+        UIImageJPEGRepresentation(uiImage, compressionQuality.toDouble())!!.toByteArray()
 }
 
 actual fun ByteArray.asImageContainer(): ImageContainer =

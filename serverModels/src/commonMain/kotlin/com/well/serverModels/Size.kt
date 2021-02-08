@@ -12,10 +12,16 @@ data class Size(
         height: Int
     ) : this(width.toFloat(), height.toFloat())
 
-    fun aspectFit(aspectRatio: Size): Size {
+    fun aspectFit(aspectRatio: Size): Size =
+        baseAspect(aspectRatio, 1F)
+
+    fun aspectFill(aspectRatio: Size): Size =
+        baseAspect(aspectRatio, -1F)
+
+    private fun baseAspect(aspectRatio: Size, ratioMultiplier: Float): Size {
         val mH = height / aspectRatio.height
         val mW = width / aspectRatio.width
-        return (mH - mW)
+        return ((mH - mW) * ratioMultiplier)
             .let { ratio ->
                 when {
                     ratio < 0 -> {

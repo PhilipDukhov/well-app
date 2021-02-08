@@ -1,8 +1,7 @@
-package com.well.androidApp.ui.composableScreens.call.screenSharing
+package com.well.androidApp.ui.composableScreens.call.drawing
 
 import androidx.compose.animation.asDisposableClock
 import androidx.compose.animation.core.*
-import androidx.compose.animation.transition
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.layout.*
@@ -22,7 +21,7 @@ import androidx.compose.ui.platform.AmbientDensity
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.unit.dp
-import com.well.androidApp.ui.composableScreens.call.screenSharing.SliderDefaults.InactiveTrackColorAlpha
+import com.well.androidApp.ui.composableScreens.call.drawing.SliderDefaults.InactiveTrackColorAlpha
 
 @Composable
 fun WidthSlider(

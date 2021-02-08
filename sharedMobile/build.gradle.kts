@@ -22,6 +22,16 @@ kotlin {
         license = "-"
         ios.deploymentTarget = project.version("iosDeploymentTarget")
     }
+    val iosExportModules = listOf(
+        ":serverModels"
+    ).map { project(it) }
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+        binaries.withType<org.jetbrains.kotlin.gradle.plugin.mpp.Framework> {
+            iosExportModules.forEach {
+                export(it)
+            }
+        }
+    }
     sourceSets {
         usePredefinedExperimentalAnnotations()
 
@@ -35,6 +45,11 @@ kotlin {
                 "kotlin.coroutines.core",
                 "kotlin.stdLib"
             )
+            dependencies {
+                iosExportModules.forEach {
+                    api(it)
+                }
+            }
         }
         val commonTest by getting {
             dependencies {
@@ -45,6 +60,7 @@ kotlin {
         val androidMain by getting {
             libDependencies(
                 "webrtc",
+                "android.material",
                 "android.activity",
                 "android.compose.accompanist.coil",
                 "ktor.client.engine.cio",

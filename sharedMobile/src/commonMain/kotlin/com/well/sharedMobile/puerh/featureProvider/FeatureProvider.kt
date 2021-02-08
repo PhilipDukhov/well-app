@@ -1,16 +1,15 @@
 package com.well.sharedMobile.puerh.featureProvider
 
-import com.well.serverModels.Date
 import com.well.serverModels.User
 import com.well.serverModels.WebSocketMessage
 import com.well.sharedMobile.networking.LoginNetworkManager
 import com.well.sharedMobile.networking.webSocketManager.NetworkManager
 import com.well.sharedMobile.puerh.call.CallFeature
-import com.well.sharedMobile.puerh.call.webRtc.WebRtcEffectHandler
+import com.well.sharedMobile.puerh.call.webRtc.CallEffectHandler
 import com.well.sharedMobile.puerh.call.webRtc.WebRtcManagerI
-import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature
 import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersApiEffectHandler
 import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersFeature
+import com.well.sharedMobile.puerh.topLevel.Action
 import com.well.sharedMobile.puerh.topLevel.Alert
 import com.well.sharedMobile.puerh.topLevel.Alert.CameraOrMicDenied
 import com.well.sharedMobile.puerh.topLevel.ContextHelper
@@ -18,20 +17,14 @@ import com.well.sharedMobile.puerh.topLevel.TopLevelFeature
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.Eff
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.Msg
 import com.well.utils.*
-import com.well.utils.atomic.AtomicCloseableRef
 import com.well.utils.atomic.AtomicLateInitRef
 import com.well.utils.permissionsHandler.PermissionsHandler
 import com.well.utils.permissionsHandler.PermissionsHandler.Result.Authorized
 import com.well.utils.permissionsHandler.PermissionsHandler.Type.*
 import com.well.utils.permissionsHandler.requestPermissions
 import com.well.utils.platform.Platform
-import com.well.utils.platform.isDebug
 import io.ktor.client.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.*
 
 class FeatureProvider(
     val context: Context,
@@ -42,15 +35,18 @@ class FeatureProvider(
     private val coroutineContext = Dispatchers.Default
     private val coroutineScope = CoroutineScope(coroutineContext)
     private val contextHelper = ContextHelper(context)
-    private val sessionCloseableContainer = object : CloseableContainer() {}
     private val networkManager = AtomicLateInitRef<NetworkManager>()
-    private val callEventHandlerCloseable = AtomicCloseableRef()
+    private val sessionCloseableContainer = CloseableContainer()
+    private val callCloseableContainer = CloseableContainer()
 
     private val effectInterpreter: ExecutorEffectsInterpreter<Eff, Msg> =
         interpreter@{ eff, listener ->
             when (eff) {
-                is Eff.ShowAlert ->
-                    contextHelper.showAlert(eff.alert)
+                is Eff.ShowAlert -> {
+                    MainScope().launch {
+                        contextHelper.showAlert(eff.alert)
+                    }
+                }
                 is Eff.OnlineUsersEff -> when (eff.eff) {
                     is OnlineUsersFeature.Eff.CallUser -> {
                         handleCall(eff.eff.user, listener)
@@ -59,20 +55,47 @@ class FeatureProvider(
                 is Eff.CallEff -> when (eff.eff) {
                     is CallFeature.Eff.NotifyDeviceStateChanged,
                     is CallFeature.Eff.SyncLocalDeviceState,
+                    is CallFeature.Eff.NotifyUpdateViewPoint,
+                    is CallFeature.Eff.DrawingEff,
                     -> Unit
                     is CallFeature.Eff.Initiate, is CallFeature.Eff.Accept -> {
-                        callEventHandlerCloseable.value =
+                        callCloseableContainer.addCloseableChild(
                             createWebRtcManagerHandler(eff.eff).freeze()
+                        )
                     }
                     is CallFeature.Eff.End -> {
-                        println("WebRtcEffectHandler close $this")
+                        println("CallEffectHandler close $this")
                         networkManager.value.send(
                             WebSocketMessage.EndCall(WebSocketMessage.EndCall.Reason.Decline)
                         )
                         endCall(listener)
                     }
-                    CallFeature.Eff.StartImageSharing -> {
-                        listener(Msg.StartImageSharing(ImageSharingFeature.State.Role.Editor))
+                    CallFeature.Eff.ChooseViewPoint -> {
+                        fun startDrawing(viewPoint: CallFeature.State.ViewPoint) =
+                            listener(
+                                Msg.CallMsg(
+                                    CallFeature.Msg.LocalUpdateViewPoint(
+                                        viewPoint
+                                    )
+                                )
+                            )
+                        MainScope().launch {
+                            contextHelper.showSheet(
+                                Action("Draw on your own camera") {
+                                    startDrawing(
+                                        CallFeature.State.ViewPoint.Mine
+                                    )
+                                },
+                                Action("Draw on your partners camera") {
+                                    startDrawing(
+                                        CallFeature.State.ViewPoint.Partner
+                                    )
+                                },
+                            )
+                        }
+                    }
+                    CallFeature.Eff.SystemBack -> {
+                        context.systemBack()
                     }
                 }
                 is Eff.GotLogInToken -> {
@@ -82,34 +105,6 @@ class FeatureProvider(
                 Eff.TestLogin -> {
                     listener.invoke(Msg.LoggedIn)
                     loggedIn(getTestLoginToken(), listener)
-                }
-                is Eff.ImageSharingEff -> when (eff.eff) {
-                    is ImageSharingFeature.Eff.NotifyViewSizeUpdate,
-                    is ImageSharingFeature.Eff.UploadImage,
-                    ImageSharingFeature.Eff.SendInit,
-                    is ImageSharingFeature.Eff.UploadPaths,
-                    -> Unit
-
-                    ImageSharingFeature.Eff.RequestImageUpdate -> {
-                        println("${Date()} handle RequestImageUpdate")
-                        CoroutineScope(Dispatchers.Default).launch {
-                            val msg = try {
-                                ImageSharingFeature.Msg.LocalUpdateImage(
-//                                if (Platform.isDebug)
-//                                    networkManager.value.downloadTestImage()
-//                                else
-                                    contextHelper.pickSystemImage()
-                                )
-                            } catch (t: Throwable) {
-                                println("LocalUpdateImage failed $t")
-                                ImageSharingFeature.Msg.ImageUpdateCancelled
-                            }
-                            listener(Msg.ImageSharingMsg(msg))
-                        }
-                    }
-                    ImageSharingFeature.Eff.Close -> {
-                        listener(Msg.StopImageSharing)
-                    }
                 }
                 Eff.SystemBack -> {
                     context.systemBack()
@@ -204,9 +199,8 @@ class FeatureProvider(
     private fun endCall(
         listener: (Msg) -> Unit,
     ) {
-        println("end call ${callEventHandlerCloseable.value}")
         listener.invoke(Msg.EndCall)
-        callEventHandlerCloseable.value = null
+        callCloseableContainer.close()
     }
 
     private suspend fun handleCallPermissions() =
@@ -222,9 +216,10 @@ class FeatureProvider(
     private fun createWebRtcManagerHandler(
         initiateEffect: CallFeature.Eff? = null,
     ) = CloseableFuture(coroutineScope) {
+        println("added listener NotifyLocalCaptureDimensionsChanged")
         feature
             .addEffectHandler(
-                WebRtcEffectHandler(
+                CallEffectHandler(
                     networkManager.value,
                     webRtcManagerGenerator,
                     coroutineScope,

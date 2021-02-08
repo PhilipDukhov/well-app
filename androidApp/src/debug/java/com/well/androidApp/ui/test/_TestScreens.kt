@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import com.well.androidApp.ui.test.TestScreen.*
 
 @Suppress("RedundantNullableReturnType")
-val testScreen: TestScreen? = null//ImageSharing
+val testScreen: TestScreen? = null
 
 enum class TestScreen {
     ImageSharing,

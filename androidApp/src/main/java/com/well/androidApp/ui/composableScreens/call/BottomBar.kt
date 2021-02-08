@@ -63,7 +63,7 @@ fun BottomBar(
                 R.drawable.ic_screen_sharing,
                 false,
                 onClick = {
-                    listener(Msg.StartImageSharing)
+                    listener(Msg.InitializeDrawing)
                 }
             )
             ToggleStillButton(
@@ -74,13 +74,23 @@ fun BottomBar(
                 }
             )
             SecondsPassedText(state.callStartedDateInfo)
-            ToggleStillButton(
-                R.drawable.ic_cam,
-                !cameraEnabled,
-                onClick = {
-                    listener(toggleCameraMsg())
-                }
-            )
+            if (state.viewPoint == State.ViewPoint.Both) {
+                ToggleStillButton(
+                    R.drawable.ic_cam,
+                    !cameraEnabled,
+                    onClick = {
+                        listener(toggleCameraMsg())
+                    }
+                )
+            } else {
+                ToggleStillButton(
+                    R.drawable.ic_stop,
+                    false,
+                    onClick = {
+                        listener(Msg.LocalUpdateViewPoint(State.ViewPoint.Both))
+                    }
+                )
+            }
             ToggleStillButton(
                 R.drawable.ic_audio,
                 audioSpeakerEnabled,

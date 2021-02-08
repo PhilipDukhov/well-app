@@ -16,31 +16,64 @@ struct CallScreen: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .top) {
+                let ongoing = state.status == .ongoing
+                let bottomBarHeight = CallBottomBar.baseHeight + geometry.safeAreaInsets.bottom
+                let callButtonsOffset = ongoing ? callButtonRadius - callButtonOffset : CallBottomBar.baseHeight
                 backgroundView()
                     .fillMaxSize()
                 callInfoView(geometry)
-                fullScreenVideoView(state.remoteVideoContext)
-                VStack(spacing: 0) {
-                    Spacer()
-                    let ongoing = state.status == .ongoing
-                    let bottomBarHeight = CallBottomBar.baseHeight + geometry.safeAreaInsets.bottom
-                    let callButtonsOffset = ongoing ? callButtonRadius - callButtonOffset : CallBottomBar.baseHeight
-                    if ongoing || state.status == .connecting,
-                       let localVideoContext = state.localVideoContext {
-                        smallVideoView(localVideoContext, geometry)
+                let minimizedBottomPadding = callButtonRadius * 2 + (ongoing ? bottomBarHeight - callButtonsOffset : geometry.safeAreaInsets.bottom)
+                state.remoteVideoView.map {
+                    videoView(
+                        videoView: $0,
+                        geometry: geometry,
+                        minimizedBottomPadding: minimizedBottomPadding,
+                        onFlip: nil
+                    )
+                }
+                state.localVideoView.map {
+                    videoView(
+                        videoView: $0,
+                        geometry: geometry,
+                        minimizedBottomPadding: minimizedBottomPadding,
+                        onFlip: $0.position == .minimized ? {
+                            listener(state.localDeviceState.toggleIsFrontCameraMsg())
+                        } : nil)
+                }
+                DrawingContent(
+                    state: state.drawingState,
+                    enabled: state.controlSet == .drawing
+                ) {
+                    listener(CallFeature.MsgDrawingMsg(msg: $0))
+                }.fillMaxSize()
+                switch state.controlSet {
+                case .call:
+                    VStack(spacing: 0) {
+                        Spacer()
+                        callButtons()
                             .offset(y: callButtonsOffset)
-                    }
-                    callButtons()
-                        .offset(y: callButtonsOffset)
-                        .padding(.all, ongoing ? 0 : nil)
-                    CallBottomBar(
-                        state: state,
-                        listener: listener,
-                        geometry: geometry
-                    ).frame(height: bottomBarHeight)
+                            .padding(.all, ongoing ? 0 : nil)
+                        CallBottomBar(
+                            state: state,
+                            listener: listener,
+                            geometry: geometry
+                        ).frame(height: bottomBarHeight)
                         .offset(y: ongoing ? 0 : bottomBarHeight)
-                } // VStack
+                    } // VStack
                     .frame(maxWidth: .infinity)
+                    
+                case .drawing:
+                    DrawingPanel(
+                        geometry: geometry,
+                        state: state.drawingState,
+                        listener: {
+                            listener(CallFeature.MsgDrawingMsg(msg: $0))
+                        }, back: {
+                            listener(CallFeature.MsgBack())
+                        })
+                    
+                default: fatalError("unsupported \(state.controlSet)")
+                }
             } // ZStack
                 .edgesIgnoringSafeArea(.all)
         } // GeometryReader
@@ -49,35 +82,37 @@ struct CallScreen: View {
             .animation(.default)
     }
 
-    private func fullScreenVideoView(
-        _ context: VideoViewContext?
-    ) -> some View {
-        VideoView(context: context)
-            .fillMaxSize()
-    }
-
     @ViewBuilder
-    private func smallVideoView(
-        _ context: VideoViewContext?,
-        _ geometry: GeometryProxy
+    private func videoView(
+        videoView: CallFeature.StateVideoView,
+        geometry: GeometryProxy,
+        minimizedBottomPadding: CGFloat,
+        onFlip: (() -> Void)?
     ) -> some View {
+        let fullscreen = videoView.position == .fullscreen
         HStack {
-            Spacer() // move video view to the right
-            let width = geometry.size.width / 3
-            VStack {
-                VideoView(context: context)
-                    .frame(
-                        width: width,
-                        height: width * 1920 / 1080
-                    )
-                Image(systemName: "camera.rotate.fill")
-                    .font(.system(size: 30))
-                    .frame(size: 45)
-                    .onTapGesture {
-                        listener(state.localDeviceState.toggleIsFrontCameraMsg())
-                    }
+            if !fullscreen {
+                Spacer() // move view to the right
             }
-        }.padding()
+            VStack {
+                if !fullscreen {
+                    Spacer() // move view to the bottom
+                }
+                VideoView(context: videoView.context)
+                    .frame(
+                        size: videoView.position.sizeIn(geometry: geometry)
+                    )
+                if let onFlip = onFlip {
+                    Image(systemName: "camera.rotate.fill")
+                        .font(.system(size: 30))
+                        .frame(size: 45)
+                        .onTapGesture(perform: onFlip)
+                }
+            }
+        }.padding(.all, fullscreen ? 0 : nil)
+        .padding(.bottom, fullscreen ? 0 : minimizedBottomPadding)
+        .opacity(videoView.hidden ? 0 : 1)
+        
     }
 
     @ViewBuilder

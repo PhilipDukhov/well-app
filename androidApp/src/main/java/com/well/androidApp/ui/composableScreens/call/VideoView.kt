@@ -2,7 +2,6 @@ package com.well.androidApp.ui.composableScreens.call
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.onDispose
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.AmbientContext
@@ -12,15 +11,15 @@ import com.well.sharedMobile.puerh.call.VideoViewContext
 
 @Composable
 fun VideoView(
-    videoViewContext: VideoViewContext,
+    context: VideoViewContext,
     modifier: Modifier,
 ) {
-    val context = AmbientContext.current
+    val composableContext = AmbientContext.current
     val customView = remember {
-        TextureViewRenderer(context).apply {
-            init(videoViewContext.eglBase.eglBaseContext, null)
+        TextureViewRenderer(composableContext).apply {
+            init(context.eglBase.eglBaseContext, null)
             setEnableHardwareScaler(true)
-            setMirror(true)
+//            setMirror(false)
         }
     }
 
@@ -29,13 +28,13 @@ fun VideoView(
         modifier = modifier
     ) {
         try {
-            videoViewContext.videoTrack.addSink(it)
+            context.videoTrack.addSink(it)
         } catch (t: Throwable) { }
     }
-    DisposableEffect(videoViewContext.videoTrack.id()) {
+    DisposableEffect(context.videoTrack.id()) {
         onDispose {
             try {
-                videoViewContext.videoTrack.removeSink(customView)
+                context.videoTrack.removeSink(customView)
             } catch (t: Throwable) { }
         }
     }

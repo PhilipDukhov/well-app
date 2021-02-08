@@ -11,7 +11,7 @@ import SharedMobile
 import Combine
 
 struct UserCell: View {
-    let viewModel: ServerModelsUser
+    let viewModel: User
 
     var body: some View {
         HStack {

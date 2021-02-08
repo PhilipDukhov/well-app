@@ -1,4 +1,4 @@
-package com.well.androidApp.ui.composableScreens.call.screenSharing
+package com.well.androidApp.ui.composableScreens.call.drawing
 
 import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.clickable
@@ -12,12 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.well.androidApp.R
-import com.well.androidApp.ui.composableScreens.call.ToggleStillButton
 import com.well.androidApp.ui.composableScreens.πExt.backgroundW
 import com.well.androidApp.ui.composableScreens.πExt.borderW
 import com.well.serverModels.Color
-import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature.Msg
-import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature.State
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.State
 import dev.chrisbanes.accompanist.insets.navigationBarsPadding
 
 @Composable

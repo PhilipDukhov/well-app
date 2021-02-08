@@ -7,8 +7,7 @@ import com.well.sharedMobile.puerh.call.CallFeature.Eff
 import com.well.sharedMobile.puerh.call.CallFeature.Msg
 import com.well.sharedMobile.puerh.call.CallFeature.State
 import com.well.sharedMobile.puerh.call.webRtc.WebRtcManagerI.Listener.DataChannelState
-import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingEffectHandler
-import com.well.sharedMobile.puerh.call.imageSharing.RtcMsg
+import com.well.sharedMobile.puerh.call.drawing.DrawingEffectHandler
 import com.well.sharedMobile.puerh.call.readInt
 import com.well.sharedMobile.puerh.call.toByteArray
 import com.well.utils.Closeable
@@ -24,11 +23,11 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import com.well.sharedMobile.puerh.call.imageSharing.RtcMsg.ImageSharingContainer.Msg.UpdateImage as ImgSharingUpdateImage
+import com.well.sharedMobile.puerh.call.webRtc.RtcMsg.ImageSharingContainer.Msg.UpdateImage as ImgSharingUpdateImage
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.Eff as TopLevelEff
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.Msg as TopLevelMsg
 
-class WebRtcEffectHandler(
+class CallEffectHandler(
     private val networkManager: NetworkManager,
     webRtcManagerGenerator: (List<String>, WebRtcManagerI.Listener) -> WebRtcManagerI,
     override val coroutineScope: CoroutineScope,
@@ -40,7 +39,7 @@ class WebRtcEffectHandler(
     private val candidates = MutableSharedFlow<WebSocketMessage.Candidate>(replay = Int.MAX_VALUE)
     private val candidatesSendCloseable = AtomicCloseableRef()
     private val webRtcManager: WebRtcManagerI
-    private val imageSharingEffectHandler = ImageSharingEffectHandler {
+    private val imageSharingEffectHandler = DrawingEffectHandler {
         send(RtcMsg.ImageSharingContainer(it))
     }
     private val dataChannelChunkManager = DataChannelChunkManager()
@@ -71,15 +70,19 @@ class WebRtcEffectHandler(
 
     init {
         val webRtcManagerListener = object : WebRtcManagerI.Listener, Closeable {
-            lateinit var handlerRef: WebRtcEffectHandler
+            lateinit var handlerRef: CallEffectHandler
 
             private val closed = AtomicRef(false)
-            private val handler: WebRtcEffectHandler?
+            private val handler: CallEffectHandler?
                 get() = if (closed.value) null else handlerRef
 
             override fun close() {
                 println("webRtcManagerListener set close")
                 closed.value = true
+            }
+
+            override fun updateCaptureDimensions(dimensions: Size) {
+                invokeCallMsg(Msg.UpdateLocalCaptureDimensions(dimensions))
             }
 
             override fun updateRemoveVideoContext(viewContext: VideoViewContext?) {
@@ -162,7 +165,11 @@ class WebRtcEffectHandler(
     override fun handleEffect(eff: TopLevelEff) {
         when (eff) {
             is TopLevelEff.CallEff -> {
-                when (val eff = eff.eff) {
+                @Suppress("MoveVariableDeclarationIntoWhen")
+                val eff = eff.eff
+                when (eff) {
+                    Eff.SystemBack,
+                    -> Unit
                     is Eff.Initiate ->
                         initiateCall(eff.userId)
                     is Eff.Accept -> {
@@ -173,17 +180,24 @@ class WebRtcEffectHandler(
                     Eff.End -> {
                         close()
                     }
-                    Eff.StartImageSharing -> Unit
+                    Eff.ChooseViewPoint -> Unit
                     is Eff.SyncLocalDeviceState -> {
                         webRtcManager.syncDeviceState(eff.localDeviceState)
+                    }
+                    is Eff.NotifyLocalCaptureDimensionsChanged -> {
+                        println("handle NotifyLocalCaptureDimensionsChanged")
+                        send(RtcMsg.UpdateCaptureDimensions(eff.dimensions))
                     }
                     is Eff.NotifyDeviceStateChanged -> {
                         send(RtcMsg.UpdateDeviceState(eff.deviceState))
                     }
+                    is Eff.NotifyUpdateViewPoint -> {
+                        send(RtcMsg.UpdateViewPoint(eff.viewPoint))
+                    }
+                    is Eff.DrawingEff -> {
+                        imageSharingEffectHandler.handleEffect(eff.eff)
+                    }
                 }
-            }
-            is TopLevelEff.ImageSharingEff -> {
-                imageSharingEffectHandler.handleEffect(eff.eff)
             }
             else -> Unit
         }
@@ -215,7 +229,7 @@ class WebRtcEffectHandler(
                 }
             }
             .also {
-                println("WebRtcEffectHandler send ws $msg")
+                println("CallEffectHandler send ws $msg")
             }
 
     private fun send(msg: RtcMsg) =
@@ -244,7 +258,7 @@ class WebRtcEffectHandler(
                     sendData(it)
                 }
         }.also {
-            println("WebRtcEffectHandler send dt $msg")
+            println("CallEffectHandler send dt $msg")
         }
 
     private fun handleDataChannelMessage(data: ByteArray) {
@@ -262,6 +276,7 @@ class WebRtcEffectHandler(
                 unwrappedData.decodeToString()
             )
         }
+        println("CallEffectHandler got dt $msg")
         when (msg) {
             is RtcMsg.ImageSharingContainer -> {
                 imageSharingEffectHandler
@@ -273,8 +288,20 @@ class WebRtcEffectHandler(
             is RtcMsg.UpdateDeviceState -> {
                 invokeCallMsg(Msg.UpdateRemoteDeviceState(msg.deviceState))
             }
+            is RtcMsg.UpdateViewPoint -> {
+                invokeCallMsg(Msg.RemoteUpdateViewPoint(
+                    when(msg.viewPoint) {
+                        State.ViewPoint.Both -> State.ViewPoint.Both
+                        State.ViewPoint.Mine -> State.ViewPoint.Partner
+                        State.ViewPoint.Partner -> State.ViewPoint.Mine
+                    }
+                ))
+            }
+            is RtcMsg.UpdateCaptureDimensions -> {
+                println("got UpdateCaptureDimensions")
+                invokeCallMsg(Msg.UpdateRemoteCaptureDimensions(msg.dimensions))
+            }
         }
-
     }
 
     private fun listenWebSocketMessage(msg: WebSocketMessage) = runWebRtcManager {

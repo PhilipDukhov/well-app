@@ -9,6 +9,7 @@ import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
 import com.well.utils.Context
 import com.well.sharedMobile.utils.ImageContainer
+import com.well.utils.Closeable
 import kotlinx.coroutines.*
 import kotlin.coroutines.resume
 
@@ -20,6 +21,19 @@ actual class ContextHelper actual constructor(actual val context: Context) {
             .setNegativeButton(alert.negativeAction)
             .create()
             .show()
+
+    actual fun showSheet(vararg actions: Action): Closeable {
+        val builder = BottomSheetDialogBuilder(context.componentActivity)
+        actions.forEach(builder::add)
+        builder.show()
+        return object : Closeable {
+            override fun close() {
+                MainScope().launch {
+                    builder.dismiss()
+                }
+            }
+        }
+    }
 
     private fun AlertDialog.Builder.setPositiveButton(action: Alert.Action) =
         apply {

@@ -1,32 +1,24 @@
-package com.well.sharedMobile.puerh.call.imageSharing
+package com.well.sharedMobile.puerh.call.drawing
 
-import com.well.serverModels.Date
 import com.well.serverModels.Path
-import com.well.serverModels.compareTo
-import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature.Eff
-import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature.Msg
+import com.well.sharedMobile.puerh.call.CallFeature
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Eff
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg
+import com.well.sharedMobile.puerh.call.resizedImage
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.Msg as TopLevelMsg
-import com.well.sharedMobile.puerh.call.resizedImageBase64Encoding
 import com.well.sharedMobile.utils.asImageContainer
 import com.well.utils.atomic.AtomicRef
-import com.well.sharedMobile.puerh.call.imageSharing.RtcMsg.ImageSharingContainer.Msg as RtcMsg
+import com.well.sharedMobile.puerh.call.webRtc.RtcMsg.ImageSharingContainer.Msg as RtcMsg
 
-class ImageSharingEffectHandler(
+class DrawingEffectHandler(
     val webRtcSendListener: (RtcMsg) -> Unit,
 ) {
-    private val initiatedSessionDate = AtomicRef<Date?>()
     private val waitingForPathConfirmation = AtomicRef(false)
     private val pendingPaths = AtomicRef<List<Path>?>()
 
     fun handleEffect(eff: Eff) {
         println("ImageSharingEffectHandler handleEffect $eff")
         when (eff) {
-            Eff.RequestImageUpdate -> Unit
-            Eff.SendInit -> {
-                val date = Date()
-                initiatedSessionDate.value = date
-                webRtcSendListener(RtcMsg.InitiateSession(date))
-            }
             is Eff.NotifyViewSizeUpdate -> {
                 webRtcSendListener(
                     RtcMsg.UpdateViewSize(
@@ -35,13 +27,18 @@ class ImageSharingEffectHandler(
                 )
             }
             is Eff.UploadImage -> {
+                val image = eff.resizedImage()
                 webRtcSendListener(
                     RtcMsg.UpdateImage(
-                        eff.resizedImageBase64Encoding()
+                        image.asByteArray(0.3F)
+                    )
+                )
+                webRtcSendListener(
+                    RtcMsg.UpdateImage(
+                        image.asByteArray(1F)
                     )
                 )
             }
-            Eff.Close -> webRtcSendListener(RtcMsg.EndSession)
             is Eff.UploadPaths -> {
                 if (!waitingForPathConfirmation.value) {
                     waitingForPathConfirmation.value = true
@@ -56,23 +53,7 @@ class ImageSharingEffectHandler(
     }
 
     fun handleDataChannelMessage(msg: RtcMsg): TopLevelMsg? =
-        TopLevelMsg.ImageSharingMsg(when (msg) {
-            is RtcMsg.InitiateSession -> {
-                initiatedSessionDate.value.let {
-                    if (it != null) {
-                        if (it > msg.date) {
-                            Msg.SwitchToViewer
-                        } else {
-                            return null
-                        }
-                    } else {
-                        return TopLevelMsg.StartImageSharing(ImageSharingFeature.State.Role.Viewer)
-                    }
-                }
-            }
-            RtcMsg.EndSession -> {
-                Msg.Close
-            }
+        TopLevelMsg.CallMsg(CallFeature.Msg.DrawingMsg(when (msg) {
             is RtcMsg.UpdateImage -> {
                 Msg.RemoteUpdateImage(msg.imageData.asImageContainer())
             }
@@ -94,7 +75,7 @@ class ImageSharingEffectHandler(
                     return null
                 }
             }
-        }).also {
+        })).also {
             println("ImageSharingEffectHandler handleDataChannelMessage $msg $it")
         }
 }

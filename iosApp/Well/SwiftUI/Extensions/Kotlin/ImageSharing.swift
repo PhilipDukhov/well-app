@@ -7,7 +7,7 @@ import CoreGraphics
 import SwiftUI
 import SharedMobile
 
-extension ImageSharingFeature.State {
+extension DrawingFeature.State {
     func strokeStyle(lineWidth: CGFloat) -> StrokeStyle {
         StrokeStyle(
             lineWidth: lineWidth,
@@ -18,7 +18,7 @@ extension ImageSharingFeature.State {
     }
 }
 
-extension ImageSharingFeature.StateStrokeStyleLineCap {
+extension DrawingFeature.StateStrokeStyleLineCap {
     func toCGLineCap() -> CGLineCap {
         switch self {
         case .round: return .round
@@ -29,12 +29,28 @@ extension ImageSharingFeature.StateStrokeStyleLineCap {
     }
 }
 
-extension ImageSharingFeature.StateStrokeStyleLineJoin {
+extension DrawingFeature.StateStrokeStyleLineJoin {
     func toCGLineJoin() -> CGLineJoin {
         switch self {
         case .round: return .round
         case .bevel: return .bevel
         case .miter: return .miter
+        default: fatalError()
+        }
+    }
+}
+
+extension CallFeature.StateVideoViewPosition {
+    func sizeIn(geometry: GeometryProxy) -> CGSize {
+        switch self {
+        case .fullscreen:
+            return geometry.size
+            
+        case .minimized:
+            let width = geometry.size.width / 3
+            let height = width * 1920 / 1080
+            return CGSize(width: width, height: height)
+            
         default: fatalError()
         }
     }

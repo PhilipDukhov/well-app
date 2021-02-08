@@ -15,7 +15,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     )
     private let featureProvider: FeatureProvider
-
+    
     override init() {
         NapierProxy().initializeLogging()
         featureProvider = FeatureProvider(

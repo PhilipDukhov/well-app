@@ -22,7 +22,7 @@ struct TopLevelView: View {
     @ViewBuilder
     var content: some View {
         if Self.testing {
-            sharingScreen()
+            callScreen()
         } else {
             switch state.currentScreen {
             case let state as TopLevelFeature.StateScreenStateOnlineUsers:
@@ -37,11 +37,6 @@ struct TopLevelView: View {
                     listener(TopLevelFeature.MsgCallMsg(msg: $0))
                 }
 
-            case let state as TopLevelFeature.StateScreenStateImageSharing:
-                ImageSharingScreen(state: state.state) {
-                    listener(TopLevelFeature.MsgImageSharingMsg(msg: $0))
-                }
-
             default:
                 Text("not handler state: \(state.currentScreen)")
             }
@@ -52,38 +47,38 @@ struct TopLevelView: View {
 
     @ViewBuilder
     func callScreen() -> some View {
-        CallScreen(state: callState) { _ in
-            callState = callState.testIncStatus()
+        CallScreen(state: callState) {
+            callState = CallFeature().reducer(msg: $0, state: callState).first!
         }
     }
 
-    @State var sharingState = ImageSharingFeature().testState(
-        imageContainer: ImageContainer(uiImage: UIImage(named: "testImage")!)
-    )
-
-    @ViewBuilder
-    func sharingScreen() -> some View {
-        ImageSharingScreen(state: sharingState) { msg in
-            let timeInterval: TimeInterval
-            (sharingState, timeInterval) = timeCounter.count {
-                ImageSharingFeature().reducerMeasuring(msg: msg, state: sharingState).first!
-            }
-            NSLog("\(msg) \(timeInterval) \(sharingState.lastReduceDurations) \(sharingState.canvasPaths.map { $0.points.count ?? 0 }.reduce(0, +))")
-            let lastSecondCounted = timeCounter.lastSecondCounted
-            if lastSecondCounted * 60 > 1 {
-                NSLog("too long", lastSecondCounted)
-            }
-        }
-    }
+//    @State var sharingState = ImageSharingFeature().testState(
+//        imageContainer: ImageContainer(uiImage: UIImage(named: "testImage")!)
+//    )
+//
+//    @ViewBuilder
+//    func sharingScreen() -> some View {
+//        ImageSharingScreen(state: sharingState) { msg in
+//            let timeInterval: TimeInterval
+//            (sharingState, timeInterval) = timeCounter.count {
+//                ImageSharingFeature().reducerMeasuring(msg: msg, state: sharingState).first!
+//            }
+//            NSLog("\(msg) \(timeInterval) \(sharingState.lastReduceDurations) \(sharingState.canvasPaths.map { $0.points.count ?? 0 }.reduce(0, +))")
+//            let lastSecondCounted = timeCounter.lastSecondCounted
+//            if lastSecondCounted * 60 > 1 {
+//                NSLog("too long", lastSecondCounted)
+//            }
+//        }
+//    }
 }
 
 let timeCounter = TimeCounter()
 
 final class TimeCounter {
-    var times = [(Date, TimeInterval)]()
+    var times = [(Foundation.Date, TimeInterval)]()
 
     func count<R>(block: () -> R) -> (R, TimeInterval) {
-        let date = Date()
+        let date = Foundation.Date()
         let result = block()
         let timeInterval = -date.timeIntervalSinceNow
         times.append((date, timeInterval))

@@ -1,20 +1,20 @@
-package com.well.sharedMobile.puerh.call.imageSharing
+package com.well.sharedMobile.puerh.call.drawing
 
 import com.well.serverModels.Point
 import com.well.serverModels.Size
-import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature.State.DrawingConverter
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.State.Converter
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class DrawingConverterTest {
+class ConverterTest {
     @Test
     fun first() {
         val imageSize = Size(100, 100)
-        val drawingConverter1 = DrawingConverter(
+        val drawingConverter1 = Converter(
             containerSize = Size(100, 150),
             imageSize = imageSize
         )
-        val drawingConverter2 = DrawingConverter(
+        val drawingConverter2 = Converter(
             containerSize = Size(200, 250),
             imageSize = imageSize
         )

@@ -6,47 +6,50 @@
 import SharedMobile
 import SwiftUI
 
-extension ServerModelsUser {
+extension User {
     var profileImageURL: URL? {
         profileImageUrl.flatMap { URL(string: $0) }
     }
 }
 
-extension ServerModelsColor {
-    func toColor() -> Color {
+extension SharedMobile.Color {
+    func toColor() -> SwiftUI.Color {
         Color(hex: UInt(argb), alpha: Double(alpha))
     }
 }
 
 extension CGPoint {
-    func toServerModelsPoint() -> ServerModelsPoint {
-        ServerModelsPoint(x: Float(x), y: Float(y))
+    func toPoint() -> Point {
+        Point(x: Float(x), y: Float(y))
     }
 }
 
-extension ServerModelsPoint {
+extension Point {
     func toCGPoint() -> CGPoint {
         CGPoint(x: CGFloat(x), y: CGFloat(y))
     }
 }
 
-extension ServerModelsSize {
+extension Size {
     func toCGSize() -> CGSize {
         CGSize(width: CGFloat(width), height: CGFloat(height))
     }
 }
 
 extension CGSize {
-    func toSize() -> ServerModelsSize {
+    func toSize() -> Size {
         .init(width: Float(width), height_: Float(height))
     }
 }
 
 extension CGSize {
-    func toNativeScaleSize() -> ServerModelsSize {
+    func toNativeScaleSize() -> Size {
         .init(
             width: Float(width * UIScreen.main.nativeScale),
             height_: Float(height * UIScreen.main.nativeScale)
         )
     }
 }
+
+// swiftlint:disable:next identifier_name
+let ColorConstants = SharedMobile.Color.Companion()

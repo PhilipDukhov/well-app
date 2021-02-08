@@ -2,45 +2,71 @@ package com.well.sharedMobile.puerh.topLevel
 
 import com.well.utils.Context
 import com.well.sharedMobile.utils.ImageContainer
+import com.well.utils.Closeable
 import com.well.utils.freeze
 import kotlinx.coroutines.*
-import platform.Foundation.NSLog
 import platform.Foundation.NSURL
 import platform.UIKit.*
 import platform.darwin.NSObject
-import platform.darwin.dispatch_async
-import platform.darwin.dispatch_get_main_queue
-import platform.darwin.dispatch_queue_t
-import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 actual class ContextHelper actual constructor(actual val context: Context) {
     actual fun showAlert(alert: Alert) {
-        MainScope().launch {
-            context
-                .rootController
-                .presentViewController(
-                    UIAlertController.alertControllerWithTitle(
-                        alert.description,
-                        "",
-                        UIAlertControllerStyleAlert
-                    )
-                        .apply {
-                            listOf(
-                                alert.positiveAction to UIAlertActionStyleCancel,
-                                alert.negativeAction to UIAlertActionStyleDefault,
-                            ).map { actionAndStyle ->
-                                UIAlertAction.actionWithTitle(
-                                    actionAndStyle.first.title,
-                                    actionAndStyle.second,
-                                ) { actionAndStyle.first.handle() }
-                            }
-                                .forEach(::addAction)
-                        },
-                    true
-                ) {}
+        presentViewController(
+            UIAlertController.alertControllerWithTitle(
+                alert.description,
+                "",
+                UIAlertControllerStyleAlert
+            )
+                .apply {
+                    listOf(
+                        alert.positiveAction to UIAlertActionStyleCancel,
+                        alert.negativeAction to UIAlertActionStyleDefault,
+                    ).map { actionAndStyle ->
+                        UIAlertAction.actionWithTitle(
+                            actionAndStyle.first.title,
+                            actionAndStyle.second,
+                        ) { actionAndStyle.first.handle() }
+                    }
+                        .forEach(::addAction)
+                }
+        )
+    }
+
+    actual fun showSheet(vararg actions: Action): Closeable {
+        val alertController = UIAlertController.alertControllerWithTitle(
+            null,
+            null,
+            UIAlertControllerStyleActionSheet
+        )
+            .apply {
+                (actions.map { action ->
+                    UIAlertAction.actionWithTitle(
+                        action.title,
+                        UIAlertActionStyleDefault,
+                    ) { action.block() }
+                } + UIAlertAction.actionWithTitle(
+                    "Cancel",
+                    UIAlertActionStyleCancel,
+                    null,
+                ))
+                    .forEach(::addAction)
+            }
+        presentViewController(alertController)
+        return object: Closeable {
+            override fun close() {
+                alertController.dismissViewControllerAnimated(true, null)
+            }
         }
+    }
+
+    private fun presentViewController(
+        viewController: UIViewController,
+        animated: Boolean = true
+    ) {
+        context
+            .rootController
+            .presentViewController(viewController, animated, null)
     }
 
     private fun Alert.Action.handle() {
@@ -78,9 +104,7 @@ actual class ContextHelper actual constructor(actual val context: Context) {
                 }.freeze()
                 context
                     .rootController
-                    .presentViewController(imagePicker, true) {
-                        NSLog("presentViewController finished")
-                    }
+                    .presentViewController(imagePicker, true) {}
             }
         }
 }

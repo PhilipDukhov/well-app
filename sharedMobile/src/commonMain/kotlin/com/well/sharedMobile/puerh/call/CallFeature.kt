@@ -2,14 +2,14 @@ package com.well.sharedMobile.puerh.call
 
 import com.well.serverModels.*
 import com.well.sharedMobile.puerh.call.CallFeature.State.Status.*
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.State as DrawingState
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature
 import com.well.sharedMobile.puerh.call.webRtc.LocalDeviceState
 import com.well.sharedMobile.puerh.call.webRtc.RemoteDeviceState
 import com.well.utils.nativeFormat
 import com.well.utils.toSetOf
 import com.well.utils.withEmptySet
 import com.well.utils.nextEnumValue
-
-private val testDate = Date()
 
 object CallFeature {
     fun callingStateAndEffects(user: User) =
@@ -24,6 +24,7 @@ object CallFeature {
     private fun Pair<State, Set<Eff>>.reduceInitialState(): Pair<State, Set<Eff>> =
         first to (second + Eff.SyncLocalDeviceState(first.localDeviceState))
 
+    private val testDate = Date()
     fun testState(status: State.Status) =
         callingStateAndEffects(
             User(
@@ -37,7 +38,9 @@ object CallFeature {
             copy(
                 status = status,
                 callStartedDateInfo = State.CallStartedDateInfo(testDate),
-                localDeviceState = localDeviceState.copy(cameraEnabled = false)
+                localDeviceState = localDeviceState.copy(cameraEnabled = false),
+                localCaptureDimensions = Size(1080, 1920),
+                remoteCaptureDimensions = Size(1080, 1920),
             )
         }
 
@@ -48,11 +51,32 @@ object CallFeature {
         val localDeviceState: LocalDeviceState = LocalDeviceState.default,
         val remoteDeviceState: RemoteDeviceState? = null,
         val callStartedDateInfo: CallStartedDateInfo? = null,
-        internal val localVideoContextRef: VideoViewContext? = null,
-        internal val remoteVideoContextRef: VideoViewContext? = null,
+        val viewPoint: ViewPoint = ViewPoint.Both,
+        val controlSet: ControlSet = ControlSet.Call,
+        internal val localVideoContext: VideoViewContext? = null,
+        internal val localCaptureDimensions: Size? = null,
+        internal val remoteVideoContext: VideoViewContext? = null,
+        internal val remoteCaptureDimensions: Size? = null,
+        val drawingState: DrawingState = DrawingState(),
     ) {
-        val localVideoContext = if (localDeviceState.cameraEnabled) localVideoContextRef else null
-        val remoteVideoContext = if (remoteDeviceState?.cameraEnabled == false) null else remoteVideoContextRef
+        internal val localCameraEnabled = localDeviceState.cameraEnabled
+        internal val remoteCameraEnabled = remoteDeviceState?.cameraEnabled != false
+        val localVideoView = if (localVideoContext == null) null else VideoView(
+            context = localVideoContext,
+            hidden = !localCameraEnabled || viewPoint == ViewPoint.Partner,
+            position = when (viewPoint) {
+                ViewPoint.Partner,
+                ViewPoint.Both,
+                -> VideoView.Position.Minimized
+                ViewPoint.Mine -> VideoView.Position.FullScreen
+            }
+        )
+        val remoteVideoView = if (remoteVideoContext == null) null else VideoView(
+            context = remoteVideoContext,
+            hidden = !remoteCameraEnabled || viewPoint == ViewPoint.Mine,
+            position = VideoView.Position.FullScreen
+        )
+
         data class CallStartedDateInfo(val date: Date) {
             val secondsPassedFormatted: String
                 get() = date.secondsSinceNow().toInt().let {
@@ -76,6 +100,31 @@ object CallFeature {
                 }
         }
 
+        data class VideoView(
+            val context: VideoViewContext,
+            val hidden: Boolean,
+            val position: Position,
+        ) {
+            enum class Position {
+                FullScreen,
+                Minimized,
+                ;
+            }
+        }
+
+        enum class ViewPoint {
+            Both,
+            Mine,
+            Partner,
+            ;
+        }
+
+        enum class ControlSet {
+            Call,
+            Drawing,
+            ;
+        }
+
         fun reduceCopyDeviceState(
             modifier: LocalDeviceState.() -> LocalDeviceState
         ) = modifier(localDeviceState).let {
@@ -91,7 +140,10 @@ object CallFeature {
     sealed class Msg {
         object Accept : Msg()
         object End : Msg()
+        object Back : Msg()
         object DataConnectionEstablished : Msg()
+        data class UpdateLocalCaptureDimensions(val dimensions: Size) : Msg()
+        data class UpdateRemoteCaptureDimensions(val dimensions: Size) : Msg()
         data class UpdateStatus(val status: State.Status) : Msg()
         data class UpdateLocalVideoContext(val viewContext: VideoViewContext) : Msg()
         data class UpdateRemoteVideoContext(val viewContext: VideoViewContext) : Msg()
@@ -100,16 +152,24 @@ object CallFeature {
         data class SetCameraEnabled(val enabled: Boolean) : Msg()
         data class SetAudioSpeakerEnabled(val enabled: Boolean) : Msg()
         data class SetIsFrontCamera(val isFrontCamera: Boolean) : Msg()
-        object StartImageSharing : Msg()
+        object InitializeDrawing : Msg()
+        data class LocalUpdateViewPoint(val viewPoint: State.ViewPoint) : Msg()
+        data class RemoteUpdateViewPoint(val viewPoint: State.ViewPoint) : Msg()
+        data class UpdateControlSet(val controlSet: State.ControlSet) : Msg()
+        data class DrawingMsg(val msg: DrawingFeature.Msg) : Msg()
     }
 
     sealed class Eff {
         data class Initiate(val userId: UserId) : Eff()
         data class Accept(val incomingCall: WebSocketMessage.IncomingCall) : Eff()
         object End : Eff()
-        object StartImageSharing : Eff()
+        object ChooseViewPoint : Eff()
+        object SystemBack : Eff()
         data class SyncLocalDeviceState(val localDeviceState: LocalDeviceState) : Eff()
+        data class NotifyLocalCaptureDimensionsChanged(val dimensions: Size) : Eff()
         data class NotifyDeviceStateChanged(val deviceState: RemoteDeviceState) : Eff()
+        data class NotifyUpdateViewPoint(val viewPoint: State.ViewPoint) : Eff()
+        data class DrawingEff(val eff: DrawingFeature.Eff) : Eff()
     }
 
     fun reducer(
@@ -120,11 +180,29 @@ object CallFeature {
             state.copy(status = Connecting) to setOf(Eff.Accept(incomingCall))
         } ?: throw IllegalStateException("$msg | $state")
         is Msg.End -> state toSetOf Eff.End
+        is Msg.Back -> {
+            when (state.controlSet) {
+                State.ControlSet.Call -> {
+                    state toSetOf Eff.SystemBack
+                }
+                State.ControlSet.Drawing -> {
+                    state.reduceUpdateControlSet(State.ControlSet.Call)
+                }
+            }
+        }
+        is Msg.UpdateLocalCaptureDimensions -> {
+            println("UpdateLocalCaptureDimensions NotifyLocalCaptureDimensionsChanged ${state.status}")
+            state.copy(localCaptureDimensions = msg.dimensions) toSetOf
+                Eff.NotifyLocalCaptureDimensionsChanged(msg.dimensions)
+        }
+        is Msg.UpdateRemoteCaptureDimensions -> {
+            state.copy(remoteCaptureDimensions = msg.dimensions).withEmptySet()
+        }
         is Msg.UpdateLocalVideoContext -> {
-            state.copy(localVideoContextRef = msg.viewContext).withEmptySet()
+            state.copy(localVideoContext = msg.viewContext).withEmptySet()
         }
         is Msg.UpdateRemoteVideoContext -> {
-            state.copy(remoteVideoContextRef = msg.viewContext).withEmptySet()
+            state.copy(remoteVideoContext = msg.viewContext).withEmptySet()
         }
         is Msg.UpdateStatus -> {
             state.copy(status = msg.status).withEmptySet()
@@ -141,17 +219,93 @@ object CallFeature {
         is Msg.SetIsFrontCamera -> {
             state.reduceCopyDeviceState { copy(isFrontCamera = msg.isFrontCamera) }
         }
-        is Msg.StartImageSharing -> {
-            state toSetOf Eff.StartImageSharing
+        is Msg.InitializeDrawing -> {
+            state.reduceInitializeDrawing()
+        }
+        is Msg.LocalUpdateViewPoint -> {
+            state.reduceUpdateViewPoint(msg.viewPoint)
+        }
+        is Msg.RemoteUpdateViewPoint -> {
+            state.copyRemoteUpdateViewPoint(msg.viewPoint).withEmptySet()
+        }
+        is Msg.UpdateControlSet -> {
+            state.reduceUpdateControlSet(msg.controlSet)
         }
         is Msg.UpdateRemoteDeviceState -> {
             state.copy(remoteDeviceState = msg.deviceState).withEmptySet()
         }
         is Msg.DataConnectionEstablished -> {
+            println("DataConnectionEstablished NotifyLocalCaptureDimensionsChanged")
             state.copy(
                 status = Ongoing,
                 callStartedDateInfo = state.callStartedDateInfo ?: State.CallStartedDateInfo(Date())
-            ).withEmptySet()
+            ) toSetOf state.localCaptureDimensions?.let {
+                Eff.NotifyLocalCaptureDimensionsChanged(it)
+            }
+        }
+        is Msg.DrawingMsg -> {
+            state.reduceDrawingMsg(msg.msg)
         }
     }
+
+    private fun State.reduceInitializeDrawing() = when {
+        viewPoint != State.ViewPoint.Both -> {
+            copy(
+                controlSet = State.ControlSet.Drawing
+            ).withEmptySet()
+        }
+        localCameraEnabled && remoteCameraEnabled -> {
+            this toSetOf Eff.ChooseViewPoint
+        }
+        localCameraEnabled -> {
+            this.reduceUpdateViewPoint(State.ViewPoint.Mine)
+        }
+        remoteCameraEnabled -> {
+            this.reduceUpdateViewPoint(State.ViewPoint.Partner)
+        }
+        else -> {
+            throw IllegalStateException("reduceInitializeDrawing $this")
+        }
+    }
+
+    private fun State.copyRemoteUpdateViewPoint(viewPoint: State.ViewPoint) =
+        copy(
+            viewPoint = viewPoint,
+            controlSet = if (viewPoint == State.ViewPoint.Both)
+                State.ControlSet.Call
+            else
+                controlSet,
+            drawingState = drawingStateCopyViewPoint(viewPoint),
+        )
+
+    private fun State.reduceUpdateViewPoint(viewPoint: State.ViewPoint) =
+        copy(
+            viewPoint = viewPoint,
+            controlSet = if (viewPoint == State.ViewPoint.Both)
+                State.ControlSet.Call
+            else
+                State.ControlSet.Drawing,
+            drawingState = drawingStateCopyViewPoint(viewPoint),
+        ) toSetOf Eff.NotifyUpdateViewPoint(viewPoint)
+
+    private fun State.drawingStateCopyViewPoint(viewPoint: State.ViewPoint) =
+        drawingState.copy(
+            videoViewSize = when (viewPoint) {
+                State.ViewPoint.Both -> null
+                State.ViewPoint.Mine -> localCaptureDimensions
+                State.ViewPoint.Partner -> remoteCaptureDimensions
+            }
+        )
+
+    private fun State.reduceDrawingMsg(msg: DrawingFeature.Msg): Pair<State, Set<Eff>> {
+        val (state, effs) = DrawingFeature.reducer(msg, drawingState)
+        return copy(
+            drawingState = state,
+        ) to effs.mapTo(HashSet(), Eff::DrawingEff)
+    }
+
+    private fun State.reduceUpdateControlSet(controlSet: State.ControlSet): Pair<State, Set<Eff>> =
+        copy(
+            controlSet = controlSet
+        ).withEmptySet()
 }

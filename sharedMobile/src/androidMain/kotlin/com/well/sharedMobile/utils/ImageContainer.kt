@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.util.Base64
 import androidx.core.graphics.drawable.toBitmap
 import coil.executeBlocking
 import coil.imageLoader
@@ -21,8 +20,7 @@ actual class ImageContainer(private val content: Content) {
             val uri: android.net.Uri,
             val context: Context
         ) : Content() {
-            val inputStream: InputStream
-                get() = context.contentResolver.openInputStream(uri)!!
+            fun inputStream(): InputStream = context.contentResolver.openInputStream(uri)!!
         }
     }
 
@@ -50,7 +48,7 @@ actual class ImageContainer(private val content: Content) {
                 BitmapFactory.Options()
                     .run {
                         inJustDecodeBounds = true
-                        BitmapFactory.decodeStream(content.inputStream, null, this)
+                        BitmapFactory.decodeStream(content.inputStream(), null, this)
                         if (outWidth <= 0 || outHeight <= 0) {
                             throw IllegalStateException("decodeStream failed")
                         }
@@ -101,15 +99,22 @@ actual class ImageContainer(private val content: Content) {
         )
     }
 
-    actual fun asByteArray(): ByteArray =
+    actual fun asByteArray(compressionQuality: Float): ByteArray =
         when (content) {
             is Content.Bitmap -> {
                 val output = ByteArrayOutputStream()
-                content.bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
+                content.bitmap.compress(
+                    Bitmap.CompressFormat.JPEG,
+                    (compressionQuality * 100).toInt(),
+                    output
+                )
                 output.toByteArray()
             }
             is Content.Uri -> {
-                content.inputStream.readBytes()
+                content
+                    .inputStream()
+                    .readBytes()
+                    .asImageContainer().asByteArray(compressionQuality) //applying compressionQuality
             }
         }
 }

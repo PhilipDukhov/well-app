@@ -22,7 +22,7 @@ struct CallBottomBar: View {
                     size: .standard,
                     selected: false
                 ).onTapGesture {
-                    listener(CallFeature.MsgStartImageSharing())
+                    listener(CallFeature.MsgInitializeDrawing())
                 }.frame(maxWidth: .infinity)
                 // MARK: - micEnabled
                 ToggleStillButton(
@@ -37,14 +37,30 @@ struct CallBottomBar: View {
                     info: state.callStartedDateInfo,
                     visible: state.status == .ongoing
                 )
-                // MARK: - audioSpeakerEnabled
-                ToggleStillButton(
-                    systemImage: "video.slash.fill",
-                    size: .standard,
-                    selected: !state.localDeviceState.cameraEnabled
-                ).onTapGesture {
-                    listener(state.localDeviceState.toggleCameraMsg())
-                }.frame(maxWidth: .infinity)
+                switch state.viewPoint {
+                case .both:
+                    // MARK: - audioSpeakerEnabled
+                    ToggleStillButton(
+                        systemImage: "video.slash.fill",
+                        size: .standard,
+                        selected: !state.localDeviceState.cameraEnabled
+                    ).onTapGesture {
+                        listener(state.localDeviceState.toggleCameraMsg())
+                    }.frame(maxWidth: .infinity)
+                    
+                case .mine, .partner:
+                    // MARK: - reset view poitn
+                    ToggleStillButton(
+                        systemImage: "stop.circle",
+                        size: .standard,
+                        selected: false
+                    ).onTapGesture {
+                        listener(CallFeature.MsgLocalUpdateViewPoint(viewPoint: .both))
+                    }.frame(maxWidth: .infinity)
+                    
+                default:
+                    fatalError()
+                }
                 // MARK: - audioSpeakerEnabled
                 ToggleStillButton(
                     systemImage: "speaker.1.fill",
@@ -88,7 +104,7 @@ private struct CallBottomShape: Shape {
     let radius: CGFloat
     let offset: CGFloat
 
-    func path(in rect: CGRect) -> Path {
+    func path(in rect: CGRect) -> SwiftUI.Path {
         Path { path in
             path.addRect(rect)
             path.addPath(.init(UIBezierPath(

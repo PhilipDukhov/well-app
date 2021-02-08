@@ -153,7 +153,7 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
     }
 
     func acceptCandidate(
-        candidate: ServerModelsWebSocketMessage.Candidate
+        candidate: WebSocketMessage.Candidate
     ) {
         peerConnection.add(
             .init(
@@ -297,6 +297,14 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
             format: format,
             fps: min(Int(maxFps), 30)
         )
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            self?.listener.updateCaptureDimensions(
+                dimensions: Size(
+                    width: format.formatDescription.dimensions.height,
+                    height: format.formatDescription.dimensions.width
+                )
+            )
+        }
     }
 
     private func setSpeakerEnabled(enabled: Bool) {
@@ -385,7 +393,7 @@ extension WebRtcManager: RTCPeerConnectionDelegate {
 }
 
 extension RTCIceCandidate {
-    fileprivate func toMessage() -> ServerModelsWebSocketMessage.Candidate {
+    fileprivate func toMessage() -> WebSocketMessage.Candidate {
         .init(
             sdpMid: sdpMid ?? "",
             sdpMLineIndex: sdpMLineIndex,
@@ -453,5 +461,11 @@ extension RTCDataChannelState {
         @unknown default:
             return .closed
         }
+    }
+}
+
+extension CMVideoDimensions {
+    fileprivate func toSize() -> Size {
+        Size(width: width, height: height)
     }
 }

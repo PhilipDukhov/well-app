@@ -1,4 +1,4 @@
-package com.well.androidApp.ui.composableScreens.call.screenSharing
+package com.well.androidApp.ui.composableScreens.call.drawing
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.InteractionState
@@ -15,8 +15,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.well.androidApp.R
-import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature.Msg
-import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature.State
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.State
 import dev.chrisbanes.accompanist.insets.statusBarsPadding
 
 @Composable

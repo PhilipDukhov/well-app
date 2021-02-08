@@ -7,11 +7,11 @@ import SwiftUI
 import SharedMobile
 
 struct ProfileImage: View {
-    let viewModel: ServerModelsUser
+    let viewModel: User
     let clipCircle: Bool
 
     init(
-        _ viewModel: ServerModelsUser,
+        _ viewModel: User,
         clipCircle: Bool = true
     ) {
         self.viewModel = viewModel

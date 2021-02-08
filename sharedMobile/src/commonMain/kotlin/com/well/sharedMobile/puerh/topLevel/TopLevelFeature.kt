@@ -3,7 +3,6 @@ package com.well.sharedMobile.puerh.topLevel
 import com.well.serverModels.User
 import com.well.serverModels.WebSocketMessage
 import com.well.sharedMobile.puerh.call.CallFeature
-import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature
 import com.well.sharedMobile.puerh.login.LoginFeature
 import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersFeature
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.State.*
@@ -19,7 +18,7 @@ object TopLevelFeature {
     )
 
     fun initialEffects(): Set<Eff> = setOf(
-        Eff.TestLogin
+        Eff.TestLogin,
     )
 
     data class State(
@@ -55,20 +54,17 @@ object TopLevelFeature {
             data class OnlineUsers(val state: OnlineUsersFeature.State) : ScreenState()
 
             data class Call(val state: CallFeature.State) : ScreenState()
-            data class ImageSharing(val state: ImageSharingFeature.State) : ScreenState()
         }
     }
 
     sealed class Msg {
         data class OnlineUsersMsg(val msg: OnlineUsersFeature.Msg) : Msg()
         data class CallMsg(val msg: CallFeature.Msg) : Msg()
-        data class ImageSharingMsg(val msg: ImageSharingFeature.Msg) : Msg()
 
         data class StartCall(val user: User) : Msg()
         data class IncomingCall(val incomingCall: WebSocketMessage.IncomingCall) : Msg()
         object EndCall : Msg()
 
-        data class StartImageSharing(val role: ImageSharingFeature.State.Role) : Msg()
         object StopImageSharing : Msg()
 
         data class ShowAlert(val alert: Alert) : Msg()
@@ -83,7 +79,6 @@ object TopLevelFeature {
         data class GotLogInToken(val token: String) : Eff()
         data class OnlineUsersEff(val eff: OnlineUsersFeature.Eff) : Eff()
         data class CallEff(val eff: CallFeature.Eff) : Eff()
-        data class ImageSharingEff(val eff: ImageSharingFeature.Eff) : Eff()
     }
 
     fun reducer(
@@ -101,10 +96,7 @@ object TopLevelFeature {
                             return@eff Eff.SystemBack
                         }
                         is ScreenState.Call -> {
-                            return@reducer state.reduceCall(CallFeature.Msg.End)
-                        }
-                        is ScreenState.ImageSharing -> {
-                            return@reducer state.reduceImageSharing(ImageSharingFeature.Msg.Close)
+                            return@reducer state.reduceCall(CallFeature.Msg.Back)
                         }
                     }
                 }
@@ -132,13 +124,6 @@ object TopLevelFeature {
                 is Msg.CallMsg -> {
                     return@reducer state.reduceCall(msg.msg)
                 }
-                is Msg.StartImageSharing -> {
-                    return@reducer state.reduceStartImageSharing(msg)
-                }
-                is Msg.ImageSharingMsg ->
-                    return@reducer state.reduceImageSharing(
-                        msg.msg,
-                    )
                 is Msg.StopImageSharing -> {
                     return@state state.copyPop(Tab.Overlay)
                 }
@@ -170,14 +155,6 @@ object TopLevelFeature {
 
     // ScreenState reducers
 
-    private fun State.reduceStartImageSharing(msg: Msg.StartImageSharing): ReducerResult {
-        val (state, effs) = ImageSharingFeature.initialState(msg.role)
-        return copyPush(
-            Tab.Overlay,
-            ScreenState.ImageSharing(state),
-        ) to effs.mapTo(HashSet(), Eff::ImageSharingEff)
-    }
-
     private fun State.reduceOnlineUsers(
         msg: OnlineUsersFeature.Msg,
     ): ReducerResult {
@@ -194,22 +171,13 @@ object TopLevelFeature {
         msg: CallFeature.Msg,
     ): ReducerResult {
         val (screen, position) = tabs.screenAndPositionOfFirstOrNull<ScreenState.Call>()
-            ?: throw IllegalStateException("$msg | $this")
+            ?: run {
+                println("error!!! $msg | $this")
+                return this.withEmptySet()
+            }
         val (newScreenState, effs) = CallFeature.reducer(msg, screen.state)
         val newEffs = effs.mapTo(HashSet(), Eff::CallEff)
         return changeScreen<ScreenState.Call>(position) {
-            copy(state = newScreenState)
-        } to newEffs
-    }
-
-    private fun State.reduceImageSharing(
-        msg: ImageSharingFeature.Msg,
-    ): ReducerResult {
-        val (screen, position) = tabs.screenAndPositionOfFirstOrNull<ScreenState.ImageSharing>()
-            ?: return this.withEmptySet()
-        val (newScreenState, effs) = ImageSharingFeature.reducer(msg, screen.state)
-        val newEffs = effs.mapTo(HashSet(), Eff::ImageSharingEff)
-        return changeScreen<ScreenState.ImageSharing>(position) {
             copy(state = newScreenState)
         } to newEffs
     }

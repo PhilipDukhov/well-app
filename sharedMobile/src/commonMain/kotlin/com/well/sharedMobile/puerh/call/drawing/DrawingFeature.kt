@@ -1,32 +1,26 @@
-package com.well.sharedMobile.puerh.call.imageSharing
+package com.well.sharedMobile.puerh.call.drawing
 
 import com.well.serverModels.*
 import com.well.sharedMobile.utils.ImageContainer
 import com.well.utils.map
+import com.well.utils.platform.Platform
+import com.well.utils.platform.nativeScale
 import com.well.utils.toSetOf
 import com.well.utils.withEmptySet
 import kotlin.time.Duration
 import kotlin.time.measureTimedValue
 
-object ImageSharingFeature {
-    fun initialState(role: State.Role) =
-        State(role) to if (role == State.Role.Editor) {
-            setOf(Eff.SendInit, Eff.RequestImageUpdate)
-        } else {
-            setOf()
-        }
-
+object DrawingFeature {
     fun testState(imageContainer: ImageContainer?) =
-        initialState(State.Role.Editor)
-            .first
+        State()
             .copy(
                 image = imageContainer,
             )
 
     data class State(
-        val role: Role,
         val localViewSize: Size? = null,
         val remoteViewSize: Size? = null,
+        val videoViewSize: Size? = null,
         val image: ImageContainer? = null,
         val currentColor: Color = Color.drawingColors.first(),
         val lineWidth: Float = 4F,
@@ -38,13 +32,15 @@ object ImageSharingFeature {
         internal val remotePaths: List<Path> = listOf(),
         val lastReduceDurations: List<Duration> = listOf(),
     ) {
-        private val historyEditingAvailable = role == Role.Editor && pathsHistory.isNotEmpty()
+        private val historyEditingAvailable = pathsHistory.isNotEmpty()
         val undoAvailable = historyEditingAvailable && pathsHistoryIndex != 0
         val redoAvailable = historyEditingAvailable && pathsHistoryIndex != pathsHistory.lastIndex
         internal val drawingConverter =
-            image?.size?.let { imageSize ->
-                localViewSize?.let { localViewSize ->
-                    DrawingConverter(localViewSize, imageSize)
+            localViewSize?.let { localViewSize ->
+                image?.size?.let {
+                    Converter(localViewSize, it, Converter.ContentMode.AspectFit)
+                } ?: videoViewSize?.let {
+                    Converter(localViewSize, it, Converter.ContentMode.AspectFill)
                 }
             }
         internal val localPaths = pathsHistory[pathsHistoryIndex] + drawingPaths
@@ -60,11 +56,6 @@ object ImageSharingFeature {
         companion object {
             val drawingColors = Color.drawingColors
             val lineWidthRange = 1F..50F
-        }
-
-        enum class Role {
-            Editor,
-            Viewer,
         }
 
         data class StrokeStyle(
@@ -93,18 +84,25 @@ object ImageSharingFeature {
             object Eraser : Brush()
         }
 
-        internal class DrawingConverter(
+        internal class Converter(
             containerSize: Size,
-            imageSize: Size
+            imageSize: Size,
+            contentMode: ContentMode,
         ) {
-            private val containerImageSize = containerSize.aspectFit(imageSize)
+            private val containerImageSize = when (contentMode) {
+                ContentMode.AspectFit -> {
+                    containerSize.aspectFit(imageSize)
+                }
+                ContentMode.AspectFill -> {
+                    containerSize.aspectFill(imageSize)
+                }
+            }
             private val imageOffset = Point(
                 x = (containerSize.width - containerImageSize.width) / 2,
                 y = (containerSize.height - containerImageSize.height) / 2,
             )
-
             init {
-                println("containerImageSize $containerImageSize imageOffset $imageOffset")
+                println("Converter init $containerImageSize $imageOffset")
             }
 
             fun normalize(point: Point) =
@@ -118,14 +116,19 @@ object ImageSharingFeature {
                     x = point.x * containerImageSize.width + imageOffset.x,
                     y = point.y * containerImageSize.height + imageOffset.y,
                 )
+
+            enum class ContentMode {
+                AspectFit,
+                AspectFill,
+                ;
+            }
         }
     }
 
     sealed class Msg {
-        object SwitchToViewer : Msg()
         data class UpdateLocalViewSize(val size: Size) : Msg()
         data class UpdateRemoteViewSize(val size: Size) : Msg()
-        object ImageUpdateCancelled : Msg()
+//        object ImageUpdateCancelled : Msg()
         data class LocalUpdateImage(val image: ImageContainer) : Msg()
         data class RemoteUpdateImage(val image: ImageContainer) : Msg()
         data class UpdateColor(val color: Color) : Msg()
@@ -136,13 +139,12 @@ object ImageSharingFeature {
         data class UpdatePaths(val paths: List<Path>) : Msg()
         object Undo : Msg()
         object Redo : Msg()
-        object Close : Msg()
+        data class LocalClear(val saveHistory: Boolean) : Msg()
+        data class RemoteClear(val saveHistory: Boolean, val date: Date) : Msg()
     }
 
     sealed class Eff {
-        object SendInit : Eff()
-        object RequestImageUpdate : Eff()
-        object Close : Eff()
+//        object RequestImageUpdate : Eff()
         data class NotifyViewSizeUpdate(val size: Size) : Eff()
         data class UploadImage(
             val image: ImageContainer,
@@ -152,6 +154,8 @@ object ImageSharingFeature {
         data class UploadPaths(
             val paths: List<Path>
         ) : Eff()
+
+        data class NotifyClear(val saveHistory: Boolean, val date: Date): Eff()
     }
 
     fun reducerMeasuring(
@@ -172,26 +176,14 @@ object ImageSharingFeature {
         msg: Msg,
         state: State
     ): Pair<State, Set<Eff>> = run state@{
+        @Suppress("UNREACHABLE_CODE")
         return@reducer state toSetOf (run eff@{
             when (msg) {
-                Msg.Close -> {
-                    return@eff Eff.Close
-                }
-                Msg.SwitchToViewer -> {
-                    return@state state.copy(role = State.Role.Viewer)
-                }
                 is Msg.UpdateLocalViewSize -> {
-                    return@reducer state.reduceLocalViewSizeUpdate(msg.size)
+                    return@reducer state.reduceLocalViewSizeUpdate(msg.size)//.nativeScaled())
                 }
                 is Msg.UpdateRemoteViewSize -> {
                     return@state state.copy(remoteViewSize = msg.size)
-                }
-                Msg.ImageUpdateCancelled -> {
-                    return@reducer state toSetOf if (state.image != null) {
-                        null
-                    } else {
-                        Eff.Close
-                    }
                 }
                 is Msg.LocalUpdateImage -> {
                     return@reducer state.copy(image = msg.image)
@@ -226,6 +218,13 @@ object ImageSharingFeature {
                 is Msg.SelectBrush -> {
                     return@state state.copy(selectedBrush = msg.brush)
                 }
+                is Msg.LocalClear -> {
+                    return@reducer state.copyClear(msg.saveHistory) toSetOf
+                        Eff.NotifyClear(msg.saveHistory, Date())
+                }
+                is Msg.RemoteClear -> {
+                    return@state state.copyClear(msg.saveHistory, msg.date)
+                }
             }
         })
     }.withEmptySet()
@@ -238,18 +237,14 @@ object ImageSharingFeature {
         }
 
     private fun State.reduceSendImageUpdate() =
-        this toSetOf if (role == State.Role.Editor && image != null && remoteViewSize != null) {
+        this toSetOf if (image != null && remoteViewSize != null) {
             Eff.UploadImage(image, remoteViewSize)
         } else {
             null
         }
 
     private fun State.reduceSendPathsUpdate() =
-        this toSetOf if (role == State.Role.Editor) {
-            Eff.UploadPaths(localPaths)
-        } else {
-            null
-        }
+        this toSetOf Eff.UploadPaths(localPaths)
 
     private fun State.copyStartPath(point: Point): State =
         copy(
@@ -322,7 +317,6 @@ object ImageSharingFeature {
         } else {
             newDrawingPaths.add(
                 last.copy(
-                    color = Color.drawingColors[(Color.drawingColors.indexOf(last.color) + 1) % Color.drawingColors.count()],
                     points = last.points.takeLast(2) + listOf(point),
                     date = Date(),
                 )
@@ -330,4 +324,20 @@ object ImageSharingFeature {
         }
         return copy(drawingPaths = newDrawingPaths).reduceSendPathsUpdate()
     }
+
+    private fun State.copyClear(saveHistory: Boolean, date: Date? = null) =
+        copy(
+            pathsHistory = if (saveHistory)
+                pathsHistory + listOf(pathsHistory.last().newer(date))
+            else
+                listOf(listOf()),
+            drawingPaths = drawingPaths.newer(date),
+            pathsHistoryIndex = if (saveHistory) pathsHistory.count() else 0,
+        )
+
+    private fun List<Path>.newer(date: Date?): List<Path> =
+        if (date != null) filter { it.date > date } else listOf()
+
+    private fun Size.nativeScaled(): Size =
+        Size(width * Platform.nativeScale, height * Platform.nativeScale)
 }

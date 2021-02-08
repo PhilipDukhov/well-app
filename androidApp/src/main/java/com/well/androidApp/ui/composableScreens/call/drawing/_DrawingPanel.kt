@@ -1,4 +1,4 @@
-package com.well.androidApp.ui.composableScreens.call.screenSharing
+package com.well.androidApp.ui.composableScreens.call.drawing
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
@@ -9,12 +9,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import com.well.androidApp.ui.composableScreens.πExt.toColor
 import com.well.serverModels.Size
-import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature.Msg
-import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature.State
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.State
 import dev.chrisbanes.accompanist.coil.CoilImage
 
 @Composable
-fun ImageSharingScreen(
+fun DrawingPanel(
     state: State,
     listener: (Msg) -> Unit,
 ) = Column(
@@ -32,27 +32,27 @@ fun ImageSharingScreen(
             .fillMaxWidth()
             .weight(1F)
     ) {
-        BoxWithConstraints(
-            modifier = Modifier
-                .fillMaxSize()
-                .onSizeChanged {
-                    listener(Msg.UpdateLocalViewSize(Size(it.width, it.height)))
-                })
-        {
-            state.image?.let {
-                CoilImage(
-                    it.data,
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .fillMaxSize()
-                )
-            }
-        }
-        DrawingContent(
-            state, listener,
-            modifier = Modifier.fillMaxSize()
-        )
+//        BoxWithConstraints(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .onSizeChanged {
+//                    listener(Msg.UpdateLocalViewSize(Size(it.width, it.height)))
+//                })
+//        {
+//            state.image?.let {
+//                CoilImage(
+//                    it.data,
+//                    contentDescription = null,
+//                    contentScale = ContentScale.Fit,
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                )
+//            }
+//        }
+//        DrawingContent(
+//            state, listener,
+//            modifier = Modifier.fillMaxSize()
+//        )
         Column(
             modifier = Modifier
                 .fillMaxSize()

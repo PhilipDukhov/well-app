@@ -9,6 +9,7 @@ import android.util.Log
 import com.well.androidApp.utils.Utilities
 import com.well.androidApp.utils.firstMapOrNull
 import com.well.serverModels.WebSocketMessage
+import com.well.serverModels.Size
 import com.well.sharedMobile.puerh.call.VideoViewContext
 import com.well.sharedMobile.puerh.call.webRtc.LocalDeviceState
 import com.well.sharedMobile.puerh.call.webRtc.WebRtcManagerI
@@ -16,10 +17,7 @@ import com.well.sharedMobile.puerh.call.webRtc.WebRtcManagerI.Listener.DataChann
 import com.well.utils.Closeable
 import com.well.utils.CloseableContainer
 import com.well.utils.getSystemService
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.webrtc.*
 import java.nio.ByteBuffer
 
@@ -49,8 +47,10 @@ class WebRtcManager(
         }
         addCloseableChild(object : Closeable {
             override fun close() {
+                println("webrtcmanager close ")
                 try {
                     peerConnection.dispose()
+                    videoCapturer.dispose()
                     listOf(
                         localAudioTrack,
                         localVideoTrack,
@@ -331,10 +331,15 @@ class WebRtcManager(
     }
 
     private fun VideoCapturer.startCapture() {
-        if (Utilities.isProbablyAnEmulator())
-            startCapture(320, 240, 15)
+        val cameraConfig = if (Utilities.isProbablyAnEmulator())
+            Triple(320, 240, 15)
         else
-            startCapture(1280, 720, 30)
+            Triple(1280, 720, 30)
+        startCapture(cameraConfig.first, cameraConfig.second, cameraConfig.third)
+        GlobalScope.launch {
+            delay(100)
+            listener.updateCaptureDimensions(Size(cameraConfig.second, cameraConfig.first))
+        }
     }
 
     private fun createOfferOrAnswer(

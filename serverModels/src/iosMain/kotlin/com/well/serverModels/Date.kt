@@ -14,7 +14,7 @@ actual data class Date(val date: NSDate) {
     actual val millisSinceNow: Long
         get() = -date.timeIntervalSinceNow.toMillis()
 
-    override fun toString(): String = "wtf ${dateFormatter.stringFromDate(date)}"
+    override fun toString(): String = dateFormatter.stringFromDate(date)
 
     companion object {
         val dateFormatter = NSDateFormatter().apply {

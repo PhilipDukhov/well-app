@@ -1,8 +1,9 @@
-package com.well.androidApp.ui.composableScreens.call.screenSharing
+package com.well.androidApp.ui.composableScreens.call.drawing
 
 import android.view.MotionEvent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -10,20 +11,23 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.layout.onSizeChanged
 import com.well.androidApp.ui.composableScreens.πExt.toColor
 import com.well.serverModels.Path
 import com.well.serverModels.Point
-import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature.Msg
-import com.well.sharedMobile.puerh.call.imageSharing.ImageSharingFeature.State
+import com.well.serverModels.Size
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.State
 import kotlin.math.hypot
 
 @Composable
 fun DrawingContent(
     state: State,
     listener: (Msg) -> Unit,
+    enabled: Boolean,
     modifier: Modifier,
 ) {
-    val filter = Modifier.pointerInteropFilter {
+    val filter = if (enabled) Modifier.pointerInteropFilter {
         when (it.action) {
             MotionEvent.ACTION_MOVE -> {
                 listener(Msg.NewDragPoint(Point(it.x, it.y)))
@@ -34,13 +38,14 @@ fun DrawingContent(
             else -> Unit
         }
         true
-    }
-    Box(
+    } else Modifier
+    BoxWithConstraints(
         modifier = modifier
             .then(filter)
             .fillMaxSize()
-            .clipToBounds()
-    ) {
+            .onSizeChanged {
+                listener(Msg.UpdateLocalViewSize(Size(it.width, it.height)))
+            }) {
         state.canvasPaths.forEach {
             PathCanvas(
                 it,
