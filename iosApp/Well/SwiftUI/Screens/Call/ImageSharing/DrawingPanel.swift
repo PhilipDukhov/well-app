@@ -29,29 +29,54 @@ struct DrawingPanel: View {
         VStack(alignment: .leading, spacing: 0) {
             topPanel()
                 .background(Color.black)
-            Spacer()
-            WidthSlider(
-                value: state.lineWidth,
-                range: DrawingFeature.StateCompanion().lineWidthRange.toClosedRange(),
-                color: state.currentColor.toColor()
-            ) {
-                listener(
-                    DrawingFeature.MsgUpdateLineWidth(lineWidth: $0)
-                )
-            }.frame(width: geometry.size.width / 2, height: geometry.size.height / 2)
-            Spacer()
+            ZStack(alignment: Alignment(horizontal: .leading, vertical: .center)) {
+                GeometryReader { geometry in
+                    ZStack(alignment: .leading) {
+                        if let image = state.image {
+                            Image(uiImage: image.uiImage)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .fillMaxSize()
+                                .background(Color.black)
+                            DrawingContent(
+                                state: state,
+                                enabled: true,
+                                listener: listener
+                            )
+                        }
+                    }.fillMaxSize()
+                    .onAppear {
+                        listener(
+                            DrawingFeature.MsgUpdateLocalImageContainerSize(
+                                size: geometry.size.toSize()
+                            )
+                        )
+                    }
+                }
+                WidthSlider(
+                    value: state.lineWidth,
+                    range: DrawingFeature.StateCompanion().lineWidthRange.toClosedRange(),
+                    color: state.currentColor.toColor()
+                ) {
+                    listener(
+                        DrawingFeature.MsgUpdateLineWidth(lineWidth: $0)
+                    )
+                }.frame(width: geometry.size.width / 2, height: geometry.size.height / 2)
+            }
             bottomPanel()
         }
         .foregroundColor(.white)
-        .edgesIgnoringSafeArea(.all)
     }
 
     @ViewBuilder
     func topPanel() -> some View {
         ZStack(alignment: .center) {
             HStack {
-                Control(systemName: "chevron.left", enabled: true, onTap: back)
+                Control(systemName: "chevron.left", onTap: back)
                 Spacer()
+                Control(systemName: "photo") {
+                    listener(DrawingFeature.MsgRequestImageUpdate())
+                }
             }
             HStack {
                 Control(systemName: "arrow.uturn.left", enabled: state.undoAvailable) {
@@ -99,7 +124,17 @@ private struct Control: View {
     let systemName: String
     let enabled: Bool
     let onTap: () -> Void
-
+    
+    init(
+        systemName: String,
+        enabled: Bool = true,
+        onTap: @escaping () -> Void
+    ) {
+        self.systemName = systemName
+        self.enabled = enabled
+        self.onTap = onTap
+    }
+    
     var body: some View {
         Image(systemName: systemName)
             .frame(size: 45)

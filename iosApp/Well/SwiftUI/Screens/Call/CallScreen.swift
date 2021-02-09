@@ -40,12 +40,25 @@ struct CallScreen: View {
                             listener(state.localDeviceState.toggleIsFrontCameraMsg())
                         } : nil)
                 }
-                DrawingContent(
-                    state: state.drawingState,
-                    enabled: state.controlSet == .drawing
-                ) {
-                    listener(CallFeature.MsgDrawingMsg(msg: $0))
-                }.fillMaxSize()
+                GeometryReader { geometry in
+                    ZStack(alignment: .leading) {
+                        // swiftlint:disable:next trailing_closure
+                        DrawingContent(
+                            state: state.drawingState,
+                            enabled: state.controlSet == .drawing,
+                            listener: {
+                                listener(CallFeature.MsgDrawingMsg(msg: $0))
+                            }
+                        ).fillMaxSize()
+                        .onAppear {
+                            listener(
+                                CallFeature.MsgDrawingMsg(
+                                    msg: DrawingFeature.MsgUpdateLocalVideoContainerSize(size: geometry.size.toSize())
+                                )
+                            )
+                        }
+                    }.opacity(state.drawingState.image == nil ? 1 : 0)
+                }
                 switch state.controlSet {
                 case .call:
                     VStack(spacing: 0) {

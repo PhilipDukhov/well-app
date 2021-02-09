@@ -1,9 +1,11 @@
 package com.well.sharedMobile.puerh.call.webRtc
 
+import com.well.serverModels.Date
 import com.well.serverModels.Path
 import com.well.serverModels.Size
 import com.well.serverModels.prepareToDebug
 import com.well.sharedMobile.puerh.call.CallFeature
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -22,11 +24,15 @@ sealed class RtcMsg {
         @Serializable
         sealed class Msg {
             @Serializable
-            data class UpdateViewSize(val size: Size) : Msg()
+            data class UpdateImageContainerSize(val size: Size) : Msg()
 
-            class UpdateImage(val imageData: ByteArray) : Msg() {
-                override fun toString() = "${super.toString().prepareToDebug()} ${imageData.count()}"
+            @Serializable
+            class UpdateImage(val imageData: ByteArray?) : Msg() {
+                override fun toString() = "${super.toString().prepareToDebug()} ${imageData?.count()}"
             }
+
+            @Serializable
+            data class NotifyClear(val saveHistory: Boolean, val date: Date): Msg()
 
             @Serializable
             data class UpdatePaths(val paths: List<Path>) : Msg()

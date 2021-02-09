@@ -19,9 +19,11 @@ class DrawingEffectHandler(
     fun handleEffect(eff: Eff) {
         println("ImageSharingEffectHandler handleEffect $eff")
         when (eff) {
+            is Eff.RequestImageUpdate,
+            -> Unit
             is Eff.NotifyViewSizeUpdate -> {
                 webRtcSendListener(
-                    RtcMsg.UpdateViewSize(
+                    RtcMsg.UpdateImageContainerSize(
                         eff.size
                     )
                 )
@@ -39,15 +41,24 @@ class DrawingEffectHandler(
                     )
                 )
             }
+            is Eff.ClearImage -> {
+                webRtcSendListener(
+                    RtcMsg.UpdateImage(null)
+                )
+            }
             is Eff.UploadPaths -> {
                 if (!waitingForPathConfirmation.value) {
                     waitingForPathConfirmation.value = true
                     pendingPaths.value = null
                     webRtcSendListener(RtcMsg.UpdatePaths(eff.paths))
-                    println("apthssss: uploding ${eff.paths}")
                 } else {
                     pendingPaths.value = eff.paths
                 }
+            }
+            is Eff.NotifyClear -> {
+                webRtcSendListener(
+                    RtcMsg.NotifyClear(eff.saveHistory, eff.date)
+                )
             }
         }
     }
@@ -55,15 +66,14 @@ class DrawingEffectHandler(
     fun handleDataChannelMessage(msg: RtcMsg): TopLevelMsg? =
         TopLevelMsg.CallMsg(CallFeature.Msg.DrawingMsg(when (msg) {
             is RtcMsg.UpdateImage -> {
-                Msg.RemoteUpdateImage(msg.imageData.asImageContainer())
+                Msg.RemoteUpdateImage(msg.imageData?.asImageContainer())
             }
             is RtcMsg.UpdatePaths -> {
-                println("apthssss: get ${msg.paths}")
                 webRtcSendListener(RtcMsg.ConfirmUpdatePaths)
                 Msg.UpdatePaths(msg.paths)
             }
-            is RtcMsg.UpdateViewSize -> {
-                Msg.UpdateRemoteViewSize(msg.size)
+            is RtcMsg.UpdateImageContainerSize -> {
+                Msg.UpdateRemoteImageContainerSize(msg.size)
             }
             RtcMsg.ConfirmUpdatePaths -> {
                 waitingForPathConfirmation.value = false
@@ -74,6 +84,9 @@ class DrawingEffectHandler(
                 run {
                     return null
                 }
+            }
+            is RtcMsg.NotifyClear -> {
+                Msg.RemoteClear(msg.saveHistory, msg.date)
             }
         })).also {
             println("ImageSharingEffectHandler handleDataChannelMessage $msg $it")

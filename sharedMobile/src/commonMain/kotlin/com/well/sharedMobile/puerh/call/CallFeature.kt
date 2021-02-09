@@ -50,13 +50,14 @@ object CallFeature {
         val remoteDeviceState: RemoteDeviceState? = null,
         val callStartedDateInfo: CallStartedDateInfo? = null,
         val viewPoint: ViewPoint = ViewPoint.Both,
-        val controlSet: ControlSet = ControlSet.Call,
+        val drawingState: DrawingState = DrawingState(),
+        internal val controlSetSaved: ControlSet = ControlSet.Call,
         internal val localVideoContext: VideoViewContext? = null,
         internal val localCaptureDimensions: Size? = null,
         internal val remoteVideoContext: VideoViewContext? = null,
         internal val remoteCaptureDimensions: Size? = null,
-        val drawingState: DrawingState = DrawingState(),
     ) {
+        val controlSet = if (drawingState.image != null) ControlSet.Drawing else controlSetSaved
         internal val localCameraEnabled = localDeviceState.cameraEnabled
         internal val remoteCameraEnabled = remoteDeviceState?.cameraEnabled != false
         val localVideoView = if (localVideoContext == null) null else VideoView(
@@ -175,12 +176,15 @@ object CallFeature {
                     state toSetOf Eff.SystemBack
                 }
                 State.ControlSet.Drawing -> {
-                    state.reduceUpdateControlSet(State.ControlSet.Call)
+                    if (state.drawingState.image != null) {
+                        state.reduceDrawingMsg(DrawingFeature.Msg.LocalUpdateImage(null))
+                    } else {
+                        state.copyUpdateControlSet(State.ControlSet.Call).withEmptySet()
+                    }
                 }
             }
         }
         is Msg.UpdateLocalCaptureDimensions -> {
-            println("UpdateLocalCaptureDimensions NotifyLocalCaptureDimensionsChanged ${state.status}")
             state.copy(localCaptureDimensions = msg.dimensions) toSetOf
                 Eff.NotifyLocalCaptureDimensionsChanged(msg.dimensions)
         }
@@ -218,7 +222,7 @@ object CallFeature {
             state.reduceRemoteUpdateViewPoint(msg.viewPoint)
         }
         is Msg.UpdateControlSet -> {
-            state.reduceUpdateControlSet(msg.controlSet)
+            state.copyUpdateControlSet(msg.controlSet).withEmptySet()
         }
         is Msg.UpdateRemoteDeviceState -> {
             state.copy(remoteDeviceState = msg.deviceState).withEmptySet()
@@ -227,9 +231,10 @@ object CallFeature {
             state.copy(
                 status = Ongoing,
                 callStartedDateInfo = state.callStartedDateInfo ?: State.CallStartedDateInfo(Date())
-            ) toSetOf state.localCaptureDimensions?.let {
-                Eff.NotifyLocalCaptureDimensionsChanged(it)
-            }
+            ) toFilterNotNull setOf(
+                state.localCaptureDimensions?.let(Eff::NotifyLocalCaptureDimensionsChanged),
+                state.drawingState.notifyViewSizeUpdateEff()?.let(Eff::DrawingEff)
+            )
         }
         is Msg.DrawingMsg -> {
             state.reduceDrawingMsg(msg.msg)
@@ -239,7 +244,7 @@ object CallFeature {
     private fun State.reduceInitializeDrawing() = when {
         viewPoint != State.ViewPoint.Both -> {
             copy(
-                controlSet = State.ControlSet.Drawing
+                controlSetSaved = State.ControlSet.Drawing
             ).withEmptySet()
         }
         localCameraEnabled && remoteCameraEnabled -> {
@@ -259,17 +264,17 @@ object CallFeature {
     private fun State.reduceRemoteUpdateViewPoint(viewPoint: State.ViewPoint) =
         copy(
             viewPoint = viewPoint,
-            controlSet = if (viewPoint == State.ViewPoint.Both)
+            controlSetSaved = if (viewPoint == State.ViewPoint.Both)
                 State.ControlSet.Call
             else
-                controlSet,
+                controlSetSaved,
             drawingState = drawingStateCopyViewPoint(viewPoint),
         ).reduceUpdateLocalDeviceState()
 
     private fun State.reduceUpdateViewPoint(viewPoint: State.ViewPoint) =
         copy(
             viewPoint = viewPoint,
-            controlSet = if (viewPoint == State.ViewPoint.Both)
+            controlSetSaved = if (viewPoint == State.ViewPoint.Both)
                 State.ControlSet.Call
             else
                 State.ControlSet.Drawing,
@@ -278,7 +283,7 @@ object CallFeature {
 
     private fun State.drawingStateCopyViewPoint(viewPoint: State.ViewPoint) =
         drawingState.copy(
-            videoViewSize = when (viewPoint) {
+            videoAspectRatio = when (viewPoint) {
                 State.ViewPoint.Both -> null
                 State.ViewPoint.Mine -> localCaptureDimensions
                 State.ViewPoint.Partner -> remoteCaptureDimensions
@@ -292,10 +297,10 @@ object CallFeature {
         ) to effs.mapTo(HashSet(), Eff::DrawingEff)
     }
 
-    private fun State.reduceUpdateControlSet(controlSet: State.ControlSet): Pair<State, Set<Eff>> =
+    private fun State.copyUpdateControlSet(controlSet: State.ControlSet) =
         copy(
-            controlSet = controlSet
-        ).withEmptySet()
+            controlSetSaved = controlSet
+        )
 
     private fun State.reduceCopyDeviceState(
         modifier: LocalDeviceState.() -> LocalDeviceState

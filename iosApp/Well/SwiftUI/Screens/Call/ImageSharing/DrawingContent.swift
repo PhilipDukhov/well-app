@@ -16,28 +16,6 @@ struct DrawingContent: View {
     let listener: Listener
     
     var body: some View {
-        GeometryReader { geometry in
-            ZStack(alignment: .leading) {
-                //                if let image = state.image {
-                //                    Image(uiImage: image.uiImage)
-                //                        .resizable()
-                //                        .aspectRatio(contentMode: .fit)
-                //                        .fillMaxSize()
-                //                }
-                drawer()
-                    .onAppear {
-                        listener(
-                            DrawingFeature.MsgUpdateLocalViewSize(
-                                size: geometry.size.toSize()
-                            )
-                        )
-                    }
-            }
-        }
-    }
-    
-    @ViewBuilder
-    func drawer() -> some View {
         ZStack {
             ForEach(state.canvasPaths, id: \.self) { (path: SharedMobile.Path) in
                 DrawShape(

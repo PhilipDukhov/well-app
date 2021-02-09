@@ -21,14 +21,12 @@ struct ProfileImage: View {
     var body: some View {
         let shape = PartCircleShape(part: clipCircle ? 1 : 0)
         if let profileImageURL = viewModel.profileImageURL {
-            printUI("ProfileImage update")
             AsyncImage(
                 url: profileImageURL,
                 placeholder: {
                     ActivityIndicator()
                 },
                 image: {
-                    printUI("AsyncImage update")
                     Image(uiImage: $0)
                         .resizable()
                         .scaledToFill()

@@ -5,6 +5,7 @@ import com.well.serverModels.WebSocketMessage
 import com.well.sharedMobile.networking.LoginNetworkManager
 import com.well.sharedMobile.networking.webSocketManager.NetworkManager
 import com.well.sharedMobile.puerh.call.CallFeature
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature
 import com.well.sharedMobile.puerh.call.webRtc.CallEffectHandler
 import com.well.sharedMobile.puerh.call.webRtc.WebRtcManagerI
 import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersApiEffectHandler
@@ -58,7 +59,6 @@ class FeatureProvider(
                     is CallFeature.Eff.NotifyDeviceStateChanged,
                     is CallFeature.Eff.SyncLocalDeviceState,
                     is CallFeature.Eff.NotifyUpdateViewPoint,
-                    is CallFeature.Eff.DrawingEff,
                     is CallFeature.Eff.NotifyLocalCaptureDimensionsChanged,
                     -> Unit
                     is CallFeature.Eff.Initiate, is CallFeature.Eff.Accept -> {
@@ -84,6 +84,11 @@ class FeatureProvider(
                             )
                         MainScope().launch {
                             contextHelper.showSheet(
+                                Action("Draw on image") {
+                                    coroutineScope.launch {
+                                        pickSystemImage(listener)
+                                    }
+                                },
                                 Action("Draw on your own camera") {
                                     startDrawing(
                                         CallFeature.State.ViewPoint.Mine
@@ -99,6 +104,18 @@ class FeatureProvider(
                     }
                     CallFeature.Eff.SystemBack -> {
                         context.systemBack()
+                    }
+                    is CallFeature.Eff.DrawingEff -> {
+                        when (eff.eff.eff) {
+                            is DrawingFeature.Eff.NotifyViewSizeUpdate,
+                            is DrawingFeature.Eff.UploadImage,
+                            is DrawingFeature.Eff.UploadPaths,
+                            is DrawingFeature.Eff.NotifyClear,
+                            -> Unit
+                            is DrawingFeature.Eff.RequestImageUpdate -> {
+                                handleRequestImageUpdate(eff.eff.eff, listener)
+                            }
+                        }
                     }
                 }
                 is Eff.GotLogInToken -> {
@@ -232,6 +249,51 @@ class FeatureProvider(
                     }
             )
     }
+
+    private suspend fun handleRequestImageUpdate(
+        eff: DrawingFeature.Eff.RequestImageUpdate,
+        listener: (Msg) -> Unit
+    ) {
+        if (eff.alreadyHasImage) {
+            MainScope().launch {
+                contextHelper.showSheet(
+                    Action("Replace image") {
+                        coroutineScope.launch {
+                            pickSystemImage(listener)
+                        }
+                    },
+                    Action("Clear image") {
+                        listener.invokeDrawingMsg(
+                            DrawingFeature.Msg.LocalUpdateImage(null)
+                        )
+                    },
+                )
+            }
+        } else {
+            pickSystemImage(listener)
+        }
+    }
+
+    private suspend fun pickSystemImage(listener: (Msg) -> Unit) {
+        try {
+            listener.invokeDrawingMsg(
+                DrawingFeature.Msg.LocalUpdateImage(
+                    contextHelper.pickSystemImage()
+                )
+            )
+        } catch (t: Throwable) {
+            println("LocalUpdateImage failed $t")
+        }
+    }
+
+    private fun ((Msg) -> Unit).invokeDrawingMsg(msg: DrawingFeature.Msg) =
+        invoke(
+            Msg.CallMsg(
+                CallFeature.Msg.DrawingMsg(
+                    msg
+                )
+            )
+        )
 
     private val PermissionsHandler.Type.alert: Alert
         get() = when (this) {

@@ -24,7 +24,8 @@ import kotlin.math.hypot
 fun DrawingContent(
     state: State,
     listener: (Msg) -> Unit,
-    enabled: Boolean,
+    enabled: Boolean = true,
+    onSizeChanged: ((Size) -> Unit)? = null,
     modifier: Modifier,
 ) {
     val filter = if (enabled) Modifier.pointerInteropFilter {
@@ -44,7 +45,7 @@ fun DrawingContent(
             .then(filter)
             .fillMaxSize()
             .onSizeChanged {
-                listener(Msg.UpdateLocalViewSize(Size(it.width, it.height)))
+                onSizeChanged?.invoke(Size(it.width, it.height))
             }) {
         state.canvasPaths.forEach {
             PathCanvas(

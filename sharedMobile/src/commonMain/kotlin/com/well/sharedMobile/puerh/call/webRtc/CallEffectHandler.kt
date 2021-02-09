@@ -240,7 +240,7 @@ class CallEffectHandler(
                         is RtcMsg.ImageSharingContainer -> {
                             when (msg.msg) {
                                 is ImgSharingUpdateImage -> {
-                                    RawDataMsgId.Image.wrapByteArray(msg.msg.imageData)
+                                    msg.msg.imageData?.let { RawDataMsgId.Image.wrapByteArray(it) }
                                 }
                                 else -> null
                             }

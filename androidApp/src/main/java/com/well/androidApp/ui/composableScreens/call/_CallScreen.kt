@@ -7,24 +7,24 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.well.androidApp.R
 import com.well.androidApp.ui.composableScreens.call.drawing.DrawingContent
 import com.well.androidApp.ui.composableScreens.call.drawing.DrawingPanel
 import com.well.androidApp.ui.composableScreens.πCustomViews.UserProfileImage
-import com.well.serverModels.Size
+import com.well.androidApp.ui.composableScreens.πExt.visibility
 import com.well.serverModels.User
 import com.well.sharedMobile.ViewConstants.CallScreen.BottomBar.CallButtonOffset
 import com.well.sharedMobile.ViewConstants.CallScreen.CallButtonRadius
 import com.well.sharedMobile.puerh.call.CallFeature.Msg
 import com.well.sharedMobile.puerh.call.CallFeature.State
 import com.well.sharedMobile.puerh.call.CallFeature.State.Status
-import com.well.sharedMobile.puerh.call.drawing.DrawingFeature
-import dev.chrisbanes.accompanist.coil.CoilImage
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg as DrawingMsg
 import dev.chrisbanes.accompanist.insets.navigationBarsPadding
 import dev.chrisbanes.accompanist.insets.statusBarsPadding
 
@@ -38,38 +38,41 @@ fun CallScreen(
 ) {
     val ongoing = state.status == Status.Ongoing
     val callButtonOffset = if (ongoing) (CallButtonRadius - CallButtonOffset).dp else 0.dp
+
     //should be inside ConstraintLayoutScope and before it gets called
     fun Modifier.videoContainerModifier(
         position: State.VideoView.Position,
         reference: ConstrainedLayoutReference,
         bottomTopReference: ConstrainedLayoutReference,
     ) = constrainAs(reference) {
+        when (position) {
+            State.VideoView.Position.FullScreen -> Unit
+            State.VideoView.Position.Minimized -> {
+                bottom.linkTo(bottomTopReference.top)
+                end.linkTo(parent.end)
+            }
+        }
+    }.run {
+        padding(
             when (position) {
-                State.VideoView.Position.FullScreen -> Unit
+                State.VideoView.Position.FullScreen -> {
+                    0.dp
+                }
                 State.VideoView.Position.Minimized -> {
-                    bottom.linkTo(bottomTopReference.top)
-                    end.linkTo(parent.end)
+                    10.dp
                 }
             }
-        }.run {
-            padding(
-                when (position) {
-                    State.VideoView.Position.FullScreen -> {
-                        0.dp
-                    }
-                    State.VideoView.Position.Minimized -> {
-                        10.dp
-                    }
-                }
-            ).offset(y = when (position) {
+        ).offset(
+            y = when (position) {
                 State.VideoView.Position.FullScreen -> {
                     0.dp
                 }
                 State.VideoView.Position.Minimized -> {
                     callButtonOffset
                 }
-            })
-        }
+            }
+        )
+    }
     val (localVideoView, remoteVideoView, profileImage, nameContainer, bottomView) = createRefs()
     Image(
         vectorResource(R.drawable.ic_call_background),
@@ -156,55 +159,59 @@ fun CallScreen(
     }
     DrawingContent(
         state.drawingState,
-        { listener(Msg.DrawingMsg(it)) },
+        listener = listener::invokeDrawingMsg,
         enabled = state.controlSet == State.ControlSet.Drawing,
-        modifier = Modifier.fillMaxSize()
+        onSizeChanged = {
+            listener.invokeDrawingMsg(DrawingMsg.UpdateLocalVideoContainerSize(it))
+        },
+        modifier = Modifier
+            .fillMaxSize()
+            .visibility(state.drawingState.image == null)
     )
-    when (state.controlSet) {
-        State.ControlSet.Call -> {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .constrainAs(bottomView) {
+                bottom.linkTo(parent.bottom)
+            }
+            .fillMaxWidth()
+            .navigationBarsPadding(bottom = !ongoing)
+            .visibility(state.controlSet == State.ControlSet.Call)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(bottom = if (ongoing) 0.dp else 10.dp)
+        ) {
+            Spacer(modifier = Modifier.weight(1f))
+            CallDownButton(
                 modifier = Modifier
-                    .constrainAs(bottomView) {
-                        bottom.linkTo(parent.bottom)
-                    }
-                    .fillMaxWidth()
-                    .navigationBarsPadding(bottom = !ongoing)
+                    .offset(y = callButtonOffset)
             ) {
-                Row(
-                    modifier = Modifier
-                        .padding(bottom = if (ongoing) 0.dp else 10.dp)
-                ) {
-                    Spacer(modifier = Modifier.weight(1f))
-                    CallDownButton(
-                        modifier = Modifier
-                            .offset(y = callButtonOffset)
-                    ) {
-                        listener.invoke(Msg.End)
-                    }
-                    when (state.status) {
-                        Status.Calling -> Unit
-                        Status.Incoming -> {
-                            Spacer(modifier = Modifier.weight(2f))
-                            CallUpButton {
-                                listener.invoke(Msg.Accept)
-                            }
-                        }
-                        Status.Connecting -> Unit
-                        Status.Ongoing -> Unit
-                    }
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-                if (ongoing) {
-                    BottomBar(state, listener)
-                }
+                listener.invoke(Msg.End)
             }
-        }
-        State.ControlSet.Drawing -> {
-            DrawingPanel(state.drawingState) {
-                listener(Msg.DrawingMsg(it))
+            when (state.status) {
+                Status.Calling -> Unit
+                Status.Incoming -> {
+                    Spacer(modifier = Modifier.weight(2f))
+                    CallUpButton {
+                        listener.invoke(Msg.Accept)
+                    }
+                }
+                Status.Connecting -> Unit
+                Status.Ongoing -> Unit
             }
+            Spacer(modifier = Modifier.weight(1f))
         }
+        if (ongoing) {
+            BottomBar(state, listener)
+        }
+    }
+    DrawingPanel(
+        state.drawingState,
+        modifier = Modifier
+            .visibility(state.controlSet == State.ControlSet.Drawing)
+    ) {
+        listener(Msg.DrawingMsg(it))
     }
 }
 
@@ -212,15 +219,14 @@ fun CallScreen(
 fun FullNameText(
     user: User,
     modifier: Modifier,
-) =
-    Text(
-        user.fullName,
-        color = androidx.compose.ui.graphics.Color.White,
-        textAlign = TextAlign.Center,
-        style = MaterialTheme.typography.h4,
-        modifier = modifier
-            .fillMaxWidth(0.9F)
-    )
+) = Text(
+    user.fullName,
+    color = androidx.compose.ui.graphics.Color.White,
+    textAlign = TextAlign.Center,
+    style = MaterialTheme.typography.h4,
+    modifier = modifier
+        .fillMaxWidth(0.9F)
+)
 
 private fun Modifier.videoModifier(
     position: State.VideoView.Position,
@@ -233,3 +239,6 @@ private fun Modifier.videoModifier(
             .aspectRatio(1080F / 1920)
     }
 }
+
+private fun ((Msg) -> Unit).invokeDrawingMsg(msg: DrawingMsg) =
+    invoke(Msg.DrawingMsg(msg))

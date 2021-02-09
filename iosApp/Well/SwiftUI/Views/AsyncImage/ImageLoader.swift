@@ -95,11 +95,9 @@ private final class ImageLoadingFactory {
 
     private func onRequestFinish(_ url: URL) {
         processingRequests[url] = nil
-        print(#function)
     }
 
     private func cache(_ image: UIImage, _ url: URL) {
-        print(#function)
         imageCache[url] = image
     }
 }

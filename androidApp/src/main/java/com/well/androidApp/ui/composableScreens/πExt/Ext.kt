@@ -9,6 +9,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.well.serverModels.Color
 import dev.chrisbanes.accompanist.insets.AmbientWindowInsets
 import dev.chrisbanes.accompanist.insets.toPaddingValues
@@ -83,3 +85,7 @@ fun Modifier.heightPlusBottomSystemBars(height: Dp) =
     composed {
         height(height + AmbientWindowInsets.current.systemBars.toPaddingValues().bottom)
     }
+
+fun Modifier.visibility(visible: Boolean) =
+    alpha(if (visible) 1F else 0F)
+        .zIndex(if (visible) 1F else 0F)

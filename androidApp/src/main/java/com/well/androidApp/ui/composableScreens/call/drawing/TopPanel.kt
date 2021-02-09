@@ -24,33 +24,45 @@ fun TopPanel(
     state: State,
     listener: (Msg) -> Unit,
     modifier: Modifier,
-) = Row(
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.Center,
+) = Box(
     modifier = modifier
         .background(Color.Black)
         .statusBarsPadding()
 ) {
-    UndoRedoButton(
-        R.drawable.ic_undo,
-        state.undoAvailable,
-        onClick = { listener(Msg.Undo) },
-    )
-    UndoRedoButton(
-        R.drawable.ic_redo,
-        state.redoAvailable,
-        onClick = { listener(Msg.Redo) },
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .align(Alignment.Center)
+    ) {
+        Control(
+            R.drawable.ic_undo,
+            enabled = state.undoAvailable,
+            onClick = { listener(Msg.Undo) },
+        )
+        Control(
+            R.drawable.ic_redo,
+            enabled = state.redoAvailable,
+            onClick = { listener(Msg.Redo) },
+        )
+    }
+    Control(
+        R.drawable.ic_sf_photo,
+        onClick = { listener(Msg.RequestImageUpdate) },
+        modifier = Modifier
+            .align(Alignment.CenterEnd)
     )
 }
 
 @Composable
-private fun UndoRedoButton(
+private fun Control(
     vectorResourceId: Int,
-    enabled: Boolean,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     onClick: () -> Unit,
 ) = Box(
     contentAlignment = Alignment.Center,
-    modifier = Modifier
+    modifier = modifier
         .clickable(
             enabled = enabled,
             interactionState = remember { InteractionState() },

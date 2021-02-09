@@ -18,9 +18,10 @@ object DrawingFeature {
             )
 
     data class State(
-        val localViewSize: Size? = null,
-        val remoteViewSize: Size? = null,
-        val videoViewSize: Size? = null,
+        val localImageContainerSize: Size? = null,
+        val remoteImageContainerSize: Size? = null,
+        val localVideoContainerSize: Size? = null,
+        val videoAspectRatio: Size? = null,
         val image: ImageContainer? = null,
         val currentColor: Color = Color.drawingColors.first(),
         val lineWidth: Float = 4F,
@@ -36,11 +37,13 @@ object DrawingFeature {
         val undoAvailable = historyEditingAvailable && pathsHistoryIndex != 0
         val redoAvailable = historyEditingAvailable && pathsHistoryIndex != pathsHistory.lastIndex
         internal val drawingConverter =
-            localViewSize?.let { localViewSize ->
-                image?.size?.let {
-                    Converter(localViewSize, it, Converter.ContentMode.AspectFit)
-                } ?: videoViewSize?.let {
-                    Converter(localViewSize, it, Converter.ContentMode.AspectFill)
+            image?.size?.let { imageSize ->
+                localImageContainerSize?.let { containerSize ->
+                    Converter(containerSize, imageSize, Converter.ContentMode.AspectFit)
+                }
+            } ?: videoAspectRatio?.let { videoAspectRatio ->
+                localVideoContainerSize?.let { containerSize ->
+                    Converter(containerSize, videoAspectRatio, Converter.ContentMode.AspectFill)
                 }
             }
         internal val localPaths = pathsHistory[pathsHistoryIndex] + drawingPaths
@@ -84,26 +87,25 @@ object DrawingFeature {
             object Eraser : Brush()
         }
 
+        fun notifyViewSizeUpdateEff() = localImageContainerSize?.let { Eff.NotifyViewSizeUpdate(it.nativeScaled()   ) }
+
         internal class Converter(
             containerSize: Size,
-            imageSize: Size,
+            aspectRatio: Size,
             contentMode: ContentMode,
         ) {
             private val containerImageSize = when (contentMode) {
                 ContentMode.AspectFit -> {
-                    containerSize.aspectFit(imageSize)
+                    containerSize.aspectFit(aspectRatio)
                 }
                 ContentMode.AspectFill -> {
-                    containerSize.aspectFill(imageSize)
+                    containerSize.aspectFill(aspectRatio)
                 }
             }
             private val imageOffset = Point(
                 x = (containerSize.width - containerImageSize.width) / 2,
                 y = (containerSize.height - containerImageSize.height) / 2,
             )
-            init {
-                println("Converter init $containerImageSize $imageOffset")
-            }
 
             fun normalize(point: Point) =
                 Point(
@@ -126,11 +128,12 @@ object DrawingFeature {
     }
 
     sealed class Msg {
-        data class UpdateLocalViewSize(val size: Size) : Msg()
-        data class UpdateRemoteViewSize(val size: Size) : Msg()
-//        object ImageUpdateCancelled : Msg()
-        data class LocalUpdateImage(val image: ImageContainer) : Msg()
-        data class RemoteUpdateImage(val image: ImageContainer) : Msg()
+        data class UpdateLocalImageContainerSize(val size: Size) : Msg()
+        data class UpdateRemoteImageContainerSize(val size: Size) : Msg()
+        data class UpdateLocalVideoContainerSize(val size: Size) : Msg()
+        object RequestImageUpdate : Msg()
+        data class LocalUpdateImage(val image: ImageContainer?) : Msg()
+        data class RemoteUpdateImage(val image: ImageContainer?) : Msg()
         data class UpdateColor(val color: Color) : Msg()
         data class UpdateLineWidth(val lineWidth: Float) : Msg()
         data class NewDragPoint(val point: Point) : Msg()
@@ -144,8 +147,9 @@ object DrawingFeature {
     }
 
     sealed class Eff {
-//        object RequestImageUpdate : Eff()
+        data class RequestImageUpdate(val alreadyHasImage: Boolean) : Eff()
         data class NotifyViewSizeUpdate(val size: Size) : Eff()
+        object ClearImage : Eff()
         data class UploadImage(
             val image: ImageContainer,
             val remoteViewSize: Size
@@ -176,21 +180,27 @@ object DrawingFeature {
         msg: Msg,
         state: State
     ): Pair<State, Set<Eff>> = run state@{
-        @Suppress("UNREACHABLE_CODE")
         return@reducer state toSetOf (run eff@{
             when (msg) {
-                is Msg.UpdateLocalViewSize -> {
-                    return@reducer state.reduceLocalViewSizeUpdate(msg.size)//.nativeScaled())
+                is Msg.UpdateLocalImageContainerSize -> {
+                    return@reducer state.reduceLocalImageContainerSizeUpdate(msg.size)
                 }
-                is Msg.UpdateRemoteViewSize -> {
-                    return@state state.copy(remoteViewSize = msg.size)
+                is Msg.UpdateRemoteImageContainerSize -> {
+                    return@state state.copy(remoteImageContainerSize = msg.size)
+                }
+                is Msg.UpdateLocalVideoContainerSize -> {
+                    return@state state.copy(localVideoContainerSize = msg.size)
+                }
+                Msg.RequestImageUpdate -> {
+                    return@eff Eff.RequestImageUpdate(alreadyHasImage = state.image != null)
                 }
                 is Msg.LocalUpdateImage -> {
-                    return@reducer state.copy(image = msg.image)
-                        .reduceSendImageUpdate()
+                    return@reducer state.copy(
+                        image = msg.image
+                    ).copyClear(false).reduceSendImageUpdate()
                 }
                 is Msg.RemoteUpdateImage -> {
-                    return@state state.copy(image = msg.image)
+                    return@state state.copy(image = msg.image).copyClear(false)
                 }
                 is Msg.UpdateColor -> {
                     return@state state.copy(currentColor = msg.color)
@@ -229,18 +239,25 @@ object DrawingFeature {
         })
     }.withEmptySet()
 
-    private fun State.reduceLocalViewSizeUpdate(size: Size) =
-        if (localViewSize != size) {
-            copy(localViewSize = size) toSetOf Eff.NotifyViewSizeUpdate(size)
+    private fun State.reduceLocalImageContainerSizeUpdate(size: Size) =
+        if (localImageContainerSize != size) {
+            copy(localImageContainerSize = size).run {
+                this toSetOf notifyViewSizeUpdateEff()
+            }
         } else {
             this.withEmptySet()
         }
 
     private fun State.reduceSendImageUpdate() =
-        this toSetOf if (image != null && remoteViewSize != null) {
-            Eff.UploadImage(image, remoteViewSize)
+        this toSetOf if (image != null) {
+            println("reduceSendImageUpdate $remoteImageContainerSize")
+            if (remoteImageContainerSize != null) {
+                Eff.UploadImage(image, remoteImageContainerSize)
+            } else {
+                null
+            }
         } else {
-            null
+            Eff.ClearImage
         }
 
     private fun State.reduceSendPathsUpdate() =
@@ -278,9 +295,6 @@ object DrawingFeature {
             path.points.any {
                 it.intersects(point, path.lineWidth + 4)
             }
-        }
-        if (filtered.count() != currentPaths.count()) {
-            println("wasd")
         }
         return if (filtered.count() != currentPaths.count()) {
             copy(

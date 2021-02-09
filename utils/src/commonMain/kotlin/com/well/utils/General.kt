@@ -14,6 +14,9 @@ inline fun <A, B, RA, RB> Pair<A, B>.map(
 infix fun <S, E> S.toSetOf(that: E?): Pair<S, Set<E>> =
     Pair(this, if (that != null) setOf(that) else emptySet())
 
+infix fun <S, E> S.toFilterNotNull(that: Set<E?>): Pair<S, Set<E>> =
+    this to that.filterNotNull().toSet()
+
 infix fun <S, E> Pair<S, Set<E>>.plus(that: E?): Pair<S, Set<E>> =
     Pair(first, second + if (that != null) setOf(that) else emptySet())
 
