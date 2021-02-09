@@ -1,0 +1,30 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Push a new beta build to TestFlight"
+  lane :build_upload_and_publish do |options|
+    changelog = check_changelog(options)
+  	update_version
+    build_app(workspace: "Well.xcworkspace", scheme: "WELL")
+    upload_to_testflight(
+      changelog: changelog,
+      distribute_external: true,
+      groups: ["Alpha"]
+    )
+  end
+
+  lane :update_version do
+    update_info_plist(
+  	  plist_path: "Well/Supporting files/Info.plist",
+  	  block: proc do |plist|
+        plist["CFBundleVersion"] = Time.now.strftime("%Y%m%d%H%M")
+      end
+  	)
+  end
+
+  private_lane :check_changelog do |options|
+    changelog = options[:changelog]
+    raise "Missing changelog" unless changelog != nil
+    changelog
+  end
+end
