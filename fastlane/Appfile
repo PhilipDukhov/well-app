@@ -1,0 +1,9 @@
+# Android
+json_key_file("../signing/googleServiceAccount.json")
+package_name("com.well.androidApp")
+
+# iOS
+app_identifier("com.well.app")
+apple_id("philip.dukhov@gmail.com")
+itc_team_id("122660015") 
+team_id("2L8ZA5WNKK")

@@ -68,7 +68,7 @@ subprojects {
             defaultConfig {
                 minSdkVersion(23)
                 targetSdkVersion(30)
-                versionCode = 1
+                versionCode = 102111311
                 versionName = Constants.version
             }
             buildTypes {

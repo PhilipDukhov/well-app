@@ -1,8 +1,0 @@
-app_identifier("com.well.app") # The bundle identifier of your app
-apple_id("philip.dukhov@gmail.com") # Your Apple email address
-
-itc_team_id("122660015") # App Store Connect Team ID
-team_id("2L8ZA5WNKK") # Developer Portal Team ID
-
-# For more information about the Appfile, see:
-#     https://docs.fastlane.tools/advanced/#appfile

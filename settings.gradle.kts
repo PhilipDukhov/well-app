@@ -37,7 +37,7 @@ pluginManagement {
             val gradlePluginVersion: String by settings
             when {
                 pluginId == "com.android" ->
-                    useModule("com.android.tools.build:gradle:${gradlePluginVersion}")
+                    useModule("com.android.tools.build:gradle:$gradlePluginVersion")
             }
         }
     }

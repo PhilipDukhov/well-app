@@ -1,14 +1,8 @@
 package com.well.androidApp.ui
 
 import android.os.Bundle
-import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.compose.ui.platform.setContent
-import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.widget.TextViewCompat
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.textview.MaterialTextView
 import com.well.androidApp.R
 import com.well.androidApp.call.webRtc.WebRtcManager
 import com.well.androidApp.ui.composableScreens.theme.Theme

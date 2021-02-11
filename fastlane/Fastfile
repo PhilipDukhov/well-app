@@ -1,0 +1,67 @@
+lane :deploy do |options|
+  check_changelog(options)
+  options[:timeNow]=Time.now
+  Fastlane::LaneManager.cruise_lane("ios", "deploy", options)
+  Fastlane::LaneManager.cruise_lane("android", "deploy", options)
+end
+
+
+platform :android do
+  lane :deploy do |options|
+    update_version(options)
+    gradle(task: "clean androidApp:bundleRelease")
+    upload_to_play_store(
+      aab: "androidApp/build/outputs/bundle/release/androidApp-release.aab",
+      track: "internal",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  private_lane :update_version do |options|
+    version = options[:timeNow].strftime("%y%m%d%H%M")
+    version[0]=''
+    path = '../build.gradle.kts'
+    re = /versionCode\s=\s+(\d+)/ 
+
+    s = File.read(path)
+    versionCode = s[re, 1].to_i
+    s[re, 1] = version
+
+    f = File.new(path, 'w')
+    f.write(s)
+    f.close
+  end
+end
+
+
+platform :ios do
+  desc "Push a new beta build to TestFlight"
+  lane :deploy do |options|
+    changelog = check_changelog(options)
+    update_version(options)
+    build_app(workspace: "iosApp/Well.xcworkspace", scheme: "WELL")
+    upload_to_testflight(
+      changelog: changelog,
+      distribute_external: true,
+      groups: ["Alpha"]
+    )
+  end
+
+  private_lane :update_version do |options|
+    update_info_plist(
+      xcodeproj: "iosApp/Well.xcodeproj",
+      plist_path: "Well/Supporting files/Info.plist",
+      block: proc do |plist|
+        plist["CFBundleVersion"] = options[:timeNow].strftime("%Y%m%d%H%M")
+      end
+    )
+  end
+end
+
+private_lane :check_changelog do |options|
+  changelog = options[:changelog]
+  raise "Missing changelog" unless changelog != nil
+  changelog
+end

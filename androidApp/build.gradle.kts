@@ -1,4 +1,5 @@
 import io.github.cdimascio.dotenv.dotenv
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 
 plugins {
     id("com.android.application")
@@ -57,7 +58,30 @@ android {
         kotlinCompilerVersion = project.version("kotlin")
         kotlinCompilerExtensionVersion = project.version("compose")
     }
+    signingConfigs {
+        val localProps = gradleLocalProperties(rootDir)
+        val storeFilePath: String by localProps
+        val storePassword: String by localProps
+        val keyAlias: String by localProps
+        create("release") {
+            this.storeFile = file(storeFilePath)
+            this.storePassword = storePassword
+            this.keyAlias = keyAlias
+            this.keyPassword = storePassword
+        }
+    }
     buildTypes {
+        getByName("release") {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
+            signingConfig = signingConfigs.getByName("release")
+        }
+        getByName("debug") {
+            applicationIdSuffix = ".debug"
+        }
         val dotenv = dotenv {
             directory = "${projectDir}/../iosApp/Well/Supporting files/"
             filename = "Shared.xcconfig"
