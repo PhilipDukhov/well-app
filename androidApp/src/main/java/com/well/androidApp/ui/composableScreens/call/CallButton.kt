@@ -11,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.well.androidApp.R
 import com.well.androidApp.ui.composableScreens.theme.Color.Green
@@ -55,5 +55,5 @@ private fun CallButton(
         .background(background)
         .clickable(onClick = onClick)
 ) {
-    Image(vectorResource(drawable), contentDescription = null)
+    Image(painterResource(drawable), contentDescription = null)
 }

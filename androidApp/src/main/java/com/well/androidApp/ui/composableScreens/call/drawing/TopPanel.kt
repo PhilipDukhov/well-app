@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.well.androidApp.R
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg
@@ -75,7 +75,7 @@ private fun Control(
         .size(size.dp)
 ) {
     Image(
-        vectorResource(id = vectorResourceId),
+        painterResource(id = vectorResourceId),
         contentDescription = null,
         modifier = Modifier
             .padding(5.dp)

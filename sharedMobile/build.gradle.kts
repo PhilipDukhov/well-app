@@ -40,7 +40,6 @@ kotlin {
                 ":serverModels",
                 ":utils",
                 "kotlin.serializationJson",
-                "napier",
                 "ktor.client.core",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib"

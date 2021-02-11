@@ -14,14 +14,15 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.AmbientDensity
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.well.androidApp.R
 import com.well.androidApp.ui.composableScreens.πExt.Size
 import com.well.androidApp.ui.composableScreens.πExt.heightPlusBottomSystemBars
+import com.well.androidApp.ui.composableScreens.πExt.toPx
 import com.well.sharedMobile.ViewConstants.CallScreen.BottomBar.CallButtonOffset
 import com.well.sharedMobile.ViewConstants.CallScreen.BottomBar.CallButtonPadding
 import com.well.sharedMobile.ViewConstants.CallScreen.BottomBar.Height
@@ -39,14 +40,13 @@ fun BottomBar(
         .heightPlusBottomSystemBars(Height.dp)
         .clip(
             BottomShape(
-                (CallButtonRadius + CallButtonPadding).dp,
-                CallButtonOffset.dp,
-                AmbientDensity.current
+                radius = (CallButtonRadius + CallButtonPadding).dp,
+                offset = CallButtonOffset.dp,
             )
         )
 ) {
     Image(
-        vectorResource(R.drawable.ic_call_background),
+        painterResource(R.drawable.ic_call_background),
         contentDescription = null,
         contentScale = ContentScale.FillBounds,
         modifier = Modifier
@@ -102,23 +102,21 @@ fun BottomBar(
     } // Row
 } // Box
 
-data class BottomShape(
+private data class BottomShape(
     val radius: Dp,
     val offset: Dp,
-    val density: Density,
 ) : Shape {
-    private fun Dp.toPx() = with(density) { toPx() }
-
     override fun createOutline(
         size: Size,
+        layoutDirection: LayoutDirection,
         density: Density
     ) = Outline.Generic(Path().apply {
         fillType = PathFillType.EvenOdd
         addRect(Rect(Offset.Zero, size))
-        val radius = radius.toPx()
+        val radius = radius.toPx(density)
         addArc(
             Rect(
-                Offset(x = size.width / 2 - radius, y = -radius - offset.toPx()),
+                Offset(x = size.width / 2 - radius, y = -radius - offset.toPx(density)),
                 Size(radius * 2)
             ),
             0F,

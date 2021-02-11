@@ -17,7 +17,7 @@ import androidx.compose.ui.gesture.scrollorientationlocking.Orientation
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.AmbientAnimationClock
-import androidx.compose.ui.platform.AmbientDensity
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.unit.dp
@@ -46,7 +46,7 @@ fun WidthSlider(
     BoxWithConstraints(modifier.sliderSemantics(state.value, position, onValueChange, thumbRadiusRange)) {
         val maxPy = constraints.maxHeight.toFloat()
         val pressPadding = 45.dp / 2 - ThumbRadius
-        val pressPaddingPx = with(AmbientDensity.current) { pressPadding.toPx() }
+        val pressPaddingPx = with(LocalDensity.current) { pressPadding.toPx() }
         position.setBounds(pressPaddingPx, maxPy - pressPaddingPx)
 
         val press = Modifier.pressIndicatorGestureFilter(
@@ -75,7 +75,7 @@ fun WidthSlider(
         )
         val coerced = state.value.coerceIn(position.startValue, position.endValue)
         val fraction = calcFraction(position.startValue, position.endValue, coerced)
-        val heightDp = with(AmbientDensity.current) {
+        val heightDp = with(LocalDensity.current) {
             maxPy.toDp()
         }
         Box(modifier = Modifier.fillMaxSize()) {

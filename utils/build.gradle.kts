@@ -11,7 +11,6 @@ kotlin {
         val commonMain by getting {
             libDependencies(
                 "kotlin.coroutines.core",
-                "napier",
                 "kotlin.stdLib"
             )
         }

@@ -12,7 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.well.androidApp.ui.composableScreens.πExt.backgroundW
@@ -60,7 +60,7 @@ fun ToggleStillButton(
             .borderW(borderWidth, borderColor, shape = CircleShape)
     ) {
         Icon(
-            imageVector = vectorResource(id = vectorResourceId),
+            painter = painterResource(vectorResourceId),
             contentDescription = null,
             tint = tintColor.toColor()
         )

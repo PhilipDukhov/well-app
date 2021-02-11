@@ -3,7 +3,6 @@ package com.well.utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
-import com.github.aakira.napier.Napier
 import com.well.utils.atomic.AtomicRef
 
 abstract class EffectHandler<Eff : Any, Msg : Any>(open val coroutineScope: CoroutineScope) : CloseableContainer() {

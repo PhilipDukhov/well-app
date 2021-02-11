@@ -11,8 +11,6 @@ libDependencies(
     "android.material",
     "android.appCompat",
     "android.constraint",
-    "android.navigationFragment",
-    "android.navigationUi",
     "android.coreCtx",
     "android.activity",
     "android.fragment",
@@ -23,9 +21,6 @@ libDependencies(
     "kotlin.serializationJson",
     "kotlin.coroutines.core",
     "kotlin.reflect",
-    "glide.glide",
-    "glide.compiler",
-    "napier",
     "webrtc",
 
     //tmp
@@ -55,7 +50,6 @@ android {
         useIR = true
     }
     composeOptions {
-        kotlinCompilerVersion = project.version("kotlin")
         kotlinCompilerExtensionVersion = project.version("compose")
     }
     signingConfigs {

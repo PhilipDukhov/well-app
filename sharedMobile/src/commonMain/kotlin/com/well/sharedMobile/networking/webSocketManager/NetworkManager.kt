@@ -1,6 +1,5 @@
 package com.well.sharedMobile.networking.webSocketManager
 
-import com.github.aakira.napier.Napier
 import com.well.serverModels.User
 import com.well.serverModels.WebSocketMessage
 import com.well.serverModels.WebSocketMessage.*
@@ -83,7 +82,7 @@ class NetworkManager(
                         }
                     }
                 } catch (t: Throwable) {
-                    Napier.e("web socket error: $t")
+                    println("web socket error: $t")
                 } finally {
                     _onlineUsers.emit(emptyList())
                     val wasConnected = _state.value == Connected

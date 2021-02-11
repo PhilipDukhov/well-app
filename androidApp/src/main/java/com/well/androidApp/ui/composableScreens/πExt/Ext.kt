@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AmbientTextStyle
+import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,12 +21,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.well.serverModels.Color
 import dev.chrisbanes.accompanist.insets.AmbientWindowInsets
+import dev.chrisbanes.accompanist.insets.LocalWindowInsets
 import dev.chrisbanes.accompanist.insets.toPaddingValues
 
 fun Size(size: Float): Size = Size(size, size)
@@ -61,7 +64,7 @@ fun TextW(
     softWrap: Boolean = true,
     maxLines: Int = Int.MAX_VALUE,
     onTextLayout: (TextLayoutResult) -> Unit = {},
-    style: TextStyle = AmbientTextStyle.current
+    style: TextStyle = LocalTextStyle.current
 ) = Text(
     text = text,
     modifier = modifier,
@@ -83,9 +86,11 @@ fun TextW(
 
 fun Modifier.heightPlusBottomSystemBars(height: Dp) =
     composed {
-        height(height + AmbientWindowInsets.current.systemBars.toPaddingValues().bottom)
+        height(height + LocalWindowInsets.current.systemBars.toPaddingValues().calculateBottomPadding())
     }
 
 fun Modifier.visibility(visible: Boolean) =
     alpha(if (visible) 1F else 0F)
         .zIndex(if (visible) 1F else 0F)
+
+fun Dp.toPx(density: Density) = with(density) { toPx() }

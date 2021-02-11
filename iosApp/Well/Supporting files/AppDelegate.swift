@@ -17,7 +17,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private let featureProvider: FeatureProvider
     
     override init() {
-        NapierProxy().initializeLogging()
         featureProvider = FeatureProvider(
             context: .init(rootController: rootViewController),
             webRtcManagerGenerator: WebRtcManager.init
@@ -44,13 +43,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         #endif
         UITableView.appearance().separatorColor = .clear
         window = initializeWindow()
-        initializeLogging()
-//        let pickerTest = PickerTest(controller: rootViewController)
-//        pickerTest.showPicker()
-//
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-//            pickerTest.showPicker2()
-//        }
         return true
     }
 
@@ -110,12 +102,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         #else
         return false
         #endif
-    }
-
-    // MARK: Privates
-
-    private func initializeLogging() {
-        NapierProxy().initializeLogging()
     }
 }
 

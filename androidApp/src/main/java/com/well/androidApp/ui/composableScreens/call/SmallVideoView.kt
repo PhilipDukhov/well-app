@@ -13,7 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.well.androidApp.R
 import com.well.sharedMobile.puerh.call.CallFeature
@@ -53,7 +53,7 @@ fun VideoViewContainer(
                         ),
                     )
             ) {
-                Image(vectorResource(R.drawable.ic_flip_cam), contentDescription = null)
+                Image(painterResource(R.drawable.ic_flip_cam), contentDescription = null)
             }
         }
     }

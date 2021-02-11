@@ -63,7 +63,7 @@ subprojects {
     plugins.matching { it is AppPlugin || it is LibraryPlugin }.whenPluginAdded {
         configure<BaseExtension> {
             setCompileSdkVersion(30)
-            buildToolsVersion = "30.0.2"
+            buildToolsVersion = "30.0.3"
 
             defaultConfig {
                 minSdkVersion(23)

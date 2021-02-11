@@ -2,11 +2,10 @@ package com.well.androidApp.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.ui.platform.setContent
+import androidx.activity.compose.setContent
 import com.well.androidApp.R
 import com.well.androidApp.call.webRtc.WebRtcManager
 import com.well.androidApp.ui.composableScreens.theme.Theme
-import com.well.sharedMobile.napier.NapierProxy
 import com.well.sharedMobile.puerh.featureProvider.FeatureProvider
 import com.well.sharedMobile.puerh.topLevel.TopLevelFeature
 import com.well.utils.Context
@@ -26,7 +25,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        NapierProxy.initializeLogging()
 
         featureProvider.feature.apply {
             listenState {

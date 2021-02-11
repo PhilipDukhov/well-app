@@ -7,12 +7,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
+import androidx.constraintlayout.compose.ConstrainedLayoutReference
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.well.androidApp.R
 import com.well.androidApp.ui.composableScreens.call.drawing.DrawingContent
 import com.well.androidApp.ui.composableScreens.call.drawing.DrawingPanel
@@ -24,9 +24,9 @@ import com.well.sharedMobile.ViewConstants.CallScreen.CallButtonRadius
 import com.well.sharedMobile.puerh.call.CallFeature.Msg
 import com.well.sharedMobile.puerh.call.CallFeature.State
 import com.well.sharedMobile.puerh.call.CallFeature.State.Status
-import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg as DrawingMsg
 import dev.chrisbanes.accompanist.insets.navigationBarsPadding
 import dev.chrisbanes.accompanist.insets.statusBarsPadding
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg as DrawingMsg
 
 @Composable
 fun CallScreen(
@@ -75,7 +75,7 @@ fun CallScreen(
     }
     val (localVideoView, remoteVideoView, profileImage, nameContainer, bottomView) = createRefs()
     Image(
-        vectorResource(R.drawable.ic_call_background),
+        painterResource(R.drawable.ic_call_background),
         contentDescription = null,
         contentScale = ContentScale.FillBounds,
         modifier = Modifier
