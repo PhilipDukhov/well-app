@@ -7,36 +7,58 @@ import SwiftUI
 import SharedMobile
 
 struct ProfileImage: View {
-    let viewModel: User
+    let image: SharedImage?
     let clipCircle: Bool
 
     init(
-        _ viewModel: User,
+        _ user: User,
         clipCircle: Bool = true
     ) {
-        self.viewModel = viewModel
+        self.init(image: user.profileImage(), clipCircle: clipCircle)
+    }
+    
+    init(
+        image: SharedImage?,
+        clipCircle: Bool = true
+    ) {
+        self.image = image
         self.clipCircle = clipCircle
     }
 
     var body: some View {
-        let shape = PartCircleShape(part: clipCircle ? 1 : 0)
-        if let profileImageURL = viewModel.profileImageURL {
-            AsyncImage(
-                url: profileImageURL,
-                placeholder: {
-                    ActivityIndicator()
-                },
-                image: {
-                    Image(uiImage: $0)
+        let view: AnyView
+        if let image = image {
+            switch image {
+            case let image as UrlImage where image.url.toURL() != nil:
+                view = AnyView(
+                    AsyncImage(
+                        url: image.url.toURL()!,
+                        placeholder: {
+                            ActivityIndicator()
+                        },
+                        image: {
+                            Image(uiImage: $0)
+                                .resizable()
+                                .scaledToFill()
+                        }
+                    )
+                )
+                
+            case let image as ImageContainer:
+                view = AnyView(
+                    Image(uiImage: image.uiImage)
                         .resizable()
                         .scaledToFill()
-                }
-            )
-                .clipShape(shape)
+                )
+                
+            default: fatalError()
+            }
         } else {
-            Rectangle()
-                .foregroundColor(.orange)
-                .clipShape(shape)
+            view = AnyView(
+                Rectangle().foregroundColorKMM(ColorConstants.LightGray)
+            )
         }
+        return view
+            .clipShape(PartCircleShape(part: clipCircle ? 1 : 0))
     }
 }

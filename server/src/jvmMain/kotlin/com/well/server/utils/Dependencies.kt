@@ -2,11 +2,15 @@ package com.well.server.utils
 
 import com.well.server.routing.Call
 import com.well.serverModels.UserId
+import com.well.serverModels.WebSocketMessage
 import com.well.serverModels.createBaseHttpClient
 import io.ktor.application.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.features.*
+import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
+import io.ktor.websocket.*
 import java.util.*
 
 class Dependencies(app: Application) {
@@ -30,4 +34,41 @@ class Dependencies(app: Application) {
     suspend fun getRandomPicture() =
         client.get<HttpStatement>("https://picsum.photos/1000")
             .execute { it.request.url }
+
+    private fun onlineUsers() =
+        database
+            .userQueries
+            .getByIds(connectedUserSessions.keys)
+            .executeAsList()
+            .map { it.toUser() }
+
+    suspend fun notifyUserUpdated(id: UserId) {
+        connectedUserSessions[id]?.let { session ->
+            session.send(
+                WebSocketMessage.CurrentUser(
+                    database
+                        .userQueries
+                        .getById(id)
+                        .executeAsOne()
+                        .toUser()
+                )
+            )
+            notifyOnline()
+        }
+    }
+
+    suspend fun notifyOnline() = connectedUserSessions.run {
+        val users = onlineUsers()
+        forEach { sessionPair ->
+            sessionPair
+                .value
+                .send(
+                    WebSocketMessage.OnlineUsersList(
+                        users.filter { it.id != sessionPair.key }
+                    )
+                )
+        }
+    }
+
+    fun awsProfileImagePath(userId: UserId) = "profilePictures/$userId"
 }

@@ -26,11 +26,11 @@ object CallFeature {
     fun testState(status: State.Status) =
         callingStateAndEffects(
             User(
-                1,
-                "12",
-                "12",
-                User.Type.Test,
-                "https://i.imgur.com/StXm8nf.jpg"
+                id = 1,
+                initialized = true,
+                fullName = "12",
+                profileImageUrl = "https://i.imgur.com/StXm8nf.jpg",
+                type = User.Type.Doctor,
             )
         ).first.run {
             copy(

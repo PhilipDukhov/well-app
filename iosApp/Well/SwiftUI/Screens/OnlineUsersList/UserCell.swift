@@ -12,6 +12,8 @@ import Combine
 
 struct UserCell: View {
     let viewModel: User
+    let onSelect: () -> Void
+    let onCallButtonTap: () -> Void
 
     var body: some View {
         HStack {
@@ -20,9 +22,12 @@ struct UserCell: View {
                 .padding()
             Text(viewModel.fullName)
             Spacer()
-        }
-            .listRowInsets(.zero)
-            .frame(maxWidth: .infinity)
-            .background(Color.white)
+            Image(systemName: "phone.fill")
+                .font(.system(size: 30))
+                .foregroundColorKMM(ColorConstants.Green)
+                .padding()
+                .onTapGesture(perform: onCallButtonTap)
+        }.background(Color.white)
+        .onTapGesture(perform: onSelect)
     }
 }

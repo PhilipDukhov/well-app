@@ -1,5 +1,6 @@
 PODS:
   - GoogleWebRTC (1.1.31999)
+  - Introspect (0.1.2)
   - R.swift (5.3.0):
     - R.swift.Library (~> 5.3.0)
   - R.swift.Library (5.3.0)
@@ -7,6 +8,7 @@ PODS:
 
 DEPENDENCIES:
   - GoogleWebRTC
+  - Introspect
   - R.swift
   - R.swift.Library
   - sharedMobile (from `../sharedMobile`)
@@ -14,6 +16,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - GoogleWebRTC
+    - Introspect
     - R.swift
     - R.swift.Library
 
@@ -23,10 +26,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   GoogleWebRTC: b39a78c4f5cc6b0323415b9233db03a2faa7b0f0
+  Introspect: 85a29d2c5ee4d3d15469ad0b75fd8839f3e72674
   R.swift: 4170fb7161c67be3bc1a847040b79367d69c419f
   R.swift.Library: 0fc583cb55a99e28901299cc451614cad1161962
-  sharedMobile: b7f3bfb4c4a14e0a0f2533d9a7e4315fe76b8c8d
+  sharedMobile: 3cfb01b360b9253b8eebbb18d9e79d26e1790fd2
 
-PODFILE CHECKSUM: 1f492e1cf3087712839471a94cdafaee462d58ae
+PODFILE CHECKSUM: ef87d75ad58de775d1c4a982bf3aebf385f24183
 
 COCOAPODS: 1.10.0

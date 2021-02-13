@@ -10,13 +10,15 @@ struct TextStyle: Equatable {
     let fontSize: CGFloat
 
     static let h4 = Self(fontWeight: .bold, fontSize: 30)
+    static let title2 = Self(fontWeight: .bold, fontSize: 17)
     static let body1 = Self(fontWeight: .regular, fontSize: 18)
+    static let body3 = Self(fontWeight: .regular, fontSize: 16)
 }
 
 extension Text {
     @inline(__always) func style(
         _ style: TextStyle
-    ) -> some View {
+    ) -> Text {
         font(.system(size: style.fontSize))
             .fontWeight(style.fontWeight)
     }

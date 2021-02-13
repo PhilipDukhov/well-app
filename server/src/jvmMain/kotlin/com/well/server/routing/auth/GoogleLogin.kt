@@ -9,6 +9,7 @@ import io.ktor.request.*
 import io.ktor.util.pipeline.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import com.well.serverModels.User
 
 suspend fun PipelineContext<*, ApplicationCall>.googleLogin(dependencies: Dependencies) =
     dependencies.run {
@@ -33,21 +34,13 @@ suspend fun PipelineContext<*, ApplicationCall>.googleLogin(dependencies: Depend
                     .executeAsOneOrNull()
                     ?: run {
                         insertGoogle(
-                            getValue("given_name") as String,
-                            getValue("family_name") as String,
-                            googleId
+                            fullName = "${getValue("given_name") as String} ${getValue("family_name") as String}",
+                            type = User.Type.Doctor,
+                            googleId = googleId
                         )
                         lastInsertId()
                             .executeAsOne()
                             .toInt()
-                    }.also {
-                        database
-                            .userQueries
-                            .updateProfileImage(
-                                getRandomPicture()
-                                    .toString(),
-                                it
-                            )
                     }
             }
         }

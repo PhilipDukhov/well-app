@@ -41,7 +41,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             )
         )
         #endif
-        UITableView.appearance().separatorColor = .clear
+        UITableView.appearance().separatorInset = .zero
         window = initializeWindow()
         return true
     }

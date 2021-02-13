@@ -23,8 +23,7 @@ suspend fun DefaultWebSocketServerSession.mainWebSocket(dependencies: Dependenci
     val currentUserId = call.authUserId
     try {
         dependencies.connectedUserSessions[currentUserId] = this
-        dependencies.notifyOnline()
-        dependencies.notifyUserUpdated(currentUserId, this)
+        dependencies.notifyUserUpdated(currentUserId)
         incoming@ for (frame in incoming) when (frame) {
             is Frame.Text -> Json.decodeFromString<WebSocketMessage>(frame.readText())
                 .let { msg ->
@@ -111,34 +110,3 @@ private suspend fun Dependencies.endCall(
         calls.removeAt(index)
     }
 
-private suspend fun Dependencies.notifyUserUpdated(
-    id: UserId,
-    session: DefaultWebSocketServerSession,
-) = session.send(
-    WebSocketMessage.CurrentUser(
-        database
-            .userQueries
-            .getById(id)
-            .executeAsOne()
-            .toUser()
-    )
-)
-
-private suspend fun Dependencies.notifyOnline() =
-    connectedUserSessions.run {
-        if (isEmpty()) return
-        val users = database
-            .userQueries
-            .getByIds(keys)
-            .executeAsList()
-            .map { it.toUser() }
-        forEach { sessionPair ->
-            sessionPair
-                .value
-                .send(
-                    WebSocketMessage.OnlineUsersList(
-                        users.filter { it.id != sessionPair.key }
-                    )
-                )
-        }
-    }

@@ -1,15 +1,15 @@
 package com.well.server.routing
 
-import com.well.server.routing.auth.*
+import com.well.server.routing.auth.facebookLogin
+import com.well.server.routing.auth.googleLogin
+import com.well.server.routing.auth.testLogin
+import com.well.server.routing.userEditing.updateUser
+import com.well.server.routing.userEditing.uploadUserProfile
 import com.well.server.utils.Dependencies
-import com.well.server.utils.authUserId
 import com.well.server.utils.createPrincipal
-import com.well.server.utils.toUser
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
@@ -18,7 +18,6 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.serialization.*
 import io.ktor.websocket.*
-import kotlinx.serialization.json.JsonElement
 import org.slf4j.event.Level
 import java.time.Duration
 
@@ -63,6 +62,8 @@ fun Application.module() {
         post("/facebookLogin") { facebookLogin(dependencies) }
         post("/googleLogin") { googleLogin(dependencies) }
         post("/testLogin") { testLogin(dependencies) }
+        put("/user") { updateUser(dependencies) }
+        post("/uploadUserProfile") { uploadUserProfile(dependencies) }
 
         authenticate {
             webSocket(path = "/mainWebSocket") {

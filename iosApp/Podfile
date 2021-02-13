@@ -14,7 +14,7 @@ target 'Well' do
   pod 'R.swift.Library'
   pod 'R.swift'
 
-  #  pod 'Colorful'
+  pod "Introspect"
 end
 
 post_install do |installer|

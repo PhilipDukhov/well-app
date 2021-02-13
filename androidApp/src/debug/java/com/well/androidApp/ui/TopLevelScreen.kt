@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import com.well.androidApp.ui.composableScreens.TopLevelScreenImpl
 import com.well.androidApp.ui.test.TestComposeScreen
 import com.well.androidApp.ui.test.testScreen
-import com.well.sharedMobile.puerh.topLevel.TopLevelFeature
+import com.well.sharedMobile.puerh._topLevel.TopLevelFeature
 
 @Composable
 fun TopLevelScreen(

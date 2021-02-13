@@ -15,25 +15,23 @@ struct OnlineUsersScreen: View {
     let listener: (OnlineUsersFeature.Msg) -> Void
 
     var body: some View {
-        ZStack(alignment: .trailing) {
-            Text(state.connectionStatus.stringRepresentation)
-                .frame(maxWidth: .infinity, alignment: .center)
-            state.currentUser.map {
-                ProfileImage($0)
-                    .frame(size: 45)
+        NavigationBar(
+            title: state.connectionStatus.stringRepresentation,
+            rightItem: state.currentUser.map {
+                NavigationBarItem(
+                    view: ProfileImage($0).frame(size: 45),
+                    handler: listener(OnlineUsersFeature.MsgOnCurrentUserSelected())
+                )
             }
-        }.frame(maxWidth: .infinity, alignment: .trailing)
-            .frame(height: 45)
-            .padding()
-        Divider()
+        )
         List {
             ForEach(state.users, id: \.id) { user in
-                UserCell(viewModel: user)
-                    .onTapGesture {
-                        print("tap ok \(Date().timeIntervalSince1970)")
-                        listener(OnlineUsersFeature.MsgOnUserSelected(user: user))
-                    }
+                UserCell(viewModel: user) {
+                    listener(OnlineUsersFeature.MsgOnUserSelected(user: user))
+                } onCallButtonTap: {
+                    listener(OnlineUsersFeature.MsgOnCallUser(user: user))
+                }
             }
-        }
+        }.listSeparatorStyle(.none)
     }
 }

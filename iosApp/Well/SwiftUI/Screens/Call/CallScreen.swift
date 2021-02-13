@@ -91,7 +91,6 @@ struct CallScreen: View {
                 .edgesIgnoringSafeArea(.all)
         } // GeometryReader
             .foregroundColor(.white)
-            .statusBar(style: .lightContent)
             .animation(.default)
     }
 
@@ -114,10 +113,11 @@ struct CallScreen: View {
                 VideoView(context: videoView.context)
                     .frameInfinitable(size: videoView.position.sizeIn(geometry: geometry))
                 if let onFlip = onFlip {
-                    Image(systemName: "camera.rotate.fill")
-                        .font(.system(size: 30))
-                        .frame(size: 45)
-                        .onTapGesture(perform: onFlip)
+                    Control(
+                        Image(systemName: "camera.rotate.fill")
+                            .font(.system(size: 30)),
+                        onTap: onFlip
+                    )
                 }
             }
         }.padding(.all, fullscreen ? 0 : nil)

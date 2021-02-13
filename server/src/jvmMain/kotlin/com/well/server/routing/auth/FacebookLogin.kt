@@ -4,6 +4,7 @@ import com.well.server.utils.Dependencies
 import com.well.server.utils.append
 import com.well.server.utils.getPrimitiveContent
 import com.well.server.utils.uploadToS3FromUrl
+import com.well.serverModels.User
 import com.well.serverModels.UserId
 import io.ktor.application.*
 import io.ktor.client.*
@@ -16,12 +17,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.*
-
-private enum class UserFields(val key: String) {
-    FirstName("first_name"),
-    LastName("last_name"),
-    Picture("picture"),
-}
 
 suspend fun PipelineContext<*, ApplicationCall>.facebookLogin(
     dependencies: Dependencies
@@ -88,9 +83,9 @@ private fun Dependencies.createFacebookUser(
     .userQueries
     .run {
         insertFacebook(
-            userInfo.getPrimitiveContent(UserFields.FirstName),
-            userInfo.getPrimitiveContent(UserFields.LastName),
-            id,
+            fullName = "${userInfo.getPrimitiveContent(UserFields.FirstName)} ${userInfo.getPrimitiveContent(UserFields.LastName)}",
+            type = User.Type.Doctor,
+            facebookId = id,
         )
         lastInsertId()
             .executeAsOne()
@@ -102,10 +97,9 @@ private suspend fun HttpClient.updateUserProfile(
     facebookId: String,
     dependencies: Dependencies,
 ) = dependencies.apply {
-    (getProfilePicture(facebookId)
-        ?.let { url -> uploadToS3FromUrl(url, "profilePictures/$id") }
-        ?: getRandomPicture())
-        .let {
+    getProfilePicture(facebookId)
+        ?.let { uploadToS3FromUrl(it, awsProfileImagePath(id)) }
+        ?.let {
             database
                 .userQueries
                 .updateProfileImage(it.toString(), id)
@@ -114,3 +108,9 @@ private suspend fun HttpClient.updateUserProfile(
 
 private fun JsonObject.getPrimitiveContent(field: UserFields) =
     getValue(field.key).jsonPrimitive.content
+
+private enum class UserFields(val key: String) {
+    FirstName("first_name"),
+    LastName("last_name"),
+    Picture("picture"),
+}

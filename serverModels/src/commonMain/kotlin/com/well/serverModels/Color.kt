@@ -32,13 +32,24 @@ data class Color(
     companion object {
         val MineShaft = Color(0x272727)
         val AzureRadiance = Color(0x037AFF)
-
         val RadicalRed = Color(0xFF2968)
         val Pizazz = Color(0xFF9503)
         val Supernova = Color(0xFFCC03)
         val Atlantis = Color(0x63DA38)
         val DodgerBlue = Color(0x1BADF8)
         val Lavender = Color(0xCC73E1)
+        val HippieBlue = Color(0x6AA2B8)
+        val Silver = Color(0xC4C4C4)
+
+        val LightBlue = Color(0x6AA2B8)
+        val MediumBlue = Color(0x0064A4)
+        val DarkBlue = Color(0x1B3D6D)
+        val Green = Color(0x94C83D)
+        val DarkGrey = Color(0x555759)
+        val BlackP = Color(0x01070E)
+        val LightGray = Color(0xC4C4C4)
+        val Pink = Color(0xF61F46)
+
         val Black = Color(0x000000)
         val White = Color(0xFFFFFF)
         val Transparent = Color(0x000000, 0F)

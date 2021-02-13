@@ -3,8 +3,8 @@ package com.well.androidApp.ui.composableScreens
 import androidx.compose.runtime.Composable
 import com.well.androidApp.ui.composableScreens.call.CallScreen
 import com.well.androidApp.ui.composableScreens.onlineUsers.OnlineUsersScreen
-import com.well.sharedMobile.puerh.topLevel.TopLevelFeature
-import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.State.ScreenState.OnlineUsers
+import com.well.sharedMobile.puerh._topLevel.TopLevelFeature
+import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.State.ScreenState.OnlineUsers
 
 @Composable
 fun TopLevelScreenImpl(

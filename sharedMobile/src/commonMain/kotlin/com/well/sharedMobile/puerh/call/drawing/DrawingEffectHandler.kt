@@ -5,7 +5,7 @@ import com.well.sharedMobile.puerh.call.CallFeature
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Eff
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg
 import com.well.sharedMobile.puerh.call.resizedImage
-import com.well.sharedMobile.puerh.topLevel.TopLevelFeature.Msg as TopLevelMsg
+import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.Msg as TopLevelMsg
 import com.well.sharedMobile.utils.asImageContainer
 import com.well.utils.atomic.AtomicRef
 import com.well.sharedMobile.puerh.call.webRtc.RtcMsg.ImageSharingContainer.Msg as RtcMsg
@@ -29,7 +29,7 @@ class DrawingEffectHandler(
                 )
             }
             is Eff.UploadImage -> {
-                val image = eff.resizedImage()
+                val image = eff.image.resizedImage(eff.remoteViewSize)
                 webRtcSendListener(
                     RtcMsg.UpdateImage(
                         image.asByteArray(0.3F)

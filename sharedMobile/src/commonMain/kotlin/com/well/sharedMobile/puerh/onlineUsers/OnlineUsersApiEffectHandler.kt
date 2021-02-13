@@ -1,8 +1,8 @@
 package com.well.sharedMobile.puerh.onlineUsers
 
-import com.well.sharedMobile.networking.webSocketManager.NetworkManager
+import com.well.sharedMobile.networking.NetworkManager
 import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersFeature.Msg.*
-import com.well.utils.EffectHandler
+import com.well.utils.puerh.EffectHandler
 import com.well.utils.asCloseable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect

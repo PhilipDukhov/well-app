@@ -13,7 +13,11 @@ import com.well.serverModels.Size
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
-actual class ImageContainer(private val content: Content) {
+actual sealed class SharedImage
+
+actual data class UrlImage actual constructor(val url: String) : SharedImage()
+
+actual class ImageContainer(private val content: Content) : SharedImage() {
     sealed class Content {
         data class Bitmap(val bitmap: android.graphics.Bitmap) : Content()
         data class Uri(
@@ -31,32 +35,28 @@ actual class ImageContainer(private val content: Content) {
 
     constructor(bitmap: Bitmap) : this(Content.Bitmap(bitmap))
 
-    actual val size: Size
+    actual val size: Size = when (content) {
+        is Content.Bitmap -> {
+            Size(content.bitmap.width, content.bitmap.height)
+        }
+        is Content.Uri -> {
+            BitmapFactory.Options()
+                .run {
+                    inJustDecodeBounds = true
+                    BitmapFactory.decodeStream(content.inputStream(), null, this)
+                    if (outWidth <= 0 || outHeight <= 0) {
+                        throw IllegalStateException("decodeStream failed")
+                    }
+                    Size(outWidth, outHeight)
+                }
+        }
+    }
 
     val data: Any
         get() = when (content) {
             is Content.Bitmap -> content.bitmap
             is Content.Uri -> content.uri
         }
-
-    init {
-        size = when (content) {
-            is Content.Bitmap -> {
-                Size(content.bitmap.width, content.bitmap.height)
-            }
-            is Content.Uri -> {
-                BitmapFactory.Options()
-                    .run {
-                        inJustDecodeBounds = true
-                        BitmapFactory.decodeStream(content.inputStream(), null, this)
-                        if (outWidth <= 0 || outHeight <= 0) {
-                            throw IllegalStateException("decodeStream failed")
-                        }
-                        Size(outWidth, outHeight)
-                    }
-            }
-        }
-    }
 
     actual fun resized(targetSize: Size): ImageContainer {
         val widthPercentage = targetSize.width / size.width
@@ -114,16 +114,8 @@ actual class ImageContainer(private val content: Content) {
                 content
                     .inputStream()
                     .readBytes()
-                    .asImageContainer().asByteArray(compressionQuality) //applying compressionQuality
+                    .asImageContainer()
+                    .asByteArray(compressionQuality) //applying compressionQuality
             }
         }
 }
-
-actual fun ByteArray.asImageContainer(): ImageContainer =
-    ImageContainer(
-        BitmapFactory.decodeByteArray(
-            this,
-            0,
-            count()
-        )
-    )

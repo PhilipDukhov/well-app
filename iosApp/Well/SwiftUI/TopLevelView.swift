@@ -17,25 +17,32 @@ struct TopLevelView: View {
         content
             .environment(\.defaultMinListRowHeight, 0)
     }
+    #if DEBUG
     static let testing = false
+    #else
+    static let testing = false
+    #endif
 
     @ViewBuilder
     var content: some View {
         if Self.testing {
-            callScreen()
+//            profileScreen().statusBar(style: .lightContent)
         } else {
             switch state.currentScreen {
+            case let state as TopLevelFeature.StateScreenStateMyProfile:
+                MyProfileScreen(state: state.state) {
+                    listener(TopLevelFeature.MsgMyProfileMsg(msg: $0))
+                }.statusBar(style: .lightContent)
+                
             case let state as TopLevelFeature.StateScreenStateOnlineUsers:
                 OnlineUsersScreen(state: state.state) {
                     listener(TopLevelFeature.MsgOnlineUsersMsg(msg: $0))
-                }.onTapGesture {
-                    print("OnlineUsersScreen tap")
-                }
+                }.statusBar(style: .lightContent)
 
             case let state as TopLevelFeature.StateScreenStateCall:
                 CallScreen(state: state.state) {
                     listener(TopLevelFeature.MsgCallMsg(msg: $0))
-                }
+                }.statusBar(style: .lightContent)
 
             default:
                 Text("")
@@ -44,6 +51,7 @@ struct TopLevelView: View {
     }
 
     @State var callState = CallFeature().testState(status: .ongoing)
+//    @State var profileState = MyProfileFeature().testState()
 
     @ViewBuilder
     func callScreen() -> some View {
@@ -51,23 +59,11 @@ struct TopLevelView: View {
             callState = CallFeature().reducer(msg: $0, state: callState).first!
         }
     }
-
-//    @State var sharingState = ImageSharingFeature().testState(
-//        imageContainer: ImageContainer(uiImage: UIImage(named: "testImage")!)
-//    )
-//
+    
 //    @ViewBuilder
-//    func sharingScreen() -> some View {
-//        ImageSharingScreen(state: sharingState) { msg in
-//            let timeInterval: TimeInterval
-//            (sharingState, timeInterval) = timeCounter.count {
-//                ImageSharingFeature().reducerMeasuring(msg: msg, state: sharingState).first!
-//            }
-//            NSLog("\(msg) \(timeInterval) \(sharingState.lastReduceDurations) \(sharingState.canvasPaths.map { $0.points.count ?? 0 }.reduce(0, +))")
-//            let lastSecondCounted = timeCounter.lastSecondCounted
-//            if lastSecondCounted * 60 > 1 {
-//                NSLog("too long", lastSecondCounted)
-//            }
+//    func profileScreen() -> some View {
+//        MyProfileScreen(state: profileState) {
+//            profileState = MyProfileFeature().reducer(msg: $0, state: profileState).first!
 //        }
 //    }
 }

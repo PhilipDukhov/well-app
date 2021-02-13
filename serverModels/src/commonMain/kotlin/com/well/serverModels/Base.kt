@@ -7,7 +7,6 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import kotlinx.serialization.json.Json
 
 fun createBaseHttpClient() = HttpClient {
     install(JsonFeature) {
@@ -32,3 +31,18 @@ fun createBaseHttpClient() = HttpClient {
         }
     }
 }
+
+inline fun <reified T : Enum<T>> T.spacedUppercaseName(): String =
+    name.mapIndexed { i, c ->
+        if (i == 0 || c.isLowerCase() || name[i - 1].isUpperCase()) return@mapIndexed c.toString()
+        " $c"
+    }.joinToString(separator = "")
+
+inline fun <reified T : Enum<T>> spacedUppercaseEnumValues() =
+    enumValues<T>().map { it.spacedUppercaseName() }
+
+inline fun <reified T : Enum<T>> enumValueOfSpacedUppercase(name: String): T =
+    enumValues<T>().first { it.spacedUppercaseName() == name }
+
+expect fun Char.isUpperCase(): Boolean
+expect fun Char.isLowerCase(): Boolean

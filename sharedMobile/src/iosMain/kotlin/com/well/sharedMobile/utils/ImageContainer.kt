@@ -8,8 +8,11 @@ import com.well.sharedMobile.puerh.toNSData
 import platform.CoreGraphics.CGRectMake
 import platform.UIKit.*
 
+actual sealed class SharedImage
+actual data class UrlImage actual constructor(val url: String) : SharedImage()
+
 @Suppress("MemberVisibilityCanBePrivate")
-actual class ImageContainer(val uiImage: UIImage) {
+actual class ImageContainer(val uiImage: UIImage): SharedImage() {
     constructor(path: String) : this(UIImage.imageWithContentsOfFile(path)!!)
 
     actual val size = uiImage.size.toSize()

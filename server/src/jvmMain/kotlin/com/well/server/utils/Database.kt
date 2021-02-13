@@ -1,7 +1,12 @@
 package com.well.server.utils
 
+import com.squareup.sqldelight.ColumnAdapter
+import com.squareup.sqldelight.EnumColumnAdapter
 import com.squareup.sqldelight.sqlite.driver.asJdbcDriver
 import com.well.server.Database
+import com.well.server.Users
+import com.well.serverModels.enumValueOfSpacedUppercase
+import com.well.serverModels.spacedUppercaseName
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.util.DriverDataSource
@@ -52,8 +57,31 @@ fun initialiseDatabase(app: Application): Database {
     val dataSource = HikariDataSource(datasourceConfig)
     val driver = dataSource.asJdbcDriver()
     Database.Schema.create(driver)
-    val db = Database(driver)
+    val db = Database(
+        driver = driver,
+        UsersAdapter = Users.Adapter(
+            typeAdapter = EnumColumnAdapter(),
+            credentialsAdapter = EnumColumnAdapter(),
+            academicRankAdapter = EnumColumnAdapter(),
+            languagesAdapter = SetEnumColumnAdapter(),
+            skillsAdapter = SetEnumColumnAdapter(),
+        )
+    )
     app.environment.monitor.subscribe(ApplicationStopped) { driver.close() }
 
     return db
 }
+
+@Suppress("FunctionName")
+private inline fun <reified T : Enum<T>> SetEnumColumnAdapter() =
+    object : ColumnAdapter<Set<T>, String> {
+        override fun decode(databaseValue: String) =
+            if (databaseValue.isNotEmpty())
+                databaseValue
+                    .split(",")
+                    .mapTo(HashSet()) { enumValueOf<T>(it) }
+            else setOf()
+
+        override fun encode(value: Set<T>) =
+            value.joinToString(separator = ",") { it.name }
+    }

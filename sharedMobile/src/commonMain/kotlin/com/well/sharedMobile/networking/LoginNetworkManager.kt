@@ -1,21 +1,21 @@
 package com.well.sharedMobile.networking
 
+import com.well.serverModels.User
 import io.ktor.client.request.*
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.*
 
 class LoginNetworkManager {
     suspend fun testLogin(uuid: String) =
-        parseToken(
-            createBaseServerClient().post("testLogin") {
-                body = uuid
-            }
-        )
-
-    private fun parseToken(jsonElement: JsonElement): String =
-        jsonElement.jsonObject["token"]!!
-            .jsonPrimitive
-            .content
+        createBaseServerClient().post<JsonElement>("testLogin") {
+            body = uuid
+        }.let { jsonElement ->
+            val token = jsonElement.jsonObject["token"]!!
+                .jsonPrimitive
+                .content
+            val user = Json.decodeFromString<User>(
+                jsonElement.jsonObject["user"]!!.jsonPrimitive.content
+            )
+            token to user
+        }
 }

@@ -1,8 +1,8 @@
 package com.well.sharedMobile.puerh.onlineUsers
 
 import com.well.serverModels.User
-import com.well.sharedMobile.networking.webSocketManager.NetworkManager
-import com.well.sharedMobile.networking.webSocketManager.NetworkManager.Status.Disconnected
+import com.well.sharedMobile.networking.NetworkManager
+import com.well.sharedMobile.networking.NetworkManager.Status.Disconnected
 import com.well.utils.toSetOf
 import com.well.utils.withEmptySet
 
@@ -22,10 +22,13 @@ object OnlineUsersFeature {
         data class OnConnectionStatusChange(val connectionStatus: NetworkManager.Status) : Msg()
         data class OnUsersUpdated(val users: List<User>) : Msg()
         data class OnUserSelected(val user: User) : Msg()
+        data class OnCallUser(val user: User) : Msg()
+        object OnCurrentUserSelected : Msg()
         data class OnCurrentUserUpdated(val user: User?) : Msg()
     }
 
     sealed class Eff {
+        data class SelectedUser(val user: User) : Eff()
         data class CallUser(val user: User) : Eff()
     }
 
@@ -37,10 +40,16 @@ object OnlineUsersFeature {
             state.copy(users = msg.users).withEmptySet()
         }
         is Msg.OnUserSelected -> {
-            state toSetOf Eff.CallUser(msg.user)
+            state toSetOf Eff.SelectedUser(msg.user)
         }
         is Msg.OnCurrentUserUpdated -> {
             state.copy(currentUser = msg.user).withEmptySet()
+        }
+        Msg.OnCurrentUserSelected -> {
+            state toSetOf Eff.SelectedUser(state.currentUser!!)
+        }
+        is Msg.OnCallUser -> {
+            state toSetOf Eff.CallUser(msg.user)
         }
     }
 }

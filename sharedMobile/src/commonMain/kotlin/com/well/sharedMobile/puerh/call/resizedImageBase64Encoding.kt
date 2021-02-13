@@ -4,16 +4,16 @@ import com.well.serverModels.Size
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature
 import com.well.sharedMobile.utils.ImageContainer
 
-fun DrawingFeature.Eff.UploadImage.resizedImage(): ImageContainer {
-    if (image.size.width <= remoteViewSize.width && image.size.height <= remoteViewSize.width) {
-        return image
+fun ImageContainer.resizedImage(maxSize: Size): ImageContainer {
+    if (size.width <= maxSize.width && size.height <= maxSize.width) {
+        return this
     }
-    val widthRatio = remoteViewSize.width / image.size.width
-    val heightRatio = remoteViewSize.height / image.size.height
+    val widthRatio = maxSize.width / size.width
+    val heightRatio = maxSize.height / size.height
     val newSize = if (widthRatio > heightRatio) {
-        Size(image.size.width * heightRatio, image.size.height * heightRatio)
+        Size(size.width * heightRatio, size.height * heightRatio)
     } else {
-        Size(image.size.width * widthRatio, image.size.height * widthRatio)
+        Size(size.width * widthRatio, size.height * widthRatio)
     }
-    return image.resized(newSize)
+    return resized(newSize)
 }

@@ -72,17 +72,17 @@ struct DrawingPanel: View {
     func topPanel() -> some View {
         ZStack(alignment: .center) {
             HStack {
-                Control(systemName: "chevron.left", onTap: back)
+                Control(Image(systemName: "chevron.left"), onTap: back)
                 Spacer()
-                Control(systemName: "photo") {
+                Control(Image(systemName: "photo")) {
                     listener(DrawingFeature.MsgRequestImageUpdate())
                 }
             }
             HStack {
-                Control(systemName: "arrow.uturn.left", enabled: state.undoAvailable) {
+                Control(Image(systemName: "photo"), enabled: state.undoAvailable) {
                     listener(DrawingFeature.MsgUndo())
                 }
-                Control(systemName: "arrow.uturn.right", enabled: state.redoAvailable) {
+                Control(Image(systemName: "photo"), enabled: state.redoAvailable) {
                     listener(DrawingFeature.MsgRedo())
                 }
             }
@@ -116,30 +116,6 @@ struct DrawingPanel: View {
                 .padding([.trailing, .leading, .top], padding)
                 .padding(.bottom, padding + geometry.safeAreaInsets.bottom)
         }
-        .background(ColorConstants.MineShaft.toColor())
-    }
-}
-
-private struct Control: View {
-    let systemName: String
-    let enabled: Bool
-    let onTap: () -> Void
-    
-    init(
-        systemName: String,
-        enabled: Bool = true,
-        onTap: @escaping () -> Void
-    ) {
-        self.systemName = systemName
-        self.enabled = enabled
-        self.onTap = onTap
-    }
-    
-    var body: some View {
-        Image(systemName: systemName)
-            .frame(size: 45)
-            .onTapGesture(perform: onTap)
-            .opacity(enabled ? 1 : 0.4)
-            .allowsHitTesting(enabled)
+        .backgroundColorKMM(ColorConstants.MineShaft)
     }
 }
