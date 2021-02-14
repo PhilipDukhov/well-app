@@ -5,40 +5,46 @@ import com.squareup.sqldelight.EnumColumnAdapter
 import com.squareup.sqldelight.sqlite.driver.asJdbcDriver
 import com.well.server.Database
 import com.well.server.Users
-import com.well.serverModels.enumValueOfSpacedUppercase
-import com.well.serverModels.spacedUppercaseName
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.util.DriverDataSource
 import io.ktor.application.*
 import org.slf4j.LoggerFactory
 import java.io.File
-import java.lang.IllegalStateException
 
 fun initialiseDatabase(app: Application): Database {
     val dbConfig = app.environment.config.config("database")
-    var connectionUrl = dbConfig.property("connection")
+    var connectionUrl: String = dbConfig.property("connection")
         .getString()
+    val userName = dbConfig.property("username").getString()
+    val pass = dbConfig.property("password").getString()
 
-    // If this is a local h2 database, ensure the directories exist
-    if (connectionUrl.startsWith("jdbc:h2:file:")) {
-        val dbFile = File(connectionUrl.removePrefix("jdbc:h2:file:")).absoluteFile
-        if (!dbFile.parentFile.exists()) {
-            dbFile.parentFile.mkdirs()
-        }
-        connectionUrl = "jdbc:h2:file:${dbFile.absolutePath}"
-    }
+    val rdsConnection = dbConfig.property("rdsConnection").getString()
+    val significantPart = rdsConnection.substringAfter("//")
 
     val datasourceConfig = HikariConfig().apply {
-        jdbcUrl = connectionUrl
-        username = dbConfig.propertyOrNull("username")
-            ?.getString()
-        password = dbConfig.propertyOrNull("password")
-            ?.getString()
+        // Ensure that rdsConnection is not empty
+        if (significantPart.split(":", "/").all { it.isNotEmpty() }) {
+            jdbcUrl = "$rdsConnection?user=$userName&password=$pass"
+            driverClassName = "com.mysql.cj.jdbc.Driver"
+        } else {
+            // If this is a local h2 database, ensure the directories exist
+            if (connectionUrl.startsWith("jdbc:h2:file:")) {
+                val dbFile = File(connectionUrl.removePrefix("jdbc:h2:file:")).absoluteFile
+                if (!dbFile.parentFile.exists()) {
+                    dbFile.parentFile.mkdirs()
+                }
+                connectionUrl = "jdbc:h2:file:${dbFile.absolutePath}"
+            }
+            jdbcUrl = connectionUrl
+            username = userName
+            password = pass
+        }
         maximumPoolSize = dbConfig.propertyOrNull("poolSize")
             ?.getString()
             ?.toInt() ?: 10
     }
+
     listOf(
         HikariDataSource::class.java,
         com.zaxxer.hikari.pool.HikariPool::class.java,
@@ -51,7 +57,9 @@ fun initialiseDatabase(app: Application): Database {
             is Class<out Any> -> LoggerFactory.getLogger(it)
             else -> throw IllegalStateException()
         } as ch.qos.logback.classic.Logger)
-            .level = ch.qos.logback.classic.Level.WARN
+            .apply {
+                level = ch.qos.logback.classic.Level.ALL
+            }
     }
 
     val dataSource = HikariDataSource(datasourceConfig)
@@ -68,20 +76,23 @@ fun initialiseDatabase(app: Application): Database {
         )
     )
     app.environment.monitor.subscribe(ApplicationStopped) { driver.close() }
-
     return db
 }
 
 @Suppress("FunctionName")
 private inline fun <reified T : Enum<T>> SetEnumColumnAdapter() =
-    object : ColumnAdapter<Set<T>, String> {
-        override fun decode(databaseValue: String) =
-            if (databaseValue.isNotEmpty())
-                databaseValue
-                    .split(",")
-                    .mapTo(HashSet()) { enumValueOf<T>(it) }
-            else setOf()
+    SetEnumColumnAdapter(enumValues<T>())
 
-        override fun encode(value: Set<T>) =
-            value.joinToString(separator = ",") { it.name }
-    }
+private class SetEnumColumnAdapter<T : Enum<T>>(
+    private val enumValues: Array<out T>
+) : ColumnAdapter<Set<T>, String> {
+    override fun decode(databaseValue: String): Set<T> =
+        if (databaseValue.isNotEmpty())
+            databaseValue
+                .split(",")
+                .mapTo(HashSet()) { value -> enumValues.first { it.name == value } }
+        else setOf()
+
+    override fun encode(value: Set<T>) =
+        value.joinToString(separator = ",") { it.name }
+}

@@ -98,7 +98,7 @@ private suspend fun HttpClient.updateUserProfile(
     dependencies: Dependencies,
 ) = dependencies.apply {
     getProfilePicture(facebookId)
-        ?.let { uploadToS3FromUrl(it, awsProfileImagePath(id)) }
+        ?.let { uploadToS3FromUrl(it, awsProfileImagePath(id, "")) }
         ?.let {
             database
                 .userQueries

@@ -39,4 +39,24 @@ inline fun <reified T : Enum<T>> T.nextEnumValue(): T =
     }
 
 @Suppress("FunctionName")
-fun <T>MutableStateFlow(): MutableStateFlow<T?> = MutableStateFlow(null)
+fun <T> MutableStateFlow(): MutableStateFlow<T?> = MutableStateFlow(null)
+
+suspend fun <R> tryF(
+    block: suspend () -> R,
+    catch: (t: Throwable) -> Unit
+): R? = try {
+    block()
+} catch (t: Throwable) {
+    catch(t)
+    null
+}
+
+suspend fun <R> tryF(
+    vararg catchers: (t: Throwable) -> Boolean,
+    block: suspend () -> R,
+): R = try {
+    block()
+} catch (t: Throwable) {
+    catchers.firstOrNull { it(t) }
+    throw t
+}

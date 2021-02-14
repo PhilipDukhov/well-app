@@ -35,7 +35,7 @@ class Dependencies(app: Application) {
         client.get<HttpStatement>("https://picsum.photos/1000")
             .execute { it.request.url }
 
-    private fun onlineUsers() =
+    private fun onlineUsers() = if (connectedUserSessions.keys.isEmpty()) listOf() else
         database
             .userQueries
             .getByIds(connectedUserSessions.keys)
@@ -70,5 +70,8 @@ class Dependencies(app: Application) {
         }
     }
 
-    fun awsProfileImagePath(userId: UserId) = "profilePictures/$userId"
+    fun awsProfileImagePath(
+        userId: UserId,
+        ext: String
+    ) = "profilePictures/$userId-${UUID.randomUUID()}.$ext"
 }

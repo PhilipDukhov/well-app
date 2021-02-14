@@ -81,16 +81,16 @@ ext.Libs = [
                 websockets   : "io.ktor:ktor-websockets:$versions.ktor",
         ],
         server                     : [
-                sqldelight: [
+                sqldelight        : [
                         runtimeJvm          : "com.squareup.sqldelight:runtime-jvm:$versions.sqldelight",
                         jdbcDriver          : "com.squareup.sqldelight:jdbc-driver:$versions.sqldelight",
                         coroutinesExtensions: "com.squareup.sqldelight:coroutines-extensions:$versions.sqldelight",
                 ],
-                hikariCP  : "com.zaxxer:HikariCP:4.0.1",
-                h2database: "com.h2database:h2:1.4.200",
-                aws       : [
+                aws               : [
                         s3: "com.amazonaws:aws-java-sdk-s3:1.11.952",
-
-                ]
+                ],
+                hikariCP          : "com.zaxxer:HikariCP:4.0.1",
+                h2database        : "com.h2database:h2:1.4.200",
+                mysqlConnectorJava: "mysql:mysql-connector-java:8.0.23",
         ],
 ]

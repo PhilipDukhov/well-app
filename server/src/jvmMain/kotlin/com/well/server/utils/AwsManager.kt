@@ -41,23 +41,22 @@ class AwsManager(
     suspend fun upload(
         data: ByteArray,
         path: String,
-    ): Url =
-        transferManager
-            .upload(
-                PutObjectRequest(
-                    bucketName,
-                    path,
-                    ByteArrayInputStream(data),
-                    ObjectMetadata().apply {
-                        contentLength = data.count()
-                            .toLong()
-                    },
-                ).withCannedAcl(CannedAccessControlList.PublicRead)
-            )
-            .await()
-            .run {
-                Url(s3Client.getResourceUrl(bucketName, key))
-            }
+    ): Url = transferManager
+        .upload(
+            PutObjectRequest(
+                bucketName,
+                path,
+                ByteArrayInputStream(data),
+                ObjectMetadata().apply {
+                    contentLength = data.count()
+                        .toLong()
+                },
+            ).withCannedAcl(CannedAccessControlList.PublicRead)
+        )
+        .await()
+        .run {
+            Url(s3Client.getResourceUrl(bucketName, key))
+        }
 
     private suspend fun Upload.await(): UploadResult = suspendCoroutine { continuation ->
         addProgressListener {

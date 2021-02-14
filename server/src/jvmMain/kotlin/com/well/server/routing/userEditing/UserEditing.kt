@@ -52,65 +52,18 @@ suspend fun PipelineContext<*, ApplicationCall>.updateUser(
 suspend fun PipelineContext<*, ApplicationCall>.uploadUserProfile(
     dependencies: Dependencies
 ) = dependencies.run {
-    val multipart = call.receiveMultipart()
-    multipart.forEachPart { part ->
-        when (part) {
-            is PartData.FormItem -> {
-                println("FormItem ${part.name}")
-                if (part.name == "title") {
-//                    title = part.value
-                }
-            }
-            is PartData.FileItem -> {
-                val ext = File(part.originalFileName!!).extension
-
-                val file = File(
-                    System.getProperty("java.io.tmpdir"),
-                    "upload-${System.currentTimeMillis()}.$ext"
+    call.receiveMultipart()
+        .forEachPart { part ->
+            if (part !is PartData.FileItem) throw IllegalStateException("unexpected part $part")
+            val fileBytes = part.streamProvider().readBytes()
+            val url = awsManager.upload(
+                fileBytes,
+                awsProfileImagePath(
+                    part.name!!.toInt(),
+                    File(part.originalFileName!!).extension
                 )
-                part.streamProvider()
-                    .use { input ->
-                        file.outputStream()
-                            .buffered()
-                            .use { output -> input.copyToSuspend(output) }
-                    }
-
-//                awsManager
-//                    .upload(
-//                        file.readBytes(),
-//                        awsProfileImagePath()
-//                    )
-            }
-            is PartData.BinaryItem -> {
-                println("BinaryItem $part")
-            }
+            )
+            call.respond(url.toString())
+            part.dispose()
         }
-
-        part.dispose()
-    }
-}
-
-suspend fun InputStream.copyToSuspend(
-    out: OutputStream,
-    bufferSize: Int = DEFAULT_BUFFER_SIZE,
-    yieldSize: Int = 4 * 1024 * 1024,
-    dispatcher: CoroutineDispatcher = Dispatchers.IO
-): Long {
-    return withContext(dispatcher) {
-        val buffer = ByteArray(bufferSize)
-        var bytesCopied = 0L
-        var bytesAfterYield = 0L
-        while (true) {
-            val bytes = read(buffer).takeIf { it >= 0 } ?: break
-            println("read $bytes")
-            out.write(buffer, 0, bytes)
-            if (bytesAfterYield >= yieldSize) {
-                yield()
-                bytesAfterYield %= yieldSize
-            }
-            bytesCopied += bytes
-            bytesAfterYield += bytes
-        }
-        return@withContext bytesCopied
-    }
 }
