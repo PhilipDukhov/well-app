@@ -85,7 +85,7 @@ struct MyProfileScreen: View {
                                 .withAlpha(alpha: 0.15)
                         )
                         .foregroundColor(Color.black)
-                        .clipShape(MaxRoundedRectangle())
+                        .clipShape(RoundedRectangle(cornerRadius: .greatestFiniteMagnitude))
                 }
                 
             case let content as UIPreviewField.ContentTextAndIcon:

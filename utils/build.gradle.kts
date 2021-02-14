@@ -21,5 +21,10 @@ kotlin {
                 "android.activity"
             )
         }
+        val iosMain by getting {
+            libDependencies(
+                "ktor.client.engine.ios"
+            )
+        }
     }
 }

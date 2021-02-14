@@ -24,7 +24,7 @@ data class LocalDeviceState(
         val default = LocalDeviceState(
             micEnabled = true,
             cameraEnabled = true,
-            audioSpeakerEnabled = false,
+            audioSpeakerEnabled = true,
             isFrontCamera = true
         )
     }

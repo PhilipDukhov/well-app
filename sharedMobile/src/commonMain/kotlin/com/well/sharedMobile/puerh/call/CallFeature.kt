@@ -239,6 +239,8 @@ object CallFeature {
         is Msg.DrawingMsg -> {
             state.reduceDrawingMsg(msg.msg)
         }
+    }.also {
+        println("$msg $it")
     }
 
     private fun State.reduceInitializeDrawing() = when {

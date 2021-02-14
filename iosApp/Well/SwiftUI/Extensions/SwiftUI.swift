@@ -7,6 +7,12 @@ import SwiftUI
 
 extension View {
     @inline(__always)
+    func visible(_ visible: Bool) -> some View {
+        opacity(visible ? 1 : 0)
+            .zIndex(visible ? 1 : 0)
+    }
+    
+    @inline(__always)
     func fillMaxSize() -> some View {
         frame(maxWidth: .infinity, maxHeight: .infinity)
     }

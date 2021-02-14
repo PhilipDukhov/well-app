@@ -17,6 +17,10 @@ struct OnlineUsersScreen: View {
     var body: some View {
         NavigationBar(
             title: state.connectionStatus.stringRepresentation,
+            leftItem: NavigationBarItem(
+                view: Text("Log out"),
+                handler: listener(OnlineUsersFeature.MsgOnLogout())
+            ),
             rightItem: state.currentUser.map {
                 NavigationBarItem(
                     view: ProfileImage($0).frame(size: 45),

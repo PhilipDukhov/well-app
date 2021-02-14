@@ -26,39 +26,43 @@ struct ProfileImage: View {
     }
 
     var body: some View {
-        let view: AnyView
+        content
+            .clipShape(PartCircleShape(part: clipCircle ? 1 : 0))
+    }
+    
+    private var content: some View {
         if let image = image {
             switch image {
             case let image as UrlImage where image.url.toURL() != nil:
-                view = AnyView(
+                return AnyView(
                     AsyncImage(
                         url: image.url.toURL()!,
                         placeholder: {
                             ActivityIndicator()
                         },
                         image: {
-                            Image(uiImage: $0)
-                                .resizable()
-                                .scaledToFill()
+                            buildImage(uiImage: $0)
                         }
                     )
                 )
                 
             case let image as ImageContainer:
-                view = AnyView(
-                    Image(uiImage: image.uiImage)
-                        .resizable()
-                        .scaledToFill()
+                return AnyView(
+                    buildImage(uiImage: image.uiImage)
                 )
                 
             default: fatalError()
             }
         } else {
-            view = AnyView(
+            return AnyView(
                 Rectangle().foregroundColorKMM(ColorConstants.LightGray)
             )
         }
-        return view
-            .clipShape(PartCircleShape(part: clipCircle ? 1 : 0))
+    }
+    
+    private func buildImage(uiImage: UIImage) -> some View {
+        Image(uiImage: uiImage)
+            .resizable()
+            .scaledToFill()
     }
 }

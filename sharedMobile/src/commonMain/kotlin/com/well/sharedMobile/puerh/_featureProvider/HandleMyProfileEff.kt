@@ -4,6 +4,8 @@ import com.well.sharedMobile.puerh._topLevel.*
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Eff
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
 import com.well.utils.dataStore.authToken
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.Msg as TopLevelMsg
 
 internal suspend fun FeatureProvider.handleMyProfileEff(
@@ -27,7 +29,9 @@ internal suspend fun FeatureProvider.handleMyProfileEff(
             }
         }
         is Eff.OpenUrl -> {
-            contextHelper.openUrl(eff.url)
+            MainScope().launch {
+                contextHelper.openUrl(eff.url)
+            }
         }
         is Eff.UploadUser -> {
             networkManager.value.apply {

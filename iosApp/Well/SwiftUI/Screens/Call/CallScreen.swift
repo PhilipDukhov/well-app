@@ -57,36 +57,31 @@ struct CallScreen: View {
                                 )
                             )
                         }
-                    }.opacity(state.drawingState.image == nil ? 1 : 0)
+                    }.visible(state.drawingState.image == nil)
                 }
-                switch state.controlSet {
-                case .call:
-                    VStack(spacing: 0) {
-                        Spacer()
-                        callButtons()
-                            .offset(y: callButtonsOffset)
-                            .padding(.all, ongoing ? 0 : nil)
-                        CallBottomBar(
-                            state: state,
-                            listener: listener,
-                            geometry: geometry
-                        ).frame(height: bottomBarHeight)
-                        .offset(y: ongoing ? 0 : bottomBarHeight)
-                    } // VStack
-                    .frame(maxWidth: .infinity)
-                    
-                case .drawing:
-                    DrawingPanel(
-                        geometry: geometry,
-                        state: state.drawingState,
-                        listener: {
-                            listener(CallFeature.MsgDrawingMsg(msg: $0))
-                        }, back: {
-                            listener(CallFeature.MsgBack())
-                        })
-                    
-                default: fatalError("unsupported \(state.controlSet)")
-                }
+                VStack(spacing: 0) {
+                    Spacer()
+                    callButtons()
+                        .offset(y: callButtonsOffset)
+                        .padding(.all, ongoing ? 0 : nil)
+                    CallBottomBar(
+                        state: state,
+                        listener: listener,
+                        geometry: geometry
+                    ).frame(height: bottomBarHeight)
+                    .offset(y: ongoing ? 0 : bottomBarHeight)
+                } // VStack
+                .frame(maxWidth: .infinity)
+                .visible(state.controlSet == .call)
+                
+                DrawingPanel(
+                    geometry: geometry,
+                    state: state.drawingState,
+                    listener: {
+                        listener(CallFeature.MsgDrawingMsg(msg: $0))
+                    }, back: {
+                        listener(CallFeature.MsgBack())
+                    }).visible(state.controlSet == .drawing)
             } // ZStack
                 .edgesIgnoringSafeArea(.all)
         } // GeometryReader

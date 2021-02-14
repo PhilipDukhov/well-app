@@ -25,7 +25,7 @@ sealed class UIGroup {
     ): UIGroup() {
         val initiateImageUpdateText = name ?: if (image != null) "Update image" else "Select image"
         val nameWithCredentials = name?.let {
-            "$name${credentials?.let { ", $it" }}"
+            "$name${credentials?.let { ", $it" } ?: ""}"
         }
     }
 }

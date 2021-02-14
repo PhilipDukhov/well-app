@@ -2,24 +2,24 @@ package com.well.sharedMobile.puerh._topLevel
 
 import com.well.utils.platform.Platform
 import com.well.utils.platform.isDebug
+import com.well.utils.userReadableDescription
 
 sealed class Alert(
-    val title: String,
-    val description: String,
+    val title: String = "",
+    val description: String = "",
     val positiveAction: Action? = null,
     val negativeAction: Action? = null,
 ) {
     object CameraOrMicDenied : Alert(
         title = Strings.callDenied,
-        description = "",
         positiveAction = Action.Ok,
         negativeAction = Action.Settings
     )
 
     data class Throwable(val throwable: kotlin.Throwable) :
         Alert(
-            title = Strings.somethingWentWrong,
-            description = if (Platform.isDebug) throwable.toString() else "",
+            title = throwable.userReadableDescription()
+                ?: (if (Platform.isDebug) "${throwable::class} $throwable" else Strings.somethingWentWrong),
             positiveAction = Action.Ok
         )
 

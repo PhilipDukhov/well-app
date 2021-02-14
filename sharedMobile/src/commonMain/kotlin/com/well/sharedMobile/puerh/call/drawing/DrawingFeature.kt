@@ -55,6 +55,7 @@ object DrawingFeature {
                 )
             }
         } ?: listOf()
+        val clearAvailable = canvasPaths.any { it.points.isNotEmpty() }
 
         companion object {
             val drawingColors = Color.drawingColors
@@ -87,7 +88,8 @@ object DrawingFeature {
             object Eraser : Brush()
         }
 
-        fun notifyViewSizeUpdateEff() = localImageContainerSize?.let { Eff.NotifyViewSizeUpdate(it.nativeScaled()   ) }
+        fun notifyViewSizeUpdateEff() =
+            localImageContainerSize?.let { Eff.NotifyViewSizeUpdate(it.nativeScaled()) }
 
         internal class Converter(
             containerSize: Size,
@@ -137,13 +139,16 @@ object DrawingFeature {
         data class UpdateColor(val color: Color) : Msg()
         data class UpdateLineWidth(val lineWidth: Float) : Msg()
         data class NewDragPoint(val point: Point) : Msg()
-        data class SelectBrush(val brush: State.Brush): Msg()
+        data class SelectBrush(val brush: State.Brush) : Msg()
         object EndDrag : Msg()
         data class UpdatePaths(val paths: List<Path>) : Msg()
         object Undo : Msg()
         object Redo : Msg()
         data class LocalClear(val saveHistory: Boolean) : Msg()
-        data class RemoteClear(val saveHistory: Boolean, val date: Date) : Msg()
+        data class RemoteClear(
+            val saveHistory: Boolean,
+            val date: Date
+        ) : Msg()
     }
 
     sealed class Eff {
@@ -159,7 +164,10 @@ object DrawingFeature {
             val paths: List<Path>
         ) : Eff()
 
-        data class NotifyClear(val saveHistory: Boolean, val date: Date): Eff()
+        data class NotifyClear(
+            val saveHistory: Boolean,
+            val date: Date
+        ) : Eff()
     }
 
     fun reducerMeasuring(
@@ -339,16 +347,25 @@ object DrawingFeature {
         return copy(drawingPaths = newDrawingPaths).reduceSendPathsUpdate()
     }
 
-    internal fun State.copyClear(saveHistory: Boolean, date: Date? = null) =
-        copy(
-            drawingPaths = drawingPaths.newer(date),
-            pathsHistory = if (saveHistory)
-                pathsHistory + listOf(pathsHistory.last().newer(date))
-            else
-                listOf(listOf()),
-            pathsHistoryIndex = if (saveHistory) pathsHistory.count() else 0,
-            remotePaths = remotePaths.newer(date),
-        )
+    internal fun State.copyClear(
+        saveHistory: Boolean,
+        date: Date? = null
+    ) = (
+        if (saveHistory) {
+            pathsHistory.last().newer(date).let {
+                if (pathsHistory.last() != it) {
+                    pathsHistory + listOf(it)
+                } else pathsHistory
+            }
+        } else listOf(listOf())
+        ).let { pathsHistory ->
+            copy(
+                drawingPaths = drawingPaths.newer(date),
+                pathsHistory = pathsHistory,
+                pathsHistoryIndex = pathsHistory.lastIndex,
+                remotePaths = remotePaths.newer(date),
+            )
+        }
 
     private fun List<Path>.newer(date: Date?): List<Path> =
         if (date != null) filter { it.date > date } else listOf()

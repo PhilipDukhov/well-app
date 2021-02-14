@@ -93,7 +93,9 @@ fun NamedDomainObjectCollection<KotlinSourceSet>.usePredefinedExperimentalAnnota
                 "kotlin.ExperimentalUnsignedTypes",
                 "kotlin.contracts.ExperimentalContracts",
                 "kotlin.time.ExperimentalTime",
-                "io.ktor.util.InternalAPI"
+                "io.ktor.util.InternalAPI",
+                "io.ktor.util.KtorExperimentalAPI",
+                "io.ktor.utils.io.core.ExperimentalIoApi"
             )).forEach {
             languageSettings.useExperimentalAnnotation(it)
         }

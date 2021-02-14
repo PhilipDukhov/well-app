@@ -26,7 +26,6 @@ internal suspend fun FeatureProvider.handleCallEff(
         is CallFeature.Eff.SyncLocalDeviceState,
         is CallFeature.Eff.NotifyUpdateViewPoint,
         is CallFeature.Eff.NotifyLocalCaptureDimensionsChanged,
-        CallFeature.Eff.ChooseViewPoint,
         CallFeature.Eff.SystemBack,
         -> Unit
         is CallFeature.Eff.Initiate, is CallFeature.Eff.Accept -> {

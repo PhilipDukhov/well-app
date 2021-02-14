@@ -74,15 +74,18 @@ struct DrawingPanel: View {
             HStack {
                 Control(Image(systemName: "chevron.left"), onTap: back)
                 Spacer()
-                Control(Image(systemName: "photo")) {
+                Control(Image(systemName: "trash.circle").font(.system(size: 20)), enabled: state.clearAvailable) {
+                    listener(DrawingFeature.MsgLocalClear(saveHistory: true))
+                }
+                Control(Image(systemName: "photo").font(.system(size: 20))) {
                     listener(DrawingFeature.MsgRequestImageUpdate())
                 }
             }
             HStack {
-                Control(Image(systemName: "photo"), enabled: state.undoAvailable) {
+                Control(Image(systemName: "arrow.uturn.left"), enabled: state.undoAvailable) {
                     listener(DrawingFeature.MsgUndo())
                 }
-                Control(Image(systemName: "photo"), enabled: state.redoAvailable) {
+                Control(Image(systemName: "arrow.uturn.right"), enabled: state.redoAvailable) {
                     listener(DrawingFeature.MsgRedo())
                 }
             }

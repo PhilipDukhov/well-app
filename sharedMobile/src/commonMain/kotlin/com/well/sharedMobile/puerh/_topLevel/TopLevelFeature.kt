@@ -80,6 +80,7 @@ object TopLevelFeature {
 
     sealed class Msg {
         data class MyProfileMsg(val msg: MyProfileFeature.Msg) : Msg()
+        data class LoginMsg(val msg: LoginFeature.Msg) : Msg()
         data class OnlineUsersMsg(val msg: OnlineUsersFeature.Msg) : Msg()
         data class CallMsg(val msg: CallFeature.Msg) : Msg()
 
@@ -101,8 +102,8 @@ object TopLevelFeature {
         data class ShowAlert(val alert: Alert) : Eff()
         object SystemBack : Eff()
         object Initial : Eff()
-//        data class GotLogInToken(val token: String) : Eff()
         data class MyProfileEff(val eff: MyProfileFeature.Eff) : Eff()
+        data class LoginEff(val eff: LoginFeature.Eff) : Eff()
         data class OnlineUsersEff(val eff: OnlineUsersFeature.Eff) : Eff()
         data class CallEff(val eff: CallFeature.Eff) : Eff()
     }
@@ -159,6 +160,9 @@ object TopLevelFeature {
                             },
                         )
                 }
+                is Msg.LoginMsg -> {
+                    return@reducer state.reduceLogin(msg.msg)
+                }
                 is Msg.MyProfileMsg -> {
                     return@reducer state.reduceMyProfile(msg.msg)
                 }
@@ -199,6 +203,20 @@ object TopLevelFeature {
         )
 
     // ScreenState reducers
+
+    private fun State.reduceLogin(
+        msg: LoginFeature.Msg,
+    ): ReducerResult =
+        reduceScreen<
+            ScreenState.Login,
+            LoginFeature.Msg,
+            LoginFeature.State,
+            LoginFeature.Eff
+            >(
+            msg,
+            LoginFeature::reducer,
+            Eff::LoginEff
+        )
 
     private fun State.reduceMyProfile(
         msg: MyProfileFeature.Msg,

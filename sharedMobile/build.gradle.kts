@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
@@ -23,10 +26,11 @@ kotlin {
         ios.deploymentTarget = project.version("iosDeploymentTarget")
     }
     val iosExportModules = listOf(
-        ":serverModels"
+        ":serverModels",
+        ":utils"
     ).map { project(it) }
-    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
-        binaries.withType<org.jetbrains.kotlin.gradle.plugin.mpp.Framework> {
+    targets.withType<KotlinNativeTarget> {
+        binaries.withType<Framework> {
             iosExportModules.forEach {
                 export(it)
             }
@@ -59,6 +63,8 @@ kotlin {
         val androidMain by getting {
             libDependencies(
                 "webrtc",
+                "facebookLogin",
+                "google.playServicesAuth",
                 "android.material",
                 "android.activity",
                 "android.compose.accompanist.coil",

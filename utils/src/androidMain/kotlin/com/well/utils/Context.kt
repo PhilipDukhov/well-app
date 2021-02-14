@@ -1,14 +1,14 @@
 package com.well.utils
 
-import androidx.activity.ComponentActivity
-import androidx.core.content.ContextCompat
-import com.well.utils.permissionsHandler.Context
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import androidx.activity.ComponentActivity
+import androidx.core.content.ContextCompat
+import com.well.utils.permissionsHandler.PermissionHandlerContext
 
 actual class Context(val componentActivity: ComponentActivity) {
-    actual val permissionsHandlerContext: Context
-        get() = Context(componentActivity)
+    actual val permissionsHandlerContext: PermissionHandlerContext
+        get() = PermissionHandlerContext(componentActivity)
 
     actual fun systemBack() {
         MainScope().launch {

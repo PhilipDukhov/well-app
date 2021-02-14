@@ -1,6 +1,6 @@
 package com.well.utils.permissionsHandler
 
-class PermissionsHandler(internal val context: Context) {
+class PermissionsHandler(internal val context: PermissionHandlerContext) {
     enum class Type {
         Camera,
         Microphone,

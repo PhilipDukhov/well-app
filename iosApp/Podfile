@@ -10,6 +10,10 @@ target 'Well' do
   #  pod 'auth', :path => '../auth'
   #
   pod 'GoogleWebRTC'
+  
+  pod 'GoogleSignIn'
+  pod 'FBSDKLoginKit'
+  pod 'FBSDKCoreKit'
 
   pod 'R.swift.Library'
   pod 'R.swift'

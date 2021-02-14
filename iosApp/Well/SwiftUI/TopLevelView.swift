@@ -16,6 +16,7 @@ struct TopLevelView: View {
     var body: some View {
         content
             .environment(\.defaultMinListRowHeight, 0)
+            .statusBar(style: .lightContent)
     }
     #if DEBUG
     static let testing = false
@@ -29,20 +30,25 @@ struct TopLevelView: View {
 //            profileScreen().statusBar(style: .lightContent)
         } else {
             switch state.currentScreen {
+            case let state as TopLevelFeature.StateScreenStateLogin:
+                LoginScreen(state: state.state) {
+                    listener(TopLevelFeature.MsgLoginMsg(msg: $0))
+                }
+            
             case let state as TopLevelFeature.StateScreenStateMyProfile:
                 MyProfileScreen(state: state.state) {
                     listener(TopLevelFeature.MsgMyProfileMsg(msg: $0))
-                }.statusBar(style: .lightContent)
+                }
                 
             case let state as TopLevelFeature.StateScreenStateOnlineUsers:
                 OnlineUsersScreen(state: state.state) {
                     listener(TopLevelFeature.MsgOnlineUsersMsg(msg: $0))
-                }.statusBar(style: .lightContent)
+                }
 
             case let state as TopLevelFeature.StateScreenStateCall:
                 CallScreen(state: state.state) {
                     listener(TopLevelFeature.MsgCallMsg(msg: $0))
-                }.statusBar(style: .lightContent)
+                }
 
             default:
                 Text("")
