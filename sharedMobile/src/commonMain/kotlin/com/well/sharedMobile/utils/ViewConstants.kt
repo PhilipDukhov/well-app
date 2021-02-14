@@ -1,4 +1,4 @@
-package com.well.sharedMobile
+package com.well.sharedMobile.utils
 
 object ViewConstants {
     object CallScreen {

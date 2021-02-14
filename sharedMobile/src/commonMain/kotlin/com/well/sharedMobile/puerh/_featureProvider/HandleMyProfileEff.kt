@@ -36,9 +36,9 @@ internal suspend fun FeatureProvider.handleMyProfileEff(
         is Eff.UploadUser -> {
             networkManager.value.apply {
                 var user = eff.user
-//                if (eff.newProfileImage != null) {
-//                    user = user.copy(profileImageUrl = uploadImage(eff.newProfileImage))
-//                }
+                if (eff.newProfileImage != null) {
+                    user = user.copy(profileImageUrl = uploadImage(user.id, eff.newProfileImage))
+                }
                 listener.invokeMyProfileMsg(
                     Msg.UserUploadFinished(
                         try {

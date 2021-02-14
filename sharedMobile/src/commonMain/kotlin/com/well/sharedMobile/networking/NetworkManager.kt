@@ -1,10 +1,7 @@
 package com.well.sharedMobile.networking
 
-import com.well.serverModels.Size
-import com.well.serverModels.User
-import com.well.serverModels.WebSocketMessage
+import com.well.serverModels.*
 import com.well.serverModels.WebSocketMessage.*
-import com.well.serverModels.createBaseHttpClient
 import com.well.sharedMobile.networking.*
 import com.well.sharedMobile.networking.NetworkManager.Status.*
 import com.well.sharedMobile.networking.webSocketManager.WebSocketClient
@@ -18,6 +15,9 @@ import com.well.utils.Closeable
 import com.well.utils.CloseableContainer
 import com.well.utils.MutableStateFlow
 import com.well.utils.atomic.*
+import com.well.utils.tryF
+import io.ktor.client.call.*
+import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
@@ -30,6 +30,8 @@ import kotlinx.serialization.json.Json
 
 class NetworkManager(
     token: String,
+    startWebSocket: Boolean,
+    private val unauthorizedHandler: () -> Unit,
 ) : CloseableContainer() {
     private val client = WebSocketClient(
         WebSocketClient.Config(
@@ -66,7 +68,7 @@ class NetworkManager(
 
     init {
         GlobalScope.launch {
-            while (true) {
+            while (startWebSocket) {
                 try {
                     _state.value = Connecting
                     println("websocket connecting")
@@ -91,6 +93,7 @@ class NetworkManager(
                         }
                     }
                 } catch (t: Throwable) {
+                    if (handleUnauthorized(t)) break
                     println("web socket error: $t")
                 } finally {
                     _onlineUsers.emit(emptyList())
@@ -102,15 +105,13 @@ class NetworkManager(
                     }
                 }
             }
-        }
-            .let {
-                object : Closeable {
-                    override fun close() {
-                        it.cancel()
-                    }
+        }.let {
+            object : Closeable {
+                override fun close() {
+                    it.cancel()
                 }
             }
-            .apply(::addCloseableChild)
+        }.apply(::addCloseableChild)
     }
 
     fun addListener(listener: WebSocketMessageListener): Closeable =
@@ -130,22 +131,40 @@ class NetworkManager(
         }
     }
 
-    suspend fun uploadImage(image: ImageContainer): String =
-        client.client.post("/uploadUserProfile") {
+    suspend fun uploadImage(
+        userId: UserId,
+        image: ImageContainer
+    ) = tryCheckAuth {
+        client.client.post<String>("/uploadUserProfile") {
             body = MultiPartFormDataContent(
                 formData {
-                    buildPacket {
-                        writeFully(
-                            image
-                                .resizedImage(Size(1920, 1920))
-                                .asByteArray(1F)
-                        )
+                    var data: ByteArray
+                    var quality = 1f
+                    do {
+                        data = image
+                            .resizedImage(Size(2000))
+                            .asByteArray(quality)
+                        quality -= 0.2f
+                        println("quality $quality ${data.count()}")
+                    } while (data.count() > 250_000 && quality >= 0)
+                    appendInput(
+                        userId.toString(),
+                        Headers.build {
+                            append(
+                                HttpHeaders.ContentDisposition,
+                                "filename=uploadUserProfile.jpg"
+                            )
+                        },
+                        data.size.toLong()
+                    ) {
+                        buildPacket { writeFully(data) }
                     }
                 }
             )
         }
+    }
 
-    suspend fun putUser(user: User) {
+    suspend fun putUser(user: User) = tryCheckAuth {
         client.client.put<Unit>("/user") {
             contentType(ContentType.Application.Json)
             body = user
@@ -175,4 +194,51 @@ class NetworkManager(
             throw t
         }
     }
+
+    private suspend fun <R> tryCheckAuth(
+        block: suspend () -> R,
+    ) = tryF(::handleUnauthorized, block = block)
+
+    private fun handleUnauthorized(t: Throwable): Boolean {
+        @Suppress("NAME_SHADOWING")
+        when (val t = t.toResponseException()) {
+            is ClientRequestException -> {
+                if (t.status == HttpStatusCode.Unauthorized) {
+                    unauthorizedHandler()
+                    return true
+                }
+            }
+        }
+        return false
+    }
+}
+
+private fun Throwable.toResponseException() : Throwable =
+    when (this) {
+        is io.ktor.client.features.RedirectResponseException -> RedirectResponseException(this)
+        is io.ktor.client.features.ClientRequestException -> ClientRequestException(this)
+        is io.ktor.client.features.ServerResponseException -> ServerResponseException(this)
+        else -> this
+    }
+
+fun getThrowable(httpStatusCode: Int): Throwable? {
+    val code = HttpStatusCode.fromValue(httpStatusCode)
+    return when (httpStatusCode) {
+        in 300..399 -> RedirectResponseException(code)
+        in 400..499 -> ClientRequestException(code)
+        in 500..599 -> ServerResponseException(code)
+        else -> null
+    }
+}
+
+data class RedirectResponseException(val status: HttpStatusCode): Exception() {
+    constructor(exception: io.ktor.client.features.RedirectResponseException) : this(exception.response.status)
+}
+
+data class ClientRequestException(val status: HttpStatusCode): Exception() {
+    constructor(exception: io.ktor.client.features.ClientRequestException) : this(exception.response.status)
+}
+
+data class ServerResponseException(val status: HttpStatusCode): Exception() {
+    constructor(exception: io.ktor.client.features.ServerResponseException) : this(exception.response.status)
 }

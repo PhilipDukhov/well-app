@@ -123,10 +123,9 @@ internal fun ByteArray.readInt(index: Int = 0): Int =
 internal fun ByteArray.readInts(
     count: Int,
     index: Int = 0,
-): List<Int> =
-    (index until count + index).map {
-        readInt(it * Int.SIZE_BYTES)
-    }
+): List<Int> = (index until count + index).map {
+    readInt(it * Int.SIZE_BYTES)
+}
 
 internal fun Int.toByteArray() = ByteArray(Int.SIZE_BYTES) {
     (this ushr (it * Byte.SIZE_BITS) and 0xff).toByte()

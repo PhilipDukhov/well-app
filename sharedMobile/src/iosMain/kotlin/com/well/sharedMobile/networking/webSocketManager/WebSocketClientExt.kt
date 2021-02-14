@@ -1,7 +1,10 @@
 package com.well.sharedMobile.networking.webSocketManager
 
+import com.well.sharedMobile.networking.RedirectResponseException
+import com.well.sharedMobile.networking.getThrowable
 import com.well.utils.freeze
 import com.well.utils.resumeWithException
+import io.ktor.client.features.ClientRequestException
 import com.well.utils.toThrowable
 import io.ktor.http.*
 import kotlinx.coroutines.*
@@ -72,13 +75,15 @@ private suspend fun WebSocketClient.webSocket(
                 task: NSURLSessionTask,
                 didCompleteWithError: NSError?,
             ) {
-                println("didCompleteWithError $didCompleteWithError")
+                val throwable = (task.response as? NSHTTPURLResponse)
+                    ?.let { getThrowable(it.statusCode.toInt()) }
+                    ?: didCompleteWithError?.toThrowable()
+                    ?: CancellationException("${task.response}")
+                println("didCompleteWithError $throwable $didCompleteWithError")
                 if (continuation.isActive) {
-                    didCompleteWithError
-                        ?.let { continuation.resumeWithException(it) }
-                        ?: continuation.cancel()
+                    continuation.resumeWithException(throwable)
                 } else {
-                    webSocketSession.close(didCompleteWithError?.toThrowable())
+                    webSocketSession.close(throwable)
                 }
             }
         }

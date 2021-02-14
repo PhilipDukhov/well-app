@@ -32,10 +32,9 @@ object MyProfileFeature {
         internal val originalUser: User,
         internal val user: User,
         internal val newImage: ImageContainer? = null,
-        internal val imageCleared: Boolean = false,
         internal val editingStatus: EditingStatus = EditingStatus.Preview,
     ) {
-        internal val image = if (imageCleared) null else (newImage ?: user.profileImage())
+        internal val image = newImage ?: user.profileImage()
         val groups = listOf(
             UIGroup.Header(
                 image = image,
@@ -136,7 +135,7 @@ object MyProfileFeature {
         is Msg.UpdateImage -> {
             state.copy(
                 newImage = msg.imageContainer,
-                imageCleared = msg.imageContainer == null
+                user = state.user.copy(profileImageUrl = null),
             ).withEmptySet()
         }
         Msg.Back -> {

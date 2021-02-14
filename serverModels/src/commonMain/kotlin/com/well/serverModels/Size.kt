@@ -12,6 +12,10 @@ data class Size(
         height: Int
     ) : this(width.toFloat(), height.toFloat())
 
+    constructor(
+        size: Int
+    ) : this(size.toFloat(), size.toFloat())
+
     fun aspectFit(aspectRatio: Size): Size =
         baseAspect(aspectRatio, 1F)
 

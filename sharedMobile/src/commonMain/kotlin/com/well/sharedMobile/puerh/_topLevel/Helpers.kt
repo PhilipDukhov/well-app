@@ -109,16 +109,15 @@ private fun Map<Tab, List<ScreenState>>.modify(
 internal fun <T : ScreenState> Map<Tab, List<ScreenState>>.copy(
     screenPosition: ScreenPosition,
     block: T.() -> T,
-): Map<Tab, List<ScreenState>> =
-    toMutableMap().also { mutableTabs ->
-        mutableTabs[screenPosition.tab] = mutableTabs
-            .getValue(screenPosition.tab)
-            .toMutableList()
-            .also {
-                @Suppress("UNCHECKED_CAST")
-                it[screenPosition.index] = block(it[screenPosition.index] as T)
-            }
-    }
+): Map<Tab, List<ScreenState>> = toMutableMap().also { mutableTabs ->
+    mutableTabs[screenPosition.tab] = mutableTabs
+        .getValue(screenPosition.tab)
+        .toMutableList()
+        .also {
+            @Suppress("UNCHECKED_CAST")
+            it[screenPosition.index] = block(it[screenPosition.index] as T)
+        }
+}
 
 @Suppress("UNCHECKED_CAST")
 internal inline fun <reified SS : ScreenState, M, S, E> State.reduceScreen(
