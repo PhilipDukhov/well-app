@@ -14,7 +14,7 @@ struct CallBottomBar: View {
 
     var body: some View {
         ZStack(alignment: .top) {
-            gradientBackground()
+            GradientKMM(gradient: .callBottomBar)
             HStack {
                 printUI("state update", state.localDeviceState)
                 ToggleStillButton(
@@ -78,20 +78,6 @@ struct CallBottomBar: View {
                 )
             )
             .clipped()
-    }
-
-    @ViewBuilder
-    private func gradientBackground() -> some View {
-        Color(hex: 0x1B3D6D).overlay(LinearGradient(
-            gradient: Gradient(
-                stops: [
-                    .init(color: Color(hex: 0x1BFFE4, alpha: 0.8), location: 0.109375),
-                    .init(color: Color(hex: 0x1B3D6D), location: 0.984375),
-                ]
-            ),
-            startPoint: .init(x: 0.762648, y: -0.376472566),
-            endPoint: .init(x: 0.812653333, y: 0.803190265)
-        ).opacity(0.5))
     }
 
     private let radius = ViewConstants.CallScreen().CallButtonRadius.toCGFloat()

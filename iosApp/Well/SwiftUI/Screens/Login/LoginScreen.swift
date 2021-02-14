@@ -27,7 +27,7 @@ struct LoginScreen: View {
                         Spacer()
                     }
                 }.padding(.bottom)
-            }.fillMaxSize().background(background.edgesIgnoringSafeArea(.all))
+            }.fillMaxSize().background(GradientKMM(gradient: .main).edgesIgnoringSafeArea(.all))
             if state.processing {
                 Color.black
                     .opacity(0.3)
@@ -36,19 +36,6 @@ struct LoginScreen: View {
                 ActivityIndicator(style: .large, color: .white)
             }
         }
-    }
-    
-    var background: some View {
-        Color(hex: 0x1B3D6D).overlay(LinearGradient(
-            gradient: Gradient(
-                stops: [
-                    .init(color: Color(hex: 0x1BFFE4, alpha: 0.8), location: 0.109375),
-                    .init(color: Color(hex: 0x1B3D6D), location: 0.984375),
-                ]
-            ),
-            startPoint: .init(x: 0.762648, y: -0.376472566),
-            endPoint: .init(x: 0.812653333, y: 0.803190265)
-        ).opacity(0.5))
     }
 }
 

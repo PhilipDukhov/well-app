@@ -18,12 +18,13 @@ final class GoogleProvider: CredentialProvider {
     override init(context: Context) {
         self.context = context
         super.init(context: context)
-        signIn.clientID = ""
+        signIn.clientID = Bundle.main.object(forInfoDictionaryKey: "googleClientId") as? String
     }
     
     override func getCredentials(completionHandler: @escaping (AuthCredential?, Error?) -> Void) {
         signIn.presentingViewController = context.rootController
         signInDelegate = Delegate(completionHandler: completionHandler)
+        signIn.delegate = signInDelegate
         signIn.signIn()
     }
     

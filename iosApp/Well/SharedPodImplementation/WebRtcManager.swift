@@ -119,6 +119,7 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
             configuration: RTCDataChannelConfiguration()
         )!
         super.init()
+        rtcAudioSession.add(self)
         localDataChannel.delegate = self
         peerConnection.delegate = self
 
@@ -127,6 +128,7 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
     }
 
     func close() {
+        rtcAudioSession.remove(self)
         peerConnection.close()
         [localAudioTrack,
          localVideoTrack,
@@ -320,6 +322,8 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
                 debugPrint("Couldn't force audio to speaker: \(error)")
             }
             self.rtcAudioSession.unlockForConfiguration()
+            
+            print(#function, enabled)
         }
     }
 }
@@ -429,6 +433,17 @@ extension WebRtcManager {
             .forEach {
                 $0.isEnabled = isEnabled
             }
+    }
+}
+
+extension WebRtcManager: RTCAudioSessionDelegate {
+    func audioSession(_ audioSession: RTCAudioSession, didSetActive active: Bool) {
+        if active {
+            setSpeakerEnabled(enabled: deviceState.audioSpeakerEnabled)
+        }
+    }
+    
+    func audioSessionDidChangeRoute(_ session: RTCAudioSession, reason: AVAudioSession.RouteChangeReason, previousRoute: AVAudioSessionRouteDescription) {
     }
 }
 

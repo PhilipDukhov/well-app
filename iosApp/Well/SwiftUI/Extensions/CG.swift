@@ -33,4 +33,8 @@ extension Float {
     func toCGFloat() -> CGFloat {
         CGFloat(self)
     }
+    
+    func toDouble() -> Double {
+        Double(self)
+    }
 }

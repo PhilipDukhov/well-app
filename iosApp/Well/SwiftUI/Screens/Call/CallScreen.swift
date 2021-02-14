@@ -19,7 +19,7 @@ struct CallScreen: View {
                 let ongoing = state.status == .ongoing
                 let bottomBarHeight = CallBottomBar.baseHeight + geometry.safeAreaInsets.bottom
                 let callButtonsOffset = ongoing ? callButtonRadius - callButtonOffset : CallBottomBar.baseHeight
-                backgroundView()
+                GradientKMM(gradient: .callBackground)
                     .fillMaxSize()
                 callInfoView(geometry)
                 let minimizedBottomPadding = callButtonRadius * 2 + (ongoing ? bottomBarHeight - callButtonsOffset : geometry.safeAreaInsets.bottom)
@@ -179,21 +179,6 @@ struct CallScreen: View {
             }
             Spacer()
         }
-    }
-
-    @ViewBuilder
-    func backgroundView() -> some View {
-        Color(hex: 0x1B3D6D)
-            .overlay(LinearGradient(
-                gradient: Gradient(
-                    stops: [
-                        .init(color: Color(hex: 0x1B3D6D), location: 0.109375),
-                        .init(color: Color(hex: 0x1BFFE4, alpha: 0.8), location: 0.984375),
-                    ]
-                ),
-                startPoint: .init(x: 1.1673333333333331, y: 0.8408037094281299),
-                endPoint: .init(x: -0.3820000000000002, y: -0.3898763523956724)
-            ).opacity(0.5))
     }
 
     private let callButtonOffset = ViewConstants.CallScreenBottomBar().CallButtonOffset.toCGFloat()

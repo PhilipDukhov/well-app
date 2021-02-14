@@ -28,14 +28,23 @@ struct OnlineUsersScreen: View {
                 )
             }
         )
-        List {
-            ForEach(state.users, id: \.id) { user in
-                UserCell(viewModel: user) {
-                    listener(OnlineUsersFeature.MsgOnUserSelected(user: user))
-                } onCallButtonTap: {
-                    listener(OnlineUsersFeature.MsgOnCallUser(user: user))
+        ScrollView {
+            if !state.users.isEmpty {
+                Divider()
+            }
+            Rectangle()
+                .foregroundColor(.white)
+                .frame(height: 1)
+            VStack {
+                ForEach(state.users, id: \.id) { user in
+                    UserCell(viewModel: user) {
+                        listener(OnlineUsersFeature.MsgOnUserSelected(user: user))
+                    } onCallButtonTap: {
+                        listener(OnlineUsersFeature.MsgOnCallUser(user: user))
+                    }
+                    Divider()
                 }
             }
-        }.listSeparatorStyle(.none)
+        }
     }
 }

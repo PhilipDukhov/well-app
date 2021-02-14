@@ -33,7 +33,11 @@ struct SelectionScreen: View {
                             .foregroundColorKMM(ColorConstants.Green)
                     }
                 }.padding().fillMaxWidth().listRowInsets(.zero)
-                .backgroundColorKMM(selected ? ColorConstants.Green.withAlpha(alpha: 0.1) : ColorConstants.White)
+                .background(
+                    Color.white.overlay(
+                        (selected ? ColorConstants.Green.withAlpha(alpha: 0.1) : ColorConstants.White).toColor()
+                    )
+                )
                 .onTapGesture {
                     if multipleSelection {
                         if selected {

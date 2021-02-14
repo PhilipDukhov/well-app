@@ -82,25 +82,11 @@ struct NavigationBar<LV: View, RV: View>: View {
         .frame(minHeight: controlMinSize)
         .fillMaxWidth()
         .foregroundColor(.white)
-        .background(background().edgesIgnoringSafeArea(.top))
+        .background(GradientKMM(gradient: .main).edgesIgnoringSafeArea(.top))
     }
     
     private func control<V>(item: NavigationBarItem<V>)-> some View {
         Control(item.view, enabled: item.enabled, onTap: item.handler ?? {})
-    }
-    
-    private func background()-> some View {
-        Color(hex: 0x94C83D)
-            .overlay(LinearGradient(
-                gradient: Gradient(
-                    stops: [
-                        .init(color: Color(hex: 0x1BFFE4, alpha: 0.8), location: 0),
-                        .init(color: Color(hex: 0x009BFF), location: 0.67),
-                    ]
-                ),
-                startPoint: .init(x: -0.06529792748787552, y: -1.2714285714285714),
-                endPoint: .init(x: 0.7983896522706257, y: 0.9809522356305803)
-            ).opacity(0.5))
     }
 }
 
@@ -126,20 +112,6 @@ struct ModeledNavigationBar<Msg: AnyObject>: View {
                 )
             }
         )
-    }
-    
-    private func background()-> some View {
-        Color(hex: 0x94C83D)
-            .overlay(LinearGradient(
-                gradient: Gradient(
-                    stops: [
-                        .init(color: Color(hex: 0x1BFFE4, alpha: 0.8), location: 0),
-                        .init(color: Color(hex: 0x009BFF), location: 0.67),
-                    ]
-                ),
-                startPoint: .init(x: -0.06529792748787552, y: -1.2714285714285714),
-                endPoint: .init(x: 0.7983896522706257, y: 0.9809522356305803)
-            ).opacity(0.5))
     }
 }
 

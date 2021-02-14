@@ -55,9 +55,9 @@
 		D555C20025D8102300B4755F /* LoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D555C1FF25D8102300B4755F /* LoginScreen.swift */; };
 		D555C20325D8959F00B4755F /* FacebookProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D555C20225D8959F00B4755F /* FacebookProvider.swift */; };
 		D555C21125D89A1000B4755F /* GoogleProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D555C21025D89A1000B4755F /* GoogleProvider.swift */; };
+		D555C21F25D9013A00B4755F /* GradientKMM.swift in Sources */ = {isa = PBXBuildFile; fileRef = D555C21E25D9013A00B4755F /* GradientKMM.swift */; };
 		D556940A25D471F10012EA36 /* MyProfileScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D556940925D471F10012EA36 /* MyProfileScreen.swift */; };
 		D556940F25D473880012EA36 /* HVStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = D556940E25D473880012EA36 /* HVStack.swift */; };
-		D556941125D482BA0012EA36 /* SharedMobileSwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D556941025D482BA0012EA36 /* SharedMobileSwiftUI.swift */; };
 		D5916FBC2598ABA900B549FF /* TopLevelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5916FBB2598ABA900B549FF /* TopLevelView.swift */; };
 		D5916FC22598BE4F00B549FF /* WebRtcManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5916FC12598BE4F00B549FF /* WebRtcManager.swift */; };
 		D5BFD5492524670900A94FCC /* ActionButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5482524670900A94FCC /* ActionButton.swift */; };
@@ -89,7 +89,7 @@
 
 /* Begin PBXFileReference section */
 		4E7FAE8E4CF4ED7E47F58204 /* Pods-Well-WellUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Well-WellUITests.release.xcconfig"; path = "Target Support Files/Pods-Well-WellUITests/Pods-Well-WellUITests.release.xcconfig"; sourceTree = "<group>"; };
-		7555FF7B242A565900829871 /* Well.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Well.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7555FF7B242A565900829871 /* Well_D.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Well_D.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF7E242A565900829871 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7555FF84242A565B00829871 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7555FF8A242A565B00829871 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -144,9 +144,9 @@
 		D555C1FF25D8102300B4755F /* LoginScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginScreen.swift; sourceTree = "<group>"; };
 		D555C20225D8959F00B4755F /* FacebookProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FacebookProvider.swift; sourceTree = "<group>"; };
 		D555C21025D89A1000B4755F /* GoogleProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleProvider.swift; sourceTree = "<group>"; };
+		D555C21E25D9013A00B4755F /* GradientKMM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientKMM.swift; sourceTree = "<group>"; };
 		D556940925D471F10012EA36 /* MyProfileScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyProfileScreen.swift; sourceTree = "<group>"; };
 		D556940E25D473880012EA36 /* HVStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HVStack.swift; sourceTree = "<group>"; };
-		D556941025D482BA0012EA36 /* SharedMobileSwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedMobileSwiftUI.swift; sourceTree = "<group>"; };
 		D5916FBB2598ABA900B549FF /* TopLevelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopLevelView.swift; sourceTree = "<group>"; };
 		D5916FC12598BE4F00B549FF /* WebRtcManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRtcManager.swift; sourceTree = "<group>"; };
 		D5BFD5482524670900A94FCC /* ActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionButton.swift; sourceTree = "<group>"; };
@@ -190,7 +190,7 @@
 		7555FF7C242A565900829871 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				7555FF7B242A565900829871 /* Well.app */,
+				7555FF7B242A565900829871 /* Well_D.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -266,6 +266,7 @@
 		96351C93F9714F97732BC54E /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				D555C21E25D9013A00B4755F /* GradientKMM.swift */,
 				D556940E25D473880012EA36 /* HVStack.swift */,
 				D555C1E825D64A9100B4755F /* Control.swift */,
 				D555C1EA25D6556200B4755F /* NavigationBar.swift */,
@@ -287,7 +288,6 @@
 				96351CD0B22C50D7CAD4A377 /* ServerModels.swift */,
 				96351127BC8BE95E698F3507 /* Kotlin.swift */,
 				963511698F818E07DF430267 /* ImageSharing.swift */,
-				D556941025D482BA0012EA36 /* SharedMobileSwiftUI.swift */,
 			);
 			path = SharedMobile;
 			sourceTree = "<group>";
@@ -482,7 +482,7 @@
 			);
 			name = Well;
 			productName = well;
-			productReference = 7555FF7B242A565900829871 /* Well.app */;
+			productReference = 7555FF7B242A565900829871 /* Well_D.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -645,6 +645,7 @@
 				D519AFAD25245E0F00C24377 /* LoginSocialsView.swift in Sources */,
 				D555C1E925D64A9100B4755F /* Control.swift in Sources */,
 				D5BFD5772524938400A94FCC /* Action.swift in Sources */,
+				D555C21F25D9013A00B4755F /* GradientKMM.swift in Sources */,
 				D5BFD5BD2524BFE000A94FCC /* Property.swift in Sources */,
 				D5BFD5C62525845500A94FCC /* EnumDictionary.swift in Sources */,
 				D555C1EB25D6556200B4755F /* NavigationBar.swift in Sources */,
@@ -674,7 +675,6 @@
 				9635195234B4E1480134DB7D /* ProfileImage.swift in Sources */,
 				96351E67C2A29F3BA1D45620 /* EdgeInsets.swift in Sources */,
 				963513B49BE9408B776FFC81 /* Color.swift in Sources */,
-				D556941125D482BA0012EA36 /* SharedMobileSwiftUI.swift in Sources */,
 				D555C1F125D70AB700B4755F /* Foundation.swift in Sources */,
 				963511B36F9FBE2F47BE5029 /* HostingController.swift in Sources */,
 				D555C1DF25D63A5500B4755F /* SelectionScreen.swift in Sources */,
@@ -851,8 +851,9 @@
 					"@executable_path/Frameworks",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D AUTH_DISABLED";
-				PRODUCT_BUNDLE_IDENTIFIER = com.well.app;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.well.app.debug;
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "$(TARGET_NAME)_D";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -879,6 +880,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D AUTH_DISABLED";
 				PRODUCT_BUNDLE_IDENTIFIER = com.well.app;
+				PRODUCT_MODULE_NAME = "$(TARGET_NAME)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;

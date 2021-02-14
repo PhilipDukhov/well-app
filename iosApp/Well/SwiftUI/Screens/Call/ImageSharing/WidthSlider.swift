@@ -26,7 +26,7 @@ struct WidthSlider: View {
         self.range = range
         self.color = color
         self.valueChanged = valueChanged
-        padding = (controlMinSize - sliderWidth / 2) / 2
+        padding = (44 - sliderWidth / 2) / 2
     }
 
     private func valueToOffset(_ value: Float, _ height: CGFloat) -> CGFloat {

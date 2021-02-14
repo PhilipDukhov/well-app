@@ -22,6 +22,10 @@ extension Point {
     func toCGPoint() -> CGPoint {
         CGPoint(x: CGFloat(x), y: CGFloat(y))
     }
+    
+    func toUnitPoint() -> UnitPoint {
+        UnitPoint(x: CGFloat(x), y: CGFloat(y))
+    }
 }
 
 extension Size {
@@ -42,6 +46,18 @@ extension CGSize {
             width: Float(width * UIScreen.main.nativeScale),
             height_: Float(height * UIScreen.main.nativeScale)
         )
+    }
+}
+
+extension View {
+    @inline(__always)
+    func foregroundColorKMM(_ color: SharedMobile.Color) -> some View {
+        foregroundColor(color.toColor())
+    }
+    
+    @inline(__always)
+    func backgroundColorKMM(_ color: SharedMobile.Color) -> some View {
+        background(color.toColor())
     }
 }
 

@@ -30,6 +30,9 @@ struct TopLevelView: View {
 //            profileScreen().statusBar(style: .lightContent)
         } else {
             switch state.currentScreen {
+            case is TopLevelFeature.StateScreenStateLaunchScreen:
+                EmptyView()
+            
             case let state as TopLevelFeature.StateScreenStateLogin:
                 LoginScreen(state: state.state) {
                     listener(TopLevelFeature.MsgLoginMsg(msg: $0))
@@ -51,7 +54,7 @@ struct TopLevelView: View {
                 }
 
             default:
-                Text("")
+                EmptyView()
             }
         }
     }
