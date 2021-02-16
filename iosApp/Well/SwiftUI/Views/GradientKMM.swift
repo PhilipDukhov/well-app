@@ -9,7 +9,7 @@
 import SwiftUI
 import SharedMobile
 
-struct GradientKMM: View {
+struct GradientView: View {
     let gradient: SharedMobile.Gradient
     
     var body: some View {

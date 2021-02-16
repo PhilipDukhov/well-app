@@ -14,7 +14,7 @@ struct CallBottomBar: View {
 
     var body: some View {
         ZStack(alignment: .top) {
-            GradientKMM(gradient: .callBottomBar)
+            GradientView(gradient: .callBottomBar)
             HStack {
                 printUI("state update", state.localDeviceState)
                 ToggleStillButton(

@@ -30,7 +30,7 @@ struct HVStack<Item, ItemView>: View where ItemView: View {
         }.frame(height: totalHeight)
     }
     
-    private func generateContent(in g: GeometryProxy) -> some View {
+    private func generateContent(in geometry: GeometryProxy) -> some View {
         var offset = CGPoint.zero
         
         return ZStack(alignment: .topLeading) {
@@ -38,7 +38,7 @@ struct HVStack<Item, ItemView>: View where ItemView: View {
                 let isLast = i == items.indices.last
                 itemBuilder(item)
                     .alignmentGuide(.leading) { d in
-                        if abs(offset.x - d.width) > g.size.width {
+                        if abs(offset.x - d.width) > geometry.size.width {
                             offset.x = 0
                             offset.y -= d.height + spacing
                         }

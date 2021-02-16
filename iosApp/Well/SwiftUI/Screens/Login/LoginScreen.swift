@@ -27,13 +27,9 @@ struct LoginScreen: View {
                         Spacer()
                     }
                 }.padding(.bottom)
-            }.fillMaxSize().background(GradientKMM(gradient: .main).edgesIgnoringSafeArea(.all))
+            }.fillMaxSize().background(GradientView(gradient: .main).edgesIgnoringSafeArea(.all))
             if state.processing {
-                Color.black
-                    .opacity(0.3)
-                    .fillMaxSize()
-                    .edgesIgnoringSafeArea(.all)
-                ActivityIndicator(style: .large, color: .white)
+                InactiveOverlay()
             }
         }
     }

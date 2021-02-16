@@ -216,7 +216,7 @@ object CallFeature {
             state.reduceInitializeDrawing()
         }
         is Msg.LocalUpdateViewPoint -> {
-            state.reduceUpdateViewPoint(msg.viewPoint)
+            state.reduceLocalUpdateViewPoint(msg.viewPoint)
         }
         is Msg.RemoteUpdateViewPoint -> {
             state.reduceRemoteUpdateViewPoint(msg.viewPoint)
@@ -253,10 +253,10 @@ object CallFeature {
             this toSetOf Eff.ChooseViewPoint
         }
         localCameraEnabled -> {
-            this.reduceUpdateViewPoint(State.ViewPoint.Mine)
+            this.reduceLocalUpdateViewPoint(State.ViewPoint.Mine)
         }
         remoteCameraEnabled -> {
-            this.reduceUpdateViewPoint(State.ViewPoint.Partner)
+            this.reduceLocalUpdateViewPoint(State.ViewPoint.Partner)
         }
         else -> {
             throw IllegalStateException("reduceInitializeDrawing $this")
@@ -271,9 +271,9 @@ object CallFeature {
             else
                 controlSetSaved,
             drawingState = drawingStateCopyViewPoint(viewPoint),
-        ).reduceUpdateLocalDeviceState()
+        ).reduceUpdateLocalDeviceState(forceMineBackCamera = true)
 
-    private fun State.reduceUpdateViewPoint(viewPoint: State.ViewPoint) =
+    private fun State.reduceLocalUpdateViewPoint(viewPoint: State.ViewPoint) =
         copy(
             viewPoint = viewPoint,
             controlSetSaved = if (viewPoint == State.ViewPoint.Both)
@@ -281,7 +281,9 @@ object CallFeature {
             else
                 State.ControlSet.Drawing,
             drawingState = drawingStateCopyViewPoint(viewPoint),
-        ).reduceUpdateLocalDeviceState() plus Eff.NotifyUpdateViewPoint(viewPoint)
+        ).reduceUpdateLocalDeviceState(forceMineBackCamera = true) plus Eff.NotifyUpdateViewPoint(
+            viewPoint
+        )
 
     private fun State.drawingStateCopyViewPoint(viewPoint: State.ViewPoint) =
         drawingState.copy(
@@ -309,16 +311,22 @@ object CallFeature {
     ) = reduceUpdateLocalDeviceState(modifier(localDeviceState))
 
     private fun State.reduceUpdateLocalDeviceState(
-        state: LocalDeviceState = localDeviceState
-    ) = copy(localDeviceState = state) to setOf(
+        state: LocalDeviceState = localDeviceState,
+        forceMineBackCamera: Boolean = false,
+    ): Pair<State, Set<Eff>> {
+        val newState = if (forceMineBackCamera && viewPoint == State.ViewPoint.Mine)
+            state.copy(isFrontCamera = false)
+        else
+            state
+        return copy(localDeviceState = newState) to setOf(
             Eff.SyncLocalDeviceState(
-                when (viewPoint) {
-                    State.ViewPoint.Both,
-                    State.ViewPoint.Mine -> state
-                    State.ViewPoint.Partner -> state.copy(cameraEnabled = false)
-                }
+                if (viewPoint == State.ViewPoint.Partner)
+                    newState.copy(cameraEnabled = false)
+                else
+                    newState
             ),
-            if (state != localDeviceState) Eff.NotifyDeviceStateChanged(RemoteDeviceState(state)) else null,
+            if (newState != localDeviceState) Eff.NotifyDeviceStateChanged(RemoteDeviceState(newState)) else null,
         ).filterNotNull().toSet()
+    }
 }
 

@@ -19,7 +19,7 @@ struct CallScreen: View {
                 let ongoing = state.status == .ongoing
                 let bottomBarHeight = CallBottomBar.baseHeight + geometry.safeAreaInsets.bottom
                 let callButtonsOffset = ongoing ? callButtonRadius - callButtonOffset : CallBottomBar.baseHeight
-                GradientKMM(gradient: .callBackground)
+                GradientView(gradient: .callBackground)
                     .fillMaxSize()
                 callInfoView(geometry)
                 let minimizedBottomPadding = callButtonRadius * 2 + (ongoing ? bottomBarHeight - callButtonsOffset : geometry.safeAreaInsets.bottom)
@@ -28,7 +28,7 @@ struct CallScreen: View {
                         videoView: $0,
                         geometry: geometry,
                         minimizedBottomPadding: minimizedBottomPadding,
-                        onFlip: nil
+                        showFlipButton: false
                     )
                 }
                 state.localVideoView.map {
@@ -36,9 +36,8 @@ struct CallScreen: View {
                         videoView: $0,
                         geometry: geometry,
                         minimizedBottomPadding: minimizedBottomPadding,
-                        onFlip: $0.position == .minimized ? {
-                            listener(state.localDeviceState.toggleIsFrontCameraMsg())
-                        } : nil)
+                        showFlipButton: $0.position == .minimized
+                    )
                 }
                 GeometryReader { geometry in
                     ZStack(alignment: .leading) {
@@ -61,6 +60,22 @@ struct CallScreen: View {
                 }
                 VStack(spacing: 0) {
                     Spacer()
+                    if state.viewPoint == .mine {
+                        HStack {
+                            Spacer()
+                            flipCameraButton()
+                                .padding()
+                                .offset(
+                                    x: (controlMinSize -
+                                        CallFeature
+                                        .StateVideoViewPosition
+                                        .minimized
+                                        .sizeIn(geometry: geometry)
+                                        .width) / 2,
+                                    y: callButtonsOffset
+                                )
+                        }
+                    }
                     callButtons()
                         .offset(y: callButtonsOffset)
                         .padding(.all, ongoing ? 0 : nil)
@@ -94,7 +109,7 @@ struct CallScreen: View {
         videoView: CallFeature.StateVideoView,
         geometry: GeometryProxy,
         minimizedBottomPadding: CGFloat,
-        onFlip: (() -> Void)?
+        showFlipButton: Bool
     ) -> some View {
         let fullscreen = videoView.position == .fullscreen
         HStack {
@@ -107,12 +122,8 @@ struct CallScreen: View {
                 }
                 VideoView(context: videoView.context)
                     .frameInfinitable(size: videoView.position.sizeIn(geometry: geometry))
-                if let onFlip = onFlip {
-                    Control(
-                        Image(systemName: "camera.rotate.fill")
-                            .font(.system(size: 30)),
-                        onTap: onFlip
-                    )
+                if showFlipButton {
+                    flipCameraButton()
                 }
             }
         }.padding(.all, fullscreen ? 0 : nil)
@@ -178,6 +189,16 @@ struct CallScreen: View {
                 EmptyView()
             }
             Spacer()
+        }
+    }
+    
+    @ViewBuilder
+    private func flipCameraButton() -> some View {
+        Control(
+            Image(systemName: "camera.rotate.fill")
+                .font(.system(size: 30))
+        ){
+            listener(state.localDeviceState.toggleIsFrontCameraMsg())
         }
     }
 

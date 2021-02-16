@@ -43,7 +43,7 @@ final private class Delegate: NSObject, GIDSignInDelegate {
     
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
         signIn.delegate = nil
-        if let token = user.authentication.idToken {
+        if let token = user?.authentication?.idToken {
             completionHandler(AuthCredential.GoogleCredential(token: token), nil)
             return
         }

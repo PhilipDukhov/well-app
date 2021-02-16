@@ -32,21 +32,18 @@ struct DrawingContent: View {
         .gesture(
             DragGesture()
                 .onChanged { value in
-                    if enabled {
-                        listener(
-                            DrawingFeature.MsgNewDragPoint(
-                                point: value.location.toPoint()
-                            )
+                    listener(
+                        DrawingFeature.MsgNewDragPoint(
+                            point: value.location.toPoint()
                         )
-                    }
+                    )
                 }
                 .onEnded { _ in
-                    if enabled {
-                        listener(
-                            DrawingFeature.MsgEndDrag()
-                        )
-                    }
+                    listener(
+                        DrawingFeature.MsgEndDrag()
+                    )
                 }
         )
+        .allowsHitTesting(enabled)
     }
 }

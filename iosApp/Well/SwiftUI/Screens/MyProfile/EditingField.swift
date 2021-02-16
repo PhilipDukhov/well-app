@@ -14,7 +14,6 @@ struct EditingField: View {
     let listener: (MyProfileFeature.Msg) -> Void
     
     private let isTextField: Bool
-    private let image: UIImage?
     private let content: UIEditingFieldContent
     
     @State private var text: String
@@ -25,7 +24,6 @@ struct EditingField: View {
         self.field = field
         self.listener = listener
         content = field.content as! UIEditingFieldContent
-        image = content.icon?.image
         switch content {
         case is UIEditingFieldContent.List:
             isTextField = false
@@ -38,8 +36,8 @@ struct EditingField: View {
     
     var body: some View {
         HStack {
-            image.map {
-                Image(uiImage: $0)
+            if let image = content.icon?.image {
+                Image(uiImage: image)
                     .foregroundColorKMM(ColorConstants.Silver)
             }
             if isTextField {

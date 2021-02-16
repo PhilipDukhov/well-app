@@ -10,6 +10,36 @@ import com.well.utils.toSetOf
 import com.well.utils.withEmptySet
 
 object MyProfileFeature {
+    fun testState() = initialState(
+        true,
+        User(
+            id = 1,
+            initialized = true,
+            fullName = "12",
+            profileImageUrl = "https://i.imgur.com/StXm8nf.jpg",
+            type = User.Type.Doctor,
+            phoneNumber = "+380686042511",
+            location = "LA, California",
+            timeZoneIdentifier = "America/Los_Angeles",
+            credentials = User.Credentials.MD,
+            academicRank = User.AcademicRank.AssistantProfessor,
+            languages = setOf(User.Language.English, User.Language.Russian),
+            bio = "LA, CaliforniaLA, CaliforniaLA, CaliforniaLA, CaliforniaLA, California",
+            education = "LA, CaliforniaLA, California",
+            professionalMemberships = "CaliforniaLA, California",
+            publications = "CaliforniaLA, California",
+            twitter = "CaliforniaLA, California",
+            doximity = "CaliforniaLA, California",
+            skills = setOf(
+                User.Skill.BPH,
+                User.Skill.RoboticCystectomy,
+                User.Skill.RoboticUrinaryReconstructionSurgery,
+                User.Skill.RoboticRenalSurgery,
+                User.Skill.PercutaneousNephrolithotomy
+            ),
+        )
+    ).copy(editingStatus = EditingStatus.Editing)
+
     fun initialState(
         isCurrent: Boolean,
         user: User,
@@ -32,7 +62,7 @@ object MyProfileFeature {
         internal val originalUser: User,
         internal val user: User,
         internal val newImage: ImageContainer? = null,
-        internal val editingStatus: EditingStatus = EditingStatus.Preview,
+        val editingStatus: EditingStatus = EditingStatus.Preview,
     ) {
         internal val image = newImage ?: user.profileImage()
         val groups = listOf(
@@ -90,7 +120,7 @@ object MyProfileFeature {
             },
         )
 
-        internal enum class EditingStatus {
+        enum class EditingStatus {
             Preview,
             Editing,
             Uploading,
@@ -112,7 +142,11 @@ object MyProfileFeature {
     sealed class Eff {
         data class InitiateImageUpdate(val hasImage: Boolean) : Eff()
         data class OpenUrl(val url: String) : Eff()
-        data class UploadUser(val user: User, val newProfileImage: ImageContainer?) : Eff()
+        data class UploadUser(
+            val user: User,
+            val newProfileImage: ImageContainer?
+        ) : Eff()
+
         data class ShowError(val throwable: Throwable) : Eff()
         data class Call(val user: User) : Eff()
         object Pop : Eff()

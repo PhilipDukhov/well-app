@@ -34,7 +34,7 @@ final class FacebookProvider: CredentialProvider {
                 if let token = token {
                     completionHandler(AuthCredential.FacebookCredential(token: token.tokenString), nil)
                 } else {
-                    completionHandler(nil, KotlinIllegalStateException().toNSError())
+                    completionHandler(nil, NSError(description: "Facebook login succeed but token is empty")/*KotlinIllegalStateException().toNSError()*/)
                 }
             case .failed(let error):
                 completionHandler(nil, error)

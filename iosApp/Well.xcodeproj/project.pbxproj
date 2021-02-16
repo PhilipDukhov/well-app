@@ -46,6 +46,7 @@
 		D516257A2504BD9C009E103B /* neris_thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = D51625772504BD9C009E103B /* neris_thin.otf */; };
 		D519AF87252441DC00C24377 /* LoginInitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D519AF86252441DC00C24377 /* LoginInitialViewController.swift */; };
 		D519AFAD25245E0F00C24377 /* LoginSocialsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D519AFAC25245E0F00C24377 /* LoginSocialsView.swift */; };
+		D5378B1B25DA211C00561199 /* InactiveOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5378B1A25DA211C00561199 /* InactiveOverlay.swift */; };
 		D555C1DD25D5C88B00B4755F /* List+Separator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D555C1DC25D5C88B00B4755F /* List+Separator.swift */; };
 		D555C1DF25D63A5500B4755F /* SelectionScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D555C1DE25D63A5500B4755F /* SelectionScreen.swift */; };
 		D555C1E125D63A6F00B4755F /* EditingField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D555C1E025D63A6F00B4755F /* EditingField.swift */; };
@@ -135,6 +136,7 @@
 		D519AF86252441DC00C24377 /* LoginInitialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginInitialViewController.swift; sourceTree = "<group>"; };
 		D519AFAC25245E0F00C24377 /* LoginSocialsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSocialsView.swift; sourceTree = "<group>"; };
 		D524FE22256D5BAA00090D40 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
+		D5378B1A25DA211C00561199 /* InactiveOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InactiveOverlay.swift; sourceTree = "<group>"; };
 		D555C1DC25D5C88B00B4755F /* List+Separator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "List+Separator.swift"; sourceTree = "<group>"; };
 		D555C1DE25D63A5500B4755F /* SelectionScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionScreen.swift; sourceTree = "<group>"; };
 		D555C1E025D63A6F00B4755F /* EditingField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditingField.swift; sourceTree = "<group>"; };
@@ -267,6 +269,7 @@
 			isa = PBXGroup;
 			children = (
 				D555C21E25D9013A00B4755F /* GradientKMM.swift */,
+				D5378B1A25DA211C00561199 /* InactiveOverlay.swift */,
 				D556940E25D473880012EA36 /* HVStack.swift */,
 				D555C1E825D64A9100B4755F /* Control.swift */,
 				D555C1EA25D6556200B4755F /* NavigationBar.swift */,
@@ -634,6 +637,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5378B1B25DA211C00561199 /* InactiveOverlay.swift in Sources */,
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
 				D508765A259A64B4000A57E5 /* CallScreen.swift in Sources */,
 				D5916FBC2598ABA900B549FF /* TopLevelView.swift in Sources */,

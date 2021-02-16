@@ -1,6 +1,8 @@
 package com.well.sharedMobile.puerh.call.webRtc
 
 import com.well.sharedMobile.puerh.call.CallFeature
+import com.well.utils.platform.Platform
+import com.well.utils.platform.isDebug
 
 data class LocalDeviceState(
     val micEnabled: Boolean,
@@ -24,7 +26,7 @@ data class LocalDeviceState(
         val default = LocalDeviceState(
             micEnabled = true,
             cameraEnabled = true,
-            audioSpeakerEnabled = true,
+            audioSpeakerEnabled = !Platform.isDebug,
             isFrontCamera = true
         )
     }

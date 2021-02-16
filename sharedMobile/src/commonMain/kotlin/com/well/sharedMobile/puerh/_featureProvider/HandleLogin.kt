@@ -28,7 +28,7 @@ fun FeatureProvider.socialNetworkLogin(
                 gotUser(user, token, listener)
             }
         } catch (t: Throwable) {
-            if (t !is CancellationException) {
+            if (t !is CancellationException && t.message?.contains("com.well.utils error 0") != true) {
                 coroutineScope.launch {
                     listener.invoke(TopLevelFeature.Msg.ShowAlert(Alert.Throwable(t)))
                 }

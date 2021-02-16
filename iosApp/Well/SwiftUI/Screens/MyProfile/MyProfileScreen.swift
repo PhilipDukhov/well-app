@@ -17,51 +17,63 @@ struct MyProfileScreen: View {
     let listener: (MyProfileFeature.Msg) -> Void
     
     var body: some View {
-        state.navigationBarModel.map {
-            ModeledNavigationBar(model: $0, listener: listener)
-        }
-        ZStack(alignment: .topLeading) {
-            ScrollView {
-                ForEach(state.groups, id: \.self) { group in
-                    let paddingNeeded = !(group is UIGroup.Header) || state.isCurrent
-                    VStack(alignment: .leading, spacing: 0) {
-                        switch group {
-                        case let header as UIGroup.Header:
-                            if state.isCurrent {
-                                currentUserHeader(header)
-                            } else {
-                                otherUserHeader(header)
-                            }
-                            
-                        case let group as UIGroup.Preview:
-                            ForEach(group.fields, id: \.self) { field in
-                                HStack {
-                                    previewField(field)
-                                    Spacer()
-                                }
-                                .padding(.vertical, 5)
-                            }
-                            
-                        case let group as UIGroup.Editing:
-                            Text(group.title)
-                                .foregroundColorKMM(ColorConstants.HippieBlue)
-                            ForEach(group.fields, id: \.self) { field in
-                                EditingField(field, listener: listener)
-                                    .fillMaxWidth()
-                                    .padding(.vertical, 7)
-                            }
-                            
-                        default: fatalError()
-                        }
-                    }.padding(.horizontal, paddingNeeded ? nil : 0)
-                    Divider()
+        VStack(spacing: 0) {
+            state.navigationBarModel.map {
+                ModeledNavigationBar(model: $0, listener: listener)
+            }
+            ZStack(alignment: .topLeading) {
+                ScrollView {
+                    ForEach(state.groups, id: \.self) { group in
+                        groupView(group)
+                        Divider()
+                    }
+                } // ScrollView
+                .edgesIgnoringSafeArea(state.isCurrent ? Edge.Set() : .top)
+                if !state.isCurrent {
+                    Control(Image(systemName: "chevron.left").foregroundColor(.white)) {
+                        listener(MyProfileFeature.MsgBack())
+                    }
                 }
-            } // ScrollView
-            .edgesIgnoringSafeArea(state.isCurrent ? Edge.Set() : .top)
-            Control(Image(systemName: "chevron.left").foregroundColor(.white)) {
-                listener(MyProfileFeature.MsgBack())
+                if state.editingStatus == .uploading {
+                    InactiveOverlay(showActivityIndicator: false)
+                }
             }
         }
+    }
+    
+    @ViewBuilder
+    private func groupView(_ group: UIGroup) -> some View {
+        let paddingNeeded = !(group is UIGroup.Header) || state.isCurrent
+        VStack(alignment: .leading, spacing: 0) {
+            switch group {
+            case let header as UIGroup.Header:
+                if state.isCurrent {
+                    currentUserHeader(header)
+                } else {
+                    otherUserHeader(header)
+                }
+                
+            case let group as UIGroup.Preview:
+                ForEach(group.fields, id: \.self) { field in
+                    HStack {
+                        previewField(field)
+                        Spacer()
+                    }
+                    .padding(.vertical, 5)
+                }
+                
+            case let group as UIGroup.Editing:
+                Text(group.title)
+                    .foregroundColorKMM(ColorConstants.HippieBlue)
+                ForEach(group.fields, id: \.self) { field in
+                    EditingField(field, listener: listener)
+                        .fillMaxWidth()
+                        .padding(.vertical, 7)
+                }
+                
+            default: fatalError()
+            }
+        }.padding(.horizontal, paddingNeeded ? nil : 0)
     }
     
     private func previewField(_ field: UIPreviewField) -> some View {
@@ -95,7 +107,7 @@ struct MyProfileScreen: View {
                     Text(content.text)
                         .onTapGesture {
                             if content.isLink {
-                                
+                                listener(MyProfileFeature.MsgOpenUrl(url: content.text))
                             }
                         }
                 }
@@ -124,7 +136,13 @@ struct MyProfileScreen: View {
                             listener(MyProfileFeature.MsgInitiateImageUpdate())
                         }
                 }
-                header.accountType.map { $0.view() }
+                header.accountType.map { accountType in
+                    HStack {
+                        accountType.imageView()
+                            .font(.system(size: 14, weight: .black))
+                        Text(accountType.description())
+                    }.foregroundColorKMM(ColorConstants.HippieBlue)
+                }
                 if let completeness = header.completeness {
                     Text("Profile \(completeness)% complete")
                         .foregroundColor(Color.gray)
@@ -183,20 +201,15 @@ private extension UIPreviewField.Icon {
 }
 
 private extension User.Type_ {
-    func view() -> some View {
-        let image: Image
+    func imageView() -> some View {
         switch self {
         case .doctor:
-            image = Image(systemName: "plus")
+            return Image(systemName: "plus")
             
         case .expert:
-            image = Image(systemName: "plus")
+            return Image(systemName: "plus")
             
         default: fatalError()
         }
-        return HStack {
-            image.font(.system(size: 14, weight: .black))
-            Text(description())
-        }.foregroundColorKMM(ColorConstants.HippieBlue)
     }
 }

@@ -10,7 +10,7 @@ struct ActivityIndicator: UIViewRepresentable {
     let style: UIActivityIndicatorView.Style
     let color: UIColor
     
-    internal init(style: UIActivityIndicatorView.Style = .medium, color: UIColor = .black) {
+    internal init(style: UIActivityIndicatorView.Style = .medium, color: UIColor = .white) {
         self.style = style
         self.color = color
     }

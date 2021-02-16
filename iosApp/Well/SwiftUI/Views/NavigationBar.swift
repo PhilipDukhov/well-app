@@ -72,7 +72,7 @@ struct NavigationBar<LV: View, RV: View>: View {
         ZStack(alignment: .center) {
             Text(title)
                 .style(.title2)
-                .frame(height: 45)
+                .frame(height: controlMinSize)
             HStack {
                 leftItem.map(control)
                 Spacer()
@@ -82,7 +82,7 @@ struct NavigationBar<LV: View, RV: View>: View {
         .frame(minHeight: controlMinSize)
         .fillMaxWidth()
         .foregroundColor(.white)
-        .background(GradientKMM(gradient: .main).edgesIgnoringSafeArea(.top))
+        .background(GradientView(gradient: .main).edgesIgnoringSafeArea(.top))
     }
     
     private func control<V>(item: NavigationBarItem<V>)-> some View {
@@ -122,7 +122,7 @@ extension NavigationBarModelItemContent {
             return AnyView(itemTextView(content.text))
             
         case is NavigationBarModelItemContent.ActivityIndicator:
-            return AnyView(Well.ActivityIndicator(color: .white))
+            return AnyView(Well.ActivityIndicator())
             
         case let content as NavigationBarModelItemContent.Icon:
             switch content.icon {
