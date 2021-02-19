@@ -1,5 +1,6 @@
 package com.well.androidApp.call.webRtc
 
+import com.well.napier.Napier
 import org.webrtc.DataChannel
 
 open class DataChannelObserver(
@@ -9,7 +10,7 @@ open class DataChannelObserver(
     private val tag = "${this.javaClass.simpleName} $name"
 
     override fun onBufferedAmountChange(p0: Long) {
-        println("$tag onBufferedAmountChange: $p0")
+        Napier.d("onBufferedAmountChange $p0", tag = tag)
     }
 
     override fun onStateChange() {
@@ -17,10 +18,10 @@ open class DataChannelObserver(
     }
 
     open fun onStateChange(state: DataChannel.State) {
-        println("$tag onStateChange $state")
+        Napier.d("onStateChange $state", tag = tag)
     }
 
     override fun onMessage(p0: DataChannel.Buffer?) {
-        println("$tag onMessage: $p0")
+        Napier.d("onMessage $p0", tag = tag)
     }
 }

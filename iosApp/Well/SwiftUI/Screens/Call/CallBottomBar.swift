@@ -16,7 +16,6 @@ struct CallBottomBar: View {
         ZStack(alignment: .top) {
             GradientView(gradient: .callBottomBar)
             HStack {
-                printUI("state update", state.localDeviceState)
                 ToggleStillButton(
                     systemImage: "pencil",
                     size: .standard,

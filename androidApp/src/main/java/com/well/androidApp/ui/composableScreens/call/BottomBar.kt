@@ -1,6 +1,6 @@
 package com.well.androidApp.ui.composableScreens.call
 
-import androidx.compose.foundation.Image
+import com.well.androidApp.ui.composableScreens.πExt.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,10 +23,10 @@ import com.well.androidApp.R
 import com.well.androidApp.ui.composableScreens.πExt.Size
 import com.well.androidApp.ui.composableScreens.πExt.heightPlusBottomSystemBars
 import com.well.androidApp.ui.composableScreens.πExt.toPx
-import com.well.sharedMobile.ViewConstants.CallScreen.BottomBar.CallButtonOffset
-import com.well.sharedMobile.ViewConstants.CallScreen.BottomBar.CallButtonPadding
-import com.well.sharedMobile.ViewConstants.CallScreen.BottomBar.Height
-import com.well.sharedMobile.ViewConstants.CallScreen.CallButtonRadius
+import com.well.sharedMobile.utils.ViewConstants.CallScreen.BottomBar.CallButtonOffset
+import com.well.sharedMobile.utils.ViewConstants.CallScreen.BottomBar.CallButtonPadding
+import com.well.sharedMobile.utils.ViewConstants.CallScreen.BottomBar.Height
+import com.well.sharedMobile.utils.ViewConstants.CallScreen.CallButtonRadius
 import com.well.sharedMobile.puerh.call.CallFeature.Msg
 import com.well.sharedMobile.puerh.call.CallFeature.State
 
@@ -47,7 +47,6 @@ fun BottomBar(
 ) {
     Image(
         painterResource(R.drawable.ic_call_background),
-        contentDescription = null,
         contentScale = ContentScale.FillBounds,
         modifier = Modifier
     )

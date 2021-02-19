@@ -11,10 +11,11 @@ import com.well.sharedMobile.networking.webSocketManager.ws
 import com.well.sharedMobile.puerh.call.resizedImage
 import com.well.sharedMobile.utils.ImageContainer
 import com.well.sharedMobile.utils.asImageContainer
-import com.well.utils.Closeable
-import com.well.utils.CloseableContainer
+import com.well.atomic.Closeable
+import com.well.atomic.CloseableContainer
 import com.well.utils.MutableStateFlow
-import com.well.utils.atomic.*
+import com.well.atomic.*
+import com.well.napier.Napier
 import com.well.utils.tryF
 import io.ktor.client.call.*
 import io.ktor.client.features.*
@@ -71,13 +72,11 @@ class NetworkManager(
             while (startWebSocket) {
                 try {
                     _state.value = Connecting
-                    println("websocket connecting")
                     client.ws("/mainWebSocket") {
-                        println("websocket connected")
                         webSocketSession.value = this
                         _state.value = Connected
                         for (string in incoming) {
-                            println("websocket msg: $string")
+                            Napier.i("websocket msg: $string")
                             val msg = Json.decodeFromString(
                                 WebSocketMessage.serializer(),
                                 string
@@ -94,7 +93,7 @@ class NetworkManager(
                     }
                 } catch (t: Throwable) {
                     if (handleUnauthorized(t)) break
-                    println("web socket error: $t")
+                    Napier.e("web socket connection error", t)
                 } finally {
                     _onlineUsers.emit(emptyList())
                     val wasConnected = _state.value == Connected
@@ -127,7 +126,7 @@ class NetworkManager(
                 )
             )
         } catch (t: Throwable) {
-            println("failed to send $message $t")
+            Napier.e("failed to send $message", t)
         }
     }
 
@@ -145,7 +144,7 @@ class NetworkManager(
                             .resizedImage(Size(2000))
                             .asByteArray(quality)
                         quality -= 0.2f
-                        println("quality $quality ${data.count()}")
+                        Napier.i("quality $quality ${data.count()}")
                     } while (data.count() > 250_000 && quality >= 0)
                     appendInput(
                         userId.toString(),

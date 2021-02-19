@@ -1,15 +1,24 @@
 package com.well.sharedMobile.puerh._topLevel
 
+import com.well.napier.Napier
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.State
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.State.*
 import com.well.utils.withEmptySet
 
 typealias ReducerResult = Pair<State, Set<TopLevelFeature.Eff>>
 
-internal inline fun <reified R : ScreenState> Map<Tab, List<ScreenState>>.screenAndPositionOfFirstOrNull(
+private inline fun <reified R : ScreenState> Map<Tab, List<ScreenState>>.screenAndPositionOfTopOrNull(
+    state: State,
 ): Pair<R, ScreenPosition>? {
-    for ((tab, screens) in this) {
-        for ((index, screen) in screens.withIndex()) {
+    keys.sortedBy { tab ->
+        if (state.selectedScreenPosition.tab == tab) {
+            1
+        } else {
+            0
+        }
+    }.forEach { tab ->
+        getValue(tab).withIndex().reversed().forEach {
+            val (index, screen) = it
             if (screen is R) {
                 return screen to ScreenPosition(tab, index)
             }
@@ -125,9 +134,9 @@ internal inline fun <reified SS : ScreenState, M, S, E> State.reduceScreen(
     reducer: (M, S) -> Pair<S, Set<E>>,
     effCreator: (E) -> TopLevelFeature.Eff,
 ): ReducerResult {
-    val (screen, position) = tabs.screenAndPositionOfFirstOrNull<SS>()
+    val (screen, position) = tabs.screenAndPositionOfTopOrNull<SS>(this)
         ?: run {
-            println("error!!! $msg | $this")
+            Napier.e("reduceScreen $msg | $this")
             return this.withEmptySet()
         }
     val (newScreenState, effs) = reducer(msg, screen.baseState as S)

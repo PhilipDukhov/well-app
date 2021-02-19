@@ -34,6 +34,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             )
         )
         #endif
+        NapierProxy().initializeLogging()
         // swiftlint:disable:next trailing_closure
         featureProvider = FeatureProvider(
             context: .init(

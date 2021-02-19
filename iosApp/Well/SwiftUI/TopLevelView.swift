@@ -14,9 +14,11 @@ struct TopLevelView: View {
     let listener: (TopLevelFeature.Msg) -> Void
 
     var body: some View {
-        content
-            .environment(\.defaultMinListRowHeight, 0)
-            .statusBar(style: .lightContent)
+        VStack(spacing: 0) {
+            content
+                .environment(\.defaultMinListRowHeight, 0)
+                .statusBar(style: .lightContent)
+        }
     }
     #if DEBUG
     static let testing = false

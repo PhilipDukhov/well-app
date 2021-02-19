@@ -258,7 +258,6 @@ object DrawingFeature {
 
     private fun State.reduceSendImageUpdate() =
         this toSetOf if (image != null) {
-            println("reduceSendImageUpdate $remoteImageContainerSize")
             if (remoteImageContainerSize != null) {
                 Eff.UploadImage(image, remoteImageContainerSize)
             } else {

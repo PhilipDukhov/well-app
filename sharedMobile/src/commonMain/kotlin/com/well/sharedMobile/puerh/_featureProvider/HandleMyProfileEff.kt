@@ -1,5 +1,6 @@
 package com.well.sharedMobile.puerh._featureProvider
 
+import com.well.napier.Napier
 import com.well.sharedMobile.puerh._topLevel.*
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Eff
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
@@ -45,7 +46,7 @@ internal suspend fun FeatureProvider.handleMyProfileEff(
                             putUser(user)
                             null
                         } catch (t: Throwable) {
-                            println("UploadUser $t")
+                            Napier.e("UploadUser $t")
                             t
                         }
                     )

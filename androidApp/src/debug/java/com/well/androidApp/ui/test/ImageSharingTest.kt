@@ -28,6 +28,3 @@ internal fun ImageSharingTest() {
 //        state.value = ImageSharingFeature.reducerMeasuring(it, state.value!!).first
 //    }
 }
-
-private fun Uri(drawableId: Int) =
-    android.net.Uri.parse("android.resource://com.well.androidApp/$drawableId")

@@ -16,7 +16,7 @@ import androidx.compose.ui.gesture.pressIndicatorGestureFilter
 import androidx.compose.ui.gesture.scrollorientationlocking.Orientation
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.platform.AmbientAnimationClock
+import androidx.compose.ui.platform.LocalAnimationClock
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
@@ -34,7 +34,7 @@ fun WidthSlider(
     inactiveTrackColor: Color = MaterialTheme.colors.primary.copy(alpha = InactiveTrackColorAlpha),
 ) {
     val interactionState = remember { InteractionState() }
-    val clock = AmbientAnimationClock.current.asDisposableClock()
+    val clock = LocalAnimationClock.current.asDisposableClock()
     val onValueChange: (Float) -> Unit = {
         state.value = it
     }
@@ -69,7 +69,6 @@ fun WidthSlider(
             onDragStopped = { onValueChangeEnd() },
             startDragImmediately = position.holder.isRunning,
             onDrag = {
-                println("$it")
                 position.holder.snapTo(position.holder.value - it)
             }
         )

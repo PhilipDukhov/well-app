@@ -15,8 +15,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.well.androidApp.ui.composableScreens.πExt.backgroundW
-import com.well.androidApp.ui.composableScreens.πExt.borderW
+import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
+import com.well.androidApp.ui.composableScreens.πExt.borderKMM
 import com.well.androidApp.ui.composableScreens.πExt.toColor
 import com.well.serverModels.Color
 
@@ -56,8 +56,8 @@ fun ToggleStillButton(
                 )
             )
             .clip(CircleShape)
-            .backgroundW(backgroundColor)
-            .borderW(borderWidth, borderColor, shape = CircleShape)
+            .backgroundKMM(backgroundColor)
+            .borderKMM(borderWidth, borderColor, shape = CircleShape)
     ) {
         Icon(
             painter = painterResource(vectorResourceId),

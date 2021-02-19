@@ -13,9 +13,13 @@ import com.well.serverModels.Size
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
-actual sealed class SharedImage
+actual sealed class SharedImage {
+    abstract val coilDataAny: Any
+}
 
-actual data class UrlImage actual constructor(val url: String) : SharedImage()
+actual data class UrlImage actual constructor(val url: String) : SharedImage() {
+    override val coilDataAny: Any = url
+}
 
 actual class ImageContainer(private val content: Content) : SharedImage() {
     sealed class Content {
@@ -52,7 +56,7 @@ actual class ImageContainer(private val content: Content) : SharedImage() {
         }
     }
 
-    val data: Any
+    override val coilDataAny: Any
         get() = when (content) {
             is Content.Bitmap -> content.bitmap
             is Content.Uri -> content.uri

@@ -3,6 +3,7 @@ package com.well.androidApp.call
 import android.os.Build
 import android.telecom.CallAudioState
 import android.telecom.Connection
+import com.well.napier.Napier
 
 class CallConnection: Connection() {
     init {
@@ -13,6 +14,6 @@ class CallConnection: Connection() {
     }
 
     override fun onCallAudioStateChanged(state: CallAudioState?) {
-        println("CallConnection onCallAudioStateChanged $state")
+        Napier.i("CallConnection onCallAudioStateChanged $state")
     }
 }

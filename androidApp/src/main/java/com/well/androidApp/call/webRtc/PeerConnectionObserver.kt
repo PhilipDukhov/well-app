@@ -1,51 +1,52 @@
 package com.well.androidApp.call.webRtc
 
+import com.well.napier.Napier
 import org.webrtc.*
 
 open class PeerConnectionObserver : PeerConnection.Observer {
     private val tag = this.javaClass.simpleName
 
     override fun onIceCandidate(iceCandidate: IceCandidate) {
-        println("$tag onIceCandidate: $iceCandidate")
+        Napier.d("onIceCandidate: $iceCandidate", tag = tag)
     }
 
     override fun onAddStream(mediaStream: MediaStream) {
-        println("$tag onAddStream: ${mediaStream.videoTracks.size}")
+        Napier.d("onAddStream: ${mediaStream.videoTracks.size}", tag = tag)
     }
 
     override fun onIceCandidatesRemoved(iceCandidates: Array<IceCandidate>) {
-        println("$tag onIceCandidatesRemoved: $iceCandidates")
+        Napier.d("onIceCandidatesRemoved: $iceCandidates", tag = tag)
     }
 
     override fun onSignalingChange(signalingState: PeerConnection.SignalingState) {
-        println("$tag onSignalingChange: ")
+        Napier.d("onSignalingChange: ", tag = tag)
     }
 
     override fun onIceConnectionChange(iceConnectionState: PeerConnection.IceConnectionState) {
-        println("$tag onIceConnectionChange: ")
+        Napier.d("onIceConnectionChange: ", tag = tag)
     }
 
     override fun onIceConnectionReceivingChange(b: Boolean) {
-        println("$tag onIceConnectionReceivingChange: ")
+        Napier.d("onIceConnectionReceivingChange: ", tag = tag)
     }
 
     override fun onIceGatheringChange(iceGatheringState: PeerConnection.IceGatheringState) {
-        println("$tag onIceGatheringChange: ")
+        Napier.d("onIceGatheringChange: ", tag = tag)
     }
 
     override fun onRemoveStream(mediaStream: MediaStream) {
-        println("$tag onRemoveStream: ")
+        Napier.d("onRemoveStream: ", tag = tag)
     }
 
     override fun onDataChannel(dataChannel: DataChannel) {
-        println("$tag onDataChannel: ")
+        Napier.d("onDataChannel: ", tag = tag)
     }
 
     override fun onRenegotiationNeeded() {
-        println("$tag onRenegotiationNeeded: ")
+        Napier.d("onRenegotiationNeeded", tag = tag)
     }
 
     override fun onAddTrack(p0: RtpReceiver?, p1: Array<out MediaStream>?) {
-        println("$tag onAddTrack: $p1")
+        Napier.d("onAddTrack $p0 $p1", tag = tag)
     }
 }

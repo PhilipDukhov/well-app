@@ -85,6 +85,7 @@ private fun Dependencies.createFacebookUser(
         insertFacebook(
             fullName = "${userInfo.getPrimitiveContent(UserFields.FirstName)} ${userInfo.getPrimitiveContent(UserFields.LastName)}",
             type = User.Type.Doctor,
+            email = userInfo.getNullablePrimitiveContent(UserFields.Email),
             facebookId = id,
         )
         lastInsertId()
@@ -107,9 +108,13 @@ private suspend fun HttpClient.updateUserProfile(
 }
 
 private fun JsonObject.getPrimitiveContent(field: UserFields) =
-    getValue(field.key).jsonPrimitive.content
+    getNullablePrimitiveContent(field) ?: throw NoSuchElementException()
+
+private fun JsonObject.getNullablePrimitiveContent(field: UserFields) =
+    get(field.key)?.jsonPrimitive?.content
 
 private enum class UserFields(val key: String) {
+    Email("email"),
     FirstName("first_name"),
     LastName("last_name"),
     Picture("picture"),

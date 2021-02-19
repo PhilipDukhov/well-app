@@ -71,7 +71,7 @@ suspend fun DefaultWebSocketServerSession.mainWebSocket(dependencies: Dependenci
             else -> Unit
         }
     } catch (t: Throwable) {
-        println("mainWebSocket $t ${t.stackTraceToString()}")
+        println("mainWebSocket closed with error: $t\n${t.stackTraceToString()}")
     } finally {
         dependencies.userDisconnected(currentUserId)
     }

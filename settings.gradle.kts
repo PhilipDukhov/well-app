@@ -10,7 +10,8 @@ val serverPaths = listOf(
 )
 val mobilePaths = listOf(
     "sharedMobile",
-//    "auth",
+    "atomic",
+    "napier",
     "utils",
     "androidApp"
 )

@@ -9,11 +9,12 @@ import com.well.sharedMobile.puerh.login.LoginFeature
 import com.well.sharedMobile.puerh.login.SocialNetwork
 import com.well.sharedMobile.puerh.login.SocialNetworkService
 import com.well.sharedMobile.puerh.login.credentialProviders.CredentialProvider
-import com.well.sharedMobile.puerh.myProfile.MyProfileFeature
 import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersFeature
-import com.well.sharedMobile.utils.ImageContainer
 import com.well.utils.*
-import com.well.utils.atomic.AtomicLateInitRef
+import com.well.atomic.AtomicLateInitRef
+import com.well.atomic.CloseableContainer
+import com.well.atomic.freeze
+import com.well.napier.Napier
 import com.well.utils.dataStore.authToken
 import com.well.utils.permissionsHandler.PermissionsHandler
 import com.well.utils.permissionsHandler.PermissionsHandler.Type.*
@@ -49,7 +50,10 @@ class FeatureProvider(
                         contextHelper.showAlert(eff.alert)
                     }
                     if (eff.alert is Alert.Throwable) {
-                        println("${eff.alert.throwable}\n${eff.alert.throwable.stackTraceToString()}")
+                        Napier.e("", eff.alert.throwable)
+                        if (!Platform.isDebug) {
+                            println("alert! ${eff.alert.throwable}")
+                        }
                     }
                 }
                 is Eff.MyProfileEff -> handleMyProfileEff(eff.eff, listener)

@@ -58,7 +58,7 @@ fun initialiseDatabase(app: Application): Database {
             else -> throw IllegalStateException()
         } as ch.qos.logback.classic.Logger)
             .apply {
-                level = ch.qos.logback.classic.Level.ALL
+                level = ch.qos.logback.classic.Level.WARN
             }
     }
 

@@ -68,7 +68,7 @@ subprojects {
             defaultConfig {
                 minSdkVersion(23)
                 targetSdkVersion(30)
-                versionCode = 102111311
+                versionCode = 102191720
                 versionName = Constants.version
             }
             buildTypes {
@@ -115,11 +115,12 @@ subprojects {
 
     if (gradlePluginVersion.first() == '7') {
         if (listOf(
-                "serverModels",
-                "utils",
-                "auth",
-                "sharedMobile"
-            ).contains(name)
+                ":serverModels",
+                ":utils",
+                ":napier",
+                ":atomic",
+                ":sharedMobile"
+            ).contains(path)
         ) {
             configurations {
                 listOf(

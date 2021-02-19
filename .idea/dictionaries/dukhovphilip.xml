@@ -12,7 +12,9 @@
       <w>jetpack</w>
       <w>kotest</w>
       <w>ktor</w>
+      <w>measurables</w>
       <w>oolong</w>
+      <w>placeables</w>
       <w>reachability</w>
       <w>sqldelight</w>
     </words>

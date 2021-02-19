@@ -1,7 +1,6 @@
 package com.well.server.routing.userEditing
 
 import com.well.server.utils.Dependencies
-import com.well.server.utils.toUser
 import com.well.serverModels.User
 import io.ktor.application.*
 import io.ktor.client.statement.*
@@ -10,19 +9,12 @@ import io.ktor.http.content.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.util.pipeline.*
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.yield
 import java.io.File
-import java.io.InputStream
-import java.io.OutputStream
 
 suspend fun PipelineContext<*, ApplicationCall>.updateUser(
     dependencies: Dependencies
 ) = dependencies.run {
     call.receive<User>().apply {
-        println("updateUser $this")
         database
             .userQueries
             .updateUser(

@@ -6,13 +6,12 @@ import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
-import com.well.sharedMobile.puerh.login.LoginView
 import com.well.utils.Context
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-class FacebookProvider constructor(context: Context) : CredentialProvider(context) {
+class FacebookProvider constructor(private val context: Context) : CredentialProvider(context) {
     private val callbackManager: CallbackManager = CallbackManager.Factory.create()
     private val loginManager = LoginManager.getInstance()
 
@@ -20,7 +19,7 @@ class FacebookProvider constructor(context: Context) : CredentialProvider(contex
         loginManager.unregisterCallback(callbackManager)
     }
 
-    override suspend fun getCredentials(loginView: LoginView): AuthCredential =
+    override suspend fun getCredentials(): AuthCredential =
         runCatching<AuthCredential> {
             suspendCancellableCoroutine { continuation ->
                 loginManager.registerCallback(
@@ -45,7 +44,7 @@ class FacebookProvider constructor(context: Context) : CredentialProvider(contex
                         }
                     }
                 )
-                loginManager.logInWithReadPermissions(loginView, listOf("email"))
+                loginManager.logInWithReadPermissions(context.componentActivity, listOf("email"))
             }
         }.also {
             loginManager.unregisterCallback(callbackManager)

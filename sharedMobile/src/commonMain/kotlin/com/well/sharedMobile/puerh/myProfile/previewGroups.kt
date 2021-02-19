@@ -6,11 +6,12 @@ import com.well.serverModels.formatters.DateFormatter
 import com.well.serverModels.formatters.format
 import com.well.serverModels.spacedUppercaseName
 
-internal fun User.previewGroups(credentialsNeeded: Boolean) = listOf(
+internal fun User.previewGroups(isCurrent: Boolean) = listOfNotNull(
     UIGroup.Preview(
-        if (credentialsNeeded) credentials?.name?.let {
-            UIPreviewField(title = Strings.credentials, text = it)
-        } else null,
+        if (!isCurrent) null else
+            credentials?.name?.let {
+                UIPreviewField(title = Strings.credentials, text = it)
+            },
         academicRank?.spacedUppercaseName()?.let {
             UIPreviewField(title = Strings.academicRank, text = it)
         },
@@ -22,14 +23,15 @@ internal fun User.previewGroups(credentialsNeeded: Boolean) = listOf(
                     .sorted()
             ),
     ),
-    UIGroup.Preview(
-        email?.let {
-            UIPreviewField(title = Strings.emailAddress, text = it)
-        },
-        phoneNumber?.let {
-            UIPreviewField(title = Strings.phoneNumber, text = it)
-        },
-    ),
+    if (!isCurrent) null else
+        UIGroup.Preview(
+            email?.let {
+                UIPreviewField(title = Strings.emailAddress, text = it)
+            },
+            phoneNumber?.let {
+                UIPreviewField(title = Strings.phoneNumber, text = it)
+            },
+        ),
     UIGroup.Preview(
         location?.let {
             UIPreviewField(
@@ -76,21 +78,23 @@ internal fun User.previewGroups(credentialsNeeded: Boolean) = listOf(
                 isLink = true
             )
         },
-        twitter?.let {
-            UIPreviewField(
-                title = Strings.twitter,
-                text = it,
-                icon = UIPreviewField.Icon.Twitter,
-                isLink = true
-            )
-        },
-        doximity?.let {
-            UIPreviewField(
-                title = Strings.doximity,
-                text = it,
-                icon = UIPreviewField.Icon.Doximity,
-                isLink = true
-            )
-        },
+        if (!isCurrent) null else
+            twitter?.let {
+                UIPreviewField(
+                    title = Strings.twitter,
+                    text = it,
+                    icon = UIPreviewField.Icon.Twitter,
+                    isLink = true
+                )
+            },
+        if (!isCurrent) null else
+            doximity?.let {
+                UIPreviewField(
+                    title = Strings.doximity,
+                    text = it,
+                    icon = UIPreviewField.Icon.Doximity,
+                    isLink = true
+                )
+            },
     ),
-).filter { it.fields.isNotEmpty() }
+)

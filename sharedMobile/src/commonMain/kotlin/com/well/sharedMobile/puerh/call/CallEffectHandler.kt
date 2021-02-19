@@ -1,5 +1,7 @@
 package com.well.sharedMobile.puerh.call
 
+import com.well.atomic.*
+import com.well.napier.Napier
 import com.well.serverModels.*
 import com.well.sharedMobile.networking.NetworkManager
 import com.well.sharedMobile.puerh.call.CallFeature.Eff
@@ -9,12 +11,7 @@ import com.well.sharedMobile.puerh.call.webRtc.WebRtcManagerI.Listener.DataChann
 import com.well.sharedMobile.puerh.call.drawing.DrawingEffectHandler
 import com.well.sharedMobile.puerh.call.webRtc.RtcMsg
 import com.well.sharedMobile.puerh.call.webRtc.WebRtcManagerI
-import com.well.utils.Closeable
 import com.well.utils.puerh.EffectHandler
-import com.well.utils.asCloseable
-import com.well.utils.atomic.AtomicCloseableRef
-import com.well.utils.atomic.AtomicRef
-import com.well.utils.freeze
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
@@ -76,7 +73,6 @@ class CallEffectHandler(
                 get() = if (closed.value) null else handlerRef
 
             override fun close() {
-                println("webRtcManagerListener set close")
                 closed.value = true
             }
 
@@ -107,7 +103,6 @@ class CallEffectHandler(
             }
 
             override fun dataChannelStateChanged(state: DataChannelState) {
-                println("dataChannelStateChanged $state")
                 handler?.invokeCallMsg(
                     if (state == DataChannelState.Open) {
                         Msg.DataConnectionEstablished
@@ -149,8 +144,7 @@ class CallEffectHandler(
                                 }.asCloseable()
                             else null
                     }
-            }
-                .asCloseable()
+            }.asCloseable()
         )
         coroutineScope.launch {
             addCloseableChild(
@@ -227,7 +221,7 @@ class CallEffectHandler(
                 }
             }
             .also {
-                println("CallEffectHandler send ws $msg")
+                Napier.i("CallEffectHandler send ws $msg")
             }
 
     private fun send(msg: RtcMsg) =
@@ -256,7 +250,7 @@ class CallEffectHandler(
                     sendData(it)
                 }
         }.also {
-            println("CallEffectHandler send dt $msg")
+            Napier.i("CallEffectHandler send dt $msg")
         }
 
     private fun handleDataChannelMessage(data: ByteArray) {
@@ -274,7 +268,7 @@ class CallEffectHandler(
                 unwrappedData.decodeToString()
             )
         }
-        println("CallEffectHandler got dt $msg")
+        Napier.i("CallEffectHandler got dt $msg")
         when (msg) {
             is RtcMsg.ImageSharingContainer -> {
                 imageSharingEffectHandler
@@ -296,7 +290,6 @@ class CallEffectHandler(
                 ))
             }
             is RtcMsg.UpdateCaptureDimensions -> {
-                println("got UpdateCaptureDimensions")
                 invokeCallMsg(Msg.UpdateRemoteCaptureDimensions(msg.dimensions))
             }
         }

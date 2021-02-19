@@ -16,7 +16,7 @@ data class User(
     val credentials: Credentials? = null,
     val academicRank: AcademicRank? = null,
     val languages: Set<Language> = setOf(),
-    val skills: Set<Skills> = setOf(),
+    val skills: Set<Skill> = setOf(),
     val bio: String? = null,
     val education: String? = null,
     val professionalMemberships: String? = null,
@@ -72,7 +72,7 @@ data class User(
 
     @Suppress("SpellCheckingInspection")
     @Serializable
-    enum class Skills {
+    enum class Skill {
         Endoscopy,
         Laparoscopy,
         RoboticSurgery,

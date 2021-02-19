@@ -6,6 +6,7 @@ import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.State.EditingStatu
 import com.well.sharedMobile.puerh.πModels.NavigationBarModel
 import com.well.sharedMobile.utils.ImageContainer
 import com.well.sharedMobile.utils.profileImage
+import com.well.utils.base.UrlUtil
 import com.well.utils.toSetOf
 import com.well.utils.withEmptySet
 
@@ -72,10 +73,11 @@ object MyProfileFeature {
                 credentials = user.credentials,
                 completeness = if (user.initialized) user.completeness else null,
                 accountType = if (user.initialized) user.type else null,
-                twitterLink = user.twitter,
+                twitterLink = user.twitter?.let { if (!UrlUtil.isValidUrl(it)) null else it },
+                doximityLink = user.doximity?.let { if (!UrlUtil.isValidUrl(it)) null else it },
             )
         ) + when (editingStatus) {
-            EditingStatus.Preview -> user.previewGroups(credentialsNeeded = isCurrent)
+            EditingStatus.Preview -> user.previewGroups(isCurrent = isCurrent)
             EditingStatus.Editing,
             EditingStatus.Uploading -> user.editingGroups()
         }
@@ -217,7 +219,5 @@ object MyProfileFeature {
         Msg.Call -> {
             state toSetOf Eff.Call(state.user)
         }
-    }.also {
-        println("$msg -> $it")
     }
 }

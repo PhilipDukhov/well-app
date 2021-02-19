@@ -1,6 +1,7 @@
 package com.well.androidApp.ui.composableScreens.call
 
-import androidx.compose.foundation.Image
+import android.util.DisplayMetrics
+import com.well.androidApp.ui.composableScreens.πExt.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -8,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -17,10 +19,12 @@ import com.well.androidApp.R
 import com.well.androidApp.ui.composableScreens.call.drawing.DrawingContent
 import com.well.androidApp.ui.composableScreens.call.drawing.DrawingPanel
 import com.well.androidApp.ui.composableScreens.πCustomViews.UserProfileImage
+import com.well.androidApp.ui.composableScreens.πCustomViews.controlMinSize
 import com.well.androidApp.ui.composableScreens.πExt.visibility
+import com.well.androidApp.ui.composableScreens.πExt.widthDp
 import com.well.serverModels.User
-import com.well.sharedMobile.ViewConstants.CallScreen.BottomBar.CallButtonOffset
-import com.well.sharedMobile.ViewConstants.CallScreen.CallButtonRadius
+import com.well.sharedMobile.utils.ViewConstants.CallScreen.BottomBar.CallButtonOffset
+import com.well.sharedMobile.utils.ViewConstants.CallScreen.CallButtonRadius
 import com.well.sharedMobile.puerh.call.CallFeature.Msg
 import com.well.sharedMobile.puerh.call.CallFeature.State
 import com.well.sharedMobile.puerh.call.CallFeature.State.Status
@@ -59,7 +63,7 @@ fun CallScreen(
                     0.dp
                 }
                 State.VideoView.Position.Minimized -> {
-                    10.dp
+                    minimizedVideoContainerPadding
                 }
             }
         ).offset(
@@ -74,9 +78,9 @@ fun CallScreen(
         )
     }
     val (localVideoView, remoteVideoView, profileImage, nameContainer, bottomView) = createRefs()
+
     Image(
         painterResource(R.drawable.ic_call_background),
-        contentDescription = null,
         contentScale = ContentScale.FillBounds,
         modifier = Modifier
             .fillMaxSize()
@@ -92,7 +96,7 @@ fun CallScreen(
                 if (ongoing) {
                     fillMaxSize()
                 } else {
-                    fillMaxWidth(0.6F)
+                    fillMaxWidth(0.6f)
                         .padding(top = 30.dp)
                         .statusBarsPadding()
                 }
@@ -108,7 +112,7 @@ fun CallScreen(
                     top.linkTo(profileImage.bottom, margin = 20.dp)
                 }
             }
-            .fillMaxWidth(0.9F)
+            .fillMaxWidth(0.9f)
     ) {
         FullNameText(
             user = state.user,
@@ -178,6 +182,20 @@ fun CallScreen(
             .navigationBarsPadding(bottom = !ongoing)
             .visibility(state.controlSet == State.ControlSet.Call)
     ) {
+        if (state.viewPoint == State.ViewPoint.Mine) {
+            FlipCameraButton(
+                onFlip = {
+                    listener(state.localDeviceState.toggleIsFrontCameraMsg())
+                },
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(minimizedVideoContainerPadding)
+                    .offset(
+                        x = (controlMinSize - LocalContext.current.resources.displayMetrics.widthDp * minimizedVideoPart + minimizedVideoContainerPadding) / 2,
+                        y = callButtonOffset
+                    )
+            )
+        }
         Row(
             modifier = Modifier
                 .padding(bottom = if (ongoing) 0.dp else 10.dp)
@@ -225,7 +243,7 @@ fun FullNameText(
     textAlign = TextAlign.Center,
     style = MaterialTheme.typography.h4,
     modifier = modifier
-        .fillMaxWidth(0.9F)
+        .fillMaxWidth(0.9f)
 )
 
 private fun Modifier.videoModifier(
@@ -235,10 +253,13 @@ private fun Modifier.videoModifier(
         fillMaxSize()
     }
     State.VideoView.Position.Minimized -> {
-        fillMaxWidth(0.3F)
-            .aspectRatio(1080F / 1920)
+        fillMaxWidth(minimizedVideoPart)
+            .aspectRatio(1080f / 1920)
     }
 }
+
+private const val minimizedVideoPart = 0.3f
+private val minimizedVideoContainerPadding = 0.dp
 
 private fun ((Msg) -> Unit).invokeDrawingMsg(msg: DrawingMsg) =
     invoke(Msg.DrawingMsg(msg))

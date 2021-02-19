@@ -7,8 +7,8 @@ import com.well.sharedMobile.puerh._topLevel.showSheetThreadSafe
 import com.well.sharedMobile.puerh.call.CallEffectHandler
 import com.well.sharedMobile.puerh.call.CallFeature
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature
-import com.well.utils.CloseableFuture
-import com.well.utils.freeze
+import com.well.atomic.CloseableFuture
+import com.well.atomic.freeze
 import com.well.utils.permissionsHandler.PermissionsHandler
 import com.well.utils.permissionsHandler.requestPermissions
 import com.well.utils.puerh.addEffectHandler
@@ -34,7 +34,6 @@ internal suspend fun FeatureProvider.handleCallEff(
             )
         }
         is CallFeature.Eff.End -> {
-            println("CallEffectHandler close $this")
             networkManager.value.send(
                 WebSocketMessage.EndCall(WebSocketMessage.EndCall.Reason.Decline)
             )
@@ -88,7 +87,6 @@ internal suspend fun FeatureProvider.handleCallEff(
 private fun FeatureProvider.createWebRtcManagerHandler(
     initiateEffect: CallFeature.Eff? = null,
 ) = CloseableFuture(coroutineScope) {
-    println("added listener NotifyLocalCaptureDimensionsChanged")
     feature
         .addEffectHandler(
             CallEffectHandler(

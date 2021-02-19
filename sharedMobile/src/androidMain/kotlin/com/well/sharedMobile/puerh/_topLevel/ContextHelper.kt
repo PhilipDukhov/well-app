@@ -9,7 +9,7 @@ import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
 import com.well.utils.Context
 import com.well.sharedMobile.utils.ImageContainer
-import com.well.utils.Closeable
+import com.well.atomic.Closeable
 import kotlinx.coroutines.*
 import kotlin.coroutines.resume
 

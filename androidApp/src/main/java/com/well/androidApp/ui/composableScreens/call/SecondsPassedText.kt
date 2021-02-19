@@ -2,7 +2,7 @@ package com.well.androidApp.ui.composableScreens.call
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
-import com.well.androidApp.ui.composableScreens.πExt.TextW
+import com.well.androidApp.ui.composableScreens.πExt.TextKMM
 import com.well.androidApp.ui.helpers.NextSecondNotifier
 import com.well.serverModels.Color
 import com.well.sharedMobile.puerh.call.CallFeature
@@ -24,7 +24,7 @@ fun SecondsPassedText(
             nextSecondNotifier.close()
         }
     }
-    TextW(
+    TextKMM(
         text = secondsPassed.value,
         color = Color.White,
         style = MaterialTheme.typography.body1,

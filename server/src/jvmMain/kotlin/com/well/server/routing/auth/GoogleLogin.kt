@@ -35,6 +35,7 @@ suspend fun PipelineContext<*, ApplicationCall>.googleLogin(dependencies: Depend
                     ?: run {
                         insertGoogle(
                             fullName = "${getValue("given_name") as String} ${getValue("family_name") as String}",
+                            email = email,
                             type = User.Type.Doctor,
                             googleId = googleId
                         )

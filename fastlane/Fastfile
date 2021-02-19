@@ -1,8 +1,8 @@
 lane :deploy do |options|
   check_changelog(options)
   options[:timeNow]=Time.now
-  Fastlane::LaneManager.cruise_lane("ios", "deploy", options)
   Fastlane::LaneManager.cruise_lane("android", "deploy", options)
+  # Fastlane::LaneManager.cruise_lane("ios", "deploy", options)
 end
 
 

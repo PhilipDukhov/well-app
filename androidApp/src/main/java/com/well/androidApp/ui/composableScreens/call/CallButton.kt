@@ -1,7 +1,5 @@
 package com.well.androidApp.ui.composableScreens.call
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -10,14 +8,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.well.androidApp.R
-import com.well.androidApp.ui.composableScreens.theme.Color.Green
-import com.well.androidApp.ui.composableScreens.theme.Color.Pink
-import com.well.sharedMobile.ViewConstants
-import com.well.sharedMobile.ViewConstants.CallScreen.CallButtonRadius
+import com.well.androidApp.ui.composableScreens.πExt.Image
+import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
+import com.well.serverModels.Color
+import com.well.sharedMobile.utils.ViewConstants.CallScreen.CallButtonRadius
 
 @Composable
 fun CallUpButton(
@@ -25,7 +22,7 @@ fun CallUpButton(
     onClick: () -> Unit
 ) = CallButton(
     R.drawable.ic_phone_up,
-    Green,
+    Color.Green,
     modifier,
     onClick,
 )
@@ -36,7 +33,7 @@ fun CallDownButton(
     onClick: () -> Unit
 ) = CallButton(
     R.drawable.ic_phone_down,
-    Pink,
+    Color.Pink,
     modifier,
     onClick,
 )
@@ -52,8 +49,8 @@ private fun CallButton(
     modifier = modifier
         .size((CallButtonRadius * 2).dp)
         .clip(CircleShape)
-        .background(background)
+        .backgroundKMM(background)
         .clickable(onClick = onClick)
 ) {
-    Image(painterResource(drawable), contentDescription = null)
+    Image(painterResource(drawable))
 }

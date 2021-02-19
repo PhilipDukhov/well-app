@@ -9,6 +9,7 @@ import platform.CoreGraphics.CGRectMake
 import platform.UIKit.*
 
 actual sealed class SharedImage
+
 actual data class UrlImage actual constructor(val url: String) : SharedImage()
 
 @Suppress("MemberVisibilityCanBePrivate")

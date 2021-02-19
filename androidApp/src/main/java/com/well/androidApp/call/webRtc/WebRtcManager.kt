@@ -14,8 +14,9 @@ import com.well.sharedMobile.puerh.call.VideoViewContext
 import com.well.sharedMobile.puerh.call.webRtc.LocalDeviceState
 import com.well.sharedMobile.puerh.call.webRtc.WebRtcManagerI
 import com.well.sharedMobile.puerh.call.webRtc.WebRtcManagerI.Listener.DataChannelState
-import com.well.utils.Closeable
-import com.well.utils.CloseableContainer
+import com.well.atomic.Closeable
+import com.well.atomic.CloseableContainer
+import com.well.napier.Napier
 import com.well.utils.getSystemService
 import kotlinx.coroutines.*
 import org.webrtc.*
@@ -47,7 +48,7 @@ class WebRtcManager(
         }
         addCloseableChild(object : Closeable {
             override fun close() {
-                println("webrtcmanager close ")
+                Napier.d("webrtcmanager close", tag = tag)
                 try {
                     peerConnection.dispose()
                     videoCapturer.dispose()
@@ -60,7 +61,7 @@ class WebRtcManager(
                         it?.dispose()
                     }
                 } catch (t: Throwable) {
-                    Log.e(tag, "close failed ${t.stackTraceToString()}")
+                    Napier.d("close failed $t", t, tag = tag)
                 }
             }
         })
@@ -69,7 +70,7 @@ class WebRtcManager(
             try {
                 audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
             } catch (t: Throwable) {
-                Log.w(tag, "audioManager.mode $t")
+                Napier.w("audioManager.mode $t", tag = tag)
             }
         }
         val listener = object : AudioManager.OnAudioFocusChangeListener, Closeable {
@@ -112,6 +113,7 @@ class WebRtcManager(
             )
         }
         addCloseableChild(listener)
+        audioManager.isSpeakerphoneOn = deviceState.audioSpeakerEnabled
     }
 
     private val rootEglBase = EglBase.create()!!
@@ -292,7 +294,7 @@ class WebRtcManager(
         if (localDataChannel.state() == DataChannel.State.OPEN) {
             localDataChannel.send(DataChannel.Buffer(ByteBuffer.wrap(data), false))
         } else {
-            Log.e(tag, "didn't sendData state ${localDataChannel.state()}")
+            Napier.e("didn't sendData state ${localDataChannel.state()}", tag = tag)
         }
     }
 

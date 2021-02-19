@@ -12,8 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.well.androidApp.R
-import com.well.androidApp.ui.composableScreens.πExt.backgroundW
-import com.well.androidApp.ui.composableScreens.πExt.borderW
+import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
+import com.well.androidApp.ui.composableScreens.πExt.borderKMM
 import com.well.serverModels.Color
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.State
@@ -26,7 +26,7 @@ fun BottomPanel(
     modifier: Modifier = Modifier,
 ) = Column(
     modifier = modifier
-        .backgroundW(Color.MineShaft)
+        .backgroundKMM(Color.MineShaft)
         .navigationBarsPadding()
 ) {
     Row(
@@ -50,7 +50,7 @@ fun BottomPanel(
                         .weight(1f)
                         .aspectRatio(1F)
                         .padding(10.dp)
-                        .borderW(
+                        .borderKMM(
                             width = 2.dp,
                             color = if (selected) Color.AzureRadiance else Color.Transparent,
                             shape = CircleShape,
@@ -60,7 +60,7 @@ fun BottomPanel(
                         modifier = Modifier
                             .padding(3.dp)
                             .clip(CircleShape)
-                            .backgroundW(color)
+                            .backgroundKMM(color)
                             .fillMaxSize()
                     )
                 }

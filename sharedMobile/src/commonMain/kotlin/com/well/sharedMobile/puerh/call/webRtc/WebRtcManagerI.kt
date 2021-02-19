@@ -4,7 +4,7 @@ import com.well.serverModels.Size
 import com.well.serverModels.WebSocketMessage
 import com.well.sharedMobile.puerh.call.CallFeature
 import com.well.sharedMobile.puerh.call.VideoViewContext
-import com.well.utils.Closeable
+import com.well.atomic.Closeable
 
 interface WebRtcManagerI: Closeable {
     interface Listener {

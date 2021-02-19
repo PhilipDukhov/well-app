@@ -1,5 +1,6 @@
 package com.well.sharedMobile.networking.webSocketManager
 
+import com.well.napier.Napier
 import io.ktor.client.features.websocket.*
 import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.*
@@ -18,11 +19,11 @@ actual class WebSocketSession(
             for (frame in socketSession.incoming) {
                 when (frame) {
                     is Frame.Text -> {
-                        println("WebSocketSession receive ${frame.readText()}")
+                        Napier.i("WebSocketSession receive ${frame.readText()}")
                         channel.send(frame.readText())
                     }
                     else -> {
-                        println("WebSocketSession receive not text $frame}")
+                        Napier.i("WebSocketSession receive not text $frame}")
                         channel.send(frame.toString())
                     }
                 }
@@ -32,7 +33,7 @@ actual class WebSocketSession(
     }
 
     actual suspend fun send(text: String) {
-        println("WebSocketSession send $text")
+        Napier.i("WebSocketSession send $text")
         socketSession.send(text)
     }
 

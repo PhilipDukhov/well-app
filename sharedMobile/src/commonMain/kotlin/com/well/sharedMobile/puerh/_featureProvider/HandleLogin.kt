@@ -78,7 +78,6 @@ fun FeatureProvider.loggedIn(
     networkManager.value = NetworkManager(token, startWebSocket = true, unauthorizedHandler = {
         logOut(listener)
     })
-    println("loggedIn ${networkManager.value}")
     val effectHandler: EffectHandler<TopLevelFeature.Eff, TopLevelFeature.Msg> =
         OnlineUsersApiEffectHandler(
             networkManager.value,

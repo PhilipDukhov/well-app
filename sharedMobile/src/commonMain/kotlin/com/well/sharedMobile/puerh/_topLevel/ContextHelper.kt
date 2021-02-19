@@ -1,5 +1,9 @@
 package com.well.sharedMobile.puerh._topLevel
 
+import com.well.atomic.Closeable
+import com.well.atomic.CloseableContainer
+import com.well.atomic.asCloseable
+import com.well.napier.Napier
 import com.well.sharedMobile.utils.ImageContainer
 import com.well.utils.*
 import kotlinx.coroutines.CoroutineScope
@@ -40,6 +44,6 @@ internal suspend fun ContextHelper.showSheetThreadSafe(
 internal suspend fun ContextHelper.pickSystemImageSafe(): ImageContainer? = try {
     pickSystemImage()
 } catch (t: Throwable) {
-    println("pickSystemImageSafe failed $t")
+    Napier.e("pickSystemImageSafe failed", t)
     null
 }

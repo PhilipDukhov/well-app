@@ -3,6 +3,7 @@ package com.well.androidApp.call
 import android.telecom.Connection
 import android.telecom.ConnectionRequest
 import android.telecom.PhoneAccountHandle
+import com.well.napier.Napier
 
 class ConnectionService: android.telecom.ConnectionService() {
 
@@ -10,7 +11,7 @@ class ConnectionService: android.telecom.ConnectionService() {
         connectionManagerPhoneAccount: PhoneAccountHandle?,
         request: ConnectionRequest?
     ): Connection {
-        println("onCreateIncomingConnection $request")
+        Napier.d("onCreateIncomingConnection $request")
         return super.onCreateIncomingConnection(connectionManagerPhoneAccount, request)
     }
 }

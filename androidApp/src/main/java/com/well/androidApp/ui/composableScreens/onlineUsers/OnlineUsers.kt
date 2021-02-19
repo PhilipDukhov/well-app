@@ -1,18 +1,19 @@
 package com.well.androidApp.ui.composableScreens.onlineUsers
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Text
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import com.well.androidApp.ui.composableScreens.πCustomViews.ControlItem
+import com.well.androidApp.ui.composableScreens.πCustomViews.NavigationBar
 import com.well.androidApp.ui.composableScreens.πCustomViews.UserProfileImage
 import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersFeature
 import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersFeature.Msg
-import dev.chrisbanes.accompanist.insets.systemBarsPadding
-import androidx.compose.foundation.lazy.items
+import dev.chrisbanes.accompanist.insets.navigationBarsPadding
 
 @Composable
 fun OnlineUsersScreen(
@@ -21,37 +22,33 @@ fun OnlineUsersScreen(
 ) = Column(
     horizontalAlignment = CenterHorizontally,
     modifier = Modifier
-        .systemBarsPadding()
-        .fillMaxWidth()
+        .fillMaxSize()
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .height(30.dp)
-    ) {
-        Text(
-            state.connectionStatus.stringRepresentation,
-            modifier = Modifier
-                .align(Alignment.Center)
-        )
-        state.currentUser?.let {
-            UserProfileImage(
-                it,
-                modifier = Modifier
-                    .size(30.dp)
-                    .align(Alignment.CenterEnd)
-            )
+    NavigationBar(
+        title = state.connectionStatus.stringRepresentation,
+        leftItem = ControlItem(text = "Log out") {
+            listener.invoke(Msg.OnLogout)
+        },
+        rightItem = ControlItem(
+            view = { UserProfileImage(state.currentUser) },
+            handler = { listener.invoke(Msg.OnCurrentUserSelected) },
+        ),
+    )
+    LazyColumn(modifier = Modifier.navigationBarsPadding()) {
+        if (state.users.isNotEmpty()) {
+            item { Divider() }
         }
-    }
-    LazyColumn {
         items(state.users) { user ->
             UserCell(
                 user,
-                onClick = {
+                onSelect = {
                     listener.invoke(Msg.OnUserSelected(user))
-                }
+                },
+                onCall = {
+                    listener.invoke(Msg.OnCallUser(user))
+                },
             )
+            Divider()
         }
     }
 }

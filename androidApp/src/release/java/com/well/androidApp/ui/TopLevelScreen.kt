@@ -2,7 +2,7 @@ package com.well.androidApp.ui
 
 import androidx.compose.runtime.Composable
 import com.well.androidApp.ui.composableScreens.TopLevelScreenImpl
-import com.well.sharedMobile.puerh.topLevel.TopLevelFeature
+import com.well.sharedMobile.puerh._topLevel.TopLevelFeature
 
 @Composable
 fun TopLevelScreen(

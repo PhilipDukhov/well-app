@@ -39,7 +39,7 @@ fun Application.module() {
 
     install(StatusPages) {
         exception<Throwable> { cause ->
-            println(cause)
+            println("StatusPages failed $cause")
             call.respond(HttpStatusCode.InternalServerError, cause.toString())
         }
     }

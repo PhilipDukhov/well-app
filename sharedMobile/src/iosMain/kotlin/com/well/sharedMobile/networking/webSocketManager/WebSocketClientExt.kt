@@ -2,7 +2,8 @@ package com.well.sharedMobile.networking.webSocketManager
 
 import com.well.sharedMobile.networking.RedirectResponseException
 import com.well.sharedMobile.networking.getThrowable
-import com.well.utils.freeze
+import com.well.atomic.freeze
+import com.well.napier.Napier
 import com.well.utils.resumeWithException
 import io.ktor.client.features.ClientRequestException
 import com.well.utils.toThrowable
@@ -79,7 +80,7 @@ private suspend fun WebSocketClient.webSocket(
                     ?.let { getThrowable(it.statusCode.toInt()) }
                     ?: didCompleteWithError?.toThrowable()
                     ?: CancellationException("${task.response}")
-                println("didCompleteWithError $throwable $didCompleteWithError")
+                Napier.e("ios web socket didCompleteWithError $didCompleteWithError", throwable)
                 if (continuation.isActive) {
                     continuation.resumeWithException(throwable)
                 } else {

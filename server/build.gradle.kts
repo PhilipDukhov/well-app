@@ -8,6 +8,7 @@ plugins {
 
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
+    @Suppress("DEPRECATION")
     mainClassName = mainClass.get()
 }
 

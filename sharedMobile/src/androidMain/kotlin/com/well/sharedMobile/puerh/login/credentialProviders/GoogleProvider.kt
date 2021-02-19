@@ -8,15 +8,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_I
 import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes.SIGN_IN_CANCELLED
 import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes.SIGN_IN_CURRENTLY_IN_PROGRESS
 import com.google.android.gms.common.api.ApiException
-import com.well.sharedMobile.puerh.login.LoginView
 import com.well.utils.Context
 import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-class GoogleProvider(context: Context) : CredentialProvider(context) {
+class GoogleProvider(private val context: Context, tokenId: String) : CredentialProvider(context) {
     private val authRequestCode = 9001
     private val googleSignInClient: GoogleSignInClient
     private var continuation: CancellableContinuation<AuthCredential>? = null
@@ -24,17 +24,17 @@ class GoogleProvider(context: Context) : CredentialProvider(context) {
     init {
         val googleSignInOptions = GoogleSignInOptions
             .Builder(DEFAULT_SIGN_IN)
-            .requestIdToken("567261840338-g9u8k9pa1okfem4n71979gf76s8fg823.apps.googleusercontent.com")
+            .requestIdToken(tokenId)
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(context.componentActivity, googleSignInOptions)
     }
 
-    override suspend fun getCredentials(loginView: LoginView): AuthCredential {
+    override suspend fun getCredentials(): AuthCredential {
         googleSignInClient.signOut().await()
         return suspendCancellableCoroutine {
             continuation = it
-            loginView.startActivityForResult(
+            context.componentActivity.startActivityForResult(
                 googleSignInClient.signInIntent,
                 authRequestCode
             )

@@ -1,21 +1,16 @@
 package com.well.androidApp.ui.composableScreens.call
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.InteractionState
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import com.well.androidApp.R
+import com.well.androidApp.ui.composableScreens.πCustomViews.Control
+import com.well.androidApp.ui.composableScreens.πExt.Image
 import com.well.sharedMobile.puerh.call.CallFeature
 
 @Suppress("ModifierParameter")
@@ -38,23 +33,17 @@ fun VideoViewContainer(
                 view.context,
                 modifier = Modifier
                     .fillMaxSize()
-            )
-        }
-        if (onFlip != null) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .size(45.dp)
-                    .clickable(
-                        onClick = onFlip,
-                        interactionState = remember { InteractionState() },
-                        indication = rememberRipple(
-                            radius = 22.dp,
-                        ),
-                    )
-            ) {
-                Image(painterResource(R.drawable.ic_flip_cam), contentDescription = null)
+                )
+            }
+            if (onFlip != null) {
+                FlipCameraButton(onFlip)
             }
         }
+}
+
+@Composable
+fun FlipCameraButton(onFlip: (() -> Unit), modifier: Modifier = Modifier) {
+    Control(onClick = onFlip, modifier = modifier) {
+        Image(painterResource(R.drawable.ic_flip_cam))
     }
 }

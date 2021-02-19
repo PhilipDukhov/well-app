@@ -3,6 +3,7 @@ package com.well.sharedMobile.puerh.myProfile
 import com.well.serverModels.enumValueOfSpacedUppercase
 import com.well.serverModels.spacedUppercaseEnumValues
 import com.well.serverModels.spacedUppercaseName
+import com.well.utils.base.UrlUtil
 
 data class UIEditingField<C> internal constructor(
     val placeholder: String,
@@ -58,8 +59,7 @@ data class UIEditingField<C> internal constructor(
             val nullable: Boolean = true,
             override val icon: Icon? = null
         ) : Content(icon) {
-            override fun toString(): String =
-                text
+            override fun toString(): String = text
 
             override fun valid(): Boolean =
                 if (nullable) true else text.isNotBlank()
@@ -69,11 +69,10 @@ data class UIEditingField<C> internal constructor(
         }
 
         data class Email internal constructor(val email: String) : Content() {
-            override fun toString(): String =
-                email
+            override fun toString(): String = email
 
             override fun valid(): Boolean =
-                email.isEmpty() || Regex(
+                Regex(
                     "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
                         "\\@" +
                         "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +

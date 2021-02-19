@@ -44,7 +44,7 @@ fun DrawingPanel(
         {
             state.image?.let {
                 CoilImage(
-                    it.data,
+                    it.coilDataAny,
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier

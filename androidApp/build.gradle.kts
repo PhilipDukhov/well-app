@@ -7,6 +7,10 @@ plugins {
     id("kotlin-android")
 }
 
+dependencies {
+    implementation(platform(libAt("firebase.bom")))
+}
+
 libDependencies(
     "android.material",
     "android.appCompat",
@@ -17,6 +21,8 @@ libDependencies(
 
     "android.compose.*",
 
+    "firebase.analytics",
+
     "kotlin.coroutines.playServices",
     "kotlin.serializationJson",
     "kotlin.coroutines.core",
@@ -26,7 +32,7 @@ libDependencies(
     //tmp
     "ktor.client.core",
 
-//    ":auth",
+    ":atomic",
     ":serverModels",
     ":utils",
     ":sharedMobile"
@@ -43,7 +49,6 @@ android {
         compose = true
     }
     lintOptions {
-        disable("PackageName")
         isAbortOnError = false
     }
     kotlinOptions {
@@ -66,29 +71,45 @@ android {
     }
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = true
-            isShrinkResources = true
+//            isMinifyEnabled = true
+//            isShrinkResources = true
+//            -dontnote kotlinx.serialization.SerializationKt
+//            -keepattributes SourceFile,LineNumberTable        # Keep file names and line numbers.
+//            -keep public class * extends java.lang.Exception  # Optional: Keep custom exceptions.
             ndk {
                 debugSymbolLevel = "FULL"
             }
+            resValue("string", "app_name", "WELL")
             signingConfig = signingConfigs.getByName("release")
         }
         getByName("debug") {
             applicationIdSuffix = ".debug"
+            resValue("string", "app_name", "WELL_D")
         }
         val dotenv = dotenv {
             directory = "${projectDir}/../iosApp/Well/Supporting files/"
             filename = "Shared.xcconfig"
         }
-        val facebookAppId = dotenv["SHARED_FACEBOOK_APP_ID"]
-        val googleWebClientId = dotenv["ANDROID_GOOGLE_CLIENT_ID"]
 
         listOf("debug", "release").forEach {
+            val facebookAppId = dotenv["SHARED_FACEBOOK_APP_ID"]
+            val googleWebClientId = dotenv["ANDROID_GOOGLE_CLIENT_ID"]
+            val googleWebClientIdFull = "$googleWebClientId.apps.googleusercontent.com"
+            val googleProjectId = dotenv["GOOGLE_PROJECT_ID"]
+            val googleAppId = dotenv["GOOGLE_APP_ID"]
+            val apiKey = "AIzaSyAPi16R8G5T88zmqmCPwgK6NHv3zXU6BFY"
+
             getByName(it) {
                 listOf(
                     "facebook_app_id" to facebookAppId,
                     "fb_login_protocol_scheme" to "fb$facebookAppId",
-                    "google_web_client_id" to "$googleWebClientId.apps.googleusercontent.com"
+                    "gcm_defaultSenderId" to googleAppId,
+                    "google_app_id" to "1:${googleAppId}:android:23b05b40100225534c61a4",
+                    "google_api_key" to apiKey,
+                    "google_crash_reporting_api_key" to apiKey,
+                    "project_id" to googleProjectId,
+                    "default_web_client_id" to googleWebClientIdFull,
+                    "google_web_client_id" to googleWebClientIdFull
                 ).forEach { pair ->
                     resValue("string", pair.first, pair.second)
                 }

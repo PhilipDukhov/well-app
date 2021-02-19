@@ -7,7 +7,8 @@ import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg
 import com.well.sharedMobile.puerh.call.resizedImage
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.Msg as TopLevelMsg
 import com.well.sharedMobile.utils.asImageContainer
-import com.well.utils.atomic.AtomicRef
+import com.well.atomic.AtomicRef
+import com.well.napier.Napier
 import com.well.sharedMobile.puerh.call.webRtc.RtcMsg.ImageSharingContainer.Msg as RtcMsg
 
 class DrawingEffectHandler(
@@ -17,7 +18,6 @@ class DrawingEffectHandler(
     private val pendingPaths = AtomicRef<List<Path>?>()
 
     fun handleEffect(eff: Eff) {
-        println("ImageSharingEffectHandler handleEffect $eff")
         when (eff) {
             is Eff.RequestImageUpdate,
             -> Unit
@@ -89,6 +89,6 @@ class DrawingEffectHandler(
                 Msg.RemoteClear(msg.saveHistory, msg.date)
             }
         })).also {
-            println("ImageSharingEffectHandler handleDataChannelMessage $msg $it")
+            Napier.i("ImageSharingEffectHandler handleDataChannelMessage $msg $it")
         }
 }

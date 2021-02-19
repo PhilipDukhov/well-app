@@ -10,6 +10,8 @@ kotlin {
         usePredefinedExperimentalAnnotations()
         val commonMain by getting {
             libDependencies(
+                ":napier",
+                ":atomic",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib"
             )

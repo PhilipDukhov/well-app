@@ -29,7 +29,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>202102141831</string>
+	<string>202102172005</string>
 	<key>FacebookAdvertiserIDCollectionEnabled</key>
 	<true/>
 	<key>FacebookAppID</key>
@@ -38,8 +38,6 @@
 	<false/>
 	<key>FacebookDisplayName</key>
 	<string>$(TARGET_NAME)</string>
-	<key>googleClientId</key>
-	<string>$(GOOGLE_CLIENT_ID).apps.googleusercontent.com</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSApplicationQueriesSchemes</key>
@@ -95,5 +93,7 @@
 	</array>
 	<key>UIUserInterfaceStyle</key>
 	<string>Light</string>
+	<key>googleClientId</key>
+	<string>$(GOOGLE_CLIENT_ID).apps.googleusercontent.com</string>
 </dict>
 </plist>

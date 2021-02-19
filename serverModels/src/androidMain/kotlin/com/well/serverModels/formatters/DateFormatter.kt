@@ -14,7 +14,7 @@ actual fun DateFormatter.Companion.format(
     val timeZone = TimeZone.getTimeZone(timeZoneIdentifier)
     val timeZoneDisplayName = timeZone.getDisplayName(false, TimeZone.SHORT)
     timeFormatter.timeZone = timeZone
-    return "$timeZoneDisplayName ${timeFormatter.format(date)}"
+    return "$timeZoneDisplayName ${timeFormatter.format(date.date)}"
 }
 
 actual fun timeZonesIdentifiersList(): List<String> =

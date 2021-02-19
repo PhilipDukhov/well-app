@@ -119,7 +119,7 @@ object TopLevelFeature {
                 }
                 is Msg.Back -> {
                     when (state.currentScreen) {
-                        is ScreenState.OnlineUsers, is ScreenState.Login -> {
+                        ScreenState.LaunchScreen, is ScreenState.OnlineUsers, is ScreenState.Login -> {
                             return@eff Eff.SystemBack
                         }
                         is ScreenState.Call -> {
@@ -128,7 +128,6 @@ object TopLevelFeature {
                         is ScreenState.MyProfile -> {
                             return@reducer state.reduceMyProfile(MyProfileFeature.Msg.Back)
                         }
-                        ScreenState.LaunchScreen -> TODO()
                     }
                 }
                 is Msg.Pop -> {

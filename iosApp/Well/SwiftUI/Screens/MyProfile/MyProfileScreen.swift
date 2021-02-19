@@ -17,26 +17,24 @@ struct MyProfileScreen: View {
     let listener: (MyProfileFeature.Msg) -> Void
     
     var body: some View {
-        VStack(spacing: 0) {
-            state.navigationBarModel.map {
-                ModeledNavigationBar(model: $0, listener: listener)
+        state.navigationBarModel.map {
+            ModeledNavigationBar(model: $0, listener: listener)
+        }
+        ZStack(alignment: .topLeading) {
+            ScrollView {
+                ForEach(state.groups, id: \.self) { group in
+                    groupView(group)
+                    Divider()
+                }
+            } // ScrollView
+            .edgesIgnoringSafeArea(state.isCurrent ? Edge.Set() : .top)
+            if !state.isCurrent {
+                Control(Image(systemName: "chevron.left").foregroundColor(.white)) {
+                    listener(MyProfileFeature.MsgBack())
+                }
             }
-            ZStack(alignment: .topLeading) {
-                ScrollView {
-                    ForEach(state.groups, id: \.self) { group in
-                        groupView(group)
-                        Divider()
-                    }
-                } // ScrollView
-                .edgesIgnoringSafeArea(state.isCurrent ? Edge.Set() : .top)
-                if !state.isCurrent {
-                    Control(Image(systemName: "chevron.left").foregroundColor(.white)) {
-                        listener(MyProfileFeature.MsgBack())
-                    }
-                }
-                if state.editingStatus == .uploading {
-                    InactiveOverlay(showActivityIndicator: false)
-                }
+            if state.editingStatus == .uploading {
+                InactiveOverlay(showActivityIndicator: false)
             }
         }
     }

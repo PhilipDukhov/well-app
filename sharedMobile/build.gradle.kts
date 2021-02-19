@@ -27,6 +27,7 @@ kotlin {
     }
     val iosExportModules = listOf(
         ":serverModels",
+        ":napier",
         ":utils"
     ).map { project(it) }
     targets.withType<KotlinNativeTarget> {
@@ -43,6 +44,8 @@ kotlin {
             libDependencies(
                 ":serverModels",
                 ":utils",
+                ":atomic",
+                ":napier",
                 "kotlin.serializationJson",
                 "ktor.client.core",
                 "kotlin.coroutines.core",

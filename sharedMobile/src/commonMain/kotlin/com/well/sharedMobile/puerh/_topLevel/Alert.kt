@@ -20,6 +20,7 @@ sealed class Alert(
         Alert(
             title = throwable.userReadableDescription()
                 ?: (if (Platform.isDebug) "${throwable::class} $throwable" else Strings.somethingWentWrong),
+            description = if (Platform.isDebug) "${throwable::class} $throwable" else "",
             positiveAction = Action.Ok
         )
 
