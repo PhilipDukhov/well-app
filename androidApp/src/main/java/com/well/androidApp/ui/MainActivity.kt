@@ -4,9 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.runtime.Providers
-import com.google.firebase.FirebaseApp
-import com.google.firebase.FirebaseOptions
+import androidx.compose.runtime.CompositionLocalProvider
 import com.well.androidApp.R
 import com.well.androidApp.call.webRtc.WebRtcManager
 import com.well.androidApp.ui.composableScreens.theme.Theme
@@ -19,8 +17,6 @@ import com.well.sharedMobile.puerh.login.credentialProviders.GoogleProvider
 import com.well.sharedMobile.puerh.login.handleActivityResult
 import com.well.sharedMobile.utils.napier.NapierProxy
 import com.well.utils.Context
-import com.well.utils.platform.Platform
-import com.well.utils.platform.isDebug
 import dev.chrisbanes.accompanist.insets.ProvideWindowInsets
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
@@ -56,7 +52,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 setContent {
                     Theme {
                         ProvideWindowInsets {
-                            Providers(
+                            CompositionLocalProvider(
                                 LocalBackPressedDispatcher provides onBackPressedDispatcher,
                             ) {
                                 TopLevelScreen(it, featureProvider.feature::accept)

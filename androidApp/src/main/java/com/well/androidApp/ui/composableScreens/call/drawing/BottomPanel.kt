@@ -1,8 +1,13 @@
 package com.well.androidApp.ui.composableScreens.call.drawing
 
-import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
@@ -11,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.well.androidApp.R
 import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
 import com.well.androidApp.ui.composableScreens.πExt.borderKMM
 import com.well.serverModels.Color
@@ -41,7 +45,7 @@ fun BottomPanel(
                             onClick = {
                                 listener(Msg.UpdateColor(color))
                             },
-                            interactionState = remember { InteractionState() },
+                            interactionSource = remember { MutableInteractionSource() },
                             indication = rememberRipple(
                                 bounded = false,
                                 radius = 20.dp,
@@ -66,6 +70,7 @@ fun BottomPanel(
                 }
             }
     }
+// brush/eraser
 //    Row(
 //        horizontalArrangement = Arrangement.Center,
 //        modifier = Modifier
@@ -87,8 +92,8 @@ fun BottomPanel(
 //    }
 }
 
-private val State.Brush.drawable: Int
-    get() = when(this) {
-        State.Brush.Pen -> R.drawable.ic_sf_hand_draw_fill
-        State.Brush.Eraser -> R.drawable.ic_eraser
-    }
+//private val State.Brush.drawable: Int
+//    get() = when(this) {
+//        State.Brush.Pen -> R.drawable.ic_sf_hand_draw_fill
+//        State.Brush.Eraser -> R.drawable.ic_eraser
+//    }

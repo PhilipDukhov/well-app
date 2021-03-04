@@ -1,5 +1,6 @@
 package com.well.androidApp.ui.composableScreens.myProfile
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -10,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.*
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import com.well.androidApp.R
 import com.well.androidApp.ui.composableScreens.πCustomViews.BackPressHandler
@@ -99,18 +100,11 @@ private fun EditingTextField(
     onFinishEditing: (String) -> Unit,
 ) {
     var focusedState by remember { mutableStateOf(false) }
-    // Grab a reference to the keyboard controller whenever text input starts
-    var keyboardController by remember { mutableStateOf<SoftwareKeyboardController?>(null) }
-
-    // Show or hide the keyboard
-    DisposableEffect(
-        keyboardController,
-        focusedState
-    ) { // Guard side-effects against failed commits
-        keyboardController?.let {
-            if (focusedState) it.showSoftwareKeyboard() else it.hideSoftwareKeyboard()
-        }
-        onDispose { /* no-op */ }
+    LocalSoftwareKeyboardController.current?.run {
+        if (focusedState)
+            showSoftwareKeyboard()
+        else
+            hideSoftwareKeyboard()
     }
     var textState by remember { mutableStateOf(text) }
     var focusState by remember { mutableStateOf(FocusState.Inactive) }
@@ -127,14 +121,40 @@ private fun EditingTextField(
     if (focusedState) {
         BackPressHandler(onBackPressed = dismissKeyboard)
     }
+//    visualTransformation: VisualTransformation = VisualTransformation.None,
+//    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+//    keyboardActions: KeyboardActions = KeyboardActions.Default,
+//    singleLine: Boolean = false,
+//    maxLines: Int = Int.MAX_VALUE,
+//    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+//    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors()
     OutlinedTextField(
-        readOnly = onClick != null,
-        inactiveColor = Color.Black.toColor(),
-        activeColor = Color.Green.toColor(),
         value = textState,
         onValueChange = {
             textState = it
         },
+        readOnly = onClick != null,
+        textStyle = MaterialTheme.typography.body2,
+        label = {
+            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.body2
+                )
+            }
+        },
+        leadingIcon = leadingIcon,
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(
+            onDone = { finishEditing() }
+        ),
+        colors = TextFieldDefaults.textFieldColors(),
+//        inactiveColor = Color.Black.toColor(),
+//        activeColor = Color.Green.toColor(),
+//        onTextInputStarted = {
+//            keyboardController = it
+//            focusedState = true
+//        },
         modifier = Modifier
             .fillMaxWidth()
             .onFocusChanged {
@@ -157,25 +177,7 @@ private fun EditingTextField(
                     }
                 }
                 focusState = it
-            },
-        textStyle = MaterialTheme.typography.body2,
-        label = {
-            Providers(LocalContentAlpha provides ContentAlpha.medium) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.body2
-                )
             }
-        },
-        leadingIcon = leadingIcon,
-        onTextInputStarted = {
-            keyboardController = it
-            focusedState = true
-        },
-        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(
-            onDone = { finishEditing() }
-        ),
     )
 }
 

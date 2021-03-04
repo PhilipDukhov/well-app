@@ -4,8 +4,6 @@ import android.util.DisplayMetrics
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.AmbientTextStyle
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +30,6 @@ import androidx.compose.ui.unit.*
 import androidx.compose.ui.zIndex
 import com.well.serverModels.Color
 import com.well.serverModels.Point
-import dev.chrisbanes.accompanist.insets.AmbientWindowInsets
 import dev.chrisbanes.accompanist.insets.LocalWindowInsets
 import dev.chrisbanes.accompanist.insets.toPaddingValues
 
@@ -92,6 +89,14 @@ fun TextKMM(
     onTextLayout = onTextLayout,
     style = style,
 )
+
+fun Modifier.heightPlusTopSystemBars(height: Dp) =
+    composed {
+        height(
+            height + LocalWindowInsets.current.systemBars.toPaddingValues()
+                .calculateTopPadding()
+        )
+    }
 
 fun Modifier.heightPlusBottomSystemBars(height: Dp) =
     composed {

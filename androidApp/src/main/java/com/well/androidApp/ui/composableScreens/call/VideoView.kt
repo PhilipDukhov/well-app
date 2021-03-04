@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.AmbientContext
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.well.androidApp.call.webRtc.TextureViewRenderer
 import com.well.sharedMobile.puerh.call.VideoViewContext
@@ -14,7 +14,7 @@ fun VideoView(
     context: VideoViewContext,
     modifier: Modifier,
 ) {
-    val composableContext = AmbientContext.current
+    val composableContext = LocalContext.current
     val customView = remember {
         TextureViewRenderer(composableContext).apply {
             init(context.eglBase.eglBaseContext, null)

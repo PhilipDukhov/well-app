@@ -53,6 +53,11 @@ android {
     }
     kotlinOptions {
         useIR = true
+
+        freeCompilerArgs += listOf(
+            "-Xopt-in=androidx.compose.ui.ExperimentalComposeUiApi",
+            "-Xskip-prerelease-check"
+        )
     }
     composeOptions {
         kotlinCompilerExtensionVersion = project.version("compose")

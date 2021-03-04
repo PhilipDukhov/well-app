@@ -1,8 +1,7 @@
 package com.well.androidApp.ui.composableScreens.πCustomViews
 
-import androidx.compose.foundation.InteractionState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,7 +18,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.well.androidApp.ui.composableScreens.πExt.Image
-import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
 import com.well.androidApp.ui.composableScreens.πExt.thenOrNull
 
 data class ControlItem(
@@ -80,10 +78,8 @@ fun Control(
     modifier = modifier
         .clickable(
             enabled = enabled,
-            interactionState = remember { InteractionState() },
-            indication = rememberRipple(
-                bounded = false,
-            ),
+            interactionSource = remember { MutableInteractionSource() },
+            indication = rememberRipple(bounded = false),
             onClick = onClick,
         )
         .sizeIn(minHeight = controlMinSize, minWidth = controlMinSize)

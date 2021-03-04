@@ -1,8 +1,8 @@
 package com.well.server.routing
 
+import com.well.server.routing.auth.appleLogin
 import com.well.server.routing.auth.facebookLogin
 import com.well.server.routing.auth.googleLogin
-import com.well.server.routing.auth.testLogin
 import com.well.server.routing.userEditing.updateUser
 import com.well.server.routing.userEditing.uploadUserProfile
 import com.well.server.utils.Dependencies
@@ -61,7 +61,7 @@ fun Application.module() {
     routing {
         post("/facebookLogin") { facebookLogin(dependencies) }
         post("/googleLogin") { googleLogin(dependencies) }
-        post("/testLogin") { testLogin(dependencies) }
+        post("/appleLogin") { appleLogin(dependencies) }
         put("/user") { updateUser(dependencies) }
         post("/uploadUserProfile") { uploadUserProfile(dependencies) }
 

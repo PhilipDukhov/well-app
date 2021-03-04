@@ -21,9 +21,6 @@ sqldelight {
 
 kotlin {
     jvm {
-        compilations.all {
-            kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
-        }
         withJava()
     }
     sourceSets {

@@ -84,9 +84,9 @@ public class TextureViewRenderer extends TextureView
         }
 
         /**
-         * Limit render framerate.
+         * Limit render frame rate.
          *
-         * @param fps Limit render framerate to this value, or use Float.POSITIVE_INFINITY to disable fps
+         * @param fps Limit render frame rate to this value, or use Float.POSITIVE_INFINITY to disable fps
          *            reduction.
          */
         @Override

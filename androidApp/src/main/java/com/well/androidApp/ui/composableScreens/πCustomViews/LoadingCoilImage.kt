@@ -17,6 +17,7 @@ fun LoadingCoilImage(
 ) = CoilImage(
     data = data,
     contentDescription = null,
+    fadeIn = true,
     loading = {
         Box {
             CircularProgressIndicator(
@@ -25,6 +26,9 @@ fun LoadingCoilImage(
                     .fillMaxSize(0.7F)
             )
         }
+    },
+    onRequestCompleted = {
+      println("LoadingCoilImage onRequestCompleted $it")
     },
     contentScale = contentScale,
     modifier = modifier,

@@ -1,7 +1,7 @@
 package com.well.androidApp.ui.composableScreens.call
 
-import androidx.compose.foundation.InteractionState
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -50,10 +50,8 @@ fun ToggleStillButton(
             .size(size)
             .clickable(
                 onClick = onClick,
-                interactionState = remember { InteractionState() },
-                indication = rememberRipple(
-                    radius = size / 2,
-                )
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(bounded = false, radius = size / 2)
             )
             .clip(CircleShape)
             .backgroundKMM(backgroundColor)

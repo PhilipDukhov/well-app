@@ -106,7 +106,7 @@ subprojects {
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
         kotlinOptions.freeCompilerArgs += listOf(
             // jetpack compose
-            "-Xallow-jvm-ir-dependencies", "-Xskip-prerelease-check",
+            "-Xallow-jvm-ir-dependencies",
             "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI",
             "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
             "-Xopt-in=kotlinx.serialization.ExperimentalSerializationApi"

@@ -1,8 +1,13 @@
 package com.well.androidApp.ui.composableScreens.call
 
-import android.util.DisplayMetrics
-import com.well.androidApp.ui.composableScreens.πExt.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -20,14 +25,15 @@ import com.well.androidApp.ui.composableScreens.call.drawing.DrawingContent
 import com.well.androidApp.ui.composableScreens.call.drawing.DrawingPanel
 import com.well.androidApp.ui.composableScreens.πCustomViews.UserProfileImage
 import com.well.androidApp.ui.composableScreens.πCustomViews.controlMinSize
+import com.well.androidApp.ui.composableScreens.πExt.Image
 import com.well.androidApp.ui.composableScreens.πExt.visibility
 import com.well.androidApp.ui.composableScreens.πExt.widthDp
 import com.well.serverModels.User
-import com.well.sharedMobile.utils.ViewConstants.CallScreen.BottomBar.CallButtonOffset
-import com.well.sharedMobile.utils.ViewConstants.CallScreen.CallButtonRadius
 import com.well.sharedMobile.puerh.call.CallFeature.Msg
 import com.well.sharedMobile.puerh.call.CallFeature.State
 import com.well.sharedMobile.puerh.call.CallFeature.State.Status
+import com.well.sharedMobile.utils.ViewConstants.CallScreen.BottomBar.CallButtonOffset
+import com.well.sharedMobile.utils.ViewConstants.CallScreen.CallButtonRadius
 import dev.chrisbanes.accompanist.insets.navigationBarsPadding
 import dev.chrisbanes.accompanist.insets.statusBarsPadding
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg as DrawingMsg
@@ -191,7 +197,7 @@ fun CallScreen(
                     .align(Alignment.End)
                     .padding(minimizedVideoContainerPadding)
                     .offset(
-                        x = (controlMinSize - LocalContext.current.resources.displayMetrics.widthDp * minimizedVideoPart + minimizedVideoContainerPadding) / 2,
+                        x = (controlMinSize - LocalContext.current.resources.displayMetrics.widthDp * minimizedVideoPart) / 2,
                         y = callButtonOffset
                     )
             )
@@ -259,7 +265,7 @@ private fun Modifier.videoModifier(
 }
 
 private const val minimizedVideoPart = 0.3f
-private val minimizedVideoContainerPadding = 0.dp
+private val minimizedVideoContainerPadding = 10.dp
 
 private fun ((Msg) -> Unit).invokeDrawingMsg(msg: DrawingMsg) =
     invoke(Msg.DrawingMsg(msg))

@@ -1,12 +1,16 @@
 package com.well.androidApp.ui.composableScreens.call
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 import com.well.androidApp.R
 import com.well.androidApp.ui.composableScreens.πCustomViews.Control
@@ -21,24 +25,32 @@ fun VideoViewContainer(
     containerModifier: Modifier,
     modifier: Modifier,
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = containerModifier
+    BoxWithConstraints(
+        modifier = Modifier.background(Color.Red).then(containerModifier)
             .alpha(if (view.hidden) 0F else 1F)
-    ) {
-        Box(
-            modifier = modifier
+            .onSizeChanged {
+                // testing position of flip button
+                println("asdasda ${it.width} ${it.height}")
+            }) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+
+
         ) {
-            VideoView(
-                view.context,
-                modifier = Modifier
-                    .fillMaxSize()
+            Box(
+                modifier = modifier
+            ) {
+                VideoView(
+                    view.context,
+                    modifier = Modifier
+                        .fillMaxSize()
                 )
             }
             if (onFlip != null) {
                 FlipCameraButton(onFlip)
             }
         }
+    }
 }
 
 @Composable
