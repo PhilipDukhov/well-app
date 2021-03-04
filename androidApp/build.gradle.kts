@@ -71,11 +71,9 @@ android {
     }
     buildTypes {
         getByName("release") {
-//            isMinifyEnabled = true
-//            isShrinkResources = true
-//            -dontnote kotlinx.serialization.SerializationKt
-//            -keepattributes SourceFile,LineNumberTable        # Keep file names and line numbers.
-//            -keep public class * extends java.lang.Exception  # Optional: Keep custom exceptions.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
             ndk {
                 debugSymbolLevel = "FULL"
             }
