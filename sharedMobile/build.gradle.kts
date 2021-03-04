@@ -26,9 +26,9 @@ kotlin {
         ios.deploymentTarget = project.version("iosDeploymentTarget")
     }
     val iosExportModules = listOf(
-        ":serverModels",
-        ":napier",
-        ":utils"
+        ":xModules:models",
+        ":xModules:napier",
+        ":xModules:utils"
     ).map { project(it) }
     targets.withType<KotlinNativeTarget> {
         binaries.withType<Framework> {
@@ -42,10 +42,10 @@ kotlin {
 
         val commonMain by getting {
             libDependencies(
-                ":serverModels",
-                ":utils",
-                ":atomic",
-                ":napier",
+                ":xModules:models",
+                ":xModules:utils",
+                ":xModules:atomic",
+                ":xModules:napier",
                 "kotlin.serializationJson",
                 "ktor.client.core",
                 "kotlin.coroutines.core",

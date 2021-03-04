@@ -26,7 +26,7 @@ kotlin {
     sourceSets {
         val jvmMain by getting {
             libDependencies(
-                ":serverModels",
+                ":xModules:models",
                 "server.*",
                 "ktor.server.*",
                 "ktor.serialization",

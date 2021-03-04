@@ -1,27 +1,14 @@
 rootProject.name = "WELL"
 
-private enum class Env {
-    Full,
-    Server,
-    Mobile,
-}
-val serverPaths = listOf(
-    "server"
-)
-val mobilePaths = listOf(
+listOf(
+    "androidApp",
+    "server",
     "sharedMobile",
-    "atomic",
-    "napier",
-    "utils",
-    "androidApp"
-)
-(when (Env.Full) {
-    Env.Full -> serverPaths + mobilePaths
-    Env.Mobile -> mobilePaths
-    Env.Server -> serverPaths
-} + listOf(
-    "serverModels"
-)).forEach {
+    "xModules:models",
+    "xModules:atomic",
+    "xModules:napier",
+    "xModules:utils"
+).forEach {
     include(":$it")
 }
 

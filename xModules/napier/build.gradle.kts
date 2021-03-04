@@ -10,7 +10,7 @@ kotlin {
         usePredefinedExperimentalAnnotations()
         val commonMain by getting {
             libDependencies(
-                ":atomic",
+                ":xModules:atomic",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib"
             )

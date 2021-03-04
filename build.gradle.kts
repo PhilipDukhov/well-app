@@ -115,10 +115,10 @@ subprojects {
 
     if (gradlePluginVersion.first() == '7') {
         if (listOf(
-                ":serverModels",
-                ":utils",
-                ":napier",
-                ":atomic",
+                ":xModules:models",
+                ":xModules:utils",
+                ":xModules:napier",
+                ":xModules:atomic",
                 ":sharedMobile"
             ).contains(path)
         ) {

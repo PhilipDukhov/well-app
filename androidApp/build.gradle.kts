@@ -32,9 +32,9 @@ libDependencies(
     //tmp
     "ktor.client.core",
 
-    ":atomic",
-    ":serverModels",
-    ":utils",
+    ":xModules:atomic",
+    ":xModules:models",
+    ":xModules:utils",
     ":sharedMobile"
 )
 
