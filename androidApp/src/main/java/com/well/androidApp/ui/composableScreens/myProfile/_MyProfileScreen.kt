@@ -42,7 +42,7 @@ import com.well.serverModels.User
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.State
 import com.well.sharedMobile.puerh.myProfile.UIGroup
-import dev.chrisbanes.accompanist.insets.navigationBarsPadding
+import com.google.accompanist.insets.navigationBarsPadding
 
 @Composable
 fun MyProfileScreen(

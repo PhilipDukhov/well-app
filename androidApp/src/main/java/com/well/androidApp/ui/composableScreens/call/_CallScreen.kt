@@ -34,8 +34,8 @@ import com.well.sharedMobile.puerh.call.CallFeature.State
 import com.well.sharedMobile.puerh.call.CallFeature.State.Status
 import com.well.sharedMobile.utils.ViewConstants.CallScreen.BottomBar.CallButtonOffset
 import com.well.sharedMobile.utils.ViewConstants.CallScreen.CallButtonRadius
-import dev.chrisbanes.accompanist.insets.navigationBarsPadding
-import dev.chrisbanes.accompanist.insets.statusBarsPadding
+import com.google.accompanist.insets.navigationBarsPadding
+import com.google.accompanist.insets.statusBarsPadding
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg as DrawingMsg
 
 @Composable

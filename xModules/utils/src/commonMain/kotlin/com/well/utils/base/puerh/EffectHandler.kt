@@ -2,7 +2,7 @@ package com.well.utils.puerh
 
 import com.well.atomic.Closeable
 import com.well.atomic.CloseableContainer
-import com.well.utils.Feature
+import com.well.utils.base.puerh.Feature
 import com.well.atomic.AtomicRef
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

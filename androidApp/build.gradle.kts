@@ -14,10 +14,8 @@ dependencies {
 libDependencies(
     "android.material",
     "android.appCompat",
-    "android.constraint",
     "android.coreCtx",
     "android.activity",
-    "android.fragment",
 
     "android.compose.*",
 

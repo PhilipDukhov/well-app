@@ -21,7 +21,7 @@ import com.well.androidApp.ui.composableScreens.πExt.borderKMM
 import com.well.serverModels.Color
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.State
-import dev.chrisbanes.accompanist.insets.navigationBarsPadding
+import com.google.accompanist.insets.navigationBarsPadding
 
 @Composable
 fun BottomPanel(

@@ -13,7 +13,7 @@ import com.well.sharedMobile.puerh.login.LoginFeature.Msg
 import com.well.sharedMobile.puerh.login.LoginFeature.State
 import com.well.sharedMobile.puerh.login.SocialNetwork
 import com.well.sharedMobile.utils.Gradient
-import dev.chrisbanes.accompanist.insets.systemBarsPadding
+import com.google.accompanist.insets.systemBarsPadding
 
 @Composable
 fun LoginScreen(

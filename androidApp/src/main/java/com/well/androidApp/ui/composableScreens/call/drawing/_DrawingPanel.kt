@@ -13,7 +13,7 @@ import com.well.androidApp.ui.composableScreens.πExt.toColor
 import com.well.serverModels.Size
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.State
-import dev.chrisbanes.accompanist.coil.CoilImage
+import com.google.accompanist.coil.CoilImage
 
 @Composable
 fun DrawingPanel(

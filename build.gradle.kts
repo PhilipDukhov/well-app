@@ -16,7 +16,6 @@ buildscript {
     repositories {
         gradlePluginPortal()
         google()
-        jcenter()
         mavenCentral()
     }
 
@@ -42,6 +41,7 @@ allprojects {
     repositories {
         jcenter()
         google()
+        mavenCentral()
 
         exclusiveContent {
             forRepository {
@@ -111,6 +111,9 @@ subprojects {
             "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
             "-Xopt-in=kotlinx.serialization.ExperimentalSerializationApi"
         )
+        kotlinOptions {
+            useIR = true
+        }
     }
 
     if (gradlePluginVersion.first() == '7') {

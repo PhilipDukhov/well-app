@@ -30,8 +30,8 @@ import androidx.compose.ui.unit.*
 import androidx.compose.ui.zIndex
 import com.well.serverModels.Color
 import com.well.serverModels.Point
-import dev.chrisbanes.accompanist.insets.LocalWindowInsets
-import dev.chrisbanes.accompanist.insets.toPaddingValues
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.toPaddingValues
 
 fun Size(size: Float): Size = Size(size, size)
 

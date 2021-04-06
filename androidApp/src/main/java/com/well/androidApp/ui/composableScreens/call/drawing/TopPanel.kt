@@ -13,7 +13,7 @@ import com.well.androidApp.R
 import com.well.androidApp.ui.composableScreens.πCustomViews.Control
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.State
-import dev.chrisbanes.accompanist.insets.statusBarsPadding
+import com.google.accompanist.insets.statusBarsPadding
 
 @Composable
 fun TopPanel(

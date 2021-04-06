@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Well-iOS" type="KmmRunConfiguration" factoryName="iOS Application" XCODE_SCHEME="WELL" EXEC_TARGET_ID="e9b37e3455348021178c93d8676501b7a30c85d7">
+  <configuration default="false" name="Well-iOS" type="KmmRunConfiguration" factoryName="iOS Application" CONFIG_VERSION="1" EXEC_TARGET_ID="e9b37e3455348021178c93d8676501b7a30c85d7" XCODE_PROJECT="$PROJECT_DIR$/./iosApp/Well.xcworkspace" XCODE_SCHEME="WELL" XCODE_SCHEME_NAME="Well">
     <method v="2">
       <option name="com.jetbrains.kmm.ios.BuildIOSAppTask" enabled="true" />
     </method>

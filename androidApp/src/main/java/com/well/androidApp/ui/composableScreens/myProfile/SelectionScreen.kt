@@ -27,7 +27,7 @@ import com.well.androidApp.ui.composableScreens.πExt.Image
 import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
 import com.well.androidApp.ui.composableScreens.πExt.toColor
 import com.well.serverModels.Color
-import dev.chrisbanes.accompanist.insets.navigationBarsPadding
+import com.google.accompanist.insets.navigationBarsPadding
 
 @Composable
 fun SelectionScreen(

@@ -17,7 +17,7 @@ import com.well.sharedMobile.puerh.login.credentialProviders.GoogleProvider
 import com.well.sharedMobile.puerh.login.handleActivityResult
 import com.well.sharedMobile.utils.napier.NapierProxy
 import com.well.utils.Context
-import dev.chrisbanes.accompanist.insets.ProvideWindowInsets
+import com.google.accompanist.insets.ProvideWindowInsets
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
     init {

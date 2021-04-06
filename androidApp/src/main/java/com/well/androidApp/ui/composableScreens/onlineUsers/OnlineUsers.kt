@@ -13,7 +13,7 @@ import com.well.androidApp.ui.composableScreens.πCustomViews.NavigationBar
 import com.well.androidApp.ui.composableScreens.πCustomViews.UserProfileImage
 import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersFeature
 import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersFeature.Msg
-import dev.chrisbanes.accompanist.insets.navigationBarsPadding
+import com.google.accompanist.insets.navigationBarsPadding
 
 @Composable
 fun OnlineUsersScreen(

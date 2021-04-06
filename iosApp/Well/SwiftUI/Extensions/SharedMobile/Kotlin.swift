@@ -10,3 +10,14 @@ extension KotlinClosedFloatingPointRange {
         (start as! Bound)...(endInclusive as! Bound)
     }
 }
+
+//extension KotlinThrowable {
+//    func asError() -> Error {
+//        do {
+//            try TestKt.rethrow(exception: self)
+//        } catch {
+//            return error
+//        }
+//        fatalError("should not reach here")
+//    }
+//}

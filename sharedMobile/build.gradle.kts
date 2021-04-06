@@ -76,9 +76,11 @@ kotlin {
             )
         }
         val androidTest by getting {
+            libDependencies(
+                "tests.junit"
+            )
             dependencies {
                 implementation(kotlin("test-junit"))
-                implementation("junit:junit:4.13.1")
             }
         }
         val iosMain by getting {
