@@ -1,6 +1,6 @@
 package com.well.sharedMobile.puerh.login.credentialProviders
 
-import com.well.utils.Context
+import com.well.modules.utils.Context
 import platform.Foundation.NSURL
 import platform.UIKit.UIApplication
 

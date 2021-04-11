@@ -1,7 +1,6 @@
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.LibraryPlugin
-import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 object Constants {
     val javaVersion = JavaVersion.VERSION_11
@@ -30,16 +29,15 @@ repositories {
     mavenCentral()
 }
 
-//plugins {
-//    id("org.cqfn.diktat.diktat-gradle-plugin") version "0.1.5"
-//}
-
 val gradlePluginVersion = extra["gradlePluginVersion"] as String
 
 allprojects {
     @Suppress("UnstableApiUsage")
     repositories {
+        // still needed for webrtc
+        @Suppress("JcenterRepositoryObsolete", "DEPRECATION")
         jcenter()
+
         google()
         mavenCentral()
 
@@ -105,11 +103,9 @@ subprojects {
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
         kotlinOptions.freeCompilerArgs += listOf(
-            // jetpack compose
-            "-Xallow-jvm-ir-dependencies",
             "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI",
             "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-            "-Xopt-in=kotlinx.serialization.ExperimentalSerializationApi"
+            "-Xopt-in=kotlinx.serialization.ExperimentalSerializationApi",
         )
         kotlinOptions {
             useIR = true
@@ -118,11 +114,11 @@ subprojects {
 
     if (gradlePluginVersion.first() == '7') {
         if (listOf(
-                ":xModules:models",
-                ":xModules:utils",
-                ":xModules:napier",
-                ":xModules:atomic",
-                ":sharedMobile"
+                ":modules:models",
+                ":modules:utils",
+                ":modules:napier",
+                ":modules:atomic",
+                ":sharedMobile",
             ).contains(path)
         ) {
             configurations {
@@ -132,7 +128,7 @@ subprojects {
                     "androidTestReleaseApi",
                     "testApi",
                     "testDebugApi",
-                    "testReleaseApi"
+                    "testReleaseApi",
                 ).forEach {
                     create(it) {}
                 }
@@ -141,6 +137,13 @@ subprojects {
     }
 
     apply(from = "${rootDir}/dependencies.gradle")
+    configurations.all {
+        resolutionStrategy.eachDependency {
+            when (requested.group to requested.name) {
+                "org.jetbrains.kotlin" to "kotlin-reflect" -> useVersion(project.version("kotlin"))
+            }
+        }
+    }
 }
 
 configurations.all {
@@ -174,41 +177,5 @@ if (allDepsNeeded != null) {
 // ./gradlew -q -PdependencyUpdatesNeeded=1 dependencyUpdates
 val dependencyUpdatesNeeded: String? by project
 if (dependencyUpdatesNeeded != null) {
-    apply(plugin = "com.github.ben-manes.versions")
-
-    fun isNonStable(version: String): Boolean {
-        val stableKeyword =
-            listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
-        val regex = "^[0-9,.v-]+(-r)?$".toRegex()
-        val isStable = stableKeyword || regex.matches(version)
-        return isStable.not()
-    }
-
-    tasks.named("dependencyUpdates", DependencyUpdatesTask::class.java).configure {
-        // Example 1: reject all non stable versions
-        rejectVersionIf {
-            isNonStable(candidate.version)
-        }
-
-        // Example 2: disallow release candidates as upgradable versions from stable versions
-        rejectVersionIf {
-            isNonStable(candidate.version) && !isNonStable(currentVersion)
-        }
-
-        // Example 3: using the full syntax
-        resolutionStrategy {
-            componentSelection {
-                all {
-                    if (isNonStable(candidate.version) && !isNonStable(currentVersion)) {
-                        reject("Release candidate")
-                    }
-                }
-            }
-        }
-
-        checkForGradleUpdate = true
-        outputFormatter = "json"
-        outputDir = "build/dependencyUpdates"
-        reportfileName = "report"
-    }
+    apply(from = "dependencyUpdates.gradle.kts")
 }

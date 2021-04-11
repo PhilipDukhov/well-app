@@ -2,11 +2,11 @@ package com.well.sharedMobile.networking.webSocketManager
 
 import com.well.sharedMobile.networking.RedirectResponseException
 import com.well.sharedMobile.networking.getThrowable
-import com.well.atomic.freeze
-import com.well.napier.Napier
-import com.well.utils.resumeWithException
+import com.well.modules.atomic.freeze
+import com.well.modules.napier.Napier
+import com.well.modules.utils.resumeWithException
 import io.ktor.client.features.ClientRequestException
-import com.well.utils.toThrowable
+import com.well.modules.utils.toThrowable
 import io.ktor.http.*
 import kotlinx.coroutines.*
 import platform.Foundation.*

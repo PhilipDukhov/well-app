@@ -11,11 +11,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.well.androidApp.ui.composableScreens.πCustomViews.UserProfileImage
 import com.well.androidApp.ui.composableScreens.πExt.Image
-import com.well.serverModels.User
+import com.well.modules.models.User
 import com.well.androidApp.R
 import com.well.androidApp.ui.composableScreens.πCustomViews.Control
 import com.well.androidApp.ui.composableScreens.πExt.toColor
-import com.well.serverModels.Color
+import com.well.modules.models.Color
 
 private val padding = 16.dp
 

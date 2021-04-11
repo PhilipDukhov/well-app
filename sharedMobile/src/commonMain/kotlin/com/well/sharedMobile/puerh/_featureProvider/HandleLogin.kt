@@ -1,18 +1,18 @@
 package com.well.sharedMobile.puerh._featureProvider
 
-import com.well.serverModels.User
+import com.well.modules.models.User
 import com.well.sharedMobile.networking.NetworkManager
 import com.well.sharedMobile.puerh._topLevel.Alert
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature
 import com.well.sharedMobile.puerh.login.LoginFeature
 import com.well.sharedMobile.puerh.login.SocialNetwork
 import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersApiEffectHandler
-import com.well.utils.dataStore.authToken
-import com.well.utils.dataStore.deviceUUID
-import com.well.utils.puerh.EffectHandler
-import com.well.utils.puerh.adapt
-import com.well.utils.puerh.wrapWithEffectHandler
-import com.well.utils.randomUUIDString
+import com.well.modules.utils.dataStore.authToken
+import com.well.modules.utils.dataStore.deviceUUID
+import com.well.modules.utils.puerh.EffectHandler
+import com.well.modules.utils.puerh.adapt
+import com.well.modules.utils.puerh.wrapWithEffectHandler
+import com.well.modules.utils.randomUUIDString
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -28,7 +28,7 @@ fun FeatureProvider.socialNetworkLogin(
                 gotUser(user, token, listener)
             }
         } catch (t: Throwable) {
-            if (t !is CancellationException && t.message?.contains("com.well.utils error 0") != true) {
+            if (t !is CancellationException && t.message?.contains("com.well.modules.utils error 0") != true) {
                 coroutineScope.launch {
                     listener.invoke(TopLevelFeature.Msg.ShowAlert(Alert.Throwable(t)))
                 }

@@ -26,7 +26,7 @@ import com.well.androidApp.ui.composableScreens.πCustomViews.NavigationBar
 import com.well.androidApp.ui.composableScreens.πExt.Image
 import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
 import com.well.androidApp.ui.composableScreens.πExt.toColor
-import com.well.serverModels.Color
+import com.well.modules.models.Color
 import com.google.accompanist.insets.navigationBarsPadding
 
 @Composable

@@ -1,14 +1,12 @@
 inhibit_all_warnings!
 
-ios_deployment_target = '13.4'
+ios_deployment_target = '14.0'
 
 target 'Well' do
   platform :ios, ios_deployment_target
   use_frameworks!
 
   pod 'sharedMobile', :path => '../sharedMobile'
-  #  pod 'auth', :path => '../auth'
-  #
   pod 'GoogleWebRTC'
   
   pod 'GoogleSignIn'

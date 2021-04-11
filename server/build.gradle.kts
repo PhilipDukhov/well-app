@@ -21,12 +21,15 @@ sqldelight {
 
 kotlin {
     jvm {
-        withJava()
+        val kotlinVersion = (extra["Versions"] as Map<*, *>)["kotlin"] as String
+        if (kotlinVersion.startsWith("1.5")) {
+            withJava()
+        }
     }
     sourceSets {
         val jvmMain by getting {
             libDependencies(
-                ":xModules:models",
+                ":modules:models",
                 "server.*",
                 "ktor.server.*",
                 "ktor.serialization",
@@ -38,7 +41,7 @@ kotlin {
                 "google.httpClientApacheV2",
                 "logback",
                 "kotlin.serializationJson",
-                "kotlin.stdLib"
+                "kotlin.stdLib",
             )
         }
     }

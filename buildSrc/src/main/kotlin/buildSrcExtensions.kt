@@ -1,7 +1,6 @@
 import org.codehaus.groovy.runtime.GStringImpl
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
 import org.gradle.kotlin.dsl.add
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet

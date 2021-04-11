@@ -26,9 +26,9 @@ kotlin {
         ios.deploymentTarget = project.version("iosDeploymentTarget")
     }
     val iosExportModules = listOf(
-        ":xModules:models",
-        ":xModules:napier",
-        ":xModules:utils"
+        ":modules:models",
+        ":modules:napier",
+        ":modules:utils",
     ).map { project(it) }
     targets.withType<KotlinNativeTarget> {
         binaries.withType<Framework> {
@@ -42,14 +42,11 @@ kotlin {
 
         val commonMain by getting {
             libDependencies(
-                ":xModules:models",
-                ":xModules:utils",
-                ":xModules:atomic",
-                ":xModules:napier",
+                ":modules:atomic",
                 "kotlin.serializationJson",
                 "ktor.client.core",
                 "kotlin.coroutines.core",
-                "kotlin.stdLib"
+                "kotlin.stdLib",
             )
             dependencies {
                 iosExportModules.forEach {
@@ -72,12 +69,12 @@ kotlin {
                 "android.activity",
                 "android.compose.accompanist.coil",
                 "ktor.client.engine.cio",
-                "kotlin.coroutines.playServices"
+                "kotlin.coroutines.playServices",
             )
         }
         val androidTest by getting {
             libDependencies(
-                "tests.junit"
+                "tests.junit",
             )
             dependencies {
                 implementation(kotlin("test-junit"))
@@ -85,7 +82,7 @@ kotlin {
         }
         val iosMain by getting {
             libDependencies(
-                "ktor.client.engine.ios"
+                "ktor.client.engine.ios",
             )
         }
     }

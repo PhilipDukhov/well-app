@@ -4,8 +4,8 @@ import com.well.server.utils.Dependencies
 import com.well.server.utils.append
 import com.well.server.utils.getPrimitiveContent
 import com.well.server.utils.uploadToS3FromUrl
-import com.well.serverModels.User
-import com.well.serverModels.UserId
+import com.well.modules.models.User
+import com.well.modules.models.UserId
 import io.ktor.application.*
 import io.ktor.client.*
 import io.ktor.client.request.*

@@ -1,15 +1,15 @@
 package com.well.sharedMobile.puerh._topLevel
 
-import com.well.serverModels.User
-import com.well.serverModels.WebSocketMessage
+import com.well.modules.models.User
+import com.well.modules.models.WebSocketMessage
 import com.well.sharedMobile.puerh.call.CallFeature
 import com.well.sharedMobile.puerh.login.LoginFeature
 import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersFeature
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.State.*
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature
-import com.well.utils.map
-import com.well.utils.toSetOf
-import com.well.utils.withEmptySet
+import com.well.modules.utils.base.map
+import com.well.modules.utils.base.toSetOf
+import com.well.modules.utils.base.withEmptySet
 
 object TopLevelFeature {
     fun initialState(

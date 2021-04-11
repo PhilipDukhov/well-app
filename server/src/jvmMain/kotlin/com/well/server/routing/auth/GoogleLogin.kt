@@ -9,7 +9,7 @@ import io.ktor.request.*
 import io.ktor.util.pipeline.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import com.well.serverModels.User
+import com.well.modules.models.User
 
 suspend fun PipelineContext<*, ApplicationCall>.googleLogin(dependencies: Dependencies) =
     dependencies.run {

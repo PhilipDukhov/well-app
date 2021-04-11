@@ -9,7 +9,7 @@ import coil.executeBlocking
 import coil.imageLoader
 import coil.request.ImageRequest
 import coil.size.Scale
-import com.well.serverModels.Size
+import com.well.modules.models.Size
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 

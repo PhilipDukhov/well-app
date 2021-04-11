@@ -8,7 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
 import com.well.androidApp.ui.composableScreens.πExt.toColor
-import com.well.serverModels.Color
+import com.well.modules.models.Color
 
 @Composable
 fun InactiveOverlay(showActivityIndicator: Boolean = true) {

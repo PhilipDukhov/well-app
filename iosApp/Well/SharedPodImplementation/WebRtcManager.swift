@@ -60,12 +60,10 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
     }
     private var remoteDataChannel: RTCDataChannel?
     var manyCamerasAvailable: Bool {
-//        AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInDualCamera], mediaType: <#T##AVMediaType?##AVFoundation.AVMediaType?#>, position: <#T##Position##AVFoundation.AVCaptureDevice.Position#>)
-        return Set(AVCaptureDevice.devices(for: .video)
-            .map {
-                $0.position == .front
-            })
-                   .count == 2
+        Set(
+            RTCCameraVideoCapturer.captureDevices()
+                .map { $0.position == .front }
+        ).count == 2
     }
     private let streamIds = ["track"]
 

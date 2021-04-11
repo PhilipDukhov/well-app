@@ -9,8 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
-import com.well.serverModels.Color
-import com.well.serverModels.User
+import com.well.modules.models.Color
+import com.well.modules.models.User
 import com.well.sharedMobile.utils.ImageContainer
 import com.well.sharedMobile.utils.SharedImage
 import com.well.sharedMobile.utils.UrlImage

@@ -6,7 +6,7 @@ import android.widget.LinearLayout
 import androidx.appcompat.widget.LinearLayoutCompat
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textview.MaterialTextView
-import com.well.utils.ui.toDp
+import com.well.modules.utils.ui.toDp
 
 data class BottomSheetDialogBuilder(val context: Context) {
     private val linearLayout = LinearLayoutCompat(context).apply {

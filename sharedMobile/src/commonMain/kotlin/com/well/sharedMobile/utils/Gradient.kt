@@ -1,7 +1,7 @@
 package com.well.sharedMobile.utils
 
-import com.well.serverModels.Color
-import com.well.serverModels.Point
+import com.well.modules.models.Color
+import com.well.modules.models.Point
 
 data class Gradient(
     val backgroundColor: Color,

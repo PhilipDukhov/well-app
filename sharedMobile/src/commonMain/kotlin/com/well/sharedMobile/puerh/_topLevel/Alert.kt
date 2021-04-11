@@ -1,8 +1,8 @@
 package com.well.sharedMobile.puerh._topLevel
 
-import com.well.utils.platform.Platform
-import com.well.utils.platform.isDebug
-import com.well.utils.userReadableDescription
+import com.well.modules.utils.platform.Platform
+import com.well.modules.utils.platform.isDebug
+import com.well.modules.utils.userReadableDescription
 
 sealed class Alert(
     val title: String = "",

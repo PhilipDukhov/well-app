@@ -47,7 +47,6 @@
 		D519AF87252441DC00C24377 /* LoginInitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D519AF86252441DC00C24377 /* LoginInitialViewController.swift */; };
 		D519AFAD25245E0F00C24377 /* LoginSocialsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D519AFAC25245E0F00C24377 /* LoginSocialsView.swift */; };
 		D5378B1B25DA211C00561199 /* InactiveOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5378B1A25DA211C00561199 /* InactiveOverlay.swift */; };
-		D555C1DD25D5C88B00B4755F /* List+Separator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D555C1DC25D5C88B00B4755F /* List+Separator.swift */; };
 		D555C1DF25D63A5500B4755F /* SelectionScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D555C1DE25D63A5500B4755F /* SelectionScreen.swift */; };
 		D555C1E125D63A6F00B4755F /* EditingField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D555C1E025D63A6F00B4755F /* EditingField.swift */; };
 		D555C1E925D64A9100B4755F /* Control.swift in Sources */ = {isa = PBXBuildFile; fileRef = D555C1E825D64A9100B4755F /* Control.swift */; };
@@ -137,7 +136,6 @@
 		D519AFAC25245E0F00C24377 /* LoginSocialsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSocialsView.swift; sourceTree = "<group>"; };
 		D524FE22256D5BAA00090D40 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
 		D5378B1A25DA211C00561199 /* InactiveOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InactiveOverlay.swift; sourceTree = "<group>"; };
-		D555C1DC25D5C88B00B4755F /* List+Separator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "List+Separator.swift"; sourceTree = "<group>"; };
 		D555C1DE25D63A5500B4755F /* SelectionScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionScreen.swift; sourceTree = "<group>"; };
 		D555C1E025D63A6F00B4755F /* EditingField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditingField.swift; sourceTree = "<group>"; };
 		D555C1E825D64A9100B4755F /* Control.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Control.swift; sourceTree = "<group>"; };
@@ -239,7 +237,6 @@
 				963518ED05F25F148D6F5928 /* SwiftUI.swift */,
 				963513DDB06C22E5A9391A01 /* EdgeInsets.swift */,
 				963518BD2D5690278A4E6851 /* Color.swift */,
-				D555C1DC25D5C88B00B4755F /* List+Separator.swift */,
 				96351DDBE2296E6603783838 /* CG.swift */,
 				D555C1F025D70AB700B4755F /* Foundation.swift */,
 			);
@@ -658,7 +655,6 @@
 				D508765C259A6858000A57E5 /* VideoView.swift in Sources */,
 				D519AF87252441DC00C24377 /* LoginInitialViewController.swift in Sources */,
 				D5BFD57D2524B06900A94FCC /* NSError+description.swift in Sources */,
-				D555C1DD25D5C88B00B4755F /* List+Separator.swift in Sources */,
 				D555C21125D89A1000B4755F /* GoogleProvider.swift in Sources */,
 				D5BFD5BA2524BFB900A94FCC /* Future.swift in Sources */,
 				D5F0A09C2578AC4D002A55DB /* OnlineUsersScreen.swift in Sources */,
@@ -768,7 +764,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -825,7 +821,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;

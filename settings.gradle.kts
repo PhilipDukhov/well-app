@@ -4,10 +4,10 @@ listOf(
     "androidApp",
     "server",
     "sharedMobile",
-    "xModules:models",
-    "xModules:atomic",
-    "xModules:napier",
-    "xModules:utils"
+    "modules:models",
+    "modules:atomic",
+    "modules:napier",
+    "modules:utils",
 ).forEach {
     include(":$it")
 }

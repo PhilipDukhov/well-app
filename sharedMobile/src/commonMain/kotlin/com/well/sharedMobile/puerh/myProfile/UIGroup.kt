@@ -1,6 +1,6 @@
 package com.well.sharedMobile.puerh.myProfile
 
-import com.well.serverModels.User
+import com.well.modules.models.User
 import com.well.sharedMobile.utils.SharedImage
 
 sealed class UIGroup {

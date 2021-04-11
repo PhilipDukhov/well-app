@@ -1,12 +1,12 @@
 package com.well.sharedMobile.puerh.login
 
-import com.well.serverModels.User
+import com.well.modules.models.User
 import com.well.sharedMobile.networking.createBaseServerClient
 import com.well.sharedMobile.puerh.login.credentialProviders.AuthCredential
 import com.well.sharedMobile.puerh.login.credentialProviders.AuthCredential.*
 import com.well.sharedMobile.puerh.login.credentialProviders.CredentialProvider
-import com.well.utils.Context
-import com.well.atomic.AtomicMutableMap
+import com.well.modules.utils.Context
+import com.well.modules.atomic.AtomicMutableMap
 import io.ktor.client.request.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json

@@ -1,7 +1,7 @@
 package com.well.server.routing.userEditing
 
 import com.well.server.utils.Dependencies
-import com.well.serverModels.User
+import com.well.modules.models.User
 import io.ktor.application.*
 import io.ktor.client.statement.*
 import io.ktor.http.*

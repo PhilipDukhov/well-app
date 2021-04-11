@@ -8,7 +8,6 @@
 
 import SwiftUI
 import SharedMobile
-import Introspect
 
 private var observation: NSKeyValueObservation?
 

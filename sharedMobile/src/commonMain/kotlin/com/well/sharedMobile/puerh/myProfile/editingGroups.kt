@@ -1,7 +1,7 @@
 package com.well.sharedMobile.puerh.myProfile
 
-import com.well.serverModels.User
-import com.well.serverModels.formatters.timeZonesIdentifiersList
+import com.well.modules.models.User
+import com.well.modules.models.formatters.timeZonesIdentifiersList
 
 internal fun User.editingGroups() = listOf(
     UIGroup.Editing(

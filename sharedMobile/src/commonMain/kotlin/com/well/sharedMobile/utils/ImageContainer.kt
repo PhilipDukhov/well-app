@@ -1,7 +1,7 @@
 package com.well.sharedMobile.utils
 
-import com.well.serverModels.Size
-import com.well.serverModels.User
+import com.well.modules.models.Size
+import com.well.modules.models.User
 
 expect sealed class SharedImage
 

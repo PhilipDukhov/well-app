@@ -28,7 +28,7 @@ import com.well.androidApp.ui.composableScreens.πCustomViews.controlMinSize
 import com.well.androidApp.ui.composableScreens.πExt.Image
 import com.well.androidApp.ui.composableScreens.πExt.visibility
 import com.well.androidApp.ui.composableScreens.πExt.widthDp
-import com.well.serverModels.User
+import com.well.modules.models.User
 import com.well.sharedMobile.puerh.call.CallFeature.Msg
 import com.well.sharedMobile.puerh.call.CallFeature.State
 import com.well.sharedMobile.puerh.call.CallFeature.State.Status

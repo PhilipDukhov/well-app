@@ -1,6 +1,6 @@
 package com.well.sharedMobile.utils
 
-import com.well.serverModels.Color
+import com.well.modules.models.Color
 import platform.UIKit.UIColor
 
 @Suppress("unused")

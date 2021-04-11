@@ -1,10 +1,10 @@
 package com.well.sharedMobile.puerh.myProfile
 
-import com.well.serverModels.Date
-import com.well.serverModels.User
-import com.well.serverModels.formatters.DateFormatter
-import com.well.serverModels.formatters.format
-import com.well.serverModels.spacedUppercaseName
+import com.well.modules.models.Date
+import com.well.modules.models.User
+import com.well.modules.models.formatters.DateFormatter
+import com.well.modules.models.formatters.format
+import com.well.modules.models.spacedUppercaseName
 
 internal fun User.previewGroups(isCurrent: Boolean) = listOfNotNull(
     UIGroup.Preview(

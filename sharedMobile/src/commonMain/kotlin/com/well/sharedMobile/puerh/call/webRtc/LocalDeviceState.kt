@@ -1,8 +1,8 @@
 package com.well.sharedMobile.puerh.call.webRtc
 
 import com.well.sharedMobile.puerh.call.CallFeature
-import com.well.utils.platform.Platform
-import com.well.utils.platform.isDebug
+import com.well.modules.utils.platform.Platform
+import com.well.modules.utils.platform.isDebug
 
 data class LocalDeviceState(
     val micEnabled: Boolean,

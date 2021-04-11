@@ -1,9 +1,9 @@
 package com.well.sharedMobile.puerh.myProfile
 
-import com.well.serverModels.enumValueOfSpacedUppercase
-import com.well.serverModels.spacedUppercaseEnumValues
-import com.well.serverModels.spacedUppercaseName
-import com.well.utils.base.UrlUtil
+import com.well.modules.models.enumValueOfSpacedUppercase
+import com.well.modules.models.spacedUppercaseEnumValues
+import com.well.modules.models.spacedUppercaseName
+import com.well.modules.utils.base.UrlUtil
 
 data class UIEditingField<C> internal constructor(
     val placeholder: String,

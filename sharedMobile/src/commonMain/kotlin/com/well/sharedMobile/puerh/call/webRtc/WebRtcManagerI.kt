@@ -1,10 +1,10 @@
 package com.well.sharedMobile.puerh.call.webRtc
 
-import com.well.serverModels.Size
-import com.well.serverModels.WebSocketMessage
+import com.well.modules.models.Size
+import com.well.modules.models.WebSocketMessage
 import com.well.sharedMobile.puerh.call.CallFeature
 import com.well.sharedMobile.puerh.call.VideoViewContext
-import com.well.atomic.Closeable
+import com.well.modules.atomic.Closeable
 
 interface WebRtcManagerI: Closeable {
     interface Listener {

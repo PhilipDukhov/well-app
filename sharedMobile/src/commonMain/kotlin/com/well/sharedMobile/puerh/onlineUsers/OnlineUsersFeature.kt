@@ -1,10 +1,10 @@
 package com.well.sharedMobile.puerh.onlineUsers
 
-import com.well.serverModels.User
+import com.well.modules.models.User
 import com.well.sharedMobile.networking.NetworkManager
 import com.well.sharedMobile.networking.NetworkManager.Status.Disconnected
-import com.well.utils.toSetOf
-import com.well.utils.withEmptySet
+import com.well.modules.utils.base.toSetOf
+import com.well.modules.utils.base.withEmptySet
 
 object OnlineUsersFeature {
     fun initialState(): State = State(

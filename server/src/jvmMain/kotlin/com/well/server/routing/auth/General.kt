@@ -2,8 +2,8 @@ package com.well.server.routing.auth
 
 import com.well.server.utils.Dependencies
 import com.well.server.utils.toUser
-import com.well.serverModels.User
-import com.well.serverModels.UserId
+import com.well.modules.models.User
+import com.well.modules.models.UserId
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*

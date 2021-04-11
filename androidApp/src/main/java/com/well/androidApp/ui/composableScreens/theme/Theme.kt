@@ -4,7 +4,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import com.well.androidApp.ui.composableScreens.πExt.toColor
-import com.well.serverModels.Color
+import com.well.modules.models.Color
 
 val colors = lightColors(
     primary = Color.Green.toColor(),

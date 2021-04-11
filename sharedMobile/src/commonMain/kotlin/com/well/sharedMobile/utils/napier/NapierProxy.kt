@@ -1,10 +1,10 @@
 package com.well.sharedMobile.utils.napier
 
-import com.well.napier.ConsoleAntilog
-import com.well.napier.FileAntilog
-import com.well.napier.Napier
-import com.well.utils.platform.Platform
-import com.well.utils.platform.isDebug
+import com.well.modules.napier.ConsoleAntilog
+import com.well.modules.napier.FileAntilog
+import com.well.modules.napier.Napier
+import com.well.modules.utils.platform.Platform
+import com.well.modules.utils.platform.isDebug
 
 object NapierProxy {
     fun initializeLogging() {

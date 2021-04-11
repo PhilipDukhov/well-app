@@ -8,7 +8,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_I
 import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes.SIGN_IN_CANCELLED
 import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes.SIGN_IN_CURRENTLY_IN_PROGRESS
 import com.google.android.gms.common.api.ApiException
-import com.well.utils.Context
+import com.well.modules.utils.Context
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine

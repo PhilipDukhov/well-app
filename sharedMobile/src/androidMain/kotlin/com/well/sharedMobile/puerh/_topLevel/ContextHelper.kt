@@ -7,9 +7,9 @@ import android.net.Uri
 import android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
-import com.well.utils.Context
+import com.well.modules.utils.Context
 import com.well.sharedMobile.utils.ImageContainer
-import com.well.atomic.Closeable
+import com.well.modules.atomic.Closeable
 import kotlinx.coroutines.*
 import kotlin.coroutines.resume
 

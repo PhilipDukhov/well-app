@@ -1,7 +1,7 @@
 package com.well.server.utils
 
 import com.well.server.Users
-import com.well.serverModels.User
+import com.well.modules.models.User
 
 fun Users.toUser(): User =
     User(

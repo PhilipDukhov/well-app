@@ -1,14 +1,14 @@
 package com.well.sharedMobile.puerh.myProfile
 
-import com.well.serverModels.User
-import com.well.serverModels.formatters.currentTimeZoneIdentifier
+import com.well.modules.models.User
+import com.well.modules.models.formatters.currentTimeZoneIdentifier
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.State.EditingStatus
 import com.well.sharedMobile.puerh.πModels.NavigationBarModel
 import com.well.sharedMobile.utils.ImageContainer
 import com.well.sharedMobile.utils.profileImage
-import com.well.utils.base.UrlUtil
-import com.well.utils.toSetOf
-import com.well.utils.withEmptySet
+import com.well.modules.utils.base.UrlUtil
+import com.well.modules.utils.base.toSetOf
+import com.well.modules.utils.base.withEmptySet
 
 object MyProfileFeature {
     fun testState() = initialState(

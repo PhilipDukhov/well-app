@@ -1,11 +1,11 @@
 package com.well.sharedMobile.puerh._topLevel
 
-import com.well.atomic.Closeable
-import com.well.atomic.CloseableContainer
-import com.well.atomic.asCloseable
-import com.well.napier.Napier
+import com.well.modules.atomic.Closeable
+import com.well.modules.atomic.CloseableContainer
+import com.well.modules.atomic.asCloseable
+import com.well.modules.napier.Napier
 import com.well.sharedMobile.utils.ImageContainer
-import com.well.utils.*
+import com.well.modules.utils.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.coroutineScope

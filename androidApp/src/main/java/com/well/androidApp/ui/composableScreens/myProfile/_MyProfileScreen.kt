@@ -37,8 +37,8 @@ import com.well.androidApp.ui.composableScreens.πCustomViews.controlMinSize
 import com.well.androidApp.ui.composableScreens.πExt.Image
 import com.well.androidApp.ui.composableScreens.πExt.heightPlusTopSystemBars
 import com.well.androidApp.ui.composableScreens.πExt.toColor
-import com.well.serverModels.Color
-import com.well.serverModels.User
+import com.well.modules.models.Color
+import com.well.modules.models.User
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.State
 import com.well.sharedMobile.puerh.myProfile.UIGroup

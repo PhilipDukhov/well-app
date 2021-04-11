@@ -1,6 +1,6 @@
 package com.well.androidApp.call.webRtc
 
-import com.well.napier.Napier
+import com.well.modules.napier.Napier
 import org.webrtc.*
 
 open class PeerConnectionObserver : PeerConnection.Observer {

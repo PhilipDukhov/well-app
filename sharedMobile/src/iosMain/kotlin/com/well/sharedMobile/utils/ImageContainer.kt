@@ -1,8 +1,8 @@
 package com.well.sharedMobile.utils
 
-import com.well.serverModels.Size
-import com.well.serverModels.toCGSize
-import com.well.serverModels.toSize
+import com.well.modules.models.Size
+import com.well.modules.models.toCGSize
+import com.well.modules.models.toSize
 import com.well.sharedMobile.puerh.toByteArray
 import com.well.sharedMobile.puerh.toNSData
 import platform.CoreGraphics.CGRectMake

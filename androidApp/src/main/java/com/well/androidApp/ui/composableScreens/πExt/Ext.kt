@@ -28,8 +28,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.zIndex
-import com.well.serverModels.Color
-import com.well.serverModels.Point
+import com.well.modules.models.Color
+import com.well.modules.models.Point
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.toPaddingValues
 

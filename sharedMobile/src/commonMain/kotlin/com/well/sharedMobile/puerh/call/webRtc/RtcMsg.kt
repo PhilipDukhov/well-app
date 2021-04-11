@@ -1,9 +1,9 @@
 package com.well.sharedMobile.puerh.call.webRtc
 
-import com.well.serverModels.Date
-import com.well.serverModels.Path
-import com.well.serverModels.Size
-import com.well.serverModels.prepareToDebug
+import com.well.modules.models.Date
+import com.well.modules.models.Path
+import com.well.modules.models.Size
+import com.well.modules.models.prepareToDebug
 import com.well.sharedMobile.puerh.call.CallFeature
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature
 import kotlinx.serialization.Serializable

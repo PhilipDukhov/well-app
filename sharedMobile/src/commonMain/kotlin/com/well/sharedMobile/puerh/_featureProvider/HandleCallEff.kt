@@ -1,17 +1,17 @@
 package com.well.sharedMobile.puerh._featureProvider
 
-import com.well.serverModels.User
-import com.well.serverModels.WebSocketMessage
+import com.well.modules.models.User
+import com.well.modules.models.WebSocketMessage
 import com.well.sharedMobile.puerh._topLevel.*
 import com.well.sharedMobile.puerh._topLevel.showSheetThreadSafe
 import com.well.sharedMobile.puerh.call.CallEffectHandler
 import com.well.sharedMobile.puerh.call.CallFeature
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature
-import com.well.atomic.CloseableFuture
-import com.well.atomic.freeze
-import com.well.utils.permissionsHandler.PermissionsHandler
-import com.well.utils.permissionsHandler.requestPermissions
-import com.well.utils.puerh.addEffectHandler
+import com.well.modules.atomic.CloseableFuture
+import com.well.modules.atomic.freeze
+import com.well.modules.utils.permissionsHandler.PermissionsHandler
+import com.well.modules.utils.permissionsHandler.requestPermissions
+import com.well.modules.utils.puerh.addEffectHandler
 import kotlinx.coroutines.launch
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.Msg as TopLevelMsg
 import com.well.sharedMobile.puerh.call.CallFeature.Msg as CallMsg

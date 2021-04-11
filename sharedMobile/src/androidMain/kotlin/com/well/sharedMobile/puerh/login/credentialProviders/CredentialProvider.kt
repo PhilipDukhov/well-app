@@ -1,7 +1,7 @@
 package com.well.sharedMobile.puerh.login.credentialProviders
 
 import android.content.Intent
-import com.well.utils.Context
+import com.well.modules.utils.Context
 
 actual abstract class CredentialProvider actual constructor(context: Context) {
     actual abstract suspend fun getCredentials(): AuthCredential

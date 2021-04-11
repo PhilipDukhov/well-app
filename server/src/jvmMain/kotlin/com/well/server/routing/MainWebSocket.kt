@@ -4,20 +4,23 @@ import com.well.server.utils.Dependencies
 import com.well.server.utils.authUserId
 import com.well.server.utils.send
 import com.well.server.utils.toUser
-import com.well.serverModels.UserId
-import com.well.serverModels.WebSocketMessage
-import com.well.serverModels.WebSocketMessage.EndCall.Reason.Busy
-import com.well.serverModels.WebSocketMessage.EndCall.Reason.Offline
+import com.well.modules.models.UserId
+import com.well.modules.models.WebSocketMessage
+import com.well.modules.models.WebSocketMessage.EndCall.Reason.Busy
+import com.well.modules.models.WebSocketMessage.EndCall.Reason.Offline
 import io.ktor.application.*
 import io.ktor.http.cio.websocket.*
 import io.ktor.response.*
 import io.ktor.websocket.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import java.util.*
 
 data class Call(val userIds: List<UserId>) {
     constructor(vararg userIds: UserId) : this(userIds.toList())
 }
+
+private val calls: MutableList<Call> = Collections.synchronizedList(mutableListOf<Call>())
 
 suspend fun DefaultWebSocketServerSession.mainWebSocket(dependencies: Dependencies) {
     val currentUserId = call.authUserId
@@ -38,7 +41,7 @@ suspend fun DefaultWebSocketServerSession.mainWebSocket(dependencies: Dependenci
                                 send(WebSocketMessage.EndCall(Offline))
                                 return
                             }
-                            if (dependencies.calls.any { it.userIds.contains(currentUserId) }) {
+                            if (calls.any { it.userIds.contains(currentUserId) }) {
                                 send(WebSocketMessage.EndCall(Busy))
                                 return
                             }
@@ -52,7 +55,7 @@ suspend fun DefaultWebSocketServerSession.mainWebSocket(dependencies: Dependenci
                                         .toUser(),
                                 )
                             )
-                            dependencies.calls.add(Call(currentUserId, msg.userId))
+                            calls.add(Call(currentUserId, msg.userId))
                         }
                         is WebSocketMessage.Answer,
                         is WebSocketMessage.Offer,

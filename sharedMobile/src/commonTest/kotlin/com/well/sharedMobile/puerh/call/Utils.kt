@@ -1,7 +1,7 @@
 package com.well.sharedMobile.puerh.call
 
-import com.well.serverModels.Point
-import com.well.serverModels.Size
+import com.well.modules.models.Point
+import com.well.modules.models.Size
 import kotlin.random.Random
 import kotlin.test.assertEquals
 

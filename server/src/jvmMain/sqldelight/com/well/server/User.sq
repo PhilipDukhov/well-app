@@ -1,4 +1,4 @@
-import com.well.serverModels.User;
+import com.well.modules.models.User;
 import kotlin.collections.Set;
 
 CREATE TABLE IF NOT EXISTS Users (

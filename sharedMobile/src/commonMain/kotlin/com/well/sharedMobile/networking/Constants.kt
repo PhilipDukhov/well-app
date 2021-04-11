@@ -1,8 +1,8 @@
 package com.well.sharedMobile.networking
 
-import com.well.serverModels.createBaseHttpClient
-import com.well.utils.platform.Platform
-import com.well.utils.platform.isDebug
+import com.well.modules.models.createBaseHttpClient
+import com.well.modules.utils.platform.Platform
+import com.well.modules.utils.platform.isDebug
 import io.ktor.client.features.*
 import io.ktor.client.request.*
 

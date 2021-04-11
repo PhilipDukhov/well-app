@@ -1,7 +1,7 @@
 package com.well.sharedMobile.puerh.call.drawing
 
-import com.well.serverModels.Point
-import com.well.serverModels.Size
+import com.well.modules.models.Point
+import com.well.modules.models.Size
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.State.Converter
 import kotlin.test.Test
 import kotlin.test.assertEquals

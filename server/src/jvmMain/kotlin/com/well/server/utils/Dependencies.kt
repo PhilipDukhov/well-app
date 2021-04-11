@@ -1,16 +1,12 @@
 package com.well.server.utils
 
-import com.well.server.routing.Call
-import com.well.serverModels.UserId
-import com.well.serverModels.WebSocketMessage
-import com.well.serverModels.createBaseHttpClient
+import com.well.modules.models.UserId
+import com.well.modules.models.WebSocketMessage
+import com.well.modules.models.createBaseHttpClient
 import io.ktor.application.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.features.*
-import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
-import io.ktor.websocket.*
 import java.util.*
 
 class Dependencies(app: Application) {
@@ -27,7 +23,6 @@ class Dependencies(app: Application) {
     val connectedUserSessions: MutableMap<UserId, WebSocketSession> = Collections.synchronizedMap(
         mutableMapOf<UserId, WebSocketSession>()
     )
-    val calls: MutableList<Call> = Collections.synchronizedList(mutableListOf<Call>())
 
     val client = createBaseHttpClient()
 

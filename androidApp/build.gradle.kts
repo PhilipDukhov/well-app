@@ -30,10 +30,10 @@ libDependencies(
     //tmp
     "ktor.client.core",
 
-    ":xModules:atomic",
-    ":xModules:models",
-    ":xModules:utils",
-    ":sharedMobile"
+    ":modules:atomic",
+    ":modules:models",
+    ":modules:utils",
+    ":sharedMobile",
 )
 
 android {
@@ -46,15 +46,13 @@ android {
         viewBinding = true
         compose = true
     }
-    lintOptions {
-        isAbortOnError = false
-    }
     kotlinOptions {
         useIR = true
 
         freeCompilerArgs += listOf(
             "-Xopt-in=androidx.compose.ui.ExperimentalComposeUiApi",
-            "-Xskip-prerelease-check"
+            "-Xskip-prerelease-check",
+            "-Xallow-jvm-ir-dependencies",
         )
     }
     composeOptions {

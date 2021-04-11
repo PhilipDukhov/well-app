@@ -1,6 +1,5 @@
 package com.well.androidApp.ui.composableScreens.myProfile
 
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -18,7 +17,7 @@ import com.well.androidApp.R
 import com.well.androidApp.ui.composableScreens.πCustomViews.BackPressHandler
 import com.well.androidApp.ui.composableScreens.πExt.Image
 import com.well.androidApp.ui.composableScreens.πExt.toColor
-import com.well.serverModels.Color
+import com.well.modules.models.Color
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
 import com.well.sharedMobile.puerh.myProfile.UIEditingField
 import com.well.sharedMobile.puerh.myProfile.UIEditingField.Content
@@ -102,9 +101,9 @@ private fun EditingTextField(
     var focusedState by remember { mutableStateOf(false) }
     LocalSoftwareKeyboardController.current?.run {
         if (focusedState)
-            showSoftwareKeyboard()
+            show()
         else
-            hideSoftwareKeyboard()
+            hide()
     }
     var textState by remember { mutableStateOf(text) }
     var focusState by remember { mutableStateOf(FocusState.Inactive) }

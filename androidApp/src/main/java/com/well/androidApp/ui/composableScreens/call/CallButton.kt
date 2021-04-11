@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.well.androidApp.R
 import com.well.androidApp.ui.composableScreens.πExt.Image
 import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
-import com.well.serverModels.Color
+import com.well.modules.models.Color
 import com.well.sharedMobile.utils.ViewConstants.CallScreen.CallButtonRadius
 
 @Composable
