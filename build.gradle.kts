@@ -55,6 +55,15 @@ allprojects {
     apply(from = "${rootDir}/dependencies.gradle")
 }
 
+val multiplatformModules = listOf(
+    ":modules:models",
+    ":modules:utils",
+    ":modules:napier",
+    ":modules:atomic",
+    ":modules:annotations",
+    ":sharedMobile",
+)
+
 subprojects {
     group = Constants.group
     version = Constants.version
@@ -113,14 +122,7 @@ subprojects {
     }
 
     if (gradlePluginVersion.first() == '7') {
-        if (listOf(
-                ":modules:models",
-                ":modules:utils",
-                ":modules:napier",
-                ":modules:atomic",
-                ":sharedMobile",
-            ).contains(path)
-        ) {
+        if (multiplatformModules.contains(path)) {
             configurations {
                 listOf(
                     "androidTestApi",
