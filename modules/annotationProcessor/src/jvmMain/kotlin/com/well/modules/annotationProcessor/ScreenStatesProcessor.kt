@@ -82,11 +82,12 @@ class ContainerInfo(
     val screenStateClassName = ClassName(packageName, screenStateName)
     val containerFeatureStateClassName = containerFeatureClassName.nestedClass("State")
     val containerFeatureMsgClassName = containerFeatureClassName.nestedClass("Msg")
+    val containerFeatureEffClassName = containerFeatureClassName.nestedClass("Eff")
     val reducerResultClassName = ClassName("kotlin", "Pair")
         .parameterizedBy(
             containerFeatureStateClassName,
             ClassName("kotlin.collections", "Set")
-                .parameterizedBy(containerFeatureClassName.nestedClass("Eff"))
+                .parameterizedBy(containerFeatureEffClassName)
         )
     val featureInfos = annotation.safeFeatures.map {
         FeatureInfo(it, this, processingEnv)
@@ -124,6 +125,18 @@ class ContainerInfo(
                         .returns(reducerResultClassName)
                         .addModifiers(KModifier.INTERNAL)
                         .beginControlFlow("return when(msg)")
+                val reduceBackMsgFuncBuilder =
+                    FunSpec
+                        .builder("reduceBackMsg")
+                        .addParameter(
+                            ParameterSpec.builder(
+                                "state",
+                                containerFeatureStateClassName
+                            ).build()
+                        )
+                        .returns(reducerResultClassName)
+                        .addModifiers(KModifier.INTERNAL)
+                        .beginControlFlow("return when(state.currentScreen)")
                 featureInfos
                     .forEach { featureInfo ->
                         val reducerFunc = featureInfo.featureReducerFunc()
@@ -132,10 +145,26 @@ class ContainerInfo(
                             "is %T.${featureInfo.featureShortName}Msg -> ${reducerFunc.name}(msg.msg, state)",
                             containerFeatureMsgClassName
                         )
+                        if (featureInfo.featureBackMsg != null) {
+                            reduceBackMsgFuncBuilder.addStatement(
+                                "is %T.${featureInfo.featureShortName} -> ${reducerFunc.name}(%T, state)",
+                                screenStateClassName,
+                                featureInfo.featureBackMsg,
+                            )
+                        }
                     }
                 addFunction(
                     reduceScreenMsgFuncBuilder
                         .addStatement("else -> throw IllegalStateException()")
+                        .endControlFlow()
+                        .build()
+                )
+                addFunction(
+                    reduceBackMsgFuncBuilder
+                        .addStatement(
+                            "else -> state to setOf(%T.SystemBack)",
+                            containerFeatureEffClassName
+                        )
                         .endControlFlow()
                         .build()
                 )
@@ -199,7 +228,8 @@ class FeatureInfo(
     val containerInfo: ContainerInfo,
     processingEnv: ProcessingEnvironment,
 ) {
-    val feature = processingEnv.typeUtils.asElement(featureTypeMirror)!!
+    val feature = processingEnv.typeUtils.asElement(featureTypeMirror)!! as TypeElement
+    val featureBackMsg = processingEnv.elementUtils.getTypeElement("$feature.Msg.Back")
     val featureName = feature.simpleName.toString()
 
     init {
@@ -286,7 +316,7 @@ class FeatureInfo(
                 featureStateClassName,
                 featureEffClassName,
                 featureClassName,
-                containerInfo.containerFeatureClassName.nestedClass("Eff")
+                containerInfo.containerFeatureEffClassName
             )
             .addModifiers(KModifier.INTERNAL)
             .build()

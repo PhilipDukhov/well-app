@@ -106,20 +106,7 @@ object TopLevelFeature {
                     return@reducer state toSetOf Eff.ShowAlert(msg.alert)
                 }
                 is Msg.Back -> {
-                    when (state.currentScreen) {
-                        ScreenState.Launch,
-                        is ScreenState.OnlineUsers,
-                        is ScreenState.Login,
-                        -> {
-                            return@eff Eff.SystemBack
-                        }
-                        is ScreenState.Call -> {
-                            return@reducer reduceCall(CallFeature.Msg.Back, state)
-                        }
-                        is ScreenState.MyProfile -> {
-                            return@reducer reduceMyProfile(MyProfileFeature.Msg.Back, state)
-                        }
-                    }
+                    return@reducer reduceBackMsg(state)
                 }
                 is Msg.Pop -> {
                     return@state state.copyPop()
