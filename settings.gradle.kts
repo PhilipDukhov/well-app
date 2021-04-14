@@ -4,6 +4,8 @@ listOf(
     "androidApp",
     "server",
     "sharedMobile",
+    "modules:annotations",
+    "modules:annotationProcessor",
     "modules:models",
     "modules:atomic",
     "modules:napier",

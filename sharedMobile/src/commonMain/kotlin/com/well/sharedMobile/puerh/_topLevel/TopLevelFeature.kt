@@ -1,5 +1,6 @@
 package com.well.sharedMobile.puerh._topLevel
 
+import com.well.modules.annotations.ScreenStates
 import com.well.modules.models.User
 import com.well.modules.models.WebSocketMessage
 import com.well.sharedMobile.puerh.call.CallFeature
@@ -11,10 +12,22 @@ import com.well.modules.utils.base.map
 import com.well.modules.utils.base.toSetOf
 import com.well.modules.utils.base.withEmptySet
 
+// remove build/tmp/kapt3 after updating it to refresh cache
+@ScreenStates(
+    empties = [
+        "Launch"
+    ],
+    features = [
+        LoginFeature::class,
+        MyProfileFeature::class,
+        OnlineUsersFeature::class,
+        CallFeature::class,
+    ]
+)
 object TopLevelFeature {
     fun initialState(
     ): State = State(
-        tabs = mapOf(Tab.Main to listOf(ScreenState.LaunchScreen)),
+        tabs = mapOf(Tab.Main to listOf(ScreenState.Launch)),
         selectedScreenPosition = ScreenPosition(Tab.Main, 0),
     )
 
@@ -47,35 +60,6 @@ object TopLevelFeature {
             Main,
             Overlay,
         }
-
-        sealed class ScreenState(internal val baseState: Any) {
-            internal abstract fun baseCopy(state: Any): ScreenState
-
-            object LaunchScreen : ScreenState(Unit) {
-                override fun baseCopy(state: Any): ScreenState =
-                    throw IllegalStateException()
-            }
-
-            data class Login(val state: LoginFeature.State) : ScreenState(state) {
-                override fun baseCopy(state: Any): ScreenState =
-                    copy(state = state as LoginFeature.State)
-            }
-
-            data class MyProfile(val state: MyProfileFeature.State) : ScreenState(state) {
-                override fun baseCopy(state: Any): ScreenState =
-                    copy(state = state as MyProfileFeature.State)
-            }
-
-            data class OnlineUsers(val state: OnlineUsersFeature.State) : ScreenState(state) {
-                override fun baseCopy(state: Any): ScreenState =
-                    copy(state = state as OnlineUsersFeature.State)
-            }
-
-            data class Call(val state: CallFeature.State) : ScreenState(state) {
-                override fun baseCopy(state: Any): ScreenState =
-                    copy(state = state as CallFeature.State)
-            }
-        }
     }
 
     sealed class Msg {
@@ -91,7 +75,11 @@ object TopLevelFeature {
         object StopImageSharing : Msg()
 
         data class ShowAlert(val alert: Alert) : Msg()
-        data class OpenUserProfile(val user: User, val isCurrent: Boolean) : Msg()
+        data class OpenUserProfile(
+            val user: User,
+            val isCurrent: Boolean
+        ) : Msg()
+
         object LoggedIn : Msg()
         object OpenLoginScreen : Msg()
         object Back : Msg()
@@ -119,14 +107,17 @@ object TopLevelFeature {
                 }
                 is Msg.Back -> {
                     when (state.currentScreen) {
-                        ScreenState.LaunchScreen, is ScreenState.OnlineUsers, is ScreenState.Login -> {
+                        ScreenState.Launch,
+                        is ScreenState.OnlineUsers,
+                        is ScreenState.Login,
+                        -> {
                             return@eff Eff.SystemBack
                         }
                         is ScreenState.Call -> {
-                            return@reducer state.reduceCall(CallFeature.Msg.Back)
+                            return@reducer reduceCall(CallFeature.Msg.Back, state)
                         }
                         is ScreenState.MyProfile -> {
-                            return@reducer state.reduceMyProfile(MyProfileFeature.Msg.Back)
+                            return@reducer reduceMyProfile(MyProfileFeature.Msg.Back, state)
                         }
                     }
                 }
@@ -159,17 +150,12 @@ object TopLevelFeature {
                             },
                         )
                 }
-                is Msg.LoginMsg -> {
-                    return@reducer state.reduceLogin(msg.msg)
-                }
-                is Msg.MyProfileMsg -> {
-                    return@reducer state.reduceMyProfile(msg.msg)
-                }
-                is Msg.OnlineUsersMsg -> {
-                    return@reducer state.reduceOnlineUsers(msg.msg)
-                }
-                is Msg.CallMsg -> {
-                    return@reducer state.reduceCall(msg.msg)
+                is Msg.LoginMsg,
+                is Msg.MyProfileMsg,
+                is Msg.OnlineUsersMsg,
+                is Msg.CallMsg,
+                -> {
+                    return@reducer reduceScreenMsg(msg, state)
                 }
                 is Msg.StopImageSharing -> {
                     return@state state.copyPop(Tab.Overlay)
@@ -199,63 +185,5 @@ object TopLevelFeature {
     private fun State.copyHideOverlay(): State =
         copyHideTab(
             Tab.Overlay
-        )
-
-    // ScreenState reducers
-
-    private fun State.reduceLogin(
-        msg: LoginFeature.Msg,
-    ): ReducerResult =
-        reduceScreen<
-            ScreenState.Login,
-            LoginFeature.Msg,
-            LoginFeature.State,
-            LoginFeature.Eff
-            >(
-            msg,
-            LoginFeature::reducer,
-            Eff::LoginEff
-        )
-
-    private fun State.reduceMyProfile(
-        msg: MyProfileFeature.Msg,
-    ): ReducerResult =
-        reduceScreen<
-            ScreenState.MyProfile,
-            MyProfileFeature.Msg,
-            MyProfileFeature.State,
-            MyProfileFeature.Eff
-            >(
-            msg,
-            MyProfileFeature::reducer,
-            Eff::MyProfileEff
-        )
-
-    private fun State.reduceOnlineUsers(
-        msg: OnlineUsersFeature.Msg,
-    ): ReducerResult =
-        reduceScreen<
-            ScreenState.OnlineUsers,
-            OnlineUsersFeature.Msg,
-            OnlineUsersFeature.State,
-            OnlineUsersFeature.Eff
-            >(
-            msg,
-            OnlineUsersFeature::reducer,
-            Eff::OnlineUsersEff
-        )
-
-    private fun State.reduceCall(
-        msg: CallFeature.Msg,
-    ): ReducerResult =
-        reduceScreen<
-            ScreenState.Call,
-            CallFeature.Msg,
-            CallFeature.State,
-            CallFeature.Eff
-            >(
-            msg,
-            CallFeature::reducer,
-            Eff::CallEff
         )
 }

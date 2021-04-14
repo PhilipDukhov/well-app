@@ -6,6 +6,15 @@ plugins {
     kotlin("native.cocoapods")
     id("com.android.library")
     id("kotlinx-serialization")
+    kotlin("kapt")
+}
+
+val generatedKotlinSources: String = "$projectDir/src/gen/kotlin"
+
+kapt {
+    javacOptions {
+        option("-Akapt.kotlin.generated=$generatedKotlinSources")
+    }
 }
 
 kotlin {
@@ -43,6 +52,7 @@ kotlin {
         val commonMain by getting {
             libDependencies(
                 ":modules:atomic",
+                ":modules:annotations",
                 "kotlin.serializationJson",
                 "ktor.client.core",
                 "kotlin.coroutines.core",
@@ -53,6 +63,10 @@ kotlin {
                     api(it)
                 }
             }
+
+            // Workaround for lack of Kapt support in multiplatform project:
+            dependencies.add("kapt", project(":modules:annotationProcessor"))
+            kotlin.srcDir(generatedKotlinSources)
         }
         val commonTest by getting {
             dependencies {

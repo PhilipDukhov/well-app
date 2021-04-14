@@ -129,19 +129,20 @@ internal fun <T : ScreenState> Map<Tab, List<ScreenState>>.copy(
 }
 
 @Suppress("UNCHECKED_CAST")
-internal inline fun <reified SS : ScreenState, M, S, E> State.reduceScreen(
+internal inline fun <reified SS : ScreenState, M, S, E> reduceScreen(
     msg: M,
+    state: State,
     reducer: (M, S) -> Pair<S, Set<E>>,
     effCreator: (E) -> TopLevelFeature.Eff,
 ): ReducerResult {
-    val (screen, position) = tabs.screenAndPositionOfTopOrNull<SS>(this)
+    val (screen, position) = state.tabs.screenAndPositionOfTopOrNull<SS>(state)
         ?: run {
-            Napier.e("reduceScreen $msg | $this")
-            return this.withEmptySet()
+            Napier.e("reduceScreen $msg | $state")
+            return state.withEmptySet()
         }
     val (newScreenState, effs) = reducer(msg, screen.baseState as S)
     val newEffs = effs.mapTo(HashSet(), effCreator)
-    return changeScreen<SS>(position) {
+    return state.changeScreen<SS>(position) {
         baseCopy(newScreenState as Any) as SS
     } to newEffs
 }
