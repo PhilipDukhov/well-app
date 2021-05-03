@@ -32,6 +32,13 @@ fun createBaseHttpClient() = HttpClient {
     }
 }
 
+open class BaseConstants {
+    val oauthCallbackProtocol = "world.endo.live.link"
+    fun oauthCallbackPath(path: String = "") = "$oauthCallbackProtocol://$path"
+}
+
+object Constants: BaseConstants()
+
 inline fun <reified T : Enum<T>> T.spacedUppercaseName(): String =
     name.mapIndexed { i, c ->
         if (i == 0 || c.isLowerCase() || name[i - 1].isUpperCase()) return@mapIndexed c.toString()

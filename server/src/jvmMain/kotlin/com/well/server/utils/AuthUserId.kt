@@ -7,13 +7,16 @@ import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 
 val ApplicationCall.authUserId: UserId
-    get() = principal<JWTPrincipal>()!!.payload.claims["id"]!!.asInt()
+    get() = principal<JWTPrincipal>()!!.payload.authUserId!!
 
 fun Payload.createPrincipal(dependencies: Dependencies) : JWTPrincipal? =
-    claims["id"]?.asInt()?.let {
+    authUserId?.let {
         val userExists = dependencies.database
-            .userQueries
+            .usersQueries
             .exists(it)
             .executeAsOne()
         if (userExists) JWTPrincipal(this) else null
     }
+
+private val Payload.authUserId: UserId?
+    get() = claims[JwtConfig.userIdKey]?.asInt()

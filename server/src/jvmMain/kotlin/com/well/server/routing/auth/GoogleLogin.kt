@@ -15,7 +15,7 @@ suspend fun PipelineContext<*, ApplicationCall>.googleLogin(dependencies: Depend
     dependencies.run {
         val clientIds = environment
             .config
-            .property("google.clientIds")
+            .property("social.google.clientIds")
             .getList()
             .map { "$it.apps.googleusercontent.com" }
         val userId = withContext(Dispatchers.IO) {
@@ -29,7 +29,7 @@ suspend fun PipelineContext<*, ApplicationCall>.googleLogin(dependencies: Depend
                 .verify(call.receive<String>())
         }.payload.run {
             val googleId = subject
-            database.userQueries.run {
+            database.usersQueries.run {
                 getByGoogleId(googleId)
                     .executeAsOneOrNull()
                     ?: run {

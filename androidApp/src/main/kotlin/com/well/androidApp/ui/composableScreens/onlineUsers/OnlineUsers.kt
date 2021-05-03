@@ -45,7 +45,7 @@ fun OnlineUsersScreen(
                     listener.invoke(Msg.OnUserSelected(user))
                 },
                 onCall = {
-                    listener.invoke(Msg.OnCallUser(user))
+//                    listener.invoke(Msg.OnCallUser(user))
                 },
             )
             Divider()

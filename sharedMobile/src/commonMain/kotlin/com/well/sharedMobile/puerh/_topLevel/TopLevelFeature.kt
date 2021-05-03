@@ -8,9 +8,10 @@ import com.well.sharedMobile.puerh.login.LoginFeature
 import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersFeature
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.State.*
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature
-import com.well.modules.utils.base.map
-import com.well.modules.utils.base.toSetOf
-import com.well.modules.utils.base.withEmptySet
+import com.well.modules.utils.map
+import com.well.modules.utils.toSetOf
+import com.well.modules.utils.withEmptySet
+import com.well.sharedMobile.puerh.welcome.WelcomeFeature
 
 // remove build/tmp/kapt3 after updating it to refresh cache
 @ScreenStates(
@@ -18,6 +19,7 @@ import com.well.modules.utils.base.withEmptySet
         "Launch"
     ],
     features = [
+        WelcomeFeature::class,
         LoginFeature::class,
         MyProfileFeature::class,
         OnlineUsersFeature::class,
@@ -63,6 +65,7 @@ object TopLevelFeature {
     }
 
     sealed class Msg {
+        data class WelcomeMsg(val msg: WelcomeFeature.Msg) : Msg()
         data class MyProfileMsg(val msg: MyProfileFeature.Msg) : Msg()
         data class LoginMsg(val msg: LoginFeature.Msg) : Msg()
         data class OnlineUsersMsg(val msg: OnlineUsersFeature.Msg) : Msg()
@@ -82,6 +85,7 @@ object TopLevelFeature {
 
         object LoggedIn : Msg()
         object OpenLoginScreen : Msg()
+        object OpenWelcomeScreen : Msg()
         object Back : Msg()
         object Pop : Msg()
     }
@@ -91,6 +95,7 @@ object TopLevelFeature {
         object SystemBack : Eff()
         object Initial : Eff()
         data class MyProfileEff(val eff: MyProfileFeature.Eff) : Eff()
+        data class WelcomeEff(val eff: WelcomeFeature.Eff) : Eff()
         data class LoginEff(val eff: LoginFeature.Eff) : Eff()
         data class OnlineUsersEff(val eff: OnlineUsersFeature.Eff) : Eff()
         data class CallEff(val eff: CallFeature.Eff) : Eff()
@@ -137,6 +142,7 @@ object TopLevelFeature {
                             },
                         )
                 }
+                is Msg.WelcomeMsg,
                 is Msg.LoginMsg,
                 is Msg.MyProfileMsg,
                 is Msg.OnlineUsersMsg,
@@ -152,6 +158,9 @@ object TopLevelFeature {
                 }
                 Msg.OpenLoginScreen -> {
                     return@state state.copyReplace(screen = ScreenState.Login(LoginFeature.State()))
+                }
+                Msg.OpenWelcomeScreen -> {
+                    return@state state.copyReplace(screen = ScreenState.Welcome(WelcomeFeature.State()))
                 }
             }
         })

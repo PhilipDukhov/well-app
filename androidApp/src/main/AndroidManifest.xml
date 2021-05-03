@@ -12,16 +12,33 @@
 <!--    <uses-permission android:name="android.permission.READ_CALL_LOG"/>-->
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
 
+    <queries>
+        <intent>
+            <action android:name=
+                "android.support.customtabs.action.CustomTabsService" />
+        </intent>
+    </queries>
+
     <application
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.MainActivity">
+        <activity android:name=".ui.MainActivity" android:launchMode="singleTask"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="world.endo.live.link" />
             </intent-filter>
         </activity>
         <service android:name="com.well.androidApp.call.ConnectionService"
@@ -30,7 +47,16 @@
                 <action android:name="android.telecom.ConnectionService" />
             </intent-filter>
         </service>
+<!--        <activity android:name="com.well.androidApp.ui.CustomTabActivity">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.VIEW" />-->
 
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <category android:name="android.intent.category.BROWSABLE" />-->
+
+<!--                <data android:scheme="world.endo.live.link" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
         <!--Facebook-->
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

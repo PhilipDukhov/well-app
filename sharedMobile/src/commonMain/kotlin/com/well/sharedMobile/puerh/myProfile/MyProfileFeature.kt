@@ -7,8 +7,8 @@ import com.well.sharedMobile.puerh.πModels.NavigationBarModel
 import com.well.sharedMobile.utils.ImageContainer
 import com.well.sharedMobile.utils.profileImage
 import com.well.modules.utils.base.UrlUtil
-import com.well.modules.utils.base.toSetOf
-import com.well.modules.utils.base.withEmptySet
+import com.well.modules.utils.toSetOf
+import com.well.modules.utils.withEmptySet
 
 object MyProfileFeature {
     fun testState() = initialState(

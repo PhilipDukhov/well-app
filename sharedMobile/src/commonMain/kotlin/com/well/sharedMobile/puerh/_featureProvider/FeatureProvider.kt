@@ -17,11 +17,14 @@ import com.well.modules.atomic.freeze
 import com.well.modules.napier.Napier
 import com.well.modules.utils.base.puerh.SyncFeature
 import com.well.modules.utils.dataStore.authToken
+import com.well.modules.utils.dataStore.welcomeShowed
 import com.well.modules.utils.permissionsHandler.PermissionsHandler
 import com.well.modules.utils.permissionsHandler.PermissionsHandler.Type.*
 import com.well.modules.utils.platform.Platform
 import com.well.modules.utils.platform.isDebug
 import com.well.modules.utils.puerh.*
+import com.well.sharedMobile.puerh.login.credentialProviders.OAuthCredentialProvider
+import com.well.sharedMobile.puerh.welcome.WelcomeFeature
 import io.ktor.client.*
 import kotlinx.coroutines.*
 
@@ -32,8 +35,13 @@ class FeatureProvider(
 ) {
     private val coroutineContext = Dispatchers.Default
     internal val sessionCloseableContainer = CloseableContainer()
-    internal val socialNetworkService = SocialNetworkService {
-        providerGenerator(it, context)
+    internal val socialNetworkService = SocialNetworkService { network ->
+        when (network) {
+            SocialNetwork.Twitter -> {
+                OAuthCredentialProvider("twitter", contextHelper)
+            }
+            else -> providerGenerator(network, context)
+        }
     }
     internal val platform = Platform(context)
     internal val permissionsHandler = PermissionsHandler(context.permissionsHandlerContext)
@@ -59,6 +67,9 @@ class FeatureProvider(
                 }
                 is Eff.MyProfileEff -> handleMyProfileEff(eff.eff, listener)
                 is Eff.OnlineUsersEff -> when (eff.eff) {
+                    is OnlineUsersFeature.Eff.UpdateList,
+                    is OnlineUsersFeature.Eff.SetUserFavorite
+                    -> Unit
                     is OnlineUsersFeature.Eff.SelectedUser -> {
                         listener.invoke(
                             Msg.OpenUserProfile(
@@ -81,7 +92,11 @@ class FeatureProvider(
                         loggedIn(loginToken, listener)
                         listener.invoke(Msg.LoggedIn)
                     } else {
-                        listener.invoke(Msg.OpenLoginScreen)
+//                        if (platform.dataStore.welcomeShowed) {
+                            listener.invoke(Msg.OpenLoginScreen)
+//                        } else {
+//                            listener.invoke(Msg.OpenWelcomeScreen)
+//                        }
                     }
                 }
                 Eff.SystemBack -> {
@@ -91,6 +106,14 @@ class FeatureProvider(
                     when (eff.eff) {
                         is LoginFeature.Eff.Login -> {
                             socialNetworkLogin(eff.eff.socialNetwork, listener)
+                        }
+                    }
+                }
+                is Eff.WelcomeEff -> {
+                    when (eff.eff) {
+                        WelcomeFeature.Eff.Continue -> {
+//                            platform.dataStore.welcomeShowed = true
+                            listener.invoke(Msg.OpenLoginScreen)
                         }
                     }
                 }

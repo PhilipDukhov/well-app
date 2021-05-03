@@ -17,6 +17,7 @@ internal expect class ContextHelper(context: Context) {
     fun showAlert(alert: Alert)
     fun showSheet(actions: List<Action>): Closeable
     fun openUrl(url: String)
+    suspend fun webAuthenticate(url: String, requestCode: Int): String
     suspend fun pickSystemImage(): ImageContainer
 }
 

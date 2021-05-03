@@ -1,12 +1,19 @@
 package com.well.sharedMobile.puerh.login
 
-import com.well.modules.utils.base.toSetOf
-import com.well.modules.utils.base.withEmptySet
+import com.well.modules.utils.toSetOf
+import com.well.modules.utils.withEmptySet
 
 object LoginFeature {
     data class State(
         val processing: Boolean = false,
-    )
+    ) {
+        data class State(
+            var firstName: String,
+            var lastName: String,
+            var email: String,
+            var phoneNumber: String,
+        )
+    }
 
     sealed class Msg {
         data class OnSocialNetworkSelected(val socialNetwork: SocialNetwork) : Msg()

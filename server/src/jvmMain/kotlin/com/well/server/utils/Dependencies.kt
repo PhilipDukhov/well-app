@@ -1,8 +1,10 @@
 package com.well.server.utils
 
+import com.well.modules.models.User
 import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMessage
 import com.well.modules.models.createBaseHttpClient
+import com.well.server.Users
 import io.ktor.application.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -26,13 +28,9 @@ class Dependencies(app: Application) {
 
     val client = createBaseHttpClient()
 
-    suspend fun getRandomPicture() =
-        client.get<HttpStatement>("https://picsum.photos/1000")
-            .execute { it.request.url }
-
     private fun onlineUsers() = if (connectedUserSessions.keys.isEmpty()) listOf() else
         database
-            .userQueries
+            .usersQueries
             .getByIds(connectedUserSessions.keys)
             .executeAsList()
             .map { it.toUser() }
@@ -41,11 +39,7 @@ class Dependencies(app: Application) {
         connectedUserSessions[id]?.let { session ->
             session.send(
                 WebSocketMessage.CurrentUser(
-                    database
-                        .userQueries
-                        .getById(id)
-                        .executeAsOne()
-                        .toUser()
+                    getUser(id)
                 )
             )
             notifyOnline()
@@ -69,4 +63,21 @@ class Dependencies(app: Application) {
         userId: UserId,
         ext: String
     ) = "profilePictures/$userId-${UUID.randomUUID()}.$ext"
+
+    fun getUser(
+        userId: UserId,
+        currentUserId: UserId? = null
+    ) = database
+        .usersQueries
+        .getById(userId)
+        .executeAsOne()
+        .toUser(
+            if (currentUserId != null) {
+                database.favoritesQueries
+                    .isFavorite(currentUserId, userId)
+                    .executeAsOne()
+            } else {
+                false
+            }
+        )
 }

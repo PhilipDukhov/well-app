@@ -1,16 +1,36 @@
 package com.well.sharedMobile.puerh._topLevel
 
-import com.well.sharedMobile.utils.ImageContainer
-import com.well.modules.utils.*
-import com.well.modules.utils.base.map
 import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.freeze
-import com.well.modules.utils.base.mapNotNull
-import kotlinx.coroutines.*
+import com.well.modules.utils.Context
+import com.well.modules.utils.mapNotNull
+import com.well.modules.utils.resumeWithException
+import com.well.sharedMobile.networking.Constants
+import com.well.sharedMobile.utils.ImageContainer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.invoke
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import platform.AuthenticationServices.ASWebAuthenticationPresentationContextProvidingProtocol
+import platform.AuthenticationServices.ASWebAuthenticationSession
+import platform.AuthenticationServices.ASWebAuthenticationSessionErrorCodeCanceledLogin
+import platform.AuthenticationServices.ASWebAuthenticationSessionErrorDomain
 import platform.Foundation.NSURL
-import platform.UIKit.*
+import platform.UIKit.UIAlertAction
+import platform.UIKit.UIAlertActionStyleCancel
+import platform.UIKit.UIAlertActionStyleDefault
+import platform.UIKit.UIAlertController
+import platform.UIKit.UIAlertControllerStyleActionSheet
+import platform.UIKit.UIAlertControllerStyleAlert
+import platform.UIKit.UIApplication
+import platform.UIKit.UIApplicationOpenSettingsURLString
+import platform.UIKit.UIImagePickerController
+import platform.UIKit.UIImagePickerControllerDelegateProtocol
+import platform.UIKit.UIImagePickerControllerImageURL
+import platform.UIKit.UINavigationControllerDelegateProtocol
+import platform.UIKit.UIViewController
 import platform.darwin.NSObject
-import kotlin.collections.map
 import kotlin.coroutines.resume
 
 internal actual class ContextHelper actual constructor(actual val context: Context) {
@@ -63,16 +83,58 @@ internal actual class ContextHelper actual constructor(actual val context: Conte
     }
 
     actual fun openUrl(url: String) {
-        UIApplication.sharedApplication.openURL(NSURL(string = url))
+        MainScope().launch {
+            UIApplication.sharedApplication.openURL(NSURL(string = url))
+        }
+    }
+
+    actual suspend fun webAuthenticate(url: String, requestCode: Int): String {
+        return suspendCancellableCoroutine { continuation ->
+            MainScope().launch {
+                val session = ASWebAuthenticationSession(
+                    uRL = NSURL(string = url),
+                    callbackURLScheme = Constants.oauthCallbackProtocol,
+                    completionHandler = completionHandler@{ callbackUrl, error ->
+                        if (continuation.isCancelled) {
+                            return@completionHandler
+                        }
+                        if (
+                            error?.domain == ASWebAuthenticationSessionErrorDomain
+                            && error?.code == ASWebAuthenticationSessionErrorCodeCanceledLogin
+                        ) {
+                            continuation.cancel()
+                        } else if (error != null) {
+                            continuation.resumeWithException(error)
+                        } else {
+                            continuation.resume(callbackUrl!!.absoluteString!!)
+                        }
+                    }
+                )
+                session.presentationContextProvider = context.rootController as? ASWebAuthenticationPresentationContextProvidingProtocol
+                session.start()
+                continuation.invokeOnCancellation {
+                    println("continuation.invokeOnCancellation")
+                    session.cancel()
+                }
+            }
+        }
     }
 
     private fun presentViewController(
         viewController: UIViewController,
         animated: Boolean = true
     ) {
-        context
-            .rootController
-            .presentViewController(viewController, animated, null)
+        MainScope().launch {
+            topmostController().presentViewController(viewController, animated, null)
+        }
+    }
+
+    private fun topmostController(): UIViewController {
+        var topmost = context.rootController
+        while (topmost.presentedViewController != null && !topmost.presentedViewController!!.isBeingDismissed()) {
+            topmost = topmost.presentedViewController!!
+        }
+        return topmost
     }
 
     private fun Alert.Action.handle() {
@@ -108,9 +170,7 @@ internal actual class ContextHelper actual constructor(actual val context: Conte
                         picker.dismissViewControllerAnimated(true) {}
                     }
                 }.freeze()
-                context
-                    .rootController
-                    .presentViewController(imagePicker, true) {}
+                presentViewController(imagePicker)
             }
         }
 }

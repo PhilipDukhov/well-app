@@ -1,5 +1,11 @@
 <component name="ProjectCodeStyleConfiguration">
   <code_scheme name="Project" version="173">
+    <HoconCodeStyleSettings>
+      <option name="KEEP_BLANK_LINES_IN_OBJECTS" value="1" />
+      <option name="KEEP_BLANK_LINES_IN_LISTS" value="0" />
+      <option name="KEEP_BLANK_LINES_BEFORE_RBRACE" value="0" />
+      <option name="KEEP_BLANK_LINES_BEFORE_RBRACKET" value="0" />
+    </HoconCodeStyleSettings>
     <JetCodeStyleSettings>
       <option name="NAME_COUNT_TO_USE_STAR_IMPORT" value="100" />
       <option name="NAME_COUNT_TO_USE_STAR_IMPORT_FOR_MEMBERS" value="100" />

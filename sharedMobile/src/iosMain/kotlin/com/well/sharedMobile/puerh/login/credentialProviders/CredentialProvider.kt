@@ -7,5 +7,5 @@ import platform.UIKit.UIApplication
 actual abstract class CredentialProvider actual constructor(context: Context) {
     actual abstract suspend fun getCredentials(): AuthCredential
 
-    abstract fun application(app: UIApplication, openURL: NSURL, options: Map<Any?, *>): Boolean
+    open fun application(app: UIApplication, openURL: NSURL, options: Map<Any?, *>) = false
 }

@@ -82,6 +82,7 @@ kotlin {
                 "android.material",
                 "android.activity",
                 "android.compose.accompanist.coil",
+                "android.browser",
                 "ktor.client.engine.cio",
                 "kotlin.coroutines.playServices",
             )

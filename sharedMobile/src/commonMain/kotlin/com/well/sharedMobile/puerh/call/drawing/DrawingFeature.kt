@@ -2,11 +2,11 @@ package com.well.sharedMobile.puerh.call.drawing
 
 import com.well.modules.models.*
 import com.well.sharedMobile.utils.ImageContainer
-import com.well.modules.utils.base.map
+import com.well.modules.utils.map
 import com.well.modules.utils.platform.Platform
 import com.well.modules.utils.platform.nativeScale
-import com.well.modules.utils.base.toSetOf
-import com.well.modules.utils.base.withEmptySet
+import com.well.modules.utils.toSetOf
+import com.well.modules.utils.withEmptySet
 import kotlin.time.Duration
 import kotlin.time.measureTimedValue
 

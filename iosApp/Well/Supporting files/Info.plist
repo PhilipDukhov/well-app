@@ -25,11 +25,12 @@
 			<array>
 				<string>com.googleusercontent.apps.$(GOOGLE_CLIENT_ID)</string>
 				<string>fb$(FACEBOOK_APP_ID)</string>
+				<string>world.endo.live.link</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>202102172005</string>
+	<string>202104272113</string>
 	<key>FacebookAdvertiserIDCollectionEnabled</key>
 	<true/>
 	<key>FacebookAppID</key>

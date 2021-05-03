@@ -15,8 +15,8 @@ private lateinit var facebookAuthenticatedClient: HttpClient
 
 suspend fun Dependencies.getFacebookAuthenticatedClient(): HttpClient {
     if (::facebookAuthenticatedClient.isInitialized) return facebookAuthenticatedClient
-    val appId = environment.configProperty("facebook.appId")
-    val appSecret = environment.configProperty("facebook.appSecret")
+    val appId = environment.configProperty("social.facebook.appId")
+    val appSecret = environment.configProperty("social.facebook.appSecret")
     val host = "graph.facebook.com"
     val client = this.client.config {
         defaultRequest {

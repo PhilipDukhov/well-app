@@ -30,3 +30,9 @@ internal val authTokenKey = createKey<String>(if (Platform.isDebug) "debugAuthTo
 var DataStore.authToken: String?
     get() = getValue(authTokenKey)
     set(value) = setValue(value, authTokenKey)
+
+@SharedImmutable
+internal val welcomeShowedKey = createKey<Boolean>("welcomeShowedKey")
+var DataStore.welcomeShowed: Boolean
+    get() = getValue(welcomeShowedKey) ?: false
+    set(value) = setValue(value, welcomeShowedKey)

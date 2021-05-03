@@ -73,7 +73,7 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
-            isShrinkResources = true
+//            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
             ndk {
                 debugSymbolLevel = "FULL"
@@ -89,29 +89,35 @@ android {
             directory = "${projectDir}/../iosApp/Well/Supporting files/"
             filename = "Shared.xcconfig"
         }
+        val facebookAppId = dotenv["SHARED_FACEBOOK_APP_ID"]
+        val googleWebClientId = dotenv["ANDROID_GOOGLE_CLIENT_ID"]
+        val googleWebClientIdFull = "$googleWebClientId.apps.googleusercontent.com"
+        val googleAppId = dotenv["GOOGLE_APP_ID"]
+        val apiKey = "GOOGLE_API_KEY"
 
-        listOf("debug", "release").forEach {
-            val facebookAppId = dotenv["SHARED_FACEBOOK_APP_ID"]
-            val googleWebClientId = dotenv["ANDROID_GOOGLE_CLIENT_ID"]
-            val googleWebClientIdFull = "$googleWebClientId.apps.googleusercontent.com"
-            val googleProjectId = dotenv["GOOGLE_PROJECT_ID"]
-            val googleAppId = dotenv["GOOGLE_APP_ID"]
-            val apiKey = "AIzaSyAPi16R8G5T88zmqmCPwgK6NHv3zXU6BFY"
-
-            getByName(it) {
-                listOf(
-                    "facebook_app_id" to facebookAppId,
-                    "fb_login_protocol_scheme" to "fb$facebookAppId",
-                    "gcm_defaultSenderId" to googleAppId,
-                    "google_app_id" to "1:${googleAppId}:android:23b05b40100225534c61a4",
-                    "google_api_key" to apiKey,
-                    "google_crash_reporting_api_key" to apiKey,
-                    "project_id" to googleProjectId,
-                    "default_web_client_id" to googleWebClientIdFull,
-                    "google_web_client_id" to googleWebClientIdFull
-                ).forEach { pair ->
-                    resValue("string", pair.first, pair.second)
-                }
+        listOf("debug", "release").forEach { buildType ->
+            getByName(buildType) {
+                (
+                    listOf(
+                        "project_id" to "GOOGLE_PROJECT_ID",
+                        "apple_server_client_id" to "APPLE_SEVER_CLIENT_ID",
+                        "apple_auth_redirect_url" to "APPLE_AUTH_REDIRECT_URL",
+                    ).map {
+                        it.first to dotenv[it.second]
+                    } +
+                        listOf(
+                            "facebook_app_id" to facebookAppId,
+                            "fb_login_protocol_scheme" to "fb$facebookAppId",
+                            "gcm_defaultSenderId" to googleAppId,
+                            "google_app_id" to "1:${googleAppId}:android:23b05b40100225534c61a4",
+                            "google_api_key" to apiKey,
+                            "google_crash_reporting_api_key" to apiKey,
+                            "default_web_client_id" to googleWebClientIdFull,
+                            "google_web_client_id" to googleWebClientIdFull,
+                        )
+                    ).forEach { pair ->
+                        resValue("string", pair.first, pair.second)
+                    }
             }
         }
     }

@@ -8,10 +8,10 @@ import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.copyClear
 import com.well.sharedMobile.puerh.call.webRtc.LocalDeviceState
 import com.well.sharedMobile.puerh.call.webRtc.RemoteDeviceState
 import com.well.modules.utils.*
-import com.well.modules.utils.base.plus
-import com.well.modules.utils.base.toFilterNotNull
-import com.well.modules.utils.base.toSetOf
-import com.well.modules.utils.base.withEmptySet
+import com.well.modules.utils.plus
+import com.well.modules.utils.toFilterNotNull
+import com.well.modules.utils.toSetOf
+import com.well.modules.utils.withEmptySet
 
 object CallFeature {
     fun callingStateAndEffects(user: User) =

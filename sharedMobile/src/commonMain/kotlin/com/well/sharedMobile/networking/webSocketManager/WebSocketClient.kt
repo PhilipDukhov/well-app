@@ -10,7 +10,8 @@ import io.ktor.http.*
 internal class WebSocketClient(val config: Config) {
     data class Config(
         val host: String,
-        val port: Int,
+        val port: Int?,
+        val webSocketProtocol: URLProtocol,
         val bearerToken: String,
     ) {
         val header: Pair<String, String>
@@ -23,6 +24,7 @@ internal class WebSocketClient(val config: Config) {
                 config.header.apply {
                     header(first, second)
                 }
+                contentType(ContentType.Application.Json)
             }
             install(WebSockets)
         }

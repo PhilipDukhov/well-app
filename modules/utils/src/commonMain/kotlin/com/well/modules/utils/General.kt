@@ -1,4 +1,4 @@
-package com.well.modules.utils.base
+package com.well.modules.utils
 
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -62,3 +62,7 @@ suspend fun <R> tryF(
 fun <F, S> Pair<F, S>.named(block: (F, S) -> Unit) = block(first, second)
 
 fun <F, S> Collection<Pair<F, S>>.forEachNamed(block: (F, S) -> Unit) = forEach { it.named(block) }
+
+fun <A, B, C> Triple<A, B, C>.named(block: (A, B, C) -> Unit) = block(first, second, third)
+
+fun <A, B, C> Collection<Triple<A, B, C>>.forEachNamed(block: (A, B, C) -> Unit) = forEach { it.named(block) }

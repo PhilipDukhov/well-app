@@ -39,16 +39,16 @@ private extension SocialNetwork {
      var image: UIImage {
         let images = R.image.loginSocials.self
         switch self {
-        //        case .apple:
-        //            return images.apple()
-        //        case .twitter:
-        //            return images.twitter()
+        case .apple:
+            return images.apple()!
+        case .twitter:
+            return images.twitter()!
         case .facebook:
             return images.facebook()!
         case .google:
             return images.google()!
             
-        default: fatalError()
+        default: fatalError("unexpected \(self)")
         }
     }
 }

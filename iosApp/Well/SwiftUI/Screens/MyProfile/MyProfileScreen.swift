@@ -36,6 +36,9 @@ struct MyProfileScreen: View {
                 InactiveOverlay(showActivityIndicator: false)
             }
         }
+        CustomTabBar(selected: 0, onExpertsClick: {
+            listener(MyProfileFeature.MsgBack())
+        }).padding()
     }
     
     @ViewBuilder

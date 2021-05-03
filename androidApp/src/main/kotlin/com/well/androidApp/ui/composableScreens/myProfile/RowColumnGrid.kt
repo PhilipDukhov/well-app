@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.well.modules.utils.base.forEachNamed
+import com.well.modules.utils.forEachNamed
 
 @Composable
 fun RowColumnGrid(

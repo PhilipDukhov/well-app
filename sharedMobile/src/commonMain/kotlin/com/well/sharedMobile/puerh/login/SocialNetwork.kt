@@ -1,10 +1,10 @@
 package com.well.sharedMobile.puerh.login
 
 enum class SocialNetwork {
+    Apple,
     Facebook,
     Google,
-//    Apple,
-//    Twitter,
+    Twitter,
     ;
 
     companion object {

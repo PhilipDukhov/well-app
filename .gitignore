@@ -336,3 +336,11 @@ iosApp/Well/Supporting files/Shared.xcconfig
 .database
 
 deps.txt
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+
+deploy/*
+
+*.p8

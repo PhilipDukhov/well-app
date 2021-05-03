@@ -1,43 +1,49 @@
 package com.well.sharedMobile.networking.webSocketManager
 
-import com.well.sharedMobile.networking.RedirectResponseException
-import com.well.sharedMobile.networking.getThrowable
 import com.well.modules.atomic.freeze
 import com.well.modules.napier.Napier
-import com.well.modules.utils.resumeWithException
-import io.ktor.client.features.ClientRequestException
 import com.well.modules.utils.toThrowable
-import io.ktor.http.*
-import kotlinx.coroutines.*
-import platform.Foundation.*
+import com.well.sharedMobile.networking.getThrowable
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.suspendCancellableCoroutine
+import platform.Foundation.NSData
+import platform.Foundation.NSError
+import platform.Foundation.NSHTTPURLResponse
+import platform.Foundation.NSMutableURLRequest
+import platform.Foundation.NSNumber
+import platform.Foundation.NSOperationQueue
+import platform.Foundation.NSString
+import platform.Foundation.NSURLComponents
+import platform.Foundation.NSURLSession
+import platform.Foundation.NSURLSessionConfiguration
+import platform.Foundation.NSURLSessionTask
+import platform.Foundation.NSURLSessionWebSocketCloseCode
+import platform.Foundation.NSURLSessionWebSocketDelegateProtocol
+import platform.Foundation.NSURLSessionWebSocketTask
+import platform.Foundation.NSUTF8StringEncoding
+import platform.Foundation.addValue
+import platform.Foundation.create
 import platform.darwin.NSObject
-import kotlin.coroutines.*
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 internal actual suspend fun WebSocketClient.ws(
     path: String,
     block: suspend WebSocketSession.() -> Unit,
 ) {
-    webSocket(URLProtocol.WS, path, block)
-}
-
-internal actual suspend fun WebSocketClient.wss(
-    path: String,
-    block: suspend WebSocketSession.() -> Unit,
-) {
-    webSocket(URLProtocol.WSS, path, block)
+    webSocket(path, block)
 }
 
 private suspend fun WebSocketClient.webSocket(
-    protocol: URLProtocol,
     path: String,
     block: suspend WebSocketSession.() -> Unit,
 ) =
     // replace with suspendCoroutine when https://github.com/Kotlin/kotlinx.coroutines/issues/2363 fixed
     block(suspendCancellableCoroutine { continuation ->
         val components = NSURLComponents()
-        components.scheme = protocol.name
+        components.scheme = config.webSocketProtocol.name
         components.host = config.host
-        components.port = NSNumber(config.port)
+        components.port = config.port?.let { NSNumber(it) }
         components.path = path
         val delegate = object : NSObject(), NSURLSessionWebSocketDelegateProtocol {
             lateinit var webSocketSession: WebSocketSession

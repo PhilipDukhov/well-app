@@ -5,5 +5,6 @@ import com.well.modules.utils.Context
 
 actual abstract class CredentialProvider actual constructor(context: Context) {
     actual abstract suspend fun getCredentials(): AuthCredential
-    abstract fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean
+    open fun handleActivityResult(requestCode: Int, resultCode: Int, data: Intent?) = false
+    open fun handleOnNewIntent(intent: Intent?) = false
 }

@@ -1,0 +1,120 @@
+import com.well.modules.models.User;
+import com.well.modules.models.UsersFilter.SortBy;
+import kotlin.collections.Set;
+
+CREATE TABLE IF NOT EXISTS Users (
+    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    createdDate REAL NOT NULL,
+    initialized BOOLEAN NOT NULL,
+    fullName TEXT NOT NULL,
+    type TEXT AS User.Type NOT NULL,
+    email TEXT,
+    profileImageUrl TEXT,
+    phoneNumber TEXT,
+    location TEXT,
+    timeZoneIdentifier TEXT,
+    credentials TEXT AS User.Credentials,
+    academicRank TEXT AS User.AcademicRank,
+    languages TEXT AS Set<User.Language> NOT NULL,
+    skills TEXT AS Set<User.Skill> NOT NULL,
+    bio TEXT,
+    education TEXT,
+    professionalMemberships TEXT,
+    publications TEXT,
+    twitter TEXT,
+    doximity TEXT,
+
+    facebookId TEXT,
+    googleId TEXT,
+    twitterId TEXT,
+    appleId TEXT
+);
+
+lastInsertId:
+SELECT LAST_INSERT_ID();
+
+exists:
+SELECT EXISTS (SELECT * FROM Users WHERE id = ?);
+
+getById:
+SELECT * FROM Users WHERE id = ?;
+
+getByIds:
+SELECT * FROM Users WHERE id IN ?;
+
+getByFacebookId:
+SELECT id FROM Users WHERE facebookId = ?;
+
+getByGoogleId:
+SELECT id FROM Users WHERE googleId = ?;
+
+getByTwitterId:
+SELECT id FROM Users WHERE twitterId = ?;
+
+getByAppleId:
+SELECT id FROM Users WHERE appleId = ?;
+-- Create
+
+insertFacebook:
+INSERT INTO Users(fullName, createdDate, initialized, languages, skills, type, email, facebookId)
+VALUES (?, UNIX_TIMESTAMP(), FALSE, '', '', ?, ?, ?);
+
+insertGoogle:
+INSERT INTO Users(fullName, createdDate, initialized, languages, skills, type, email, googleId)
+VALUES (?, UNIX_TIMESTAMP(), FALSE, '', '', ?, ?, ?);
+
+insertTwitter:
+INSERT INTO Users(fullName, createdDate, initialized, languages, skills, type, twitterId)
+VALUES ('', UNIX_TIMESTAMP(), FALSE, '', '', ?, ?);
+
+insertApple:
+INSERT INTO Users(fullName, createdDate, initialized, languages, skills, type, appleId)
+VALUES (?, UNIX_TIMESTAMP(), FALSE, '', '', NULL, NULL);
+
+-- Update
+
+updateProfileImage:
+UPDATE Users
+SET profileImageUrl = ?
+WHERE id = ?;
+
+updateUser:
+UPDATE Users
+SET initialized = TRUE,
+    fullName = ?,
+    email = ?,
+    profileImageUrl = ?,
+    phoneNumber = ?,
+    location = ?,
+    timeZoneIdentifier = ?,
+    credentials = ?,
+    academicRank = ?,
+    languages = ?,
+    skills = ?,
+    bio = ?,
+    education = ?,
+    professionalMemberships = ?,
+    publications = ?,
+    twitter = ?,
+    doximity = ?
+WHERE id = ?;
+
+-- Filter
+filter:
+SELECT * FROM Users
+WHERE
+    (:nameFilter = '' OR LOCATE(:nameFilter, fullName) > 0)
+    AND (:favorites = FALSE OR
+        id IN (
+            SELECT Favourites.destination FROM Favourites WHERE owner = :userId
+        )
+    )
+;
+
+--     val sortBy: SortBy = SortBy.Popularity,
+--     val skills: Set<User.Skill> = emptySet(),
+--     val academicRanks: Set<User.AcademicRank> = emptySet(),
+--     val languages: Set<User.Language> = emptySet(),
+--     val location: String? = null,
+--     val rating: Rating = Rating.All,
+--     val withReviews: Boolean = true,

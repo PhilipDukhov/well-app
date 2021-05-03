@@ -6,16 +6,9 @@ internal actual suspend fun WebSocketClient.ws(
     path: String,
     block: suspend WebSocketSession.() -> Unit,
 ) {
-    client.ws(path) {
-        block(WebSocketSession(this))
-    }
-}
-
-internal actual suspend fun WebSocketClient.wss(
-    path: String,
-    block: suspend WebSocketSession.() -> Unit,
-) {
-    client.wss(path) {
+    client.ws(path, request = {
+        url.protocol = config.webSocketProtocol
+    }) {
         block(WebSocketSession(this))
     }
 }

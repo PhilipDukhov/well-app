@@ -46,4 +46,6 @@ private val SocialNetwork.drawable: Int
     get() = when (this) {
         SocialNetwork.Facebook -> R.drawable.ic_auth_facebook
         SocialNetwork.Google -> R.drawable.ic_auth_google
+        SocialNetwork.Twitter -> R.drawable.ic_auth_twitter
+        SocialNetwork.Apple -> R.drawable.ic_auth_apple
     }

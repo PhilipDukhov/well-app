@@ -20,5 +20,11 @@ kotlin {
                 "kotlin.stdLib",
             )
         }
+        val jvmMain by getting {
+
+        }
+        val androidMain by getting {
+            dependsOn(jvmMain)
+        }
     }
 }

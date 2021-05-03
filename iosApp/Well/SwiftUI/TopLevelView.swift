@@ -32,25 +32,30 @@ struct TopLevelView: View {
 //            profileScreen().statusBar(style: .lightContent)
         } else {
             switch state.currentScreen {
-            case is TopLevelFeature.StateScreenStateLaunchScreen:
+            case let state as ScreenState.Welcome:
+                WelcomeScreen(state: state.state) {
+                    listener(TopLevelFeature.MsgWelcomeMsg(msg: $0))
+                }
+                
+            case is ScreenState.Launch:
                 EmptyView()
-            
-            case let state as TopLevelFeature.StateScreenStateLogin:
+
+            case let state as ScreenState.Login:
                 LoginScreen(state: state.state) {
                     listener(TopLevelFeature.MsgLoginMsg(msg: $0))
                 }
-            
-            case let state as TopLevelFeature.StateScreenStateMyProfile:
+
+            case let state as ScreenState.MyProfile:
                 MyProfileScreen(state: state.state) {
                     listener(TopLevelFeature.MsgMyProfileMsg(msg: $0))
                 }
-                
-            case let state as TopLevelFeature.StateScreenStateOnlineUsers:
+
+            case let state as ScreenState.OnlineUsers:
                 OnlineUsersScreen(state: state.state) {
                     listener(TopLevelFeature.MsgOnlineUsersMsg(msg: $0))
                 }
 
-            case let state as TopLevelFeature.StateScreenStateCall:
+            case let state as ScreenState.Call:
                 CallScreen(state: state.state) {
                     listener(TopLevelFeature.MsgCallMsg(msg: $0))
                 }

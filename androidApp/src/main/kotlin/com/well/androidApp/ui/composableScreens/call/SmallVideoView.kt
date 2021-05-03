@@ -2,7 +2,6 @@ package com.well.androidApp.ui.composableScreens.call
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -25,7 +24,7 @@ fun VideoViewContainer(
     containerModifier: Modifier,
     modifier: Modifier,
 ) {
-    BoxWithConstraints(
+    Box(
         modifier = Modifier.background(Color.Red).then(containerModifier)
             .alpha(if (view.hidden) 0F else 1F)
             .onSizeChanged {

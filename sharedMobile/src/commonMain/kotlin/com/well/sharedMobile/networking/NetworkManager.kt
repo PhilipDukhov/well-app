@@ -10,13 +10,12 @@ import com.well.sharedMobile.networking.webSocketManager.WebSocketSession
 import com.well.sharedMobile.networking.webSocketManager.ws
 import com.well.sharedMobile.puerh.call.resizedImage
 import com.well.sharedMobile.utils.ImageContainer
-import com.well.sharedMobile.utils.asImageContainer
 import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
-import com.well.modules.utils.base.MutableStateFlow
+import com.well.modules.utils.MutableStateFlow
 import com.well.modules.atomic.*
 import com.well.modules.napier.Napier
-import com.well.modules.utils.base.tryF
+import com.well.modules.utils.tryF
 import io.ktor.client.call.*
 import io.ktor.client.features.*
 import io.ktor.client.request.*
@@ -36,9 +35,10 @@ class NetworkManager(
 ) : CloseableContainer() {
     private val client = WebSocketClient(
         WebSocketClient.Config(
-            Constants.host,
-            Constants.port,
-            token,
+            host = Constants.host,
+            port = Constants.port,
+            webSocketProtocol = Constants.webSocketProtocol,
+            bearerToken = token,
         )
     )
 
@@ -165,8 +165,19 @@ class NetworkManager(
 
     suspend fun putUser(user: User) = tryCheckAuth {
         client.client.put<Unit>("/user") {
-            contentType(ContentType.Application.Json)
             body = user
+        }
+    }
+
+    suspend fun filteredUsersList(filter: UsersFilter) = tryCheckAuth {
+        client.client.post<List<User>>("/user/filteredList") {
+            body = filter
+        }
+    }
+
+    suspend fun setFavorite(favoriteSetter: FavoriteSetter) = tryCheckAuth {
+        client.client.post<Unit>("/user/setFavorite") {
+            body = favoriteSetter
         }
     }
 
@@ -212,7 +223,7 @@ class NetworkManager(
     }
 }
 
-private fun Throwable.toResponseException() : Throwable =
+private fun Throwable.toResponseException(): Throwable =
     when (this) {
         is io.ktor.client.features.RedirectResponseException -> RedirectResponseException(this)
         is io.ktor.client.features.ClientRequestException -> ClientRequestException(this)
@@ -230,14 +241,14 @@ fun getThrowable(httpStatusCode: Int): Throwable? {
     }
 }
 
-data class RedirectResponseException(val status: HttpStatusCode): Exception() {
+data class RedirectResponseException(val status: HttpStatusCode) : Exception() {
     constructor(exception: io.ktor.client.features.RedirectResponseException) : this(exception.response.status)
 }
 
-data class ClientRequestException(val status: HttpStatusCode): Exception() {
+data class ClientRequestException(val status: HttpStatusCode) : Exception() {
     constructor(exception: io.ktor.client.features.ClientRequestException) : this(exception.response.status)
 }
 
-data class ServerResponseException(val status: HttpStatusCode): Exception() {
+data class ServerResponseException(val status: HttpStatusCode) : Exception() {
     constructor(exception: io.ktor.client.features.ServerResponseException) : this(exception.response.status)
 }

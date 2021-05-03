@@ -72,7 +72,7 @@ private suspend fun HttpClient.getProfilePicture(userId: String) =
 private fun Dependencies.getFacebookUserId(
     id: String,
 ) = database
-    .userQueries
+    .usersQueries
     .getByFacebookId(id)
     .executeAsOneOrNull()
 
@@ -80,7 +80,7 @@ private fun Dependencies.createFacebookUser(
     id: String,
     userInfo: JsonObject,
 ): UserId = database
-    .userQueries
+    .usersQueries
     .run {
         insertFacebook(
             fullName = "${userInfo.getPrimitiveContent(UserFields.FirstName)} ${userInfo.getPrimitiveContent(UserFields.LastName)}",
@@ -102,7 +102,7 @@ private suspend fun HttpClient.updateUserProfile(
         ?.let { uploadToS3FromUrl(it, awsProfileImagePath(id, "")) }
         ?.let {
             database
-                .userQueries
+                .usersQueries
                 .updateProfileImage(it.toString(), id)
         }
 }

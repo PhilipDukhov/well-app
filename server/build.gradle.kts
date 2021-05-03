@@ -1,9 +1,11 @@
+import io.github.cdimascio.dotenv.dotenv
+
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
     id("com.squareup.sqldelight")
     application
-    id("com.github.johnrengelman.shadow") version "6.1.0"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 application {
@@ -27,6 +29,7 @@ kotlin {
         }
     }
     sourceSets {
+        usePredefinedExperimentalAnnotations("KtorExperimentalLocationsAPI")
         val jvmMain by getting {
             libDependencies(
                 ":modules:models",
@@ -34,7 +37,10 @@ kotlin {
                 "ktor.server.*",
                 "ktor.serialization",
                 "ktor.client.serialization",
+                "ktor.client.logging",
                 "ktor.client.engine.cio",
+                "ktor.auth",
+                "ktor.authJwt",
                 "ktor.metrics",
                 "ktor.websockets",
                 "google.apiClient",
@@ -58,11 +64,15 @@ tasks.withType<Jar> {
 }
 
 tasks.named<JavaExec>("run") {
-    io.github.cdimascio.dotenv.dotenv {
+    dotenv {
         directory = "${projectDir}/../iosApp/Well/Supporting files/"
         filename = "Shared.xcconfig"
     }.entries().forEach {
         environment(it.key, it.value)
         System.setProperty(it.value, it.key)
     }
+}
+
+tasks.named<AbstractCopyTask>("jvmProcessResources") {
+    duplicatesStrategy = DuplicatesStrategy.WARN
 }

@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+import AuthenticationServices
 
 struct StatusBarStyleKey: PreferenceKey {
     static var defaultValue: UIStatusBarStyle = .default
@@ -22,7 +23,7 @@ extension View {
     }
 }
 
-final class HostingController<T: View>: UIHostingController<AnyView> {
+final class HostingController<T: View>: UIHostingController<AnyView>, ASWebAuthenticationPresentationContextProviding {
     var statusBarStyle = UIStatusBarStyle.default
 
     //UIKit seems to observe changes on this, perhaps with KVO?
@@ -73,5 +74,9 @@ final class HostingController<T: View>: UIHostingController<AnyView> {
         coder aDecoder: NSCoder
     ) {
         fatalError("Unavailable")
+    }
+
+    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+        view.window!
     }
 }

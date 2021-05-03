@@ -8,3 +8,9 @@ fun FeatureProvider.handleActivityResult(requestCode: Int, resultCode: Int, data
         .credentialProviders
         .values
         .any { it.handleActivityResult(requestCode, resultCode, data) }
+
+fun FeatureProvider.handleOnNewIntent(data: Intent?) =
+    socialNetworkService
+        .credentialProviders
+        .values
+        .any { it.handleOnNewIntent(data) }

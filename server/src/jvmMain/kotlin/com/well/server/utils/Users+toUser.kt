@@ -2,11 +2,13 @@ package com.well.server.utils
 
 import com.well.server.Users
 import com.well.modules.models.User
+import com.well.modules.models.UserId
 
-fun Users.toUser(): User =
+fun Users.toUser(favorite: Boolean = false): User =
     User(
         id = id,
         initialized = initialized,
+        favorite = favorite,
         fullName = fullName,
         type = type,
         email = email,

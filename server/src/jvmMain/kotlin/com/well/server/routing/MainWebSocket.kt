@@ -47,12 +47,10 @@ suspend fun DefaultWebSocketServerSession.mainWebSocket(dependencies: Dependenci
                             }
                             session.send(
                                 WebSocketMessage.IncomingCall(
-                                    dependencies
-                                        .database
-                                        .userQueries
-                                        .getById(currentUserId)
-                                        .executeAsOne()
-                                        .toUser(),
+                                    dependencies.getUser(
+                                        msg.userId,
+                                        currentUserId,
+                                    )
                                 )
                             )
                             calls.add(Call(currentUserId, msg.userId))

@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.insets.navigationBarsPadding
 import com.well.androidApp.R
 import com.well.androidApp.ui.composableScreens.πCustomViews.Control
 import com.well.androidApp.ui.composableScreens.πCustomViews.InactiveOverlay
@@ -42,7 +43,6 @@ import com.well.modules.models.User
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.State
 import com.well.sharedMobile.puerh.myProfile.UIGroup
-import com.google.accompanist.insets.navigationBarsPadding
 
 @Composable
 fun MyProfileScreen(

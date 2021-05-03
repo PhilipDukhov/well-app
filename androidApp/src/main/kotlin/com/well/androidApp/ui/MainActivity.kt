@@ -18,6 +18,9 @@ import com.well.sharedMobile.puerh.login.handleActivityResult
 import com.well.sharedMobile.utils.napier.NapierProxy
 import com.well.modules.utils.Context
 import com.google.accompanist.insets.ProvideWindowInsets
+import com.well.sharedMobile.puerh.login.credentialProviders.AppleProvider
+import com.well.sharedMobile.puerh.login.handleOnNewIntent
+import java.lang.IllegalStateException
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
     init {
@@ -35,17 +38,25 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         },
         providerGenerator = { socialNetwork, context ->
             when (socialNetwork) {
-                SocialNetwork.Google -> GoogleProvider(
-                    context,
-                    resources.getString(R.string.google_web_client_id)
-                )
                 SocialNetwork.Facebook -> FacebookProvider(context)
+                SocialNetwork.Google -> GoogleProvider(
+                    context = context,
+                    tokenId = resources.getString(R.string.google_web_client_id)
+                )
+                SocialNetwork.Apple -> AppleProvider(
+                    context = context,
+                    clientId = resources.getString(R.string.apple_server_client_id),
+                    redirectUri = resources.getString(R.string.apple_auth_redirect_url),
+                )
+                SocialNetwork.Twitter
+                -> throw IllegalStateException("Twitter should be handler earlier")
             }
         }
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        println("MainActivity onCreate ${intent.dataString}")
 
         featureProvider.feature
             .listenState {
@@ -61,6 +72,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                     }
                 }
             }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        featureProvider.handleOnNewIntent(intent)
     }
 
     override fun onActivityResult(

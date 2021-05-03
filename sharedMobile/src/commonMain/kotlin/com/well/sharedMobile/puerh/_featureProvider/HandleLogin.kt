@@ -1,5 +1,6 @@
 package com.well.sharedMobile.puerh._featureProvider
 
+import com.well.modules.models.AuthResponse
 import com.well.modules.models.User
 import com.well.sharedMobile.networking.NetworkManager
 import com.well.sharedMobile.puerh._topLevel.Alert
@@ -17,56 +18,38 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
-fun FeatureProvider.socialNetworkLogin(
+suspend fun FeatureProvider.socialNetworkLogin(
     socialNetwork: SocialNetwork,
     listener: (TopLevelFeature.Msg) -> Unit
 ) {
-    MainScope().launch {
-        try {
-            val (token, user) = socialNetworkService.login(socialNetwork)
-            coroutineScope.launch {
-                gotUser(user, token, listener)
-            }
-        } catch (t: Throwable) {
-            if (t !is CancellationException && t.message?.contains("com.well.modules.utils error 0") != true) {
-                coroutineScope.launch {
-                    listener.invoke(TopLevelFeature.Msg.ShowAlert(Alert.Throwable(t)))
-                }
-            }
-        } finally {
-            coroutineScope.launch {
-                listener.invoke(TopLevelFeature.Msg.LoginMsg(LoginFeature.Msg.LoginAttemptFinished))
-            }
+    try {
+        gotAuthResponse(socialNetworkService.login(socialNetwork), listener)
+    } catch (t: Throwable) {
+        if (t !is CancellationException && t.message?.contains("com.well.modules.utils error 0") != true) {
+            listener.invoke(TopLevelFeature.Msg.ShowAlert(Alert.Throwable(t)))
         }
+    } finally {
+        listener.invoke(TopLevelFeature.Msg.LoginMsg(LoginFeature.Msg.LoginAttemptFinished))
     }
 }
 
-suspend fun FeatureProvider.getTestLoginTokenAndUser(): Pair<String, User> {
-    val deviceUUID = platform.dataStore.deviceUUID
-        ?: run {
-            randomUUIDString().also {
-                platform.dataStore.deviceUUID = it
-            }
-        }
-    return socialNetworkService
-        .testLogin(deviceUUID)
-}
-
-fun FeatureProvider.gotUser(
-    user: User,
-    token: String,
+fun FeatureProvider.gotAuthResponse(
+    authResponse: AuthResponse,
     listener: (TopLevelFeature.Msg) -> Unit,
 ) {
-    if (!user.initialized) {
-        nonInitializedUserToken.value = token
+    if (!authResponse.user.initialized) {
+        nonInitializedUserToken.value = authResponse.token
         sessionCloseableContainer.close()
-        networkManager.value = NetworkManager(token, startWebSocket = false, unauthorizedHandler = {
-            sessionCloseableContainer.close()
-        })
+        networkManager.value = NetworkManager(
+            authResponse.token,
+            startWebSocket = false,
+            unauthorizedHandler = {
+                sessionCloseableContainer.close()
+            })
         sessionCloseableContainer.addCloseableChild(networkManager.value)
-        listener.invoke(TopLevelFeature.Msg.OpenUserProfile(user, isCurrent = true))
+        listener.invoke(TopLevelFeature.Msg.OpenUserProfile(authResponse.user, isCurrent = true))
     } else {
-        loggedIn(token, listener)
+        loggedIn(authResponse.token, listener)
     }
 }
 
