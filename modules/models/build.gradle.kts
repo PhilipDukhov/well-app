@@ -15,8 +15,9 @@ kotlin {
         val commonMain by getting {
             libDependencies(
                 "kotlin.serializationJson",
-                "ktor.client.serialization",
                 "ktor.client.core",
+                "ktor.client.serialization",
+                "ktor.client.logging",
                 "kotlin.stdLib",
             )
         }

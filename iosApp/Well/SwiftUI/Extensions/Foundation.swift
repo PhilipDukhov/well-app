@@ -12,4 +12,8 @@ extension String {
     func toURL() -> URL? {
         URL(string: self)
     }
+
+    var isNotEmpty: Bool {
+        !isEmpty
+    }
 }

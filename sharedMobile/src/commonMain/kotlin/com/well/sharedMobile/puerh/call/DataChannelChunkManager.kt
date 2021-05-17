@@ -111,7 +111,7 @@ class DataChannelChunkManager {
 }
 
 internal fun ByteArray.readInt(index: Int = 0): Int =
-    (0 until Int.SIZE_BYTES).sumBy { i ->
+    (0 until Int.SIZE_BYTES).sumOf { i ->
         (this[index + i].toUByte().toInt()) shl (i * Byte.SIZE_BITS)
     }
 

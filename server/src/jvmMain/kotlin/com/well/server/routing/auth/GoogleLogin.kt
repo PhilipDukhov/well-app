@@ -18,7 +18,7 @@ suspend fun PipelineContext<*, ApplicationCall>.googleLogin(dependencies: Depend
             .property("social.google.clientIds")
             .getList()
             .map { "$it.apps.googleusercontent.com" }
-        val userId = withContext(Dispatchers.IO) {
+        val uid = withContext(Dispatchers.IO) {
             @Suppress("BlockingMethodInNonBlockingContext")
             GoogleIdTokenVerifier.Builder(
                 ApacheHttpTransport(),
@@ -45,5 +45,5 @@ suspend fun PipelineContext<*, ApplicationCall>.googleLogin(dependencies: Depend
                     }
             }
         }
-        call.respondAuthenticated(userId, dependencies)
+        call.respondAuthenticated(uid, dependencies)
     }

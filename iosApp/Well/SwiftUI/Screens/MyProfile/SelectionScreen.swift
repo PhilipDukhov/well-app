@@ -7,24 +7,19 @@
 //
 
 import SwiftUI
+import SharedMobile
 
 struct SelectionScreen: View {
-    let title: String
-    @State var selection: Set<String>
+    @Binding var selection: Set<KotlinInt>
     let variants: [String]
     let multipleSelection: Bool
-    let onSelectionChanged: (Set<String>) -> Void
-    let onCancel: () -> Void
-    
+    let onSelectionChanged: (Set<KotlinInt>) -> Void
+
     var body: some View {
-        NavigationBar(
-            title: title,
-            leftItem: NavigationBarItem(text: "Cancel", handlerOpt: onCancel),
-            rightItem: multipleSelection ? NavigationBarItem(text: "Done", handler: onSelectionChanged(selection)) : nil
-        )
         List {
-            ForEach(variants, id: \.self) { variant in
-                let selected = selection.contains(variant)
+            ForEachEnumerated(variants) { index, variant in
+                let index = KotlinInt(integerLiteral: index)
+                let selected = selection.contains(index)
                 HStack {
                     Text(variant)
                     Spacer()
@@ -41,12 +36,12 @@ struct SelectionScreen: View {
                 .onTapGesture {
                     if multipleSelection {
                         if selected {
-                            selection.remove(variant)
+                            selection.remove(index)
                         } else {
-                            selection.insert(variant)
+                            selection.insert(index)
                         }
                     } else {
-                        selection = Set([variant])
+                        selection = Set([index])
                         onSelectionChanged(selection)
                     }
                 }

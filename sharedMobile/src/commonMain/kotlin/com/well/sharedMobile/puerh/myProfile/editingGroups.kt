@@ -1,7 +1,9 @@
 package com.well.sharedMobile.puerh.myProfile
 
 import com.well.modules.models.User
-import com.well.modules.models.formatters.timeZonesIdentifiersList
+import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
+import com.well.sharedMobile.puerh.πModels.UIEditingField
+import com.well.sharedMobile.utils.timeZonesIdentifiersList
 
 internal fun User.editingGroups() = listOf(
     UIGroup.Editing(
@@ -10,46 +12,49 @@ internal fun User.editingGroups() = listOf(
             UIEditingField(
                 placeholder = Strings.fullName,
                 UIEditingField.Content.Text(textNonNullable = fullName),
-            ) { MyProfileFeature.Msg.UpdateUser(copy(fullName = it.text)) },
+            ) { Msg.UpdateUser(copy(fullName = it.text)) },
             UIEditingField.createSingleSelectionList(
                 placeholder = Strings.credentials,
                 singleSelection = credentials,
-            ) { MyProfileFeature.Msg.UpdateUser(copy(credentials = it)) },
+            ) { Msg.UpdateUser(copy(credentials = it)) },
             UIEditingField.createSingleSelectionList(
                 placeholder = Strings.academicRank,
                 singleSelection = academicRank,
-            ) { MyProfileFeature.Msg.UpdateUser(copy(academicRank = it)) },
+            ) { Msg.UpdateUser(copy(academicRank = it)) },
             UIEditingField.createMultipleSelectionList(
                 placeholder = Strings.skillsExpertise,
                 selection = skills,
-            ) { MyProfileFeature.Msg.UpdateUser(copy(skills = it.toSet())) },
+            ) { Msg.UpdateUser(copy(skills = it.toSet())) },
             UIEditingField(
                 placeholder = Strings.emailAddress,
                 UIEditingField.Content.Email(emailNullable = email),
-            ) { MyProfileFeature.Msg.UpdateUser(copy(email = it.email)) },
+            ) { Msg.UpdateUser(copy(email = it.email)) },
             UIEditingField(
                 placeholder = Strings.phoneNumber,
                 UIEditingField.Content.Text(textNullable = phoneNumber),
-            ) { MyProfileFeature.Msg.UpdateUser(copy(phoneNumber = it.text)) },
+            ) { Msg.UpdateUser(copy(phoneNumber = it.text)) },
         )
     ),
     UIGroup.Editing(
-        Strings.location,
+        Strings.country,
         listOf(
             UIEditingField(
-                placeholder = Strings.yourLocation,
-                UIEditingField.Content.Text(
-                    textNullable = location,
-                    icon = UIEditingField.Content.Icon.Location
-                ),
-            ) { MyProfileFeature.Msg.UpdateUser(copy(location = it.text)) },
+                placeholder = Strings.yourCountry,
+                content = UIEditingField.Content.List.countryCodesList(countryCode),
+                updateMsg = {
+                    Msg.UpdateUser(copy(countryCode = it.selectedItems.firstOrNull()))
+                }
+            ),
             UIEditingField(
                 placeholder = Strings.timeZone,
-                UIEditingField.Content.List(
+                content = UIEditingField.Content.List.createSingleStingSelection(
                     singleSelection = timeZoneIdentifier,
-                    list = timeZonesIdentifiersList(),
+                    items = timeZonesIdentifiersList(),
                 ),
-            ) { MyProfileFeature.Msg.UpdateUser(copy(timeZoneIdentifier = it.selection.first())) },
+                updateMsg = {
+                    Msg.UpdateUser(copy(timeZoneIdentifier = it.selectedItems.firstOrNull()))
+                }
+            ),
         )
     ),
     UIGroup.Editing(
@@ -58,15 +63,15 @@ internal fun User.editingGroups() = listOf(
             UIEditingField.createMultipleSelectionList(
                 placeholder = Strings.languagesSpoken,
                 selection = languages,
-            ) { MyProfileFeature.Msg.UpdateUser(copy(languages = it.toSet())) },
+            ) { Msg.UpdateUser(copy(languages = it)) },
             UIEditingField(
                 placeholder = Strings.missionBio,
                 UIEditingField.Content.Text(textNullable = education),
-            ) { MyProfileFeature.Msg.UpdateUser(copy(education = it.text)) },
+            ) { Msg.UpdateUser(copy(education = it.text)) },
             UIEditingField(
                 placeholder = Strings.professionalMemberships,
                 UIEditingField.Content.Text(textNullable = professionalMemberships),
-            ) { MyProfileFeature.Msg.UpdateUser(copy(professionalMemberships = it.text)) },
+            ) { Msg.UpdateUser(copy(professionalMemberships = it.text)) },
         )
     ),
     UIGroup.Editing(
@@ -75,15 +80,15 @@ internal fun User.editingGroups() = listOf(
             UIEditingField(
                 placeholder = Strings.publications,
                 UIEditingField.Content.Text(textNullable = publications),
-            ) { MyProfileFeature.Msg.UpdateUser(copy(publications = it.text)) },
+            ) { Msg.UpdateUser(copy(publications = it.text)) },
             UIEditingField(
                 placeholder = "${Strings.twitter} ${Strings.link}",
                 UIEditingField.Content.Text(textNullable = twitter),
-            ) { MyProfileFeature.Msg.UpdateUser(copy(twitter = it.text)) },
+            ) { Msg.UpdateUser(copy(twitter = it.text)) },
             UIEditingField(
                 placeholder = "${Strings.doximity} ${Strings.link}",
                 UIEditingField.Content.Text(textNullable = doximity),
-            ) { MyProfileFeature.Msg.UpdateUser(copy(doximity = it.text)) },
+            ) { Msg.UpdateUser(copy(doximity = it.text)) },
         )
     ),
 )

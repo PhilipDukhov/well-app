@@ -1,20 +1,22 @@
 package com.well.server.routing.user
 
-import com.well.server.utils.Dependencies
 import com.well.modules.models.User
+import com.well.server.utils.Dependencies
+import com.well.server.utils.authUid
 import io.ktor.application.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.http.content.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.util.pipeline.*
-import java.io.File
 
 suspend fun PipelineContext<*, ApplicationCall>.updateUser(
     dependencies: Dependencies
 ) = dependencies.run {
     call.receive<User>().apply {
+        if (call.authUid != id) {
+            call.respond(HttpStatusCode.Forbidden)
+            return@run
+        }
         database
             .usersQueries
             .updateUser(
@@ -23,7 +25,7 @@ suspend fun PipelineContext<*, ApplicationCall>.updateUser(
                 email = email,
                 profileImageUrl = profileImageUrl,
                 phoneNumber = phoneNumber,
-                location = location,
+                countryCode = countryCode,
                 timeZoneIdentifier = timeZoneIdentifier,
                 credentials = credentials,
                 academicRank = academicRank,
@@ -36,26 +38,7 @@ suspend fun PipelineContext<*, ApplicationCall>.updateUser(
                 twitter = twitter,
                 doximity = doximity,
             )
-        notifyUserUpdated(id)
+        notifyCurrentUserUpdated(id)
     }
-    call.respond(HttpStatusCode.OK, Unit)
-}
-
-suspend fun PipelineContext<*, ApplicationCall>.uploadUserProfile(
-    dependencies: Dependencies
-) = dependencies.run {
-    call.receiveMultipart()
-        .forEachPart { part ->
-            if (part !is PartData.FileItem) throw IllegalStateException("unexpected part $part")
-            val fileBytes = part.streamProvider().readBytes()
-            val url = awsManager.upload(
-                fileBytes,
-                awsProfileImagePath(
-                    part.name!!.toInt(),
-                    File(part.originalFileName!!).extension
-                )
-            )
-            call.respond(url.toString())
-            part.dispose()
-        }
+    call.respond(HttpStatusCode.OK)
 }

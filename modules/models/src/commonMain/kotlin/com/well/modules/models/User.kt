@@ -12,7 +12,7 @@ data class User(
     val email: String? = null,
     val profileImageUrl: String? = null,
     val phoneNumber: String? = null,
-    val location: String? = null,
+    val countryCode: String? = null,
     val timeZoneIdentifier: String? = null,
     val credentials: Credentials? = null,
     val academicRank: AcademicRank? = null,
@@ -32,7 +32,7 @@ data class User(
             email,
             profileImageUrl,
             phoneNumber,
-            location,
+            countryCode,
             timeZoneIdentifier,
             credentials,
             academicRank,
@@ -57,6 +57,8 @@ data class User(
     @Serializable
     enum class Type {
         Doctor,
+        PendingExpert,
+        DeclinedExpert,
         Expert,
     }
 
@@ -104,5 +106,10 @@ data class User(
         Russian,
         Arabic,
         French,
+    }
+
+    @Serializable
+    enum class Country {
+
     }
 }

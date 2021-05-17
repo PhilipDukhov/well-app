@@ -1,4 +1,4 @@
-package com.well.sharedMobile.puerh.onlineUsers
+package com.well.sharedMobile.puerh.experts
 
 import com.well.modules.models.FavoriteSetter
 import com.well.modules.models.User
@@ -7,8 +7,12 @@ import com.well.sharedMobile.networking.NetworkManager
 import com.well.sharedMobile.networking.NetworkManager.Status.Disconnected
 import com.well.modules.utils.toSetOf
 import com.well.modules.utils.withEmptySet
+import com.well.sharedMobile.networking.NetworkManager.Status.Connected
+import com.well.sharedMobile.puerh.call.CallFeature
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature
+import com.well.sharedMobile.puerh.experts.filter.FilterFeature
 
-object OnlineUsersFeature {
+object ExpertsFeature {
     fun initialState(): State = State(
         listOf(),
         Disconnected,
@@ -18,7 +22,7 @@ object OnlineUsersFeature {
         val users: List<User>,
         val connectionStatus: NetworkManager.Status,
         val currentUser: User? = null,
-        val filter: UsersFilter = UsersFilter(),
+        val filterState: FilterFeature.State = FilterFeature.State(filter = UsersFilter())
     )
 
     sealed class Msg {
@@ -27,10 +31,9 @@ object OnlineUsersFeature {
         data class OnUserSelected(val user: User) : Msg()
         data class OnUserFavorite(val user: User) : Msg()
         object OnCurrentUserSelected : Msg()
-        object OnLogout : Msg()
         data class OnCurrentUserUpdated(val user: User?) : Msg()
 
-        data class SetFilter(val filter: UsersFilter) : Msg()
+        data class FilterMsg(val msg: FilterFeature.Msg) : Msg()
         data class SetSearchString(val searchString: String) : Msg()
         object ToggleFilterFavorite : Msg()
     }
@@ -38,9 +41,9 @@ object OnlineUsersFeature {
     sealed class Eff {
         data class SelectedUser(val user: User) : Eff()
         data class CallUser(val user: User) : Eff()
-        object Logout : Eff()
         data class UpdateList(val filter: UsersFilter) : Eff()
         data class SetUserFavorite(val setter: FavoriteSetter) : Eff()
+        data class FilterEff(val eff: FilterFeature.Eff) : Eff()
     }
 
     fun reducer(
@@ -52,7 +55,7 @@ object OnlineUsersFeature {
                 is Msg.OnConnectionStatusChange -> {
                     return@reducer state.copy(
                         connectionStatus = msg.connectionStatus,
-                    ) toSetOf Eff.UpdateList(state.filter)
+                    ) toSetOf if (msg.connectionStatus == Connected) Eff.UpdateList(state.filterState.filter) else null
                 }
                 is Msg.OnUsersUpdated -> {
                     return@state state.copy(users = msg.users)
@@ -77,33 +80,45 @@ object OnlineUsersFeature {
                         }
                     ) toSetOf Eff.SetUserFavorite(FavoriteSetter(newUser.favorite, newUser.id))
                 }
-                Msg.OnLogout -> {
-                    return@eff Eff.Logout
-                }
-                is Msg.SetFilter -> {
-                    return@reducer state.updateFilter(msg.filter)
+                is Msg.FilterMsg -> {
+                    return@reducer state.reduceFilterMsg(msg.msg)
                 }
                 is Msg.SetSearchString -> {
-                    return@reducer state.updateFilter(
-                        state.filter.copy(searchString = msg.searchString)
+                    return@reducer state.reduceFilterMsg(
+                        FilterFeature.Msg.Update(
+                            state.filterState.filter.copy(
+                                searchString = msg.searchString
+                            )
+                        )
                     )
                 }
-                is Msg.ToggleFilterFavorite ->  {
-                    return@reducer state.updateFilter(
-                        state.filter.copy(favorite = !state.filter.favorite)
+                is Msg.ToggleFilterFavorite -> {
+                    return@reducer state.reduceFilterMsg(
+                        FilterFeature.Msg.Update(
+                            state.filterState.filter.copy(
+                                favorite = !state.filterState.filter.favorite
+                            )
+                        )
                     )
                 }
             }
         })
     }.withEmptySet()
 
-    private fun State.updateFilter(filter: UsersFilter) =
-        if (this.filter != filter) {
-            copy(
-                filter = filter,
-                users = listOf(),
-            ) toSetOf Eff.UpdateList(filter)
-        } else {
-            this.withEmptySet()
-        }
+//    private fun <State, Eff, ChildState, ChildEff, ChildMsg> reduceMsg(msg: ChildMsg, copy: (ChildState) -> State) {
+//       TODO: make general reducer
+//    }
+
+    private fun State.reduceFilterMsg(msg: FilterFeature.Msg): Pair<State, Set<Eff>> {
+        val (newState, effs) = FilterFeature.reducer(msg, filterState)
+        return copy(
+            filterState = newState,
+        ) to effs
+            .mapTo(HashSet<Eff>(), Eff::FilterEff)
+            .apply {
+                if (connectionStatus == Connected && newState.filter != filterState.filter) {
+                    add(Eff.UpdateList(newState.filter))
+                }
+            }
+    }
 }

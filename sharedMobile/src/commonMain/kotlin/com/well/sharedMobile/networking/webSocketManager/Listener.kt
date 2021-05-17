@@ -1,5 +1,5 @@
 package com.well.sharedMobile.networking.webSocketManager
 
-import com.well.modules.models.WebSocketMessage
+import com.well.modules.models.WebSocketMsg
 
-typealias WebSocketMessageListener = (WebSocketMessage) -> Unit
+typealias WebSocketMessageListener = (WebSocketMsg) -> Unit

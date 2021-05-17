@@ -32,7 +32,7 @@ class CallEffectHandler(
         .state
         .map { it == NetworkManager.Status.Connected }
         .distinctUntilChanged()
-    private val candidates = MutableSharedFlow<WebSocketMessage.Candidate>(replay = Int.MAX_VALUE)
+    private val candidates = MutableSharedFlow<WebSocketMsg.Candidate>(replay = Int.MAX_VALUE)
     private val candidatesSendCloseable = AtomicCloseableRef()
     private val webRtcManager: WebRtcManagerI
     private val imageSharingEffectHandler = DrawingEffectHandler {
@@ -88,18 +88,18 @@ class CallEffectHandler(
                 }
             }
 
-            override fun addCandidate(candidate: WebSocketMessage.Candidate) {
+            override fun addCandidate(candidate: WebSocketMsg.Candidate) {
                 coroutineScope.launch {
                     handler?.candidates?.emit(candidate)
                 }
             }
 
             override fun sendOffer(webRTCSessionDescriptor: String) {
-                handler?.send(WebSocketMessage.Offer(webRTCSessionDescriptor))
+                handler?.send(WebSocketMsg.Offer(webRTCSessionDescriptor))
             }
 
             override fun sendAnswer(webRTCSessionDescriptor: String) {
-                handler?.send(WebSocketMessage.Answer(webRTCSessionDescriptor))
+                handler?.send(WebSocketMsg.Answer(webRTCSessionDescriptor))
             }
 
             override fun dataChannelStateChanged(state: DataChannelState) {
@@ -208,12 +208,12 @@ class CallEffectHandler(
 
     private fun initiateCall(userId: UserId) =
         send(
-            WebSocketMessage.InitiateCall(
+            WebSocketMsg.InitiateCall(
                 userId,
             )
         )
 
-    fun send(msg: WebSocketMessage) =
+    fun send(msg: WebSocketMsg) =
         msg.freeze()
             .let {
                 coroutineScope.launch {
@@ -295,16 +295,16 @@ class CallEffectHandler(
         }
     }
 
-    private fun listenWebSocketMessage(msg: WebSocketMessage) = runWebRtcManager {
+    private fun listenWebSocketMessage(msg: WebSocketMsg) = runWebRtcManager {
         when (msg) {
-            is WebSocketMessage.Offer -> {
+            is WebSocketMsg.Offer -> {
                 invokeCallMsg(Msg.UpdateStatus(State.Status.Connecting))
                 acceptOffer(msg.sessionDescriptor)
             }
-            is WebSocketMessage.Answer -> {
+            is WebSocketMsg.Answer -> {
                 acceptAnswer(msg.sessionDescriptor)
             }
-            is WebSocketMessage.Candidate -> {
+            is WebSocketMsg.Candidate -> {
                 acceptCandidate(msg)
             }
             else -> Unit

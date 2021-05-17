@@ -8,19 +8,21 @@
 
 import SwiftUI
 
-struct HVStack<Item, ItemView>: View where ItemView: View {
+let defaultHVStackSpacing: CGFloat = 9
+
+struct HVStack<Item, ItemView: View>: View {
     let items: [Item]
     let spacing: CGFloat
     let itemBuilder: (Item) -> ItemView
-    
-    init(items: [Item], spacing: CGFloat = 9, itemBuilder: @escaping (Item) -> ItemView) {
+
+    init(items: [Item], spacing: CGFloat = defaultHVStackSpacing, itemBuilder: @escaping (Item) -> ItemView) {
         self.items = items
         self.spacing = spacing
         self.itemBuilder = itemBuilder
     }
-    
+
     @State private var totalHeight = CGFloat.zero
-    
+
     var body: some View {
         GeometryReader { geometry in
             HStack(spacing: 0) {
@@ -29,10 +31,10 @@ struct HVStack<Item, ItemView>: View where ItemView: View {
             }
         }.frame(height: totalHeight)
     }
-    
+
     private func generateContent(in geometry: GeometryProxy) -> some View {
         var offset = CGPoint.zero
-        
+
         return ZStack(alignment: .topLeading) {
             ForEach(Array(items.enumerated()), id: \.0) { i, item in
                 let isLast = i == items.indices.last
@@ -59,9 +61,8 @@ struct HVStack<Item, ItemView>: View where ItemView: View {
                     }
             }
         }.background(viewHeightReader($totalHeight))
-        
     }
-    
+
     private func viewHeightReader(_ binding: Binding<CGFloat>) -> some View {
         return GeometryReader { geometry -> Color in
             let rect = geometry.frame(in: .local)

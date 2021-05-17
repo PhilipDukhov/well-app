@@ -3,32 +3,27 @@ package com.well.modules.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class WebSocketMessage {
-    @Serializable
-    data class OnlineUsersList(
-        val users: List<User>
-    ) : WebSocketMessage()
-
+sealed class WebSocketMsg {
     @Serializable
     data class CurrentUser(
         val user: User,
-    ) : WebSocketMessage()
+    ) : WebSocketMsg()
 
     // Call
     @Serializable
     data class InitiateCall(
-        val userId: UserId,
-    ) : WebSocketMessage()
+        val uid: UserId,
+    ) : WebSocketMsg()
 
     @Serializable
     data class IncomingCall(
         val user: User,
-    ) : WebSocketMessage()
+    ) : WebSocketMsg()
 
     @Serializable
     data class Offer(
         val sessionDescriptor: String,
-    ) : WebSocketMessage() {
+    ) : WebSocketMsg() {
         override fun toString(): String =
             super.toString()
                 .prepareToDebug()
@@ -37,7 +32,7 @@ sealed class WebSocketMessage {
     @Serializable
     data class Answer(
         val sessionDescriptor: String,
-    ) : WebSocketMessage() {
+    ) : WebSocketMsg() {
         override fun toString(): String =
             super.toString()
                 .prepareToDebug()
@@ -48,10 +43,10 @@ sealed class WebSocketMessage {
         val sdpMid: String,
         val sdpMLineIndex: Int,
         val sdp: String,
-    ) : WebSocketMessage()
+    ) : WebSocketMsg()
 
     @Serializable
-    data class EndCall(val reason: Reason) : WebSocketMessage() {
+    data class EndCall(val reason: Reason) : WebSocketMsg() {
         @Serializable
         sealed class Reason {
             @Serializable

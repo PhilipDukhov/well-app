@@ -66,7 +66,7 @@ struct MyProfileScreen: View {
                 Text(group.title)
                     .foregroundColorKMM(ColorConstants.HippieBlue)
                 ForEach(group.fields, id: \.self) { field in
-                    EditingField(field, listener: listener)
+                    EditingField(field as! UIEditingField<UIEditingFieldContent, MyProfileFeature.Msg>, listener: listener)
                         .fillMaxWidth()
                         .padding(.vertical, 7)
                 }
@@ -78,9 +78,11 @@ struct MyProfileScreen: View {
     
     private func previewField(_ field: UIPreviewField) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(field.title)
-                .foregroundColor(.gray)
-                .padding(.bottom, 5)
+            if field.title.isNotEmpty {
+                Text(field.title)
+                    .foregroundColor(.gray)
+                    .padding(.bottom, 5)
+            }
             
             switch field.content {
             case let content as UIPreviewField.ContentText:
@@ -97,7 +99,7 @@ struct MyProfileScreen: View {
                                 .withAlpha(alpha: 0.15)
                         )
                         .foregroundColor(Color.black)
-                        .clipShape(RoundedRectangle(cornerRadius: .greatestFiniteMagnitude))
+                        .clipShape(Capsule())
                 }
                 
             case let content as UIPreviewField.ContentTextAndIcon:
@@ -111,8 +113,15 @@ struct MyProfileScreen: View {
                             }
                         }
                 }
+
+            case let content as UIPreviewFieldContentButton<MyProfileFeature.Msg>:
+                Button {
+                    listener(content.msg!)
+                } label: {
+                    Text(content.title)
+                }.buttonStyle(ActionButtonStyle(style: .onWhite))
                 
-            default: fatalError()
+            default: fatalError("view not provided for \(field.content)")
             }
         }
     }
@@ -140,7 +149,7 @@ struct MyProfileScreen: View {
                     HStack {
                         accountType.imageView()
                             .font(.system(size: 14, weight: .black))
-                        Text(accountType.description())
+                        Text(accountType.title)
                     }.foregroundColorKMM(ColorConstants.HippieBlue)
                 }
                 if let completeness = header.completeness {
@@ -156,7 +165,7 @@ struct MyProfileScreen: View {
     private func otherUserHeader(_ header: UIGroup.Header) -> some View {
         VStack {
             ProfileImage(image: header.image, clipCircle: false)
-                .fillMaxWidth()
+                .frame(width: UIScreen.main.bounds.width)
                 .aspectRatio(1.2, contentMode: .fit)
             HStack {
                 header.accountType.map { Text($0.description) }
@@ -203,7 +212,7 @@ private extension UIPreviewField.Icon {
 private extension User.Type_ {
     func imageView() -> some View {
         switch self {
-        case .doctor:
+        case .doctor, .pendingexpert:
             return Image(systemName: "plus")
             
         case .expert:

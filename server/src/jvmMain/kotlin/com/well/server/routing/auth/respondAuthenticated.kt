@@ -11,9 +11,12 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 suspend fun ApplicationCall.respondAuthenticated(
-    userId: UserId,
+    uid: UserId,
     dependencies: Dependencies,
 ) = respond(
     HttpStatusCode.Created,
-    AuthResponse(dependencies.jwtConfig.makeToken(userId), dependencies.getUser(userId))
+    AuthResponse(
+        token = dependencies.jwtConfig.makeToken(uid),
+        user = dependencies.getCurrentUser(uid)
+    )
 )

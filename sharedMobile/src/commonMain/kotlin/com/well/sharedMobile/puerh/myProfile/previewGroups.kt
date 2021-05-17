@@ -33,9 +33,9 @@ internal fun User.previewGroups(isCurrent: Boolean) = listOfNotNull(
             },
         ),
     UIGroup.Preview(
-        location?.let {
+        countryCode?.let {
             UIPreviewField(
-                title = Strings.location,
+                title = Strings.country,
                 text = it,
                 icon = UIPreviewField.Icon.Location
             )
@@ -96,5 +96,12 @@ internal fun User.previewGroups(isCurrent: Boolean) = listOfNotNull(
                     isLink = true
                 )
             },
+    ),
+    UIGroup.Preview(
+        if (isCurrent && type == User.Type.Doctor) {
+            UIPreviewField(
+                content = UIPreviewField.Content.Button(Strings.becomeExpert, MyProfileFeature.Msg.BecomeExpert),
+            )
+        } else null
     ),
 )

@@ -1,6 +1,7 @@
 package com.well.sharedMobile.puerh.myProfile
 
 import com.well.modules.models.User
+import com.well.sharedMobile.puerh.πModels.UIEditingField
 import com.well.sharedMobile.utils.SharedImage
 
 sealed class UIGroup {
@@ -18,7 +19,7 @@ sealed class UIGroup {
 
     data class Editing(
         val title: String,
-        val fields: List<UIEditingField<*>>,
+        val fields: List<UIEditingField<*, MyProfileFeature.Msg>>,
     ) : UIGroup()
 
     data class Header(

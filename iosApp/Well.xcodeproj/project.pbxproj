@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		0902BD0460D4849CA1790CBB /* Pods_Well.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8560B869390C33CC211DA86 /* Pods_Well.framework */; };
+		347D1737EF6D0ED04DA9AC65 /* ForEachEnumerated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D1C3FB3AB18BE58691534 /* ForEachEnumerated.swift */; };
+		347D178406E17BBA44CDAA45 /* SelectableHVStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D1AAC642FF35292FB7CA4 /* SelectableHVStack.swift */; };
+		347D1A87588CBF1F893DF5A8 /* ActionButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D153B0C1410B1F25CD661 /* ActionButtonStyle.swift */; };
+		4A570D4E2642760200569A40 /* R.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51625602503C945009E103B /* R.generated.swift */; };
+		4AE3A0F626443820005BB554 /* FilterScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE3A0F526443820005BB554 /* FilterScreen.swift */; };
 		7555FF7F242A565900829871 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF7E242A565900829871 /* AppDelegate.swift */; };
 		7555FF85242A565B00829871 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF84242A565B00829871 /* Assets.xcassets */; };
 		7555FF8B242A565B00829871 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF89242A565B00829871 /* LaunchScreen.storyboard */; };
@@ -22,7 +27,6 @@
 		D5680318263831A500CFE16B /* EnumDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5C52525845500A94FCC /* EnumDictionary.swift */; };
 		D5680319263831A500CFE16B /* Bundle+displayName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD57E2524B0AB00A94FCC /* Bundle+displayName.swift */; };
 		D568031A263831A500CFE16B /* NSError+description.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD57C2524B06900A94FCC /* NSError+description.swift */; };
-		D568031B263831B200CFE16B /* R.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51625602503C945009E103B /* R.generated.swift */; };
 		D568031D263831DB00CFE16B /* EdgeInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963513DDB06C22E5A9391A01 /* EdgeInsets.swift */; };
 		D568031E263831DB00CFE16B /* ServerModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96351CD0B22C50D7CAD4A377 /* ServerModels.swift */; };
 		D568031F263831DB00CFE16B /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963518BD2D5690278A4E6851 /* Color.swift */; };
@@ -68,7 +72,7 @@
 		D56803472638322500CFE16B /* ToggleStillButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963510CBADB952EF5FE43C78 /* ToggleStillButton.swift */; };
 		D56803492638323700CFE16B /* LoginScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D555C1FF25D8102300B4755F /* LoginScreen.swift */; };
 		D568034A2638323700CFE16B /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F0A09D2578AC7A002A55DB /* UserCell.swift */; };
-		D568034B2638324D00CFE16B /* OnlineUsersScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F0A09B2578AC4D002A55DB /* OnlineUsersScreen.swift */; };
+		D568034B2638324D00CFE16B /* ExpertsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F0A09B2578AC4D002A55DB /* ExpertsScreen.swift */; };
 		D568034C2638327600CFE16B /* TopLevelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5916FBB2598ABA900B549FF /* TopLevelView.swift */; };
 		D568034E26383DA900CFE16B /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D568034D26383DA900CFE16B /* SearchBar.swift */; };
 		D568035026384A2500CFE16B /* WelcomeScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D568034F26384A2500CFE16B /* WelcomeScreen.swift */; };
@@ -88,6 +92,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		347D153B0C1410B1F25CD661 /* ActionButtonStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionButtonStyle.swift; sourceTree = "<group>"; };
+		347D1AAC642FF35292FB7CA4 /* SelectableHVStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectableHVStack.swift; sourceTree = "<group>"; };
+		347D1C3FB3AB18BE58691534 /* ForEachEnumerated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForEachEnumerated.swift; sourceTree = "<group>"; };
+		4AE3A0F526443820005BB554 /* FilterScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterScreen.swift; sourceTree = "<group>"; };
 		4E7FAE8E4CF4ED7E47F58204 /* Pods-Well-WellUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Well-WellUITests.release.xcconfig"; path = "Target Support Files/Pods-Well-WellUITests/Pods-Well-WellUITests.release.xcconfig"; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* Well_D.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Well_D.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF7E242A565900829871 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -160,7 +168,7 @@
 		D5BFD5C8252584FE00A94FCC /* Cancellable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cancellable.swift; sourceTree = "<group>"; };
 		D5E6AF9025CEB18700AA0538 /* DrawingContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingContent.swift; sourceTree = "<group>"; };
 		D5ECE30225231ECB00207638 /* Well.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Well.entitlements; sourceTree = "<group>"; };
-		D5F0A09B2578AC4D002A55DB /* OnlineUsersScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineUsersScreen.swift; sourceTree = "<group>"; };
+		D5F0A09B2578AC4D002A55DB /* ExpertsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpertsScreen.swift; sourceTree = "<group>"; };
 		D5F0A09D2578AC7A002A55DB /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
 		E7C0F47F0D380B0A230F9888 /* Pods-Well-WellUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Well-WellUITests.debug.xcconfig"; path = "Target Support Files/Pods-Well-WellUITests/Pods-Well-WellUITests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -177,6 +185,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4AE3A0F426443813005BB554 /* Filter */ = {
+			isa = PBXGroup;
+			children = (
+				4AE3A0F526443820005BB554 /* FilterScreen.swift */,
+			);
+			path = Filter;
+			sourceTree = "<group>";
+		};
 		7555FF72242A565900829871 = {
 			isa = PBXGroup;
 			children = (
@@ -277,6 +293,9 @@
 				963511D84AC7F5AE438A17B1 /* ViewContainer.swift */,
 				963512AA2B28EDE3FE7F42AF /* Label.swift */,
 				D568034D26383DA900CFE16B /* SearchBar.swift */,
+				347D153B0C1410B1F25CD661 /* ActionButtonStyle.swift */,
+				347D1AAC642FF35292FB7CA4 /* SelectableHVStack.swift */,
+				347D1C3FB3AB18BE58691534 /* ForEachEnumerated.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -420,7 +439,7 @@
 			children = (
 				D568035126384A2A00CFE16B /* Welcome */,
 				D555C1F225D8099500B4755F /* Login */,
-				D5F0A09A2578AC29002A55DB /* OnlineUsersList */,
+				D5F0A09A2578AC29002A55DB /* Experts */,
 				D5087658259A64A2000A57E5 /* Call */,
 				D556940825D471D60012EA36 /* MyProfile */,
 			);
@@ -442,13 +461,14 @@
 			path = General;
 			sourceTree = "<group>";
 		};
-		D5F0A09A2578AC29002A55DB /* OnlineUsersList */ = {
+		D5F0A09A2578AC29002A55DB /* Experts */ = {
 			isa = PBXGroup;
 			children = (
-				D5F0A09B2578AC4D002A55DB /* OnlineUsersScreen.swift */,
+				4AE3A0F426443813005BB554 /* Filter */,
+				D5F0A09B2578AC4D002A55DB /* ExpertsScreen.swift */,
 				D5F0A09D2578AC7A002A55DB /* UserCell.swift */,
 			);
-			path = OnlineUsersList;
+			path = Experts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -466,7 +486,7 @@
 				7555FF79242A565900829871 /* Resources */,
 				7555FFB4242A642300829871 /* Embed Frameworks */,
 				491238037572C75B2A859A9E /* [CP] Embed Pods Frameworks */,
-				80D2AFAEF81B1C4509C28CA7 /* [CP] Copy Pods Resources */,
+				A5E7015DBF93AB468F44F78B /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -564,7 +584,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		80D2AFAEF81B1C4509C28CA7 /* [CP] Copy Pods Resources */ = {
+		A5E7015DBF93AB468F44F78B /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -616,8 +636,8 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellPath = /bin/zsh;
+			shellScript = "if test -d \"/opt/homebrew/bin/\"; then\n  PATH=\"/opt/homebrew/bin/:${PATH}\"\nfi\n\nexport PATH\n\nif which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -640,8 +660,9 @@
 				D5680324263831DB00CFE16B /* SwiftUI.swift in Sources */,
 				D56803322638320400CFE16B /* OffsetCircle.swift in Sources */,
 				D568031D263831DB00CFE16B /* EdgeInsets.swift in Sources */,
-				D568034B2638324D00CFE16B /* OnlineUsersScreen.swift in Sources */,
+				D568034B2638324D00CFE16B /* ExpertsScreen.swift in Sources */,
 				D56803292638320300CFE16B /* HVStack.swift in Sources */,
+				4AE3A0F626443820005BB554 /* FilterScreen.swift in Sources */,
 				D56803382638320F00CFE16B /* WebRtcManager.swift in Sources */,
 				D5680327263831FC00CFE16B /* ManualViewUpdater.swift in Sources */,
 				D5680323263831DB00CFE16B /* Foundation.swift in Sources */,
@@ -666,7 +687,6 @@
 				D5680315263831A500CFE16B /* Action.swift in Sources */,
 				D5680313263831A500CFE16B /* Property.swift in Sources */,
 				D568032A2638320300CFE16B /* Control.swift in Sources */,
-				D568031B263831B200CFE16B /* R.generated.swift in Sources */,
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
 				D56803462638322500CFE16B /* CallButton.swift in Sources */,
 				D568035026384A2500CFE16B /* WelcomeScreen.swift in Sources */,
@@ -674,6 +694,7 @@
 				D5680319263831A500CFE16B /* Bundle+displayName.swift in Sources */,
 				D568033F2638322500CFE16B /* SelectionScreen.swift in Sources */,
 				D56803422638322500CFE16B /* MyProfileScreen.swift in Sources */,
+				4A570D4E2642760200569A40 /* R.generated.swift in Sources */,
 				D568034E26383DA900CFE16B /* SearchBar.swift in Sources */,
 				D5680326263831FC00CFE16B /* PartCircleShape.swift in Sources */,
 				D56803412638322500CFE16B /* VideoView.swift in Sources */,
@@ -686,6 +707,9 @@
 				D56803372638320400CFE16B /* NavigationBar.swift in Sources */,
 				D5680320263831DB00CFE16B /* CG.swift in Sources */,
 				96351CB235DE05363561861E /* AppleProvider.swift in Sources */,
+				347D1A87588CBF1F893DF5A8 /* ActionButtonStyle.swift in Sources */,
+				347D178406E17BBA44CDAA45 /* SelectableHVStack.swift in Sources */,
+				347D1737EF6D0ED04DA9AC65 /* ForEachEnumerated.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -831,6 +855,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Well/Supporting files/Well.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 2L8ZA5WNKK;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FACEBOOK_APP_ID = "$(SHARED_FACEBOOK_APP_ID)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -842,10 +867,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -D AUTH_DISABLED";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.well.app.debug;
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME)";
 				PRODUCT_NAME = "$(TARGET_NAME)_D";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -870,10 +896,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -D AUTH_DISABLED";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.well.app;
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};

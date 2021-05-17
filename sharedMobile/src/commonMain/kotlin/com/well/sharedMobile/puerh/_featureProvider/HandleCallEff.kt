@@ -1,7 +1,7 @@
 package com.well.sharedMobile.puerh._featureProvider
 
 import com.well.modules.models.User
-import com.well.modules.models.WebSocketMessage
+import com.well.modules.models.WebSocketMsg
 import com.well.sharedMobile.puerh._topLevel.*
 import com.well.sharedMobile.puerh._topLevel.showSheetThreadSafe
 import com.well.sharedMobile.puerh.call.CallEffectHandler
@@ -35,7 +35,7 @@ internal suspend fun FeatureProvider.handleCallEff(
         }
         is CallFeature.Eff.End -> {
             networkManager.value.send(
-                WebSocketMessage.EndCall(WebSocketMessage.EndCall.Reason.Decline)
+                WebSocketMsg.EndCall(WebSocketMsg.EndCall.Reason.Decline)
             )
             endCall(listener)
         }
@@ -132,9 +132,9 @@ private suspend fun FeatureProvider.pickSystemImage(listener: (TopLevelMsg) -> U
 
 internal fun FeatureProvider.createWebSocketMessageHandler(
     listener: (TopLevelMsg) -> Unit
-): (WebSocketMessage) -> Unit = { msg ->
+): (WebSocketMsg) -> Unit = { msg ->
     when (msg) {
-        is WebSocketMessage.IncomingCall -> {
+        is WebSocketMsg.IncomingCall -> {
             listener.invoke(TopLevelMsg.IncomingCall(msg))
             coroutineScope.launch {
                 handleCallPermissions()?.also {
@@ -143,7 +143,7 @@ internal fun FeatureProvider.createWebSocketMessageHandler(
                 }
             }
         }
-        is WebSocketMessage.EndCall -> {
+        is WebSocketMsg.EndCall -> {
             endCall(listener)
         }
         else -> Unit

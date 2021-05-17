@@ -1,12 +1,12 @@
 package com.well.server.routing
 
 import com.well.server.utils.Dependencies
-import com.well.server.utils.authUserId
+import com.well.server.utils.authUid
 import io.ktor.http.cio.websocket.*
 import io.ktor.websocket.*
 
 suspend fun DefaultWebSocketServerSession.call(dependencies: Dependencies) {
-    val id = call.authUserId
+    val id = call.authUid
     dependencies.connectedUserSessions[id] = this
 
     fun otherConnections() =

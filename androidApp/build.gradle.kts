@@ -1,5 +1,6 @@
 import io.github.cdimascio.dotenv.dotenv
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 
 plugins {
     id("com.android.application")

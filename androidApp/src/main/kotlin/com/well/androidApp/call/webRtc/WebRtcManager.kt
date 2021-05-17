@@ -5,10 +5,9 @@ import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.os.Build
-import android.util.Log
 import com.well.androidApp.utils.Utilities
 import com.well.androidApp.utils.firstMapOrNull
-import com.well.modules.models.WebSocketMessage
+import com.well.modules.models.WebSocketMsg
 import com.well.modules.models.Size
 import com.well.sharedMobile.puerh.call.VideoViewContext
 import com.well.sharedMobile.puerh.call.webRtc.LocalDeviceState
@@ -196,7 +195,7 @@ class WebRtcManager(
                     super.onIceCandidate(iceCandidate)
                     CoroutineScope(Dispatchers.IO).launch {
                         listener.addCandidate(
-                            WebSocketMessage.Candidate(
+                            WebSocketMsg.Candidate(
                                 iceCandidate.sdpMid,
                                 iceCandidate.sdpMLineIndex,
                                 iceCandidate.sdp,
@@ -280,7 +279,7 @@ class WebRtcManager(
         )
     }
 
-    override fun acceptCandidate(candidate: WebSocketMessage.Candidate) {
+    override fun acceptCandidate(candidate: WebSocketMsg.Candidate) {
         peerConnection.addIceCandidate(
             IceCandidate(
                 candidate.sdpMid,

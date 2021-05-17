@@ -16,9 +16,3 @@ actual fun DateFormatter.Companion.format(
     timeFormatter.timeZone = timeZone
     return "$timeZoneDisplayName ${timeFormatter.format(date.date)}"
 }
-
-actual fun timeZonesIdentifiersList(): List<String> =
-    TimeZone.getAvailableIDs().toList()
-
-actual fun currentTimeZoneIdentifier(): String =
-    TimeZone.getDefault().id

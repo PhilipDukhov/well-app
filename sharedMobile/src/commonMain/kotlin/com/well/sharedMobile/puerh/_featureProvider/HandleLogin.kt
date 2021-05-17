@@ -7,7 +7,7 @@ import com.well.sharedMobile.puerh._topLevel.Alert
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature
 import com.well.sharedMobile.puerh.login.LoginFeature
 import com.well.sharedMobile.puerh.login.SocialNetwork
-import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersApiEffectHandler
+import com.well.sharedMobile.puerh.experts.ExpertsApiEffectHandler
 import com.well.modules.utils.dataStore.authToken
 import com.well.modules.utils.dataStore.deviceUUID
 import com.well.modules.utils.puerh.EffectHandler
@@ -62,12 +62,12 @@ fun FeatureProvider.loggedIn(
         logOut(listener)
     })
     val effectHandler: EffectHandler<TopLevelFeature.Eff, TopLevelFeature.Msg> =
-        OnlineUsersApiEffectHandler(
+        ExpertsApiEffectHandler(
             networkManager.value,
             coroutineScope,
         ).adapt(
-            effAdapter = { (it as? TopLevelFeature.Eff.OnlineUsersEff)?.eff },
-            msgAdapter = { TopLevelFeature.Msg.OnlineUsersMsg(it) }
+            effAdapter = { (it as? TopLevelFeature.Eff.ExpertsEff)?.eff },
+            msgAdapter = { TopLevelFeature.Msg.ExpertsMsg(it) }
         )
     listOf(
         networkManager.value

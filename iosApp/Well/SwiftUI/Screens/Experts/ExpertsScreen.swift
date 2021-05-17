@@ -1,5 +1,5 @@
 //
-//  OnlineUsersScreen.swift
+//  ExpertsScreen.swift
 //  Well
 //
 //  Created by Philip Dukhov on 12/3/20.
@@ -10,31 +10,45 @@ import SwiftUI
 import SharedMobile
 import Combine
 
-struct OnlineUsersScreen: View {
-    let state: OnlineUsersFeature.State
-    let listener: (OnlineUsersFeature.Msg) -> Void
-    
+struct ExpertsScreen: View {
+    let state: ExpertsFeature.State
+    let listener: (ExpertsFeature.Msg) -> Void
+
     @State
     private var searchText = ""
+
+    @State
+    private var filterPresented = false
 
     var body: some View {
         NavigationBar(
             title: state.connectionStatus.stringRepresentation,
             leftItem: NavigationBarItem(
-                view: Text("Log out"),
-                handler: listener(OnlineUsersFeature.MsgOnLogout())
+                view: HStack {
+                    Image(systemName: "line.horizontal.3.decrease.circle")
+                    Text("Filter")
+                }.style(.title2),
+                handlerOpt: {
+                    filterPresented = true
+                }
             ),
             rightItem: NavigationBarItem(
-                view: Image(systemName: state.filter.favorite ? "suit.heart.fill" : "heart")
+                view: Image(systemName: state.filterState.filter.favorite ? "suit.heart.fill" : "heart")
                     .font(.system(size: 25))
                     .foregroundColorKMM(ColorConstants.White),
-                handler: listener(OnlineUsersFeature.MsgToggleFilterFavorite())
+                handler: listener(ExpertsFeature.MsgToggleFilterFavorite())
             )
-        )
+        ).sheet(isPresented: $filterPresented) {
+            FilterScreen(state: state.filterState) { msg in
+                listener(ExpertsFeature.MsgFilterMsg(msg: msg))
+            } hide: {
+                filterPresented = false
+            }
+        }
         SearchBar(text: $searchText)
             .fillMaxWidth()
             .padding()
-            
+
         ScrollView {
             if !state.users.isEmpty {
                 Divider()
@@ -45,19 +59,19 @@ struct OnlineUsersScreen: View {
             VStack {
                 ForEach(state.users, id: \.id) { user in
                     UserCell(viewModel: user) {
-                        listener(OnlineUsersFeature.MsgOnUserSelected(user: user))
+                        listener(ExpertsFeature.MsgOnUserSelected(user: user))
                     } onCallButtonTap: {
-                        listener(OnlineUsersFeature.MsgOnUserFavorite(user: user))
+                        listener(ExpertsFeature.MsgOnUserFavorite(user: user))
                     }
                     Divider()
                 }
             }
         }
-        .onChange(of: searchText) { searchText in
-            listener(OnlineUsersFeature.MsgSetSearchString(searchString: searchText))
-        }
+            .onChange(of: searchText) { searchText in
+                listener(ExpertsFeature.MsgSetSearchString(searchString: searchText))
+            }
         CustomTabBar(selected: 1, onAccountClick: {
-            listener(OnlineUsersFeature.MsgOnCurrentUserSelected())
+            listener(ExpertsFeature.MsgOnCurrentUserSelected())
         }).padding()
     }
 }
@@ -68,10 +82,11 @@ struct CustomTabBar: View {
             case systemName(String)
             case uiImage(UIImage)
         }
+
         let imageContent: ImageContent
         let title: String
         let action: () -> Void
-        
+
         @ViewBuilder
         var image: some View {
             switch imageContent {
@@ -84,19 +99,22 @@ struct CustomTabBar: View {
             }
         }
     }
-    
+
     let items: [Item]
     let selected: Int
+
     init(selected: Int, onAccountClick: @escaping () -> Void = {}, onExpertsClick: @escaping () -> Void = {}) {
         self.selected = selected
         items = [
             Item(imageContent: .systemName("person.fill"), title: "My Profile", action: onAccountClick),
             Item(imageContent: .uiImage(R.image.profile.expert()!), title: "Experts", action: onExpertsClick),
-            Item(imageContent: .systemName("message.fill"), title: "Messages", action: {}),
-            Item(imageContent: .systemName("bell.fill"), title: "Notice", action: {}),
+            Item(imageContent: .systemName("message.fill"), title: "Messages", action: {
+            }),
+            Item(imageContent: .systemName("bell.fill"), title: "Notice", action: {
+            }),
         ]
     }
-    
+
     var body: some View {
         VStack(spacing: 10) {
             Divider()
@@ -108,7 +126,7 @@ struct CustomTabBar: View {
                             Text(item.title)
                                 .font(.system(size: 14))
                         }
-                        .foregroundColor(i == selected ? SwiftUI.Color(hex: "1B3D6D") : ColorConstants.LightGray.toColor())
+                            .foregroundColor(i == selected ? SwiftUI.Color(hex: 0x1B3D6D) : ColorConstants.LightGray.toColor())
                     }
                     if i != items.count {
                         Spacer()
@@ -116,48 +134,5 @@ struct CustomTabBar: View {
                 }
             }
         }
-    }
-}
-
-struct ForEachEnumerated<Data: RandomAccessCollection, Content: View>: View {
-    var data: [EnumeratedSequence<Data>.Element]
-    var content: (Int, Data.Element) -> Content
-    
-    init(_ data: Data, @ViewBuilder content: @escaping (Int, Data.Element) -> Content) {
-        self.data = Array(data.enumerated())
-        self.content = content
-    }
-    
-    var body: some View {
-        ForEach(data, id: \.offset) { element in
-            content(element.offset, element.element)
-        }
-    }
-}
-
-extension SwiftUI.Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let a, r, g, b: UInt64
-        switch hex.count {
-        case 3: // RGB (12-bit)
-            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6: // RGB (24-bit)
-            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8: // ARGB (32-bit)
-            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            (a, r, g, b) = (1, 1, 1, 0)
-        }
-        
-        self.init(
-            .sRGB,
-            red: Double(r) / 255,
-            green: Double(g) / 255,
-            blue:  Double(b) / 255,
-            opacity: Double(a) / 255
-        )
     }
 }

@@ -2,16 +2,17 @@ import com.well.modules.models.User;
 import com.well.modules.models.UsersFilter.SortBy;
 import kotlin.collections.Set;
 
-CREATE TABLE IF NOT EXISTS Users (
+CREATE TABLE Users (
     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     createdDate REAL NOT NULL,
     initialized BOOLEAN NOT NULL,
     fullName TEXT NOT NULL,
     type TEXT AS User.Type NOT NULL,
+    rating REAL NOT NULL,
     email TEXT,
     profileImageUrl TEXT,
     phoneNumber TEXT,
-    location TEXT,
+    countryCode TEXT,
     timeZoneIdentifier TEXT,
     credentials TEXT AS User.Credentials,
     academicRank TEXT AS User.AcademicRank,
@@ -39,6 +40,9 @@ SELECT EXISTS (SELECT * FROM Users WHERE id = ?);
 getById:
 SELECT * FROM Users WHERE id = ?;
 
+getTypeById:
+SELECT type FROM Users WHERE id = ?;
+
 getByIds:
 SELECT * FROM Users WHERE id IN ?;
 
@@ -56,26 +60,36 @@ SELECT id FROM Users WHERE appleId = ?;
 -- Create
 
 insertFacebook:
-INSERT INTO Users(fullName, createdDate, initialized, languages, skills, type, email, facebookId)
-VALUES (?, UNIX_TIMESTAMP(), FALSE, '', '', ?, ?, ?);
+INSERT INTO Users(fullName, createdDate, initialized, rating, languages, skills, type, email, facebookId)
+VALUES (?, UNIX_TIMESTAMP(), FALSE, 0, '', '', ?, ?, ?);
 
 insertGoogle:
-INSERT INTO Users(fullName, createdDate, initialized, languages, skills, type, email, googleId)
-VALUES (?, UNIX_TIMESTAMP(), FALSE, '', '', ?, ?, ?);
+INSERT INTO Users(fullName, createdDate, initialized, rating, languages, skills, type, email, googleId)
+VALUES (?, UNIX_TIMESTAMP(), FALSE, 0, '', '', ?, ?, ?);
 
 insertTwitter:
-INSERT INTO Users(fullName, createdDate, initialized, languages, skills, type, twitterId)
-VALUES ('', UNIX_TIMESTAMP(), FALSE, '', '', ?, ?);
+INSERT INTO Users(fullName, createdDate, initialized, rating, languages, skills, type, twitterId)
+VALUES ('', UNIX_TIMESTAMP(), FALSE, 0, '', '', ?, ?);
 
 insertApple:
-INSERT INTO Users(fullName, createdDate, initialized, languages, skills, type, appleId)
-VALUES (?, UNIX_TIMESTAMP(), FALSE, '', '', NULL, NULL);
+INSERT INTO Users(fullName, createdDate, initialized, rating, languages, skills, type, appleId)
+VALUES (?, UNIX_TIMESTAMP(), FALSE, 0, '', '', NULL, NULL);
 
 -- Update
 
 updateProfileImage:
 UPDATE Users
 SET profileImageUrl = ?
+WHERE id = ?;
+
+updateType:
+UPDATE Users
+SET type = ?
+WHERE id = ?;
+
+updateRating:
+UPDATE Users
+SET rating = ?
 WHERE id = ?;
 
 updateUser:
@@ -85,7 +99,7 @@ SET initialized = TRUE,
     email = ?,
     profileImageUrl = ?,
     phoneNumber = ?,
-    location = ?,
+    countryCode = ?,
     timeZoneIdentifier = ?,
     credentials = ?,
     academicRank = ?,
@@ -103,18 +117,20 @@ WHERE id = ?;
 filter:
 SELECT * FROM Users
 WHERE
-    (:nameFilter = '' OR LOCATE(:nameFilter, fullName) > 0)
+    initialized = TRUE
+    AND id != :uid
+    AND (:nameFilter = '' OR LOCATE(:nameFilter, fullName) > 0)
     AND (:favorites = FALSE OR
         id IN (
-            SELECT Favourites.destination FROM Favourites WHERE owner = :userId
+            SELECT Favourites.destination FROM Favourites WHERE owner = :uid
         )
     )
+    AND (:skillsRegexp = '' OR skills REGEXP :skillsRegexp)
+    AND (:academicRankRegexp = '' OR academicRank REGEXP :academicRankRegexp)
+    AND (:languagesRegexp = '' OR languages REGEXP :languagesRegexp)
 ;
 
 --     val sortBy: SortBy = SortBy.Popularity,
---     val skills: Set<User.Skill> = emptySet(),
---     val academicRanks: Set<User.AcademicRank> = emptySet(),
---     val languages: Set<User.Language> = emptySet(),
 --     val location: String? = null,
 --     val rating: Rating = Rating.All,
 --     val withReviews: Boolean = true,

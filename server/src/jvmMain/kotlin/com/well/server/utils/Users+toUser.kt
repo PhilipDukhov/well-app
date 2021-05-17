@@ -2,19 +2,33 @@ package com.well.server.utils
 
 import com.well.server.Users
 import com.well.modules.models.User
+import com.well.modules.models.User.Type
 import com.well.modules.models.UserId
+import com.well.server.Database
 
-fun Users.toUser(favorite: Boolean = false): User =
-    User(
+fun Users.toUser(
+    currentUid: UserId,
+    database: Database,
+): User {
+    val isCurrent = currentUid == id
+    return User(
         id = id,
         initialized = initialized,
-        favorite = favorite,
+        favorite = if (isCurrent) false else
+            database.favoritesQueries.isFavorite(currentUid, id).executeAsOne(),
         fullName = fullName,
-        type = type,
+        type = if (isCurrent) type else when (type) {
+            Type.Doctor,
+            Type.Expert,
+            -> type
+            Type.PendingExpert,
+            Type.DeclinedExpert,
+            -> Type.Doctor
+        },
         email = email,
         profileImageUrl = profileImageUrl,
         phoneNumber = phoneNumber,
-        location = location,
+        countryCode = countryCode,
         timeZoneIdentifier = timeZoneIdentifier,
         credentials = credentials,
         academicRank = academicRank,
@@ -27,3 +41,4 @@ fun Users.toUser(favorite: Boolean = false): User =
         twitter = twitter,
         doximity = doximity,
     )
+}

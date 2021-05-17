@@ -1,8 +1,8 @@
 rootProject.name = "WELL"
 
-listOf(
-    "androidApp",
-    "server",
+val kotlinVersion: String by settings
+
+val modules = mutableSetOf(
     "sharedMobile",
     "modules:annotations",
     "modules:annotationProcessor",
@@ -10,7 +10,14 @@ listOf(
     "modules:atomic",
     "modules:napier",
     "modules:utils",
-).forEach {
+)
+if (kotlinVersion.startsWith("1.5")) {
+    modules.add("server")
+} else {
+    modules.add("androidApp")
+}
+
+modules.forEach {
     include(":$it")
 }
 

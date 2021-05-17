@@ -9,10 +9,7 @@ import com.well.server.routing.auth.sendEmail
 import com.well.server.routing.auth.sendSms
 import com.well.server.routing.auth.twitterLogin
 import com.well.server.routing.mainWebSocket
-import com.well.server.routing.user.filterUsers
-import com.well.server.routing.user.setUserFavorite
-import com.well.server.routing.user.updateUser
-import com.well.server.routing.user.uploadUserProfile
+import com.well.server.routing.user.*
 import com.well.server.utils.Dependencies
 import com.well.server.utils.configProperty
 import com.well.server.utils.createPrincipal
@@ -21,7 +18,6 @@ import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 import io.ktor.client.*
 import io.ktor.client.features.logging.*
-import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.features.*
 import io.ktor.http.*
@@ -31,15 +27,8 @@ import io.ktor.response.*
 import io.ktor.locations.*
 import io.ktor.routing.*
 import io.ktor.serialization.*
-import io.ktor.util.*
 import io.ktor.websocket.*
-import org.bouncycastle.asn1.pkcs.PrivateKeyInfo
-import org.bouncycastle.openssl.PEMException
-import org.bouncycastle.openssl.PEMParser
-import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter
 import org.slf4j.event.Level
-import java.io.File
-import java.io.StringReader
 import java.net.URL
 import java.time.Duration
 import java.util.*
@@ -216,8 +205,6 @@ fun Application.module() {
         }
         post("/twitter_oauth_callback") { appleLogin(dependencies) }
 
-        put("/user") { updateUser(dependencies) }
-        post("/uploadUserProfile") { uploadUserProfile(dependencies) }
 //        get("/metrics") {
 //            call.respond(appMicrometerRegistry.scrape())
 //        }
@@ -230,11 +217,16 @@ fun Application.module() {
                 mainWebSocket(dependencies)
             }
             route("/user") {
+                put { updateUser(dependencies) }
+                post("/uploadProfileImage") { uploadProfileImage(dependencies) }
                 post("/filteredList") {
                     filterUsers(dependencies)
                 }
                 post("setFavorite") {
                     setUserFavorite(dependencies)
+                }
+                post("requestBecomeExpert") {
+                    requestBecomeExpert(dependencies)
                 }
             }
         }

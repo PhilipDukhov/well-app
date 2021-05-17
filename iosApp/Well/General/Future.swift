@@ -29,7 +29,7 @@ final class Future<Value>: Hashable, Cancellable {
     }
     
     private var value: Value?
-    private var cancelled: Bool = false
+    private var cancelled = false
     
     func complete(with value: Value) {
         guard self.value == nil, !cancelled else { return }

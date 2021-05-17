@@ -17,10 +17,9 @@ class JwtConfig(secret: String) {
     val issuer = "ktor.io"
 
     companion object {
-        const val userIdKey = "id"
+        const val uidKey = "id"
     }
 
-    //    private val validityInMs = 10 * 60 * 60 * 1000 // 10 hours
     private val algorithm = Algorithm.HMAC512(secret)
 
     val verifier: JWTVerifier = JWT
@@ -31,7 +30,7 @@ class JwtConfig(secret: String) {
     fun makeToken(id: Int): String = JWT.create()
         .withSubject("Authentication")
         .withIssuer(issuer)
-        .withClaim(userIdKey, id)
+        .withClaim(uidKey, id)
         .sign(algorithm)
 
     fun createAppleAuthToken(

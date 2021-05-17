@@ -12,6 +12,7 @@ import com.amazonaws.services.sns.model.MessageAttributeValue
 import com.amazonaws.services.sns.model.PublishRequest
 import com.well.server.utils.Dependencies
 import io.ktor.application.*
+import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.util.pipeline.*
@@ -20,14 +21,14 @@ suspend fun PipelineContext<*, ApplicationCall>.sendEmail(
     dependencies: Dependencies
 ) {
     sendEmail("philip.dukhov@gmail.com", call.receive(), "Hi", "code")
-    call.respond("ok")
+    call.respond(HttpStatusCode.OK)
 }
 
 suspend fun PipelineContext<*, ApplicationCall>.sendSms(
     dependencies: Dependencies
 ) {
     sendSms("Enter code", call.receive())
-    call.respond("ok")
+    call.respond(HttpStatusCode.OK)
 }
 
 private fun sendSms(
@@ -57,10 +58,9 @@ private fun sendEmail(
     subject: String,
     body: String
 ) {
-    println("sendEmail")
-    val client = AmazonSimpleEmailServiceClientBuilder.standard().build()
-    println("build")
-    val res = client.sendEmail(
+    AmazonSimpleEmailServiceClientBuilder
+        .standard()
+        .build().sendEmail(
         SendEmailRequest()
             .withSource(source)
             .withDestination(
@@ -76,5 +76,4 @@ private fun sendEmail(
                     )
             )
     )
-    println("sendEmail ${res.messageId}")
 }

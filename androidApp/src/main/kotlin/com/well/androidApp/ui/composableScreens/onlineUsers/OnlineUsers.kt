@@ -1,9 +1,8 @@
-package com.well.androidApp.ui.composableScreens.onlineUsers
+package com.well.androidApp.ui.composableScreens.experts
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -11,13 +10,13 @@ import androidx.compose.ui.Modifier
 import com.well.androidApp.ui.composableScreens.πCustomViews.ControlItem
 import com.well.androidApp.ui.composableScreens.πCustomViews.NavigationBar
 import com.well.androidApp.ui.composableScreens.πCustomViews.UserProfileImage
-import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersFeature
-import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersFeature.Msg
+import com.well.sharedMobile.puerh.experts.ExpertsFeature
+import com.well.sharedMobile.puerh.experts.ExpertsFeature.Msg
 import com.google.accompanist.insets.navigationBarsPadding
 
 @Composable
-fun OnlineUsersScreen(
-    state: OnlineUsersFeature.State,
+fun ExpertsScreen(
+    state: ExpertsFeature.State,
     listener: (Msg) -> Unit,
 ) = Column(
     horizontalAlignment = CenterHorizontally,

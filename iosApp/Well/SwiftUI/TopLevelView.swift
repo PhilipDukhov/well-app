@@ -21,22 +21,22 @@ struct TopLevelView: View {
         }
     }
     #if DEBUG
-    static let testing = false
+        static let testing = false
     #else
-    static let testing = false
+        static let testing = false
     #endif
 
     @ViewBuilder
     var content: some View {
         if Self.testing {
-//            profileScreen().statusBar(style: .lightContent)
+            filterScreen()
         } else {
             switch state.currentScreen {
             case let state as ScreenState.Welcome:
                 WelcomeScreen(state: state.state) {
                     listener(TopLevelFeature.MsgWelcomeMsg(msg: $0))
                 }
-                
+
             case is ScreenState.Launch:
                 EmptyView()
 
@@ -50,9 +50,9 @@ struct TopLevelView: View {
                     listener(TopLevelFeature.MsgMyProfileMsg(msg: $0))
                 }
 
-            case let state as ScreenState.OnlineUsers:
-                OnlineUsersScreen(state: state.state) {
-                    listener(TopLevelFeature.MsgOnlineUsersMsg(msg: $0))
+            case let state as ScreenState.Experts:
+                ExpertsScreen(state: state.state) {
+                    listener(TopLevelFeature.MsgExpertsMsg(msg: $0))
                 }
 
             case let state as ScreenState.Call:
@@ -66,16 +66,23 @@ struct TopLevelView: View {
         }
     }
 
-    @State var callState = CallFeature().testState(status: .ongoing)
+    @State var filterState = FilterFeature.State(filter: UsersFilter.Companion().default(searchString: ""))
+    @ViewBuilder
+    func filterScreen() -> some View {
+//        FilterScreen(state: filterState) { msg in
+//            filterState = FilterFeature().reducer(msg: msg, state: filterState).first!
+//        }
+    }
+
+//    @State var callState = CallFeature().testState(status: .ongoing)
 //    @State var profileState = MyProfileFeature().testState()
 
-    @ViewBuilder
-    func callScreen() -> some View {
-        CallScreen(state: callState) {
-            callState = CallFeature().reducer(msg: $0, state: callState).first!
-        }
-    }
-    
+//    @ViewBuilder
+//    func callScreen() -> some View {
+//        CallScreen(state: callState) {
+//            callState = CallFeature().reducer(msg: $0, state: callState).first!
+//        }
+//    }
 //    @ViewBuilder
 //    func profileScreen() -> some View {
 //        MyProfileScreen(state: profileState) {
@@ -101,6 +108,8 @@ final class TimeCounter {
         times = times.filter {
             $0.0.timeIntervalSinceNow < 1
         }
-        return times.map{$0.1}.reduce(0, +) / (times[0].0.timeIntervalSince(times.last!.0))
+        return times.map {
+            $0.1
+        }.reduce(0, +) / (times[0].0.timeIntervalSince(times.last!.0))
     }
 }

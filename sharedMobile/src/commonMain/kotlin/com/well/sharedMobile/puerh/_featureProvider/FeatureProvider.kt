@@ -9,7 +9,7 @@ import com.well.sharedMobile.puerh.login.LoginFeature
 import com.well.sharedMobile.puerh.login.SocialNetwork
 import com.well.sharedMobile.puerh.login.SocialNetworkService
 import com.well.sharedMobile.puerh.login.credentialProviders.CredentialProvider
-import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersFeature
+import com.well.sharedMobile.puerh.experts.ExpertsFeature
 import com.well.modules.utils.*
 import com.well.modules.atomic.AtomicLateInitRef
 import com.well.modules.atomic.CloseableContainer
@@ -66,11 +66,11 @@ class FeatureProvider(
                     }
                 }
                 is Eff.MyProfileEff -> handleMyProfileEff(eff.eff, listener)
-                is Eff.OnlineUsersEff -> when (eff.eff) {
-                    is OnlineUsersFeature.Eff.UpdateList,
-                    is OnlineUsersFeature.Eff.SetUserFavorite
+                is Eff.ExpertsEff -> when (eff.eff) {
+                    is ExpertsFeature.Eff.UpdateList,
+                    is ExpertsFeature.Eff.SetUserFavorite
                     -> Unit
-                    is OnlineUsersFeature.Eff.SelectedUser -> {
+                    is ExpertsFeature.Eff.SelectedUser -> {
                         listener.invoke(
                             Msg.OpenUserProfile(
                                 user = eff.eff.user,
@@ -78,11 +78,8 @@ class FeatureProvider(
                             )
                         )
                     }
-                    is OnlineUsersFeature.Eff.CallUser -> {
+                    is ExpertsFeature.Eff.CallUser -> {
                         handleCall(eff.eff.user, listener)
-                    }
-                    OnlineUsersFeature.Eff.Logout -> {
-                        logOut(listener)
                     }
                 }
                 is Eff.CallEff -> handleCallEff(eff.eff, listener)
@@ -92,11 +89,11 @@ class FeatureProvider(
                         loggedIn(loginToken, listener)
                         listener.invoke(Msg.LoggedIn)
                     } else {
-//                        if (platform.dataStore.welcomeShowed) {
+                        if (Platform.isDebug || platform.dataStore.welcomeShowed) {
                             listener.invoke(Msg.OpenLoginScreen)
-//                        } else {
-//                            listener.invoke(Msg.OpenWelcomeScreen)
-//                        }
+                        } else {
+                            listener.invoke(Msg.OpenWelcomeScreen)
+                        }
                     }
                 }
                 Eff.SystemBack -> {

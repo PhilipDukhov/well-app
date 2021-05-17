@@ -51,13 +51,13 @@ extension CGSize {
 
 extension View {
     @inline(__always)
-    func foregroundColorKMM(_ color: SharedMobile.Color) -> some View {
-        foregroundColor(color.toColor())
+    func foregroundColorKMM(_ color: SharedMobile.Color?) -> some View {
+        foregroundColor(color?.toColor())
     }
     
     @inline(__always)
-    func backgroundColorKMM(_ color: SharedMobile.Color) -> some View {
-        background(color.toColor())
+    func backgroundColorKMM(_ color: SharedMobile.Color?) -> some View {
+        background(color?.toColor())
     }
 }
 

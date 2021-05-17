@@ -1,7 +1,7 @@
 package com.well.sharedMobile.puerh.myProfile
 
 data class UIPreviewField(
-    val title: String,
+    val title: String = "",
     val content: Content,
 ) {
     constructor(
@@ -30,6 +30,7 @@ data class UIPreviewField(
         ) : Content()
 
         data class List(val list: kotlin.collections.List<String>) : Content()
+        data class Button<Msg>(val title: String, val msg: Msg) : Content()
     }
 
     enum class Icon {

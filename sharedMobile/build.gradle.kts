@@ -86,13 +86,13 @@ kotlin {
                 "ktor.client.engine.cio",
                 "kotlin.coroutines.playServices",
             )
-        }
-        val androidTest by getting {
-            libDependencies(
-                "tests.junit",
-            )
-            dependencies {
-                implementation(kotlin("test-junit"))
+            val androidTest by getting {
+                libDependencies(
+                    "tests.junit",
+                )
+                dependencies {
+                    implementation(kotlin("test-junit"))
+                }
             }
         }
         val iosMain by getting {

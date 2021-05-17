@@ -22,8 +22,8 @@ suspend fun PipelineContext<*, ApplicationCall>.facebookLogin(
     dependencies: Dependencies
 ) = dependencies.run {
     getFacebookAuthenticatedClient().run {
-        val facebookId = getUserId(call.receive())
-        val id = getFacebookUserId(facebookId)
+        val facebookId = getUid(call.receive())
+        val id = getFacebookUid(facebookId)
             ?: run {
                 createFacebookUser(
                     facebookId,
@@ -36,15 +36,15 @@ suspend fun PipelineContext<*, ApplicationCall>.facebookLogin(
     }
 }
 
-private suspend fun HttpClient.getUserId(token: String): String =
+private suspend fun HttpClient.getUid(token: String): String =
     get<JsonElement>(
         "debug_token?input_token=$token"
     ).jsonObject
         .getValue("data")
         .jsonObject.getPrimitiveContent("user_id")
 
-private suspend fun HttpClient.getUserInfo(userId: String): JsonObject =
-    get<JsonElement>(userId) {
+private suspend fun HttpClient.getUserInfo(uid: String): JsonObject =
+    get<JsonElement>(uid) {
         parameter(
             "fields",
             UserFields
@@ -54,8 +54,8 @@ private suspend fun HttpClient.getUserInfo(userId: String): JsonObject =
         )
     }.jsonObject
 
-private suspend fun HttpClient.getProfilePicture(userId: String) =
-    get<JsonElement>("$userId/picture") {
+private suspend fun HttpClient.getProfilePicture(uid: String) =
+    get<JsonElement>("$uid/picture") {
         val pictureSize = 1000
         url.parameters.append(
             "height" to "$pictureSize",
@@ -69,7 +69,7 @@ private suspend fun HttpClient.getProfilePicture(userId: String) =
             else Url(it.getPrimitiveContent("url"))
         }
 
-private fun Dependencies.getFacebookUserId(
+private fun Dependencies.getFacebookUid(
     id: String,
 ) = database
     .usersQueries

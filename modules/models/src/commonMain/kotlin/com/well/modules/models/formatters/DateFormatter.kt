@@ -7,7 +7,3 @@ class DateFormatter {
 }
 
 expect fun DateFormatter.Companion.format(date: Date, timeZoneIdentifier: String): String
-
-expect fun timeZonesIdentifiersList(): List<String>
-
-expect fun currentTimeZoneIdentifier(): String

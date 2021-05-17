@@ -121,7 +121,7 @@ subprojects {
         }
     }
 
-    if (gradlePluginVersion.first() == '7') {
+    if (gradlePluginVersion.first() == '7' && !version("kotlin").startsWith("1.5")) {
         if (multiplatformModules.contains(path)) {
             configurations {
                 listOf(

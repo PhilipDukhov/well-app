@@ -40,7 +40,7 @@ private extension SocialNetwork {
         let images = R.image.loginSocials.self
         switch self {
         case .apple:
-            return images.apple()!
+            return UIImage()//images.apple()!
         case .twitter:
             return images.twitter()!
         case .facebook:

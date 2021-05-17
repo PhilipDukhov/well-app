@@ -1,20 +1,19 @@
 package com.well.sharedMobile.puerh.myProfile
 
+import com.well.modules.models.User
 import com.well.sharedMobile.puerh.πModels.GlobalStringsBase
 
 internal object Strings: GlobalStringsBase() {
+    const val logout = "Logout"
+    const val becomeExpert = "Become an expert"
     const val about = "About"
     const val fullName = "Full name"
     const val credentials = "Credentials"
-    const val academicRank = "Academic Rank"
-    const val skillsExpertise = "Skills/Expertise"
     const val emailAddress = "Email address"
     const val phoneNumber = "Phone number"
-    const val location = "Location"
-    const val yourLocation = "Your location"
+    const val yourCountry = "Your country"
     const val timeZone = "Time zone"
     const val more = "More"
-    const val languagesSpoken = "Languages spoken"
     const val missionBio = "Mission/Bio"
     const val education = "Education"
     const val professionalMemberships = "Professional memberships"
@@ -24,3 +23,16 @@ internal object Strings: GlobalStringsBase() {
     const val doximity = "Doximity"
     const val link = "link"
 }
+
+val User.Type.title: String
+    get() {
+        return when (this) {
+            User.Type.Doctor
+            -> "Doctor"
+            User.Type.PendingExpert,
+            User.Type.DeclinedExpert,
+            -> "Doctor, expert verification pending"
+            User.Type.Expert
+            -> "Expert"
+        }
+    }

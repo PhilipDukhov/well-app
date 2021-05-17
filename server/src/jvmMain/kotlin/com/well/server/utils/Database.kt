@@ -106,6 +106,7 @@ fun SqlDriver.migrateIfNeeded(schema: SqlDriver.Schema) {
     if (version >= schema.version) {
         return
     }
+    println("migration $version -> ${schema.version}")
     sqlDriverTransacter.transaction {
         if (version == 0) schema.create(this@migrateIfNeeded) else schema.migrate(
             this@migrateIfNeeded,

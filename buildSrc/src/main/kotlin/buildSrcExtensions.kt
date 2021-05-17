@@ -1,8 +1,10 @@
 import org.codehaus.groovy.runtime.GStringImpl
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.PluginDependenciesSpecScope
 import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
 import org.gradle.kotlin.dsl.add
+import org.gradle.kotlin.dsl.apply
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 private fun Project.mapAt(
@@ -87,15 +89,15 @@ fun NamedDomainObjectCollection<KotlinSourceSet>.usePredefinedExperimentalAnnota
 ) {
     all {
         (annotations.toList() +
-            listOf(
-                "kotlinx.coroutines.InternalCoroutinesApi",
-                "kotlin.ExperimentalUnsignedTypes",
-                "kotlin.contracts.ExperimentalContracts",
-                "kotlin.time.ExperimentalTime",
-                "io.ktor.util.InternalAPI",
-                "io.ktor.util.KtorExperimentalAPI",
-                "io.ktor.utils.io.core.ExperimentalIoApi"
-            )).forEach {
+                listOf(
+                    "kotlinx.coroutines.InternalCoroutinesApi",
+                    "kotlin.ExperimentalUnsignedTypes",
+                    "kotlin.contracts.ExperimentalContracts",
+                    "kotlin.time.ExperimentalTime",
+                    "io.ktor.util.InternalAPI",
+                    "io.ktor.util.KtorExperimentalAPI",
+                    "io.ktor.utils.io.core.ExperimentalIoApi"
+                )).forEach {
             languageSettings.useExperimentalAnnotation(it)
         }
     }

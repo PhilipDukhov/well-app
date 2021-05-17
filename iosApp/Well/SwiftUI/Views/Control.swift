@@ -24,12 +24,13 @@ struct Control<T>: View where T: View {
     }
     
     var body: some View {
-        container
-            .frame(minSize: controlMinSize)
-            .contentShape(Rectangle())
-            .onTapGesture(perform: onTap)
-            .opacity(enabled ? 1 : 0.4)
-            .allowsHitTesting(enabled)
+        Button(action: onTap) {
+            container
+                .frame(minSize: controlMinSize)
+                .contentShape(Rectangle())
+                .opacity(enabled ? 1 : 0.4)
+                .allowsHitTesting(enabled)
+        }
     }
 }
 

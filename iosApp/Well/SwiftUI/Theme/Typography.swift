@@ -10,8 +10,10 @@ struct TextStyle: Equatable {
     let fontSize: CGFloat
 
     static let h4 = Self(fontWeight: .bold, fontSize: 30)
+    static let title1 = Self(fontWeight: .regular, fontSize: 21)
     static let title2 = Self(fontWeight: .bold, fontSize: 17)
     static let body1 = Self(fontWeight: .regular, fontSize: 18)
+    static let body2 = Self(fontWeight: .regular, fontSize: 17)
     static let body3 = Self(fontWeight: .regular, fontSize: 16)
 }
 
@@ -19,8 +21,15 @@ extension Text {
     @inline(__always) func style(
         _ style: TextStyle
     ) -> Text {
-        font(.system(size: style.fontSize))
-            .fontWeight(style.fontWeight)
+        font(.system(size: style.fontSize, weight: style.fontWeight))
+    }
+}
+
+extension View {
+    @inline(__always) func style(
+        _ style: TextStyle
+    ) -> some View {
+        font(.system(size: style.fontSize, weight: style.fontWeight))
     }
 }
 
@@ -37,7 +46,7 @@ extension Font.Weight {
         case .heavy: return .heavy
         case .black: return .black
         default:
-            fatalError()
+            fatalError("\(self) weight not provided")
         }
     }
 }

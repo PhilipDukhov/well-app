@@ -23,14 +23,14 @@ suspend fun PipelineContext<*, ApplicationCall>.twitterLogin(
         call.respond(HttpStatusCode.NotFound, error)
         return
     }
-    val twitterUserId = principal.extraParameters["user_id"]
+    val twitterUid = principal.extraParameters["user_id"]
         ?: throw IllegalStateException("user_id missing in twitter response: ${principal.extraParameters}")
     val id = database
         .usersQueries
-        .getByTwitterId(twitterUserId)
+        .getByTwitterId(twitterUid)
         .executeAsOneOrNull()
         ?: run {
-            createTwitterUser(twitterUserId)
+            createTwitterUser(twitterUid)
         }
     call.respondAuthenticated(id, dependencies)
 }

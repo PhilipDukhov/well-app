@@ -2,10 +2,10 @@ package com.well.sharedMobile.puerh._topLevel
 
 import com.well.modules.annotations.ScreenStates
 import com.well.modules.models.User
-import com.well.modules.models.WebSocketMessage
+import com.well.modules.models.WebSocketMsg
 import com.well.sharedMobile.puerh.call.CallFeature
 import com.well.sharedMobile.puerh.login.LoginFeature
-import com.well.sharedMobile.puerh.onlineUsers.OnlineUsersFeature
+import com.well.sharedMobile.puerh.experts.ExpertsFeature
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.State.*
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature
 import com.well.modules.utils.map
@@ -13,7 +13,7 @@ import com.well.modules.utils.toSetOf
 import com.well.modules.utils.withEmptySet
 import com.well.sharedMobile.puerh.welcome.WelcomeFeature
 
-// remove build/tmp/kapt3 after updating it to refresh cache
+// remove build/tmp/kapt3 after updating features to refresh cache
 @ScreenStates(
     empties = [
         "Launch"
@@ -22,7 +22,7 @@ import com.well.sharedMobile.puerh.welcome.WelcomeFeature
         WelcomeFeature::class,
         LoginFeature::class,
         MyProfileFeature::class,
-        OnlineUsersFeature::class,
+        ExpertsFeature::class,
         CallFeature::class,
     ]
 )
@@ -68,11 +68,11 @@ object TopLevelFeature {
         data class WelcomeMsg(val msg: WelcomeFeature.Msg) : Msg()
         data class MyProfileMsg(val msg: MyProfileFeature.Msg) : Msg()
         data class LoginMsg(val msg: LoginFeature.Msg) : Msg()
-        data class OnlineUsersMsg(val msg: OnlineUsersFeature.Msg) : Msg()
+        data class ExpertsMsg(val msg: ExpertsFeature.Msg) : Msg()
         data class CallMsg(val msg: CallFeature.Msg) : Msg()
 
         data class StartCall(val user: User) : Msg()
-        data class IncomingCall(val incomingCall: WebSocketMessage.IncomingCall) : Msg()
+        data class IncomingCall(val incomingCall: WebSocketMsg.IncomingCall) : Msg()
         object EndCall : Msg()
 
         object StopImageSharing : Msg()
@@ -97,7 +97,7 @@ object TopLevelFeature {
         data class MyProfileEff(val eff: MyProfileFeature.Eff) : Eff()
         data class WelcomeEff(val eff: WelcomeFeature.Eff) : Eff()
         data class LoginEff(val eff: LoginFeature.Eff) : Eff()
-        data class OnlineUsersEff(val eff: OnlineUsersFeature.Eff) : Eff()
+        data class ExpertsEff(val eff: ExpertsFeature.Eff) : Eff()
         data class CallEff(val eff: CallFeature.Eff) : Eff()
     }
 
@@ -122,7 +122,7 @@ object TopLevelFeature {
                 is Msg.LoggedIn -> {
                     return@state state.copy(
                         tabs = mapOf(
-                            Tab.Main to listOf(ScreenState.OnlineUsers(OnlineUsersFeature.initialState()))
+                            Tab.Main to listOf(ScreenState.Experts(ExpertsFeature.initialState()))
                         ),
                         selectedScreenPosition = ScreenPosition(Tab.Main, 0),
                     )
@@ -145,7 +145,7 @@ object TopLevelFeature {
                 is Msg.WelcomeMsg,
                 is Msg.LoginMsg,
                 is Msg.MyProfileMsg,
-                is Msg.OnlineUsersMsg,
+                is Msg.ExpertsMsg,
                 is Msg.CallMsg,
                 -> {
                     return@reducer reduceScreenMsg(msg, state)

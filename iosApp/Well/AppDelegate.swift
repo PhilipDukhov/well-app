@@ -1,6 +1,3 @@
-#if !AUTH_DISABLED
-    import Auth
-#endif
 import UIKit
 import SharedMobile
 import SwiftUI
@@ -18,22 +15,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-    #if !AUTH_DISABLED
-        private var socialNetworkService: SocialNetworkService!
-    #endif
-
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        #if !AUTH_DISABLED
-            socialNetworkService = SocialNetworkService(
-                context: .init(
-                    application: application,
-                    launchOptions: launchOptions
-                )
-            )
-        #endif
         NapierProxy().initializeLogging()
         // swiftlint:disable:next trailing_closure
         featureProvider = FeatureProvider(
@@ -77,33 +62,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 )
             }
         }
-        #if !AUTH_DISABLED
-            let loginInitialViewController = LoginInitialViewController()
-            loginInitialViewController.props = .init(
-                socialNetworkAction: .init { [self, unowned loginInitialViewController] in
-                    socialNetworkService.login(
-                        network: $0,
-                        loginView: loginInitialViewController
-                    ) { result, error in
-                        if let result = result {
-                            window.rootViewController = UIHostingController(
-                                rootView: OnlineUsersList(viewModel: .init(token: result.bearerToken))
-                            )
-                        }
-                        if let error = error {
-                            if error.isKotlinCancellationException {
-                                print("\(#function) cancelled")
-                                return
-                            }
-                            print("\(#function) \(error.sharedLocalizedDescription)")
-                            return
-                        }
-                    }
-                },
-                createAccountAction: .zero,
-                signInAction: .zero)
-            window.rootViewController = loginInitialViewController
-        #endif
         window.makeKeyAndVisible()
         return window
     }

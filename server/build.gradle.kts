@@ -23,16 +23,18 @@ sqldelight {
 
 kotlin {
     jvm {
-        val kotlinVersion = (extra["Versions"] as Map<*, *>)["kotlin"] as String
-        if (kotlinVersion.startsWith("1.5")) {
-            withJava()
-        }
+        withJava()
     }
     sourceSets {
         usePredefinedExperimentalAnnotations("KtorExperimentalLocationsAPI")
-        val jvmMain by getting {
+        val commonMain by getting {
             libDependencies(
                 ":modules:models",
+            )
+        }
+
+        val jvmMain by getting {
+            libDependencies(
                 "server.*",
                 "ktor.server.*",
                 "ktor.serialization",
