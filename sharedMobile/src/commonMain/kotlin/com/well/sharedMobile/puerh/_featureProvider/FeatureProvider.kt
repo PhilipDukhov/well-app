@@ -90,11 +90,11 @@ class FeatureProvider(
                         loggedIn(loginToken, listener)
                         listener.invoke(Msg.LoggedIn)
                     } else {
-//                        if (Platform.isDebug || platform.dataStore.welcomeShowed) {
-//                            listener.invoke(Msg.OpenLoginScreen)
-//                        } else {
+                        if (Platform.isDebug || platform.dataStore.welcomeShowed) {
+                            listener.invoke(Msg.OpenLoginScreen)
+                        } else {
                             listener.invoke(Msg.OpenWelcomeScreen)
-//                        }
+                        }
                     }
                 }
                 Eff.SystemBack -> {

@@ -7,8 +7,7 @@ object WelcomeFeature {
         val title = "Welcome to WELL app"
         val descriptions = listOf(
             "Our app provides urologists globally of performing mentored urological",
-            "Our app provides urologists globally of performing mentored urological",
-            "Our app provides urologists globally of performing mentored urological",
+            "Our app provides urologists globally of performing mentored urological Our app provides urologists globally of performing mentored urological",
             "Our app provides urologists globally of performing mentored urological",
         )
     }
