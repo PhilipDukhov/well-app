@@ -54,24 +54,34 @@ internal suspend fun FeatureProvider.handleMyProfileEff(
                 )
             }
         }
-        is Eff.ShowError -> {
+        is Eff.SetUserFavorite -> {
+            networkManager.value.setFavorite(eff.setter)
+        }
+        is Eff.ShowError
+        -> {
             listener(TopLevelMsg.ShowAlert(Alert.Throwable(eff.throwable)))
         }
-        Eff.Pop -> {
+        is Eff.Pop -> {
             listener(TopLevelMsg.Pop)
         }
-        Eff.InitializationFinished -> {
+        is Eff.InitializationFinished -> {
             loggedIn(nonInitializedUserToken.value, listener)
         }
         is Eff.Call -> {
             listener(TopLevelMsg.StartCall(eff.user))
         }
-        Eff.Logout -> {
+        is Eff.Logout -> {
             logOut(listener)
         }
-        Eff.BecomeExpert -> {
+        is Eff.BecomeExpert -> {
             networkManager.value.apply {
                 requestBecomeExpert()
+            }
+        }
+        is Eff.RatingRequest -> {
+            networkManager.value.apply {
+                rate(eff.ratingRequest)
+                listener(TopLevelMsg.ExpertsMsg(ExpertsFeature.Msg.Reload))
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.well.sharedMobile.networking.webSocketManager
 
 import io.ktor.client.features.websocket.*
+import kotlinx.coroutines.CoroutineScope
 
 internal actual suspend fun WebSocketClient.ws(
     path: String,
@@ -9,6 +10,6 @@ internal actual suspend fun WebSocketClient.ws(
     client.ws(path, request = {
         url.protocol = config.webSocketProtocol
     }) {
-        block(WebSocketSession(this))
+        block(WebSocketSession(this, CoroutineScope(coroutineContext)))
     }
 }

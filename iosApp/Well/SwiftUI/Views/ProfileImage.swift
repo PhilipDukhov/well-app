@@ -9,60 +9,66 @@ import SharedMobile
 struct ProfileImage: View {
     let image: SharedImage?
     let clipCircle: Bool
+    let aspectRatio: CGFloat?
+    let contentMode: ContentMode
 
     init(
         _ user: User,
-        clipCircle: Bool = true
+        clipCircle: Bool = true,
+        aspectRatio: CGFloat? = nil,
+        contentMode: ContentMode = .fill
     ) {
-        self.init(image: user.profileImage(), clipCircle: clipCircle)
+        self.init(image: user.profileImage(),
+            clipCircle: clipCircle,
+            aspectRatio: aspectRatio,
+            contentMode: contentMode)
     }
-    
+
     init(
         image: SharedImage?,
-        clipCircle: Bool = true
+        clipCircle: Bool = true,
+        aspectRatio: CGFloat? = nil,
+        contentMode: ContentMode = .fill
     ) {
         self.image = image
         self.clipCircle = clipCircle
+        self.aspectRatio = aspectRatio
+        self.contentMode = contentMode
     }
 
     var body: some View {
-        content
-            .clipShape(PartCircleShape(part: clipCircle ? 1 : 0))
+        content.clipShape(PartCircleShape(part: clipCircle ? 1 : 0))
     }
-    
+
+    @ViewBuilder
     private var content: some View {
         if let image = image {
             switch image {
             case let image as UrlImage where image.url.toURL() != nil:
-                return AnyView(
-                    AsyncImage(
-                        url: image.url.toURL()!,
-                        placeholder: {
-                            ActivityIndicator()
-                        },
-                        image: {
-                            buildImage(uiImage: $0)
-                        }
-                    )
+                AsyncImage(
+                    url: image.url.toURL()!,
+                    placeholder: {
+                        ActivityIndicator()
+                    },
+                    image: {
+                        buildImage(uiImage: $0)
+                    }
                 )
-                
+
             case let image as ImageContainer:
-                return AnyView(
-                    buildImage(uiImage: image.uiImage)
-                )
-                
+                buildImage(uiImage: image.uiImage)
+
             default: fatalError()
             }
         } else {
-            return AnyView(
-                Rectangle().foregroundColorKMM(ColorConstants.LightGray)
-            )
+            Rectangle().foregroundColorKMM(ColorConstants.LightGray)
+                .aspectRatio(aspectRatio, contentMode: contentMode)
         }
     }
-    
+
     private func buildImage(uiImage: UIImage) -> some View {
         Image(uiImage: uiImage)
             .resizable()
-            .scaledToFill()
+            .aspectRatio(contentMode: .fill)
     }
 }

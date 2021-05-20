@@ -156,9 +156,9 @@ fileprivate struct FilterSelectionScreen: View {
     var body: some View {
         NavigationBar(
             title: title,
-            leftItem: NavigationBarItem(view: Image(systemName: "chevron.left"), handlerOpt: {
+            leftItem: NavigationBarItem(view: Image(systemName: "chevron.left")) {
                 onSelectionChanged(selection)
-            }),
+            },
             rightItem: { () -> NavigationBarItem<Text>? in
                 guard multipleSelection else {
                     return nil
@@ -167,9 +167,9 @@ fileprivate struct FilterSelectionScreen: View {
                     KotlinInt(integerLiteral: $0)
                 })
                 let allVariantsSelected = selection == allVariants
-                return NavigationBarItem(text: allVariantsSelected ? "Deselect all" : "Select all", handlerOpt: {
+                return NavigationBarItem(text: allVariantsSelected ? "Deselect all" : "Select all") {
                     selection = allVariantsSelected ? Set() : allVariants
-                })
+                }
             }()
         )
         SelectionScreen(

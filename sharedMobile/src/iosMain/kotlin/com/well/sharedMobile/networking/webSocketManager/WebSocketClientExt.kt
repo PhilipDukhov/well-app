@@ -5,6 +5,7 @@ import com.well.modules.napier.Napier
 import com.well.modules.utils.toThrowable
 import com.well.sharedMobile.networking.getThrowable
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.Foundation.NSData
 import platform.Foundation.NSError
@@ -24,6 +25,7 @@ import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.addValue
 import platform.Foundation.create
 import platform.darwin.NSObject
+import kotlin.coroutines.coroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -37,7 +39,7 @@ internal actual suspend fun WebSocketClient.ws(
 private suspend fun WebSocketClient.webSocket(
     path: String,
     block: suspend WebSocketSession.() -> Unit,
-) =
+) = coroutineContext.let { coroutineContext ->
     // replace with suspendCoroutine when https://github.com/Kotlin/kotlinx.coroutines/issues/2363 fixed
     block(suspendCancellableCoroutine { continuation ->
         val components = NSURLComponents()
@@ -106,7 +108,9 @@ private suspend fun WebSocketClient.webSocket(
                 }
             }
         )
-        delegate.webSocketSession = WebSocketSession(webSocket).freeze()
+        delegate.webSocketSession =
+            WebSocketSession(webSocket, CoroutineScope(coroutineContext)).freeze()
         delegate.freeze()
         webSocket.resume()
     })
+}

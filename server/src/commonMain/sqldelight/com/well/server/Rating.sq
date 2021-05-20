@@ -1,0 +1,30 @@
+CREATE TABLE Ratings (
+    owner INT NOT NULL,
+    destination INT NOT NULL,
+    value INT NOT NULL,
+    text TEXT,
+    PRIMARY KEY (owner, destination),
+    FOREIGN KEY (owner) REFERENCES Users(id),
+    FOREIGN KEY (destination) REFERENCES Users(id)
+);
+
+delete:
+DELETE FROM Ratings
+WHERE owner = ? AND destination = ?;
+
+add:
+INSERT INTO Ratings(owner, destination, value, text)
+VALUES (?, ?, ?, ?);
+
+get:
+SELECT *
+FROM Ratings
+WHERE destination = ? AND owner = ?;
+
+userRating:
+SELECT AVG(value), COUNT(owner)
+FROM Ratings
+WHERE destination = :uid;
+
+list:
+EXPLAIN SELECT * FROM Ratings;

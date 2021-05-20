@@ -15,6 +15,8 @@ struct TextStyle: Equatable {
     static let body1 = Self(fontWeight: .regular, fontSize: 18)
     static let body2 = Self(fontWeight: .regular, fontSize: 17)
     static let body3 = Self(fontWeight: .regular, fontSize: 16)
+    static let caption1 = Self(fontWeight: .regular, fontSize: 14)
+    static let caption2 = Self(fontWeight: .light, fontSize: 12)
 }
 
 extension Text {

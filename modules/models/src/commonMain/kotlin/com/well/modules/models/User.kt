@@ -10,6 +10,7 @@ data class User(
     val fullName: String,
     val type: Type,
     val email: String? = null,
+    val ratingInfo: RatingInfo,
     val profileImageUrl: String? = null,
     val phoneNumber: String? = null,
     val countryCode: String? = null,
@@ -109,7 +110,9 @@ data class User(
     }
 
     @Serializable
-    enum class Country {
-
-    }
+    data class RatingInfo(
+        val count: Int,
+        val average: Double,
+        val currentUserRating: Rating? = null,
+    )
 }

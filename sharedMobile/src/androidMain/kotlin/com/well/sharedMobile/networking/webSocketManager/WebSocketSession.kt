@@ -10,12 +10,13 @@ import kotlin.coroutines.CoroutineContext
 
 actual class WebSocketSession(
     private val socketSession: DefaultClientWebSocketSession,
+    scope: CoroutineScope,
 ) {
     private val channel = Channel<String>(8)
     actual val incoming: ReceiveChannel<String> = channel
 
     init {
-        GlobalScope.launch(Dispatchers.IO) {
+        scope.launch {
             for (frame in socketSession.incoming) {
                 when (frame) {
                     is Frame.Text -> {

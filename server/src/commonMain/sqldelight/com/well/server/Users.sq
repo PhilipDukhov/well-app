@@ -5,14 +5,12 @@ import kotlin.collections.Set;
 CREATE TABLE Users (
     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     createdDate REAL NOT NULL,
-    initialized BOOLEAN NOT NULL,
+    initialized BOOLEAN NOT NULL DEFAULT FALSE,
     fullName TEXT NOT NULL,
     type TEXT AS User.Type NOT NULL,
-    rating REAL NOT NULL,
     email TEXT,
     profileImageUrl TEXT,
     phoneNumber TEXT,
-    countryCode TEXT,
     timeZoneIdentifier TEXT,
     credentials TEXT AS User.Credentials,
     academicRank TEXT AS User.AcademicRank,
@@ -28,7 +26,11 @@ CREATE TABLE Users (
     facebookId TEXT,
     googleId TEXT,
     twitterId TEXT,
-    appleId TEXT
+    appleId TEXT,
+
+    countryCode TEXT,
+    averageRating REAL NOT NULL DEFAULT 0,
+    ratingsCount INTEGER NOT NULL DEFAULT 0
 );
 
 lastInsertId:
@@ -60,20 +62,20 @@ SELECT id FROM Users WHERE appleId = ?;
 -- Create
 
 insertFacebook:
-INSERT INTO Users(fullName, createdDate, initialized, rating, languages, skills, type, email, facebookId)
-VALUES (?, UNIX_TIMESTAMP(), FALSE, 0, '', '', ?, ?, ?);
+INSERT INTO Users(fullName, createdDate,  type, email, facebookId, languages, skills)
+VALUES (?, UNIX_TIMESTAMP(), ?, ?, ?, '', '');
 
 insertGoogle:
-INSERT INTO Users(fullName, createdDate, initialized, rating, languages, skills, type, email, googleId)
-VALUES (?, UNIX_TIMESTAMP(), FALSE, 0, '', '', ?, ?, ?);
+INSERT INTO Users(fullName, createdDate,  type, email, googleId, languages, skills)
+VALUES (?, UNIX_TIMESTAMP(), ?, ?, ?, '', '');
 
 insertTwitter:
-INSERT INTO Users(fullName, createdDate, initialized, rating, languages, skills, type, twitterId)
-VALUES ('', UNIX_TIMESTAMP(), FALSE, 0, '', '', ?, ?);
+INSERT INTO Users(fullName, createdDate, type, twitterId, languages, skills)
+VALUES ('', UNIX_TIMESTAMP(), ?, ?, '', '');
 
 insertApple:
-INSERT INTO Users(fullName, createdDate, initialized, rating, languages, skills, type, appleId)
-VALUES (?, UNIX_TIMESTAMP(), FALSE, 0, '', '', NULL, NULL);
+INSERT INTO Users(fullName, createdDate,  type, appleId, languages, skills)
+VALUES (?, UNIX_TIMESTAMP(),NULL, NULL, '', '');
 
 -- Update
 
@@ -89,7 +91,8 @@ WHERE id = ?;
 
 updateRating:
 UPDATE Users
-SET rating = ?
+SET averageRating = :average,
+    ratingsCount = :count
 WHERE id = ?;
 
 updateUser:
@@ -128,9 +131,20 @@ WHERE
     AND (:skillsRegexp = '' OR skills REGEXP :skillsRegexp)
     AND (:academicRankRegexp = '' OR academicRank REGEXP :academicRankRegexp)
     AND (:languagesRegexp = '' OR languages REGEXP :languagesRegexp)
+    AND (:countryCodeRegex = '' OR countryCode REGEXP :countryCodeRegex)
+    AND (:withReviews = FALSE OR ratingsCount > 0)
+    AND (:rating = NULL OR averageRating >= :rating)
+    LIMIT 10
 ;
 
 --     val sortBy: SortBy = SortBy.Popularity,
---     val location: String? = null,
 --     val rating: Rating = Rating.All,
---     val withReviews: Boolean = true,
+
+-- Clean
+selectUninitialized:
+SELECT * FROM Users
+WHERE initialized = FALSE AND UNIX_TIMESTAMP() - createdDate < 60 * 60 * 24;
+
+deleteUninitialized:
+DELETE FROM Users
+WHERE initialized = FALSE AND UNIX_TIMESTAMP() - createdDate < 60 * 60 * 24;

@@ -68,7 +68,8 @@ class FeatureProvider(
                 is Eff.MyProfileEff -> handleMyProfileEff(eff.eff, listener)
                 is Eff.ExpertsEff -> when (eff.eff) {
                     is ExpertsFeature.Eff.UpdateList,
-                    is ExpertsFeature.Eff.SetUserFavorite
+                    is ExpertsFeature.Eff.SetUserFavorite,
+                    is ExpertsFeature.Eff.FilterEff,
                     -> Unit
                     is ExpertsFeature.Eff.SelectedUser -> {
                         listener.invoke(
@@ -89,11 +90,11 @@ class FeatureProvider(
                         loggedIn(loginToken, listener)
                         listener.invoke(Msg.LoggedIn)
                     } else {
-                        if (Platform.isDebug || platform.dataStore.welcomeShowed) {
-                            listener.invoke(Msg.OpenLoginScreen)
-                        } else {
+//                        if (Platform.isDebug || platform.dataStore.welcomeShowed) {
+//                            listener.invoke(Msg.OpenLoginScreen)
+//                        } else {
                             listener.invoke(Msg.OpenWelcomeScreen)
-                        }
+//                        }
                     }
                 }
                 Eff.SystemBack -> {

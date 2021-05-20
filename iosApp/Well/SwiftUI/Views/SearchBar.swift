@@ -18,6 +18,7 @@ struct SearchBar: View {
             HStack {
                 Image(systemName: "magnifyingglass")
                 TextField("Search ...", text: $text)
+                    .disableAutocorrection(true)
                     .onTapGesture {
                         self.isEditing = true
                     }
@@ -28,6 +29,7 @@ struct SearchBar: View {
                 Button {
                     self.isEditing = false
                     self.text = ""
+                    UIApplication.shared.endEditing()
                 } label: {
                     Text("Cancel")
                 }

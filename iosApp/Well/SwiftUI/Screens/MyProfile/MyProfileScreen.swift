@@ -14,7 +14,10 @@ private var observation: NSKeyValueObservation?
 struct MyProfileScreen: View {
     let state: MyProfileFeature.State
     let listener: (MyProfileFeature.Msg) -> Void
-    
+
+    @State
+    private var editingRating = false
+
     var body: some View {
         state.navigationBarModel.map {
             ModeledNavigationBar(model: $0, listener: listener)
@@ -26,7 +29,7 @@ struct MyProfileScreen: View {
                     Divider()
                 }
             } // ScrollView
-            .edgesIgnoringSafeArea(state.isCurrent ? Edge.Set() : .top)
+                .edgesIgnoringSafeArea(state.isCurrent ? Edge.Set() : .top)
             if !state.isCurrent {
                 Control(Image(systemName: "chevron.left").foregroundColor(.white)) {
                     listener(MyProfileFeature.MsgBack())
@@ -35,12 +38,17 @@ struct MyProfileScreen: View {
             if state.editingStatus == .uploading {
                 InactiveOverlay(showActivityIndicator: false)
             }
+        }.sheet(isPresented: $editingRating) {
+            RatingScreen(user: state.user) { rating in
+                listener(MyProfileFeature.MsgRate(rating: rating))
+                editingRating = false
+            }
         }
         CustomTabBar(selected: 0, onExpertsClick: {
             listener(MyProfileFeature.MsgBack())
         }).padding()
     }
-    
+
     @ViewBuilder
     private func groupView(_ group: UIGroup) -> some View {
         let paddingNeeded = !(group is UIGroup.Header) || state.isCurrent
@@ -52,30 +60,31 @@ struct MyProfileScreen: View {
                 } else {
                     otherUserHeader(header)
                 }
-                
+
             case let group as UIGroup.Preview:
                 ForEach(group.fields, id: \.self) { field in
                     HStack {
                         previewField(field)
                         Spacer()
                     }
-                    .padding(.vertical, 5)
+                        .padding(.vertical, 5)
                 }
-                
+
             case let group as UIGroup.Editing:
                 Text(group.title)
                     .foregroundColorKMM(ColorConstants.HippieBlue)
                 ForEach(group.fields, id: \.self) { field in
-                    EditingField(field as! UIEditingField<UIEditingFieldContent, MyProfileFeature.Msg>, listener: listener)
+                    EditingField(field as! UIEditingField<UIEditingFieldContent, MyProfileFeature.Msg>,
+                        listener: listener)
                         .fillMaxWidth()
                         .padding(.vertical, 7)
                 }
-                
+
             default: fatalError()
             }
         }.padding(.horizontal, paddingNeeded ? nil : 0)
     }
-    
+
     private func previewField(_ field: UIPreviewField) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             if field.title.isNotEmpty {
@@ -83,11 +92,11 @@ struct MyProfileScreen: View {
                     .foregroundColor(.gray)
                     .padding(.bottom, 5)
             }
-            
+
             switch field.content {
             case let content as UIPreviewField.ContentText:
                 Text(content.text)
-                
+
             case let content as UIPreviewField.ContentList:
                 HVStack(items: content.list) { item in
                     Text(item)
@@ -101,7 +110,7 @@ struct MyProfileScreen: View {
                         .foregroundColor(Color.black)
                         .clipShape(Capsule())
                 }
-                
+
             case let content as UIPreviewField.ContentTextAndIcon:
                 HStack {
                     Image(uiImage: content.icon.uiImage())
@@ -120,12 +129,12 @@ struct MyProfileScreen: View {
                 } label: {
                     Text(content.title)
                 }.buttonStyle(ActionButtonStyle(style: .onWhite))
-                
+
             default: fatalError("view not provided for \(field.content)")
             }
         }
     }
-    
+
     private func currentUserHeader(_ header: UIGroup.Header) -> some View {
         HStack(spacing: 0) {
             if let image = header.image {
@@ -161,34 +170,46 @@ struct MyProfileScreen: View {
             Spacer()
         }.padding(.vertical)
     }
-    
+
     private func otherUserHeader(_ header: UIGroup.Header) -> some View {
         VStack {
-            ProfileImage(image: header.image, clipCircle: false)
-                .frame(width: UIScreen.main.bounds.width)
-                .aspectRatio(1.2, contentMode: .fit)
+            let profileImageWidth = UIScreen.main.bounds.width
+            ProfileImage(image: header.image, clipCircle: false, aspectRatio: 1.2, contentMode: .fit)
+                .frame(size: CGSize(width: profileImageWidth, height: profileImageWidth / 1.2))
+                .clipped()
             HStack {
-                header.accountType.map { Text($0.description) }
-                Spacer()
-                header.twitterLink.map { link in
-                    Image(uiImage: R.image.profile.twitter()!)
-                        .foregroundColorKMM(ColorConstants.LightBlue)
-                        .onTapGesture {
-                            listener(MyProfileFeature.MsgOpenUrl(url: link))
-                        }
+                header.accountType.map {
+                    Text($0.description)
                 }
-                Image(systemName: "phone.fill")
-                    .font(.system(size: 20))
-                    .foregroundColorKMM(ColorConstants.Green)
-                    .padding()
-                    .onTapGesture {
-                        listener(MyProfileFeature.MsgCall())
+                Spacer()
+                ToggleFavoriteButton(favorite: header.favorite) {
+                    listener(MyProfileFeature.MsgToggleFavorite())
+                }
+                header.twitterLink.map { link in
+                    Button {
+                        listener(MyProfileFeature.MsgOpenUrl(url: link))
+                    } label: {
+                        Image(uiImage: R.image.profile.twitter()!)
+                            .foregroundColorKMM(ColorConstants.LightBlue)
+                            .padding()
                     }
+                }
+                Button {
+                    listener(MyProfileFeature.MsgCall())
+                } label: {
+                    Image(systemName: "phone.fill")
+                        .font(.system(size: 20))
+                        .foregroundColorKMM(ColorConstants.Green)
+                        .padding()
+                }
             }.padding()
             header.nameWithCredentials.map {
                 Text($0)
-                .style(.h4)
+                    .style(.h4)
             }
+            RatingInfoView(ratingInfo: header.ratingInfo) {
+                editingRating = true
+            }.padding()
         }
     }
 }
@@ -214,11 +235,17 @@ private extension User.Type_ {
         switch self {
         case .doctor, .pendingexpert:
             return Image(systemName: "plus")
-            
+
         case .expert:
             return Image(systemName: "plus")
-            
+
         default: fatalError()
         }
+    }
+}
+
+extension User.RatingInfo: Identifiable {
+    public var id: String {
+        "\(currentUserRating?.value)"
     }
 }

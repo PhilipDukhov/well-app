@@ -3,7 +3,7 @@ package com.well.sharedMobile.networking.webSocketManager
 import com.well.sharedMobile.puerh.toNSData
 import com.well.modules.utils.resumeWithException
 import com.well.modules.utils.toThrowable
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
@@ -14,6 +14,7 @@ import kotlin.native.concurrent.freeze
 
 actual class WebSocketSession(
     private val webSocket: NSURLSessionWebSocketTask,
+    private val scope: CoroutineScope,
 ) {
     private val channel = Channel<String>(8)
     actual val incoming: ReceiveChannel<String> = channel
@@ -45,7 +46,7 @@ actual class WebSocketSession(
             }
             message != null -> {
                 message.string?.let {
-                    GlobalScope.launch {
+                    scope.launch {
                         channel.send(it)
                     }
                 }

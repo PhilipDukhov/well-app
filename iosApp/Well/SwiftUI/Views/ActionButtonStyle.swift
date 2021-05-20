@@ -11,7 +11,10 @@ struct ActionButtonStyle: ButtonStyle {
         case white
         case onWhite
     }
+
     let style: Style
+    @Environment(\.isEnabled)
+    private var isEnabled: Bool
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -19,7 +22,7 @@ struct ActionButtonStyle: ButtonStyle {
             .foregroundColorKMM(foreground)
             .frame(height: 57)
             .fillMaxWidth()
-            .background(background)
+            .background(background.opacity(isEnabled ? 1 : 0.4))
             .clipShape(Capsule())
     }
 
@@ -33,13 +36,14 @@ struct ActionButtonStyle: ButtonStyle {
         }
     }
 
+    @ViewBuilder
     private var background: some View {
         switch style {
         case .onWhite:
-            return ColorConstants.Green.toColor()
+            GradientView(gradient: .main)
 
         case .white:
-            return ColorConstants.White.toColor()
+            ColorConstants.White.toColor()
         }
     }
 }

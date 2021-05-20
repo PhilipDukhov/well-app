@@ -17,6 +17,16 @@ extension Int32 {
     }
 }
 
+extension Int32 {
+    func toDouble() -> Double {
+        Double(self)
+    }
+
+    func toInt() -> Int {
+        Int(self)
+    }
+}
+
 extension CGSize {
     init(size: CGFloat) {
         self.init(width: size, height: size)
@@ -33,7 +43,7 @@ extension Float {
     func toCGFloat() -> CGFloat {
         CGFloat(self)
     }
-    
+
     func toDouble() -> Double {
         Double(self)
     }

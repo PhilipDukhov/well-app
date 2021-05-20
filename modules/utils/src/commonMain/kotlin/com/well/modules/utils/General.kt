@@ -3,7 +3,7 @@ package com.well.modules.utils
 import kotlinx.coroutines.flow.MutableStateFlow
 
 inline fun <A, B, RA, RB> Pair<A, B>.map(
-    transformA: ((A) -> RA),
+    transformA: (A) -> RA,
     transformB: (B) -> RB,
 ): Pair<RA, RB> {
     val f = transformA(first)

@@ -50,6 +50,8 @@ class NetworkManager(
             }
     }
 
+    private val webSocketScope = CoroutineScope(Dispatchers.Default)
+
     private val webSocketSession = AtomicRef<WebSocketSession?>(null)
     private val listeners = AtomicMutableList<WebSocketMessageListener>()
 
@@ -60,7 +62,7 @@ class NetworkManager(
     val currentUser = _currentUser.asStateFlow()
 
     init {
-        GlobalScope.launch {
+        webSocketScope.launch {
             while (startWebSocket) {
                 try {
                     _state.value = Connecting
@@ -172,6 +174,12 @@ class NetworkManager(
 
     suspend fun requestBecomeExpert() = tryCheckAuth {
         client.client.post<Unit>("/user/requestBecomeExpert")
+    }
+
+    suspend fun rate(ratingRequest: RatingRequest) = tryCheckAuth {
+        client.client.post<Unit>("/user/rate") {
+            body = ratingRequest
+        }
     }
 
     private suspend fun <R> tryCheckAuth(

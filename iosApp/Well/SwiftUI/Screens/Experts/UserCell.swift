@@ -11,23 +11,37 @@ import SharedMobile
 import Combine
 
 struct UserCell: View {
-    let viewModel: User
+    let user: User
     let onSelect: () -> Void
-    let onCallButtonTap: () -> Void
+    let toggleFavorite: () -> Void
 
     var body: some View {
         HStack {
-            ProfileImage(viewModel)
+            ProfileImage(user)
                 .frame(size: 45)
-                .padding()
-            Text(viewModel.fullName)
+                .padding(.trailing)
+            VStack(alignment: .leading) {
+                Text(user.fullName)
+                    .style(.caption1)
+                user.academicRank.map { academicRank in
+                    Text(academicRank.localizedDescription())
+                        .style(.caption2)
+                }
+                user.countryName().map { countryName in
+                    HStack {
+                        Image(uiImage: R.image.profile.location()!)
+                        Text(countryName)
+                            .style(.caption2)
+                    }
+                }
+            }
             Spacer()
-            Image(systemName: viewModel.favorite ? "suit.heart.fill" : "heart")
-                .font(.system(size: 25))
-                .foregroundColorKMM(viewModel.favorite ? ColorConstants.Green : ColorConstants.LightGray)
-                .padding()
-                .onTapGesture(perform: onCallButtonTap)
-        }.background(Color.white)
-        .onTapGesture(perform: onSelect)
+            VStack(alignment: .trailing, spacing: 0) {
+                RatingInfoView(ratingInfo: user.ratingInfo)
+                Spacer()
+                ToggleFavoriteButton(favorite: user.favorite, action: toggleFavorite)
+            }
+        }.padding().background(Color.white)
+            .onTapGesture(perform: onSelect)
     }
 }

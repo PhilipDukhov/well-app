@@ -152,9 +152,11 @@ fileprivate struct ProfileSelectionScreen: View {
     var body: some View {
         NavigationBar(
             title: title,
-            leftItem: NavigationBarItem(text: "Cancel", handlerOpt: onCancel),
+            leftItem: NavigationBarItem(text: "Cancel", handler: onCancel),
             rightItem: !multipleSelection ? nil :
-                       NavigationBarItem(text: "Done", handler: onSelectionChanged(selection))
+                       NavigationBarItem(text: "Done") {
+                           onSelectionChanged(selection)
+                       }
         )
         SelectionScreen(
             selection: $selection,

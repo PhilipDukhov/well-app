@@ -1,5 +1,8 @@
 package com.well.sharedMobile.puerh.myProfile
 
+import com.well.modules.models.FavoriteSetter
+import com.well.modules.models.Rating
+import com.well.modules.models.RatingRequest
 import com.well.modules.models.User
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.State.EditingStatus
 import com.well.sharedMobile.puerh.πModels.NavigationBarModel
@@ -37,6 +40,10 @@ object MyProfileFeature {
                 User.Skill.RoboticRenalSurgery,
                 User.Skill.PercutaneousNephrolithotomy
             ),
+            ratingInfo = User.RatingInfo(
+                count = 0,
+                average = 0.0,
+            ),
         )
     ).copy(editingStatus = EditingStatus.Editing)
 
@@ -60,7 +67,7 @@ object MyProfileFeature {
     data class State internal constructor(
         val isCurrent: Boolean,
         internal val originalUser: User,
-        internal val user: User,
+        val user: User,
         internal val newImage: ImageContainer? = null,
         val editingStatus: EditingStatus = EditingStatus.Preview,
     ) {
@@ -70,11 +77,13 @@ object MyProfileFeature {
                 image = image,
                 name = if (!user.initialized || editingStatus != EditingStatus.Preview) null else user.fullName,
                 credentials = user.credentials,
+                favorite = user.favorite,
+                ratingInfo = user.ratingInfo,
                 completeness = if (user.initialized) user.completeness else null,
                 accountType = if (user.initialized) user.type else null,
                 twitterLink = user.twitter?.let { if (!UrlUtil.isValidUrl(it)) null else it },
                 doximityLink = user.doximity?.let { if (!UrlUtil.isValidUrl(it)) null else it },
-            )
+            ),
         ) + when (editingStatus) {
             EditingStatus.Preview -> user.previewGroups(isCurrent = isCurrent)
             EditingStatus.Editing,
@@ -140,10 +149,12 @@ object MyProfileFeature {
         object FinishEditing : Msg()
         object InitiateImageUpdate : Msg()
         object Call : Msg()
+        object ToggleFavorite : Msg()
         data class OpenUrl(val url: String) : Msg()
         data class UpdateUser(val user: User) : Msg()
         data class UpdateImage(val imageContainer: ImageContainer?) : Msg()
         data class UserUploadFinished(val throwable: Throwable?) : Msg()
+        data class Rate(val rating: Rating) : Msg()
         object OnLogout : Msg()
     }
 
@@ -157,10 +168,12 @@ object MyProfileFeature {
 
         data class ShowError(val throwable: Throwable) : Eff()
         data class Call(val user: User) : Eff()
+        data class RatingRequest(val ratingRequest: com.well.modules.models.RatingRequest) : Eff()
         object Pop : Eff()
         object InitializationFinished : Eff()
         object Logout : Eff()
         object BecomeExpert : Eff()
+        data class SetUserFavorite(val setter: FavoriteSetter) : Eff()
     }
 
     fun reducer(
@@ -184,7 +197,13 @@ object MyProfileFeature {
                         user = state.user.copy(profileImageUrl = null),
                     )
                 }
-                Msg.Back -> {
+                is Msg.ToggleFavorite -> {
+                    val newUser = state.user.copy(favorite = !state.user.favorite)
+                    return@reducer state.copy(
+                        user = newUser,
+                    ) toSetOf Eff.SetUserFavorite(FavoriteSetter(newUser.favorite, newUser.id))
+                }
+                is Msg.Back -> {
                     if (state.user.initialized) {
                         when (state.editingStatus) {
                             EditingStatus.Preview -> {
@@ -202,7 +221,7 @@ object MyProfileFeature {
                         return@eff Eff.Pop
                     }
                 }
-                Msg.FinishEditing -> {
+                is Msg.FinishEditing -> {
                     return@reducer state.copy(
                         editingStatus = EditingStatus.Uploading,
                     ) toSetOf Eff.UploadUser(state.user, state.newImage)
@@ -223,21 +242,32 @@ object MyProfileFeature {
                         }
                     }
                 }
-                Msg.InitiateImageUpdate -> {
+                is Msg.InitiateImageUpdate -> {
                     return@eff Eff.InitiateImageUpdate(state.image != null)
                 }
-                Msg.Call -> {
+                is Msg.Call -> {
                     return@eff Eff.Call(state.user)
                 }
-                Msg.OnLogout -> {
+                is Msg.OnLogout -> {
                     return@eff Eff.Logout
                 }
-                Msg.BecomeExpert -> {
+                is Msg.BecomeExpert -> {
                     val user = state.originalUser.copy(type = User.Type.PendingExpert)
                     return@reducer state.copy(
                         user = user,
-                        originalUser = user,
                     ) toSetOf Eff.BecomeExpert
+                }
+                is Msg.Rate -> {
+                    return@reducer state.copy(
+                        user = state.user.copy(
+                            ratingInfo = state.user.ratingInfo.copy(currentUserRating = msg.rating),
+                        )
+                    ) toSetOf Eff.RatingRequest(
+                        ratingRequest = RatingRequest(
+                            uid = state.user.id,
+                            rating = msg.rating,
+                        )
+                    )
                 }
             }
         })

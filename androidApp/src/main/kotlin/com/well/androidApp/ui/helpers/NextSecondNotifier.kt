@@ -19,7 +19,8 @@ class NextSecondNotifier(
 
     private fun wait(): Job? =
         date?.let { date ->
-            GlobalScope.launch {
+//            https://stackoverflow.com/questions/67569208/how-to-recompose-every-minute-in-jetpack-compose
+            GlobalScope11111.launch {
                 delay((1000 - (Date().time - date.time) % 1000))
                 if (!isActive) return@launch
                 handler()

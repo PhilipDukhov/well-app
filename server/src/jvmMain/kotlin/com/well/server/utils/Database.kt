@@ -3,7 +3,6 @@ package com.well.server.utils
 import com.squareup.sqldelight.ColumnAdapter
 import com.squareup.sqldelight.EnumColumnAdapter
 import com.squareup.sqldelight.TransacterImpl
-import com.squareup.sqldelight.db.SqlCursor
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.sqlite.driver.asJdbcDriver
 import com.well.server.Database
@@ -79,6 +78,15 @@ fun initialiseDatabase(app: Application): Database {
         )
     )
     app.environment.monitor.subscribe(ApplicationStopped) { driver.close() }
+    db.usersQueries
+        .selectUninitialized()
+        .executeAsList()
+        .let { uninitialized ->
+            if (uninitialized.isNotEmpty()) {
+                println("cleaning uninitialized: ${}")
+                db.usersQueries.deleteUninitialized()
+            }
+        }
     return db
 }
 

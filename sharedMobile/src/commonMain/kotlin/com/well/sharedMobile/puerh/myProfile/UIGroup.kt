@@ -26,6 +26,8 @@ sealed class UIGroup {
         val image: SharedImage?,
         val name: String?,
         val credentials: User.Credentials?,
+        val favorite: Boolean,
+        val ratingInfo: User.RatingInfo,
         val completeness: Int?,
         val accountType: User.Type?,
         val twitterLink: String?,

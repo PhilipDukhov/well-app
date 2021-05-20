@@ -198,29 +198,32 @@ fun Application.module() {
                 }
             }
             authenticate(AuthName.Twitter) {
-                post("/twitter") {
+                post("twitter") {
                     twitterLogin(dependencies)
                 }
             }
         }
-        post("/twitter_oauth_callback") { appleLogin(dependencies) }
+        post("twitter_oauth_callback") { appleLogin(dependencies) }
 
 //        get("/metrics") {
 //            call.respond(appMicrometerRegistry.scrape())
 //        }
 
-        post("/email") { sendEmail(dependencies) }
-        post("/sms") { sendSms(dependencies) }
+        post("email") { sendEmail(dependencies) }
+        post("sms") { sendSms(dependencies) }
 
         authenticate(AuthName.Main) {
-            webSocket(path = "/mainWebSocket") {
+            webSocket(path = "mainWebSocket") {
                 mainWebSocket(dependencies)
             }
-            route("/user") {
+            route("user") {
                 put { updateUser(dependencies) }
-                post("/uploadProfileImage") { uploadProfileImage(dependencies) }
-                post("/filteredList") {
+                post("uploadProfileImage") { uploadProfileImage(dependencies) }
+                post("filteredList") {
                     filterUsers(dependencies)
+                }
+                post("rate") {
+                    rate(dependencies)
                 }
                 post("setFavorite") {
                     setUserFavorite(dependencies)

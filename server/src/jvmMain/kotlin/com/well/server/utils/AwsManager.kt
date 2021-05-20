@@ -31,7 +31,7 @@ class AwsManager(
     private val s3Client = (AmazonS3Client.builder()
         .withCredentials(AWSStaticCredentialsProvider(BasicAWSCredentials(accessKeyId, secretAccessKey)))
         .apply {
-            setEndpointConfiguration(AwsClientBuilder.EndpointConfiguration("s3.us-east-2.amazonaws.com", Regions.US_EAST_2.name))
+            setEndpointConfiguration(AwsClientBuilder.EndpointConfiguration("s3.us-east-2.amazonaws.com", "us-east-2"))
             isPathStyleAccessEnabled = true
         }
         .build() as AmazonS3Client)

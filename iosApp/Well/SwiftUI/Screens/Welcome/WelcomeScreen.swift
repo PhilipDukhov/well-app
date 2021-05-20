@@ -16,73 +16,75 @@ struct WelcomeScreen: View {
     @State
     var selection: Int = 0
 
-    @State
-    var topSelection: Int = 0
-
     var body: some View {
-        let texts = [
-            "Our app provides urologists globally of performing mentored urological",
-            "Our app provides urologists globally of performing mentored urological Our app provides urologists globally of performing mentored urological",
-            "Our app provides urologists globally of performing mentored urological",
-            "Our app provides urologists globally of performing mentored urological",
-        ]
-        ZStack {
-            TabView(selection: $topSelection) {
-                ForEachEnumerated(texts) { i, _ in
-                    Rectangle()
-                        .foregroundColor(i % 2 == 0 ? .yellow : .gray)
+        VStack(spacing: 0) {
+            topImagesView
+            welcomeInfoView
+        }
+    }
+    
+    private let cornerRadius: CGFloat = 20
+
+    var topImagesView: some View {
+        GeometryReader { geometry in
+            let offset = geometry.safeAreaInsets.top
+            let size = CGSize(width: geometry.size.width, height: geometry.size.width * 1084 / 929 + offset + cornerRadius)
+            TabView(selection: $selection.animation()) {
+                ForEachEnumerated(state.descriptions) { i, _ in
+                    Image("welcome/\(i)")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(size: size)
+                        .clipped()
+                        .offset(y: -offset)
                 }
             }.tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                .allowsHitTesting(false)
-            VStack {
-                Spacer()
-                    .fillMaxHeight()
-                VStack {
-                    Text("Welcome to WELL app")
-                        .font(.largeTitle)
-                    AutoLayoutTextPageView(
-                        Array(texts.enumerated()),
-                        id: \.offset,
-                        selection: $selection
-                    ) { text in
-                        Text(text.element)
-                            .multilineTextAlignment(.center)
-                            .padding(.vertical)
-                    }.foregroundColor(.black)
-                        .font(.callout)
-                    let isLast = texts.indices.last == selection
-                    Button {
-                        withAnimation {
-                            if !isLast {
-                                selection += 1
-                            } else {
-                                listener(WelcomeFeature.MsgContinue())
-                            }
-                        }
-                    } label: {
-                        Text("Next")
-                    }.buttonStyle(ActionButtonStyle(style: .onWhite))
-                    Button {
+            .frame(size: size)
+            .offset(y: -offset)
+        }
+    }
+
+    var welcomeInfoView: some View {
+        VStack {
+            Text("Welcome to WELL app")
+                .font(.largeTitle)
+                .padding(.top)
+            AutoLayoutTextPageView(
+                Array(state.descriptions.enumerated()),
+                id: \.offset,
+                selection: $selection.animation()
+            ) { text in
+                Text(text.element)
+                    .multilineTextAlignment(.center)
+                    .padding()
+            }.foregroundColor(.black)
+                .font(.callout)
+            let isLast = state.descriptions.indices.last == selection
+            Button {
+                withAnimation {
+                    if !isLast {
+                        selection += 1
+                    } else {
                         listener(WelcomeFeature.MsgContinue())
-                    } label: {
-                        Text("Skip all")
-                            .padding()
-                            .opacity(isLast ? 0 : 1)
                     }
                 }
+            } label: {
+                Text("Next")
+            }.buttonStyle(ActionButtonStyle(style: .onWhite))
+                .padding(.horizontal)
+            Button {
+                listener(WelcomeFeature.MsgContinue())
+            } label: {
+                Text("Skip all")
                     .padding()
-                    .background(
-                        SwiftUI.Color.white
-                            .edgesIgnoringSafeArea(.all)
-                            .cornerRadius(20, corners: [.topLeft, .topRight])
-                    )
+                    .opacity(isLast ? 0 : 1)
             }
         }
-            .onChange(of: selection, perform: { selection in
-                withAnimation {
-                    topSelection = selection
-                }
-            })
+            .background(
+                SwiftUI.Color.white
+                    .edgesIgnoringSafeArea(.all)
+                    .cornerRadius(cornerRadius, corners: [.topLeft, .topRight])
+            )
     }
 }
 

@@ -159,11 +159,11 @@ private fun Project.customDependencies(libs: List<String>): List<Dependency> =
                 result + Dependency.Test(dep)
             dep.startsWith(":") ->
                 result + Dependency.Module(dep)
-            dep == "kotlin.coroutines.core" ->
-                result + Dependency.Implementation(
-                    "org.jetbrains.kotlinx:kotlinx-coroutines-core",
-                    version("kotlinCoroutines")
-                )
+//            dep == "kotlin.coroutines.core" ->
+//                result + Dependency.Implementation(
+//                    "org.jetbrains.kotlinx:kotlinx-coroutines-core",
+//                    version("kotlinCoroutines")
+//                )
             dep.endsWith(".*") -> {
                 result + libsAt(dep.dropLast(2)).map(Dependency::Implementation)
             }

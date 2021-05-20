@@ -8,9 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		0902BD0460D4849CA1790CBB /* Pods_Well.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8560B869390C33CC211DA86 /* Pods_Well.framework */; };
+		347D1284F7802A92EBD89A49 /* RatingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D120E9EF2045F5DDC5CD6 /* RatingScreen.swift */; };
+		347D15DDABDD467C0CC08BF1 /* RatingInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D10162C3E3F617B8B7A24 /* RatingInfoView.swift */; };
 		347D1737EF6D0ED04DA9AC65 /* ForEachEnumerated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D1C3FB3AB18BE58691534 /* ForEachEnumerated.swift */; };
 		347D178406E17BBA44CDAA45 /* SelectableHVStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D1AAC642FF35292FB7CA4 /* SelectableHVStack.swift */; };
+		347D1A25C3F01A6BE29610D2 /* UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D17D8B928F2A6E88E67E8 /* UIKit.swift */; };
 		347D1A87588CBF1F893DF5A8 /* ActionButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D153B0C1410B1F25CD661 /* ActionButtonStyle.swift */; };
+		347D1B5FCCA8AC2CBCFFF0DD /* ToggleFavoriteButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D14BAE525CB97AED4334F /* ToggleFavoriteButton.swift */; };
 		4A570D4E2642760200569A40 /* R.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51625602503C945009E103B /* R.generated.swift */; };
 		4AE3A0F626443820005BB554 /* FilterScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE3A0F526443820005BB554 /* FilterScreen.swift */; };
 		7555FF7F242A565900829871 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF7E242A565900829871 /* AppDelegate.swift */; };
@@ -92,7 +96,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		347D10162C3E3F617B8B7A24 /* RatingInfoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatingInfoView.swift; sourceTree = "<group>"; };
+		347D120E9EF2045F5DDC5CD6 /* RatingScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatingScreen.swift; sourceTree = "<group>"; };
+		347D14BAE525CB97AED4334F /* ToggleFavoriteButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToggleFavoriteButton.swift; sourceTree = "<group>"; };
 		347D153B0C1410B1F25CD661 /* ActionButtonStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionButtonStyle.swift; sourceTree = "<group>"; };
+		347D17D8B928F2A6E88E67E8 /* UIKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIKit.swift; sourceTree = "<group>"; };
 		347D1AAC642FF35292FB7CA4 /* SelectableHVStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectableHVStack.swift; sourceTree = "<group>"; };
 		347D1C3FB3AB18BE58691534 /* ForEachEnumerated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForEachEnumerated.swift; sourceTree = "<group>"; };
 		4AE3A0F526443820005BB554 /* FilterScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterScreen.swift; sourceTree = "<group>"; };
@@ -253,6 +261,7 @@
 				963518BD2D5690278A4E6851 /* Color.swift */,
 				96351DDBE2296E6603783838 /* CG.swift */,
 				D555C1F025D70AB700B4755F /* Foundation.swift */,
+				347D17D8B928F2A6E88E67E8 /* UIKit.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -296,6 +305,7 @@
 				347D153B0C1410B1F25CD661 /* ActionButtonStyle.swift */,
 				347D1AAC642FF35292FB7CA4 /* SelectableHVStack.swift */,
 				347D1C3FB3AB18BE58691534 /* ForEachEnumerated.swift */,
+				347D14BAE525CB97AED4334F /* ToggleFavoriteButton.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -402,6 +412,7 @@
 				D556940925D471F10012EA36 /* MyProfileScreen.swift */,
 				D555C1E025D63A6F00B4755F /* EditingField.swift */,
 				D555C1DE25D63A5500B4755F /* SelectionScreen.swift */,
+				347D120E9EF2045F5DDC5CD6 /* RatingScreen.swift */,
 			);
 			path = MyProfile;
 			sourceTree = "<group>";
@@ -467,6 +478,7 @@
 				4AE3A0F426443813005BB554 /* Filter */,
 				D5F0A09B2578AC4D002A55DB /* ExpertsScreen.swift */,
 				D5F0A09D2578AC7A002A55DB /* UserCell.swift */,
+				347D10162C3E3F617B8B7A24 /* RatingInfoView.swift */,
 			);
 			path = Experts;
 			sourceTree = "<group>";
@@ -710,6 +722,10 @@
 				347D1A87588CBF1F893DF5A8 /* ActionButtonStyle.swift in Sources */,
 				347D178406E17BBA44CDAA45 /* SelectableHVStack.swift in Sources */,
 				347D1737EF6D0ED04DA9AC65 /* ForEachEnumerated.swift in Sources */,
+				347D15DDABDD467C0CC08BF1 /* RatingInfoView.swift in Sources */,
+				347D1B5FCCA8AC2CBCFFF0DD /* ToggleFavoriteButton.swift in Sources */,
+				347D1284F7802A92EBD89A49 /* RatingScreen.swift in Sources */,
+				347D1A25C3F01A6BE29610D2 /* UIKit.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

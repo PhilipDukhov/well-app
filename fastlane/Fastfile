@@ -5,6 +5,17 @@ lane :deploy do |options|
   Fastlane::LaneManager.cruise_lane("ios", "deploy", options)
 end
 
+lane :deployServer do |options|
+  gradle(task: ":server:shadowJar")
+  Dir.chdir("../deploy") do
+    sh("rm -rf .git ; git init --initial-branch=master")
+    sh("cp ../server/build/libs/server-1.0-SNAPSHOT-all.jar server-1.0-SNAPSHOT-all.jar")
+    sh("git add . && git commit -m 'M'")
+    sh("eb deploy")
+    sh("rm -rf .git")
+  end
+end
+
 
 platform :android do
   lane :deploy do |options|

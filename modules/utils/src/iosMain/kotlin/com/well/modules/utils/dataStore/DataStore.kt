@@ -20,7 +20,10 @@ actual class DataStore actual constructor(context: Context) {
     ) = when (T::class) {
         String::class,
         Boolean::class,
-        -> userDefaults.setObject(value, key.name)
+        -> {
+            userDefaults.setObject(value, key.name)
+            println("userDefaults.setObject ${key.name} ${userDefaults.objectForKey(key.name)}")
+        }
         else -> throw IllegalStateException()
     }
 }

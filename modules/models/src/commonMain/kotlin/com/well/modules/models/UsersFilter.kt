@@ -13,7 +13,7 @@ data class UsersFilter(
     val languages: Set<User.Language> = emptySet(),
     val countryCode: String? = null,
     val rating: Rating = Rating.All,
-    val withReviews: Boolean = true,
+    val withReviews: Boolean = false,
 ) {
     enum class SortBy {
         Popularity,

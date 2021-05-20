@@ -14,24 +14,16 @@ struct NavigationBarItem<V: View> {
     let enabled: Bool
     let handler: (() -> Void)?
 
-    init(view: V, enabled: Bool = true, handlerOpt: (() -> Void)?) {
+    init(view: V, enabled: Bool = true, handler: (() -> Void)?) {
         self.view = view
         self.enabled = enabled
-        self.handler = handlerOpt
+        self.handler = handler
     }
 
-    init(text: String, enabled: Bool = true, handlerOpt: (() -> Void)?) where V == Text {
+    init(text: String, enabled: Bool = true, handler: (() -> Void)?) where V == Text {
         self.view = itemTextView(text)
         self.enabled = enabled
-        self.handler = handlerOpt
-    }
-
-    init(view: V, enabled: Bool = true, handler: @escaping @autoclosure () -> Void) {
-        self.init(view: view, enabled: enabled, handlerOpt: handler)
-    }
-
-    init(text: String, enabled: Bool = true, handler: @escaping @autoclosure () -> Void) where V == Text {
-        self.init(text: text, enabled: enabled, handlerOpt: handler)
+        self.handler = handler
     }
 }
 
@@ -39,6 +31,7 @@ struct NavigationBar<Title: View, LV: View, RV: View>: View {
     let title: Title
     let leftItem: NavigationBarItem<LV>?
     let rightItem: NavigationBarItem<RV>?
+    let minContentHeight: CGFloat?
 
     init(
         title: Title
@@ -46,6 +39,7 @@ struct NavigationBar<Title: View, LV: View, RV: View>: View {
         self.title = title
         self.leftItem = nil
         self.rightItem = nil
+        self.minContentHeight = nil
     }
 
     init(
@@ -56,6 +50,7 @@ struct NavigationBar<Title: View, LV: View, RV: View>: View {
         self.title = Self.createTitle(title)
         self.leftItem = leftItem
         self.rightItem = rightItem
+        self.minContentHeight = nil
     }
 
     init(
@@ -65,6 +60,7 @@ struct NavigationBar<Title: View, LV: View, RV: View>: View {
         self.title = Self.createTitle(title)
         self.leftItem = leftItem
         self.rightItem = nil
+        self.minContentHeight = nil
     }
 
     init(
@@ -74,6 +70,17 @@ struct NavigationBar<Title: View, LV: View, RV: View>: View {
         self.title = Self.createTitle(title)
         self.leftItem = nil
         self.rightItem = rightItem
+        self.minContentHeight = nil
+    }
+
+    init(
+        rightItem: NavigationBarItem<RV>?,
+        minContentHeight: CGFloat? = nil
+    ) where LV == EmptyView, Title == EmptyView {
+        self.title = EmptyView()
+        self.leftItem = nil
+        self.rightItem = rightItem
+        self.minContentHeight = minContentHeight
     }
 
     private static func createTitle(_ title: String) -> Text {
@@ -81,7 +88,7 @@ struct NavigationBar<Title: View, LV: View, RV: View>: View {
     }
 
     var body: some View {
-        ZStack(alignment: .center) {
+        ZStack(alignment: .top) {
             title
                 .style(.title2)
                 .frame(height: controlMinSize)
@@ -91,7 +98,7 @@ struct NavigationBar<Title: View, LV: View, RV: View>: View {
                 rightItem.map(control)
             }
         }.padding(.horizontal).padding(.vertical, 5)
-            .frame(minHeight: controlMinSize)
+            .frame(minHeight: max(minContentHeight ?? 0, controlMinSize))
             .fillMaxWidth()
             .foregroundColor(.white)
             .background(GradientView(gradient: .main).edgesIgnoringSafeArea(.top))
@@ -114,7 +121,7 @@ struct ModeledNavigationBar<Msg: AnyObject>: View {
                 NavigationBarItem(
                     view: leftItem.content.view(),
                     enabled: leftItem.enabled,
-                    handlerOpt: leftItem.msg.map { msg in
+                    handler: leftItem.msg.map { msg in
                         {
                             listener(msg)
                         }
@@ -125,7 +132,7 @@ struct ModeledNavigationBar<Msg: AnyObject>: View {
                 NavigationBarItem(
                     view: rightItem.content.view(),
                     enabled: rightItem.enabled,
-                    handlerOpt: rightItem.msg.map { msg in
+                    handler: rightItem.msg.map { msg in
                         {
                             listener(msg)
                         }

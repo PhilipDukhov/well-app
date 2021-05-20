@@ -34,6 +34,7 @@ class WebRtcManager(
     private var deviceState = LocalDeviceState.default
     private val audioManager = applicationContext.getSystemService<AudioManager>()!!
     private val tag = "WebRtcManager"
+    private val coroutineContext = CoroutineScope(Dispatchers.Default)
 
     init {
         if (!initialized) {
@@ -65,7 +66,7 @@ class WebRtcManager(
             }
         })
 
-        GlobalScope.launch {
+        coroutineContext.launch {
             try {
                 audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
             } catch (t: Throwable) {
@@ -337,7 +338,7 @@ class WebRtcManager(
         else
             Triple(1280, 720, 30)
         startCapture(cameraConfig.first, cameraConfig.second, cameraConfig.third)
-        GlobalScope.launch {
+        coroutineContext.launch {
             delay(100)
             listener.updateCaptureDimensions(Size(cameraConfig.second, cameraConfig.first))
         }

@@ -35,6 +35,10 @@ object CallFeature {
                 fullName = "12",
                 profileImageUrl = "https://i.imgur.com/StXm8nf.jpg",
                 type = User.Type.Doctor,
+                ratingInfo = User.RatingInfo(
+                    count = 0,
+                    average = 0.0,
+                ),
             )
         ).first.run {
             copy(

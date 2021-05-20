@@ -28,16 +28,17 @@ struct ExpertsScreen: View {
                     Image(systemName: "line.horizontal.3.decrease.circle")
                     Text("Filter")
                 }.style(.title2),
-                handlerOpt: {
+                handler: {
                     filterPresented = true
                 }
             ),
             rightItem: NavigationBarItem(
                 view: Image(systemName: state.filterState.filter.favorite ? "suit.heart.fill" : "heart")
                     .font(.system(size: 25))
-                    .foregroundColorKMM(ColorConstants.White),
-                handler: listener(ExpertsFeature.MsgToggleFilterFavorite())
-            )
+                    .foregroundColorKMM(ColorConstants.White)
+            ) {
+                listener(ExpertsFeature.MsgToggleFilterFavorite())
+            }
         ).sheet(isPresented: $filterPresented) {
             FilterScreen(state: state.filterState) { msg in
                 listener(ExpertsFeature.MsgFilterMsg(msg: msg))
@@ -48,28 +49,35 @@ struct ExpertsScreen: View {
         SearchBar(text: $searchText)
             .fillMaxWidth()
             .padding()
-
-        ScrollView {
-            if !state.users.isEmpty {
-                Divider()
-            }
-            Rectangle()
-                .foregroundColor(.white)
-                .frame(height: 1)
-            VStack {
-                ForEach(state.users, id: \.id) { user in
-                    UserCell(viewModel: user) {
-                        listener(ExpertsFeature.MsgOnUserSelected(user: user))
-                    } onCallButtonTap: {
-                        listener(ExpertsFeature.MsgOnUserFavorite(user: user))
-                    }
-                    Divider()
-                }
-            }
-        }
             .onChange(of: searchText) { searchText in
                 listener(ExpertsFeature.MsgSetSearchString(searchString: searchText))
             }
+        if state.updating {
+            ProgressView()
+            Spacer()
+        } else if state.users.isEmpty {
+            Text("Тo users satisfying the filter")
+            Spacer()
+        } else {
+            ScrollView {
+                if !state.users.isEmpty {
+                    Divider()
+                }
+                Rectangle()
+                    .foregroundColor(.white)
+                    .frame(height: 1)
+                VStack {
+                    ForEach(state.users, id: \.id) { user in
+                        UserCell(user: user) {
+                            listener(ExpertsFeature.MsgOnUserSelected(user: user))
+                        } toggleFavorite: {
+                            listener(ExpertsFeature.MsgOnUserFavorite(user: user))
+                        }
+                        Divider()
+                    }
+                }
+            }
+        }
         CustomTabBar(selected: 1, onAccountClick: {
             listener(ExpertsFeature.MsgOnCurrentUserSelected())
         }).padding()
@@ -103,7 +111,9 @@ struct CustomTabBar: View {
     let items: [Item]
     let selected: Int
 
-    init(selected: Int, onAccountClick: @escaping () -> Void = {}, onExpertsClick: @escaping () -> Void = {}) {
+    init(selected: Int, onAccountClick: @escaping () -> Void = {
+    }, onExpertsClick: @escaping () -> Void = {
+    }) {
         self.selected = selected
         items = [
             Item(imageContent: .systemName("person.fill"), title: "My Profile", action: onAccountClick),
