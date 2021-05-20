@@ -27,7 +27,12 @@ struct LoginScreen: View {
                         Spacer()
                     }
                 }.padding(.bottom)
-            }.fillMaxSize().background(GradientView(gradient: .main).edgesIgnoringSafeArea(.all))
+            }.fillMaxSize().background(
+                Image("loginBackground")
+                    .resizable()
+                    .scaledToFill()
+                    .edgesIgnoringSafeArea(.all)
+            )
             if state.processing {
                 InactiveOverlay()
             }
@@ -40,7 +45,7 @@ private extension SocialNetwork {
         let images = R.image.loginSocials.self
         switch self {
         case .apple:
-            return UIImage()//images.apple()!
+            return images.apple()!
         case .twitter:
             return images.twitter()!
         case .facebook:
