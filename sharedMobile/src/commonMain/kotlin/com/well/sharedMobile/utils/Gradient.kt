@@ -3,16 +3,30 @@ package com.well.sharedMobile.utils
 import com.well.modules.models.Color
 import com.well.modules.models.Point
 
-data class Gradient(
-    val backgroundColor: Color,
-    val overlayOpacity: Float = 0.5F,
+data class Gradient internal constructor(
+    val backgroundColor: Color = Color.Transparent,
+    val overlayOpacity: Float = 1f,
     val stops: List<Stop>,
     val startPoint: Point,
     val endPoint: Point,
 ) {
+
     companion object {
-        val Main = Gradient(
+        val Welcome = linearVertical(
+            Stop(color = Color(colorRGB = 0x000000, alpha = 0.35f), location = 0f),
+            Stop(color = Color(colorRGB = 0x0B121B, alpha = 0.53f), location = 1f),
+        )
+
+        val Login = linearVertical(
+            Stop(color = Color(colorRGB = 0x000000, alpha = 0.26f), location = 0f),
+            Stop(color = Color(colorRGB = 0x000000, alpha = 0.058f), location = 0.0729f),
+            Stop(color = Color(colorRGB = 0x000000, alpha = 0f), location = 0.64f),
+            Stop(color = Color(colorRGB = 0x111D2D, alpha = 0.65f), location = 1f),
+        )
+
+        val Main = backgroundOverlay(
             backgroundColor = Color(colorRGB = 0x94C83D),
+            overlayOpacity = 0.5f,
             stops = listOf(
                 Stop(color = Color(colorRGB = 0x1BFFE4, alpha = 0.8f), location = 0.0f),
                 Stop(color = Color(colorRGB = 0x009BFF), location = 0.67f),
@@ -27,7 +41,7 @@ data class Gradient(
             )
         )
 
-        val CallBackground = Gradient(
+        val CallBackground = backgroundOverlay(
             backgroundColor = Color(colorRGB = 0x1B3D6D),
             stops = listOf(
                 Stop(color = Color(colorRGB = 0x1B3D6D), location = 0.109375f),
@@ -43,7 +57,7 @@ data class Gradient(
             )
         )
 
-        val CallBottomBar = Gradient(
+        val CallBottomBar = backgroundOverlay(
             backgroundColor = Color(colorRGB = 0x1B3D6D),
             stops = listOf(
                 Stop(color = Color(colorRGB = 0x1BFFE4, alpha = 0.8f), location = 0.109375f),
@@ -56,6 +70,36 @@ data class Gradient(
             endPoint = Point(
                 x = 0.812653333f,
                 y = 0.803190265f,
+            )
+        )
+
+        private fun backgroundOverlay(
+            backgroundColor: Color,
+            overlayOpacity: Float = 0.5f,
+            stops: List<Stop>,
+            startPoint: Point,
+            endPoint: Point,
+        ) = Gradient(
+            backgroundColor = backgroundColor,
+            overlayOpacity = overlayOpacity,
+            stops = stops,
+            startPoint = startPoint,
+            endPoint = endPoint
+        )
+
+        private fun linearVertical(
+            vararg stops: Stop,
+        ) = Gradient(
+            backgroundColor = Color.Transparent,
+            overlayOpacity = 1f,
+            stops = stops.toList(),
+            startPoint = Point(
+                x = 0f,
+                y = 0F,
+            ),
+            endPoint = Point(
+                x = 0f,
+                y = 1f,
             )
         )
     }

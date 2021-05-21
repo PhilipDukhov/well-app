@@ -2,15 +2,12 @@ package com.well.server.routing.auth
 
 import com.well.modules.models.User
 import com.well.modules.models.UserId
-import com.well.server.extraParameters
 import com.well.server.utils.Dependencies
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
-import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.util.pipeline.*
-import kotlinx.serialization.json.JsonObject
 import java.lang.IllegalStateException
 
 suspend fun PipelineContext<*, ApplicationCall>.twitterLogin(
@@ -47,4 +44,10 @@ private fun Dependencies.createTwitterUser(
         lastInsertId()
             .executeAsOne()
             .toInt()
+    }
+
+private val OAuthAccessTokenResponse.extraParameters: Parameters
+    get() = when (this) {
+        is OAuthAccessTokenResponse.OAuth1a -> extraParameters
+        is OAuthAccessTokenResponse.OAuth2 -> extraParameters
     }

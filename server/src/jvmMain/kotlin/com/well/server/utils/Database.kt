@@ -83,7 +83,7 @@ fun initialiseDatabase(app: Application): Database {
         .executeAsList()
         .let { uninitialized ->
             if (uninitialized.isNotEmpty()) {
-                println("cleaning uninitialized: ${}")
+                println("cleaning uninitialized: $uninitialized")
                 db.usersQueries.deleteUninitialized()
             }
         }

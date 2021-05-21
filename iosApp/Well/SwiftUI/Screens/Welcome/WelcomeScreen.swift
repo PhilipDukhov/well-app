@@ -22,13 +22,14 @@ struct WelcomeScreen: View {
             welcomeInfoView
         }
     }
-    
+
     private let cornerRadius: CGFloat = 20
 
     var topImagesView: some View {
         GeometryReader { geometry in
             let offset = geometry.safeAreaInsets.top
-            let size = CGSize(width: geometry.size.width, height: geometry.size.width * 1084 / 929 + offset + cornerRadius)
+            let size = CGSize(width: geometry.size.width,
+                height: max(geometry.size.width * 1084 / 929, geometry.size.height) + offset + cornerRadius)
             TabView(selection: $selection.animation()) {
                 ForEachEnumerated(state.descriptions) { i, _ in
                     Image("welcome/\(i)")
@@ -39,13 +40,14 @@ struct WelcomeScreen: View {
                         .offset(y: -offset)
                 }
             }.tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-            .frame(size: size)
-            .offset(y: -offset)
+                .overlay(GradientView(gradient: .welcome))
+                .frame(size: size)
+                .offset(y: -offset)
         }
     }
 
     var welcomeInfoView: some View {
-        VStack {
+        VStack(spacing: 0) {
             Text("Welcome to WELL app")
                 .font(.largeTitle)
                 .padding(.top)

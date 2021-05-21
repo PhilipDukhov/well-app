@@ -62,11 +62,11 @@ SELECT id FROM Users WHERE appleId = ?;
 -- Create
 
 insertFacebook:
-INSERT INTO Users(fullName, createdDate,  type, email, facebookId, languages, skills)
+INSERT INTO Users(fullName, createdDate,  type, facebookId, email, languages, skills)
 VALUES (?, UNIX_TIMESTAMP(), ?, ?, ?, '', '');
 
 insertGoogle:
-INSERT INTO Users(fullName, createdDate,  type, email, googleId, languages, skills)
+INSERT INTO Users(fullName, createdDate,  type, googleId, email, languages, skills)
 VALUES (?, UNIX_TIMESTAMP(), ?, ?, ?, '', '');
 
 insertTwitter:
@@ -74,8 +74,8 @@ INSERT INTO Users(fullName, createdDate, type, twitterId, languages, skills)
 VALUES ('', UNIX_TIMESTAMP(), ?, ?, '', '');
 
 insertApple:
-INSERT INTO Users(fullName, createdDate,  type, appleId, languages, skills)
-VALUES (?, UNIX_TIMESTAMP(),NULL, NULL, '', '');
+INSERT INTO Users(fullName, createdDate, type, appleId, email, languages, skills)
+VALUES (?, UNIX_TIMESTAMP(), ?, ?, ?, '', '');
 
 -- Update
 

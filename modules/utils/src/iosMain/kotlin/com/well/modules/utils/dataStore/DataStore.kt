@@ -22,7 +22,6 @@ actual class DataStore actual constructor(context: Context) {
         Boolean::class,
         -> {
             userDefaults.setObject(value, key.name)
-            println("userDefaults.setObject ${key.name} ${userDefaults.objectForKey(key.name)}")
         }
         else -> throw IllegalStateException()
     }

@@ -34,18 +34,13 @@ extension AppleProvider: ASAuthorizationControllerDelegate {
         controller: ASAuthorizationController,
         didCompleteWithAuthorization authorization: ASAuthorization
     ) {
-        print(#function, authorization)
         switch authorization.credential {
         case let appleIDCredential as ASAuthorizationAppleIDCredential:
-
-            // Create an account in your system.
-            let userIdentifier = appleIDCredential.user
-            let fullName = appleIDCredential.fullName
-            let email = appleIDCredential.email
-
-            print("test", appleIDCredential, userIdentifier, email, fullName)
-            completionHandler?(AuthCredential.AppleCredential(userIdentifier: appleIDCredential.user), nil)
-
+            guard let identityToken = appleIDCredential.identityToken?.toString(encoding: .utf8) else {
+                completionHandler?(nil, NSError(description: "authorizationCode missing"))
+                return
+            }
+            completionHandler?(AuthCredential.AppleCredential(identityToken: identityToken), nil)
         case let passwordCredential as ASPasswordCredential:
 
             // Sign in using an existing iCloud Keychain credential.

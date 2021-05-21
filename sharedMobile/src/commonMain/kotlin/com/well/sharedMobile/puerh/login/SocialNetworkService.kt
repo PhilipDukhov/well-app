@@ -39,9 +39,8 @@ internal class SocialNetworkService(private val providerGenerator: (SocialNetwor
             }
         }
         is AppleCredential -> {
-            client.post(path = "login/appleCallback") {
-                body = credentials.userIdentifier
-//                header(HttpHeaders.Authorization, "Bearer ${credentials.userIdentifier}")
+            client.post(path = "login/apple") {
+                header(HttpHeaders.Authorization, "Bearer ${credentials.identityToken}")
             }
         }
         is OAuth1Credential -> {

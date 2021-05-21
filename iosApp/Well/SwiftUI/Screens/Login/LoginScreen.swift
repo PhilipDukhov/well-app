@@ -31,6 +31,7 @@ struct LoginScreen: View {
                 Image("loginBackground")
                     .resizable()
                     .scaledToFill()
+                    .overlay(GradientView(gradient: .login))
                     .edgesIgnoringSafeArea(.all)
             )
             if state.processing {

@@ -31,6 +31,8 @@ struct GradientView: View {
 
 extension SharedMobile.Gradient {
     static let main = SharedMobile.Gradient.Companion().Main
+    static let welcome = SharedMobile.Gradient.Companion().Welcome
+    static let login = SharedMobile.Gradient.Companion().Login
     static let callBackground = SharedMobile.Gradient.Companion().CallBackground
     static let callBottomBar = SharedMobile.Gradient.Companion().CallBottomBar
 }

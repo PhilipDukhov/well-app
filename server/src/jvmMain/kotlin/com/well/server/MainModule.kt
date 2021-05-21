@@ -2,12 +2,7 @@ package com.well.server
 
 import com.auth0.jwk.JwkProviderBuilder
 import com.well.modules.models.Constants
-import com.well.server.routing.auth.appleLogin
-import com.well.server.routing.auth.facebookLogin
-import com.well.server.routing.auth.googleLogin
-import com.well.server.routing.auth.sendEmail
-import com.well.server.routing.auth.sendSms
-import com.well.server.routing.auth.twitterLogin
+import com.well.server.routing.auth.*
 import com.well.server.routing.mainWebSocket
 import com.well.server.routing.user.*
 import com.well.server.utils.Dependencies
@@ -24,9 +19,9 @@ import io.ktor.http.*
 import io.ktor.http.cio.websocket.*
 import io.ktor.request.*
 import io.ktor.response.*
-import io.ktor.locations.*
 import io.ktor.routing.*
 import io.ktor.serialization.*
+import io.ktor.util.*
 import io.ktor.websocket.*
 import org.slf4j.event.Level
 import java.net.URL
@@ -67,7 +62,6 @@ fun Application.module() {
         consumerSecret = environment.configProperty("social.twitter.apiSecret"),
     )
 
-    install(Locations)
     install(Authentication) {
         jwt(AuthName.Main) {
             verifier(dependencies.jwtConfig.verifier)
@@ -130,16 +124,16 @@ fun Application.module() {
             post("facebook") { facebookLogin(dependencies) }
             post("google") { googleLogin(dependencies) }
             post("appleCallback") {
-//                val params = call.receive<String>()
-//                    .parseUrlEncodedParameters()
-//                val error = params["error"]
-//                if (error != null) {
-//                    call.respond(HttpStatusCode.BadRequest, error)
-//                    return@post
-//                }
-//                val code = params["code"]!!
-                val code = call.receive<String>()
-//                println("$code $params ${call.request.headers.flattenEntries()}")
+                val params = call.receive<String>()
+                    .parseUrlEncodedParameters()
+                val error = params["error"]
+                if (error != null) {
+                    call.respond(HttpStatusCode.BadRequest, error)
+                    return@post
+                }
+                val code = params["code"]!!
+//                val code = params["id_token"]!!
+                println("$code $params ${call.request.headers.flattenEntries()}")
 
                 val appleOauthResponse = application.environment.run {
                     dependencies.client.config {
@@ -174,27 +168,7 @@ fun Application.module() {
             }
             authenticate(AuthName.Apple) {
                 post("apple") {
-//                    val appleUserSignInRequest = call.receive<AppleUserSignInRequest>()
-//                    call.application.log.debug("Code ${appleUserSignInRequest.code}")
-//                    val appleOauthResponse = application.environment.run {
-//                        Oauth2Service(dependencies.client).authenticate(
-//                            "https://appleid.apple.com/auth/token", Oauth2Parameters(
-//                                grantType = "authorization_code",
-//                                code = appleUserSignInRequest.code,
-//                                clientId = configProperty("social.apple.clientId"),
-//                                clientSecret = dependencies.jwtConfig.createAppleAuthToken(
-//                                    keyId = configProperty("social.apple.keyId"),
-//                                    teamId = configProperty("social.apple.teamId")
-//                                ),
-//                                redirectUri = null
-//                            )
-//                        )
-//                    }
-//
-//                    val principal = call.authentication.principal<JWTPrincipal>()!!
-//
-//                    println("RESPONSE $appleOauthResponse $principal")
-//                    call.respond(appleOauthResponse)
+                    appleLoginPrincipal(dependencies)
                 }
             }
             authenticate(AuthName.Twitter) {
@@ -203,7 +177,7 @@ fun Application.module() {
                 }
             }
         }
-        post("twitter_oauth_callback") { appleLogin(dependencies) }
+        post("twitter_oauth_callback") { twitterLogin(dependencies) }
 
 //        get("/metrics") {
 //            call.respond(appMicrometerRegistry.scrape())
@@ -235,65 +209,3 @@ fun Application.module() {
         }
     }
 }
-
-val OAuthAccessTokenResponse.extraParameters: Parameters
-    get() = when (this) {
-        is OAuthAccessTokenResponse.OAuth1a -> extraParameters
-        is OAuthAccessTokenResponse.OAuth2 -> extraParameters
-    }
-
-data class AppleUserSignInRequest(
-    val code: String,
-    val nick: String
-)
-
-data class Oauth2Parameters(
-    val grantType: String,
-    val code: String,
-    val clientId: String,
-    val clientSecret: String,
-    val redirectUri: String?
-)
-
-class Oauth2Service(val client: HttpClient) {
-    suspend inline fun authenticate(
-        tokenUrl: String,
-        parameters: Oauth2Parameters
-    ): AppleOauthResponse {
-        val data = Parameters.build {
-            append("grant_type", parameters.grantType)
-            append("code", parameters.code)
-            parameters.redirectUri?.apply { append("redirect_uri", parameters.redirectUri) }
-            append("client_id", parameters.clientId)
-            append(
-                "client_secret", parameters.clientSecret
-            )
-        }
-
-        println("Sending form with data: $data")
-        val body = client.submitForm<AppleOauthResponse>(
-            url = tokenUrl,
-            formParameters = data,
-            encodeInQuery = false,
-//            block = { header("user-agent", "cheer-with-me") }
-        )
-
-        println(body)
-        return body
-    }
-}
-
-data class AppleOauthResponse(
-    val access_token: String,
-    val expires_in: Long,
-    val id_token: String,
-    val refresh_token: String,
-    val token_type: String
-)
-
-fun Parameters.Companion.build(list: List<Pair<String, String>>) =
-    build {
-        list.forEach {
-            append(it.first, it.second)
-        }
-    }
