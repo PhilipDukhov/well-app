@@ -3,6 +3,7 @@ package com.well.androidApp.ui.composableScreens.experts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -25,9 +26,9 @@ fun ExpertsScreen(
 ) {
     NavigationBar(
         title = state.connectionStatus.stringRepresentation,
-        leftItem = ControlItem(text = "Log out") {
-            listener.invoke(Msg.OnLogout)
-        },
+//        leftItem = ControlItem(text = "Log out") {
+//            listener.invoke(Msg.OnLogout)
+//        },
         rightItem = ControlItem(
             view = { UserProfileImage(state.currentUser) },
             handler = { listener.invoke(Msg.OnCurrentUserSelected) },

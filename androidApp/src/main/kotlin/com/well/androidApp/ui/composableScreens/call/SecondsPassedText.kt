@@ -13,8 +13,9 @@ fun SecondsPassedText(
 ) {
     if (info == null) return
     val secondsPassed = remember { mutableStateOf(info.secondsPassedFormatted) }
+    val scope = rememberCoroutineScope()
     val nextSecondNotifier = remember {
-        NextSecondNotifier {
+        NextSecondNotifier(scope) {
             secondsPassed.value = info.secondsPassedFormatted
         }
     }

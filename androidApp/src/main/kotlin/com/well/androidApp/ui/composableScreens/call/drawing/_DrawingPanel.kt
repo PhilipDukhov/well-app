@@ -9,11 +9,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import com.google.accompanist.coil.rememberCoilPainter
+import com.well.androidApp.ui.composableScreens.πExt.Image
 import com.well.androidApp.ui.composableScreens.πExt.toColor
 import com.well.modules.models.Size
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.State
-import com.google.accompanist.coil.CoilImage
 
 @Composable
 fun DrawingPanel(
@@ -43,8 +44,8 @@ fun DrawingPanel(
                 })
         {
             state.image?.let {
-                CoilImage(
-                    it.coilDataAny,
+                Image(
+                    rememberCoilPainter(it.coilDataAny),
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier

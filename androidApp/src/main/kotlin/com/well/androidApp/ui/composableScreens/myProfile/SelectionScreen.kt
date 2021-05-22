@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -32,10 +33,10 @@ import com.google.accompanist.insets.navigationBarsPadding
 @Composable
 fun SelectionScreen(
     title: String,
-    selection: Set<String>,
+    selection: Set<Int>,
     variants: List<String>,
     multipleSelection: Boolean,
-    onSelectionChanged: (Set<String>) -> Unit,
+    onSelectionChanged: (Set<Int>) -> Unit,
     onCancel: () -> Unit,
 ){
     var selectionState by remember { mutableStateOf(selection) }
@@ -53,8 +54,8 @@ fun SelectionScreen(
             } else null,
         )
         LazyColumn(modifier = Modifier.navigationBarsPadding()) {
-            items(variants) { variant ->
-                val selected = selectionState.contains(variant)
+            itemsIndexed(variants) { index, variant ->
+                val selected = selectionState.contains(index)
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -64,13 +65,13 @@ fun SelectionScreen(
                             if (multipleSelection) {
                                 selectionState = selectionState.toMutableSet().apply {
                                     if (selected) {
-                                        remove(variant)
+                                        remove(index)
                                     } else {
-                                        add(variant)
+                                        add(index)
                                     }
                                 }
                             } else {
-                                onSelectionChanged(setOf(variant))
+                                onSelectionChanged(setOf(index))
                             }
                         }
                         .padding(horizontal = 20.dp, vertical = 10.dp)

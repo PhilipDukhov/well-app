@@ -19,17 +19,16 @@ import com.well.androidApp.ui.composableScreens.πExt.Image
 import com.well.androidApp.ui.composableScreens.πExt.toColor
 import com.well.modules.models.Color
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
-import com.well.sharedMobile.puerh.myProfile.UIEditingField
-import com.well.sharedMobile.puerh.myProfile.UIEditingField.Content
+import com.well.sharedMobile.puerh.πModels.UIEditingField
 
 @Composable
-fun <C> EditingField(
-    field: UIEditingField<C>,
+fun <Content> EditingField(
+    field: UIEditingField<Content, Msg>,
     listener: (Msg) -> Unit,
     onTextInputEditingHandler: ((() -> Unit)?) -> Unit,
     showModalContent: ((@Composable () -> Unit)?) -> Unit,
     modifier: Modifier,
-) where C : Content {
+) where Content : UIEditingField.Content {
     val content = field.content
     val fieldName = content.toString()
     Row(
@@ -39,12 +38,12 @@ fun <C> EditingField(
         EditingTextField(
             text = fieldName,
             title = field.placeholder,
-            onClick = if (content is Content.List) {
+            onClick = if (content is UIEditingField.Content.List<*>) {
                 {
                     showModalContent {
                         @Suppress("UNCHECKED_CAST")
                         ModalContent(
-                            field as UIEditingField<Content.List>,
+                            field as UIEditingField<UIEditingField.Content.List<Any>, Msg>,
                             listener,
                             showModalContent,
                         )
@@ -69,18 +68,18 @@ fun <C> EditingField(
 
 @Composable
 private fun ModalContent(
-    field: UIEditingField<Content.List>,
+    field: UIEditingField<UIEditingField.Content.List<Any>, Msg>,
     listener: (Msg) -> Unit,
     showModalContent: ((@Composable () -> Unit)?) -> Unit,
 ) {
     SelectionScreen(
         title = field.placeholder,
-        selection = field.content.selection,
-        variants = field.content.list,
+        selection = field.content.selectionIndices,
+        variants = field.content.itemDescriptions,
         multipleSelection = field.content.multipleSelectionAvailable,
         onSelectionChanged = {
             @Suppress("UNCHECKED_CAST")
-            listener(field.updateMsg(field.content.copy(selection = it)))
+            listener(field.updateMsg(field.content.doCopy(selectionIndices = it)))
             showModalContent(null)
         },
         onCancel = {
@@ -181,28 +180,27 @@ private fun EditingTextField(
 }
 
 @Suppress("UNCHECKED_CAST")
-private fun <C> textContentUpdated(
+private fun <Content> textContentUpdated(
     text: String,
-    field: UIEditingField<C>,
+    field: UIEditingField<Content, Msg>,
     listener: (Msg) -> Unit,
-) where C : Content {
-    val content = field.content as Content
+) where Content : UIEditingField.Content {
+    val content = field.content
     if (text == content.toString()) return
     listener(
         field.updateMsg(
             when (content) {
-                is Content.Text -> content.copy(text = text)
-                is Content.Email -> content.copy(email = text)
-                is Content.List ->
-                    throw IllegalStateException("textContentUpdated shouldn't be called for a list")
-            } as C
+                is UIEditingField.Content.Text -> content.copy(text = text)
+                is UIEditingField.Content.Email -> content.copy(email = text)
+                else -> throw IllegalStateException("textContentUpdated shouldn't be called for a $content")
+            } as Content
         )
     )
 }
 
-private val Content.Icon.drawable
+private val UIEditingField.Content.Icon.drawable
     get() = when (this) {
-        Content.Icon.Location -> {
+        UIEditingField.Content.Icon.Location -> {
             R.drawable.ic_outline_location_on_24
         }
     }

@@ -43,11 +43,7 @@ class NetworkManager(
         ;
 
         val stringRepresentation: String
-            get() = when (this) {
-                Disconnected -> "Disconnected"
-                Connecting -> "Connecting"
-                Connected -> "Connected"
-            }
+            get() = name
     }
 
     private val webSocketScope = CoroutineScope(Dispatchers.Default)

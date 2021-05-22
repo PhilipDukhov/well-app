@@ -18,7 +18,7 @@ import com.well.sharedMobile.puerh.login.handleActivityResult
 import com.well.sharedMobile.utils.napier.NapierProxy
 import com.well.modules.utils.Context
 import com.google.accompanist.insets.ProvideWindowInsets
-import com.well.sharedMobile.puerh.login.credentialProviders.AppleProvider
+import com.well.sharedMobile.puerh.login.credentialProviders.AppleOAuthProvider
 import com.well.sharedMobile.puerh.login.handleOnNewIntent
 import java.lang.IllegalStateException
 
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                     context = context,
                     tokenId = resources.getString(R.string.google_web_client_id)
                 )
-                SocialNetwork.Apple -> AppleProvider(
+                SocialNetwork.Apple -> AppleOAuthProvider(
                     context = context,
                     clientId = resources.getString(R.string.apple_server_client_id),
                     redirectUri = resources.getString(R.string.apple_auth_redirect_url),

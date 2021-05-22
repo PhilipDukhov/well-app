@@ -3,6 +3,7 @@ package com.well.sharedMobile.puerh.login.credentialProviders
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import com.well.modules.utils.Context
 import com.well.sharedMobile.networking.Constants
 import com.well.sharedMobile.puerh._topLevel.ContextHelper
 import kotlinx.coroutines.CancellableContinuation
@@ -13,11 +14,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 
-internal class AppleProvider(private val contextHelper: ContextHelper, private val clientId: String, private val redirectUri: String): CredentialProvider(contextHelper.context) {
+class AppleOAuthProvider(context: Context, private val clientId: String, private val redirectUri: String): CredentialProvider(context) {
     private val requestCode = 98234
     private var handleActivityResultCancelJob: Job? = null
     private var webAuthenticateJob: Job? = null
     private var getCredentialsContinuation: CancellableContinuation<AuthCredential>? = null
+    private val contextHelper = ContextHelper(context)
 
     override suspend fun getCredentials(): AuthCredential =
         suspendCancellableCoroutine {

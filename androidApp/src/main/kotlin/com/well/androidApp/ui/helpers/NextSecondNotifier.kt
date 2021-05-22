@@ -1,11 +1,22 @@
 package com.well.androidApp.ui.helpers
 
+import android.os.Handler
+import android.os.Looper
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
 import java.util.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
 class NextSecondNotifier(
-    val handler: () -> Unit,
+    private val scope: CoroutineScope,
+    private val handler: () -> Unit,
 ): Closeable {
     var date: Date? = null
         set(value) {
@@ -19,9 +30,8 @@ class NextSecondNotifier(
 
     private fun wait(): Job? =
         date?.let { date ->
-//            https://stackoverflow.com/questions/67569208/how-to-recompose-every-minute-in-jetpack-compose
-            GlobalScope11111.launch {
-                delay((1000 - (Date().time - date.time) % 1000))
+            scope.launch {
+                delay(1000 - (Date().time - date.time) % 1000)
                 if (!isActive) return@launch
                 handler()
                 job = wait()

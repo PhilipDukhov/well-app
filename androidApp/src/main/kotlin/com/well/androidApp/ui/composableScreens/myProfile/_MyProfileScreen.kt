@@ -96,7 +96,7 @@ private fun Content(
                 state.groups.forEach { group ->
                     when (group) {
                         is UIGroup.Preview -> {
-                           group.fields.forEach { field -> // items(group.fields)
+                            group.fields.forEach { field -> // items(group.fields)
                                 PreviewField(field, paddingModifier)
                             }
                         }
@@ -115,20 +115,20 @@ private fun Content(
                         }
                         is UIGroup.Header -> {
 //                            item {
-                                if (state.isCurrent) {
-                                    CurrentUserHeader(
-                                        group,
-                                        listener,
-                                        paddingModifier
-                                    )
-                                } else {
-                                    OtherUserHeader(group, listener, paddingModifier)
-                                }
+                            if (state.isCurrent) {
+                                CurrentUserHeader(
+                                    group,
+                                    listener,
+                                    paddingModifier
+                                )
+                            } else {
+                                OtherUserHeader(group, listener, paddingModifier)
+                            }
 //                            }
                         }
                     }
 //                    item {
-                        Divider()
+                    Divider()
 //                    }
                 }
             }
@@ -241,6 +241,9 @@ private fun OtherUserHeader(
 
 private val User.Type.drawable
     get() = when (this) {
-        User.Type.Doctor -> R.drawable.ic_profile_doctor
+        User.Type.Doctor,
+        User.Type.PendingExpert,
+        User.Type.DeclinedExpert,
+        -> R.drawable.ic_profile_doctor
         User.Type.Expert -> R.drawable.ic_profile_expert
     }
