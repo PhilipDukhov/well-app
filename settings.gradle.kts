@@ -1,6 +1,8 @@
 rootProject.name = "WELL"
 
-val kotlinVersion: String by settings
+apply(from = "dependenciesResolver.gradle.kts")
+val withAndroid = System.getProperty("withAndroid")!!.toBoolean()
+val kotlinVersion = System.getProperty("kotlinVersion")!!
 
 val modules = mutableSetOf(
     "sharedMobile",
@@ -11,10 +13,11 @@ val modules = mutableSetOf(
     "modules:napier",
     "modules:utils",
 )
+if (withAndroid) {
+    modules.add("androidApp")
+}
 if (kotlinVersion.startsWith("1.5")) {
     modules.add("server")
-} else {
-    modules.add("androidApp")
 }
 
 modules.forEach {
@@ -30,10 +33,11 @@ pluginManagement {
     resolutionStrategy {
         eachPlugin {
             val pluginId = requested.id.id
-            val gradlePluginVersion: String by settings
             when {
-                pluginId == "com.android" ->
-                    useModule("com.android.tools.build:gradle:$gradlePluginVersion")
+                pluginId == "com.android" -> {
+                    println("wtf $pluginId")
+                    useModule("com.android.tools.build:gradle:${System.getProperty("gradlePluginVersion")}")
+                }
             }
         }
     }

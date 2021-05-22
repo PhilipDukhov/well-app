@@ -17,9 +17,9 @@ repositories {
     mavenCentral()
 }
 
-apply(from = "${projectDir.parent}/dependencies.gradle")
-val kotlinVersion = (extra["Versions"] as Map<*, *>)["kotlin"] as String
-val gradlePluginVersion = extra["gradlePluginVersion"] as String
+apply(from = "../dependenciesResolver.gradle.kts")
+val kotlinVersion = extra["kotlinVersion"]!! as String
+val gradlePluginVersion = extra.properties["gradlePluginVersion"] as? String
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib") {
@@ -33,6 +33,8 @@ dependencies {
         }
     }
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-    implementation("com.android.tools.build:gradle:$gradlePluginVersion")
+    if (gradlePluginVersion != null) {
+        implementation("com.android.tools.build:gradle:$gradlePluginVersion")
+    }
     implementation(gradleApi())
 }

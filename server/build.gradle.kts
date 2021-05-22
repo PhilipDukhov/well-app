@@ -73,6 +73,10 @@ tasks.named<JavaExec>("run") {
         environment(it.key, it.value)
         System.setProperty(it.value, it.key)
     }
+    classpath += objects.fileCollection().from(
+        tasks.named("compileKotlinJvm"),
+        configurations.named("jvmRuntimeClasspath")
+    )
 }
 
 tasks.named<AbstractCopyTask>("jvmProcessResources") {

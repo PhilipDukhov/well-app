@@ -1,6 +1,6 @@
 def versions = [
         iosDeploymentTarget: "14.0",
-        kotlin             : kotlinVersion,
+        kotlin             : System.getProperty("kotlinVersion"),
         compose            : "1.0.0-beta07",
         accompanist        : "0.10.0",
         kotlinSerialization: "1.2.1",
@@ -15,7 +15,6 @@ ext.Versions = versions
 ext.Libs = [
         build                      : [
                 kotlin              : "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin",
-                gradle              : "com.android.tools.build:gradle:$gradlePluginVersion",
                 kotlinSerialization : "org.jetbrains.kotlin:kotlin-serialization:$versions.kotlin",
                 googleServices      : "com.google.gms:google-services:4.3.5",
                 dotenv              : "io.github.cdimascio:dotenv-kotlin:6.2.2",
@@ -112,3 +111,7 @@ ext.Libs = [
                 junit: "junit:junit:4.13.2",
         ],
 ]
+def gradlePluginVersion = System.getProperty("gradlePluginVersion")
+if (gradlePluginVersion != null) {
+        ext.Libs["build"]["gradle"] = "com.android.tools.build:gradle:$gradlePluginVersion"
+}

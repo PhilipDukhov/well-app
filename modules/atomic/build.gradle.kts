@@ -1,10 +1,12 @@
 plugins {
     kotlin("multiplatform")
-    id("com.android.library")
+    if (withAndroid) {
+        id("com.android.library")
+    }
 }
 
 kotlin {
-    android()
+    androidWithAndroid()
     ios()
     sourceSets {
         usePredefinedExperimentalAnnotations()

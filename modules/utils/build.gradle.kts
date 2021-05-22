@@ -1,10 +1,12 @@
 plugins {
     kotlin("multiplatform")
-    id("com.android.library")
+    if (withAndroid) {
+        id("com.android.library")
+    }
 }
 
 kotlin {
-    android()
+    androidWithAndroid()
     ios()
     sourceSets {
         usePredefinedExperimentalAnnotations()
@@ -16,12 +18,14 @@ kotlin {
                 "kotlin.stdLib",
             )
         }
-        val androidMain by getting {
-            libDependencies(
-                "android.appCompat",
-                "android.dataStore",
-                "android.activity",
-            )
+        if (withAndroid) {
+            val androidMain by getting {
+                libDependencies(
+                    "android.appCompat",
+                    "android.dataStore",
+                    "android.activity",
+                )
+            }
         }
         val iosMain by getting {
             libDependencies(

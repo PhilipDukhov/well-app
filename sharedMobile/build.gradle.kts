@@ -4,8 +4,10 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
-    id("com.android.library")
     id("kotlinx-serialization")
+    if (withAndroid) {
+        id("com.android.library")
+    }
     kotlin("kapt")
 }
 
@@ -18,7 +20,7 @@ kapt {
 }
 
 kotlin {
-    android()
+    androidWithAndroid()
     val frameworkName = project.name.capitalize()
     ios() {
         binaries {
@@ -65,7 +67,9 @@ kotlin {
             }
 
             // Workaround for lack of Kapt support in multiplatform project:
-            dependencies.add("kapt", project(":modules:annotationProcessor"))
+            if (withAndroid) {
+                dependencies.add("kapt", project(":modules:annotationProcessor"))
+            }
             kotlin.srcDir(generatedKotlinSources)
         }
         val commonTest by getting {
@@ -74,18 +78,20 @@ kotlin {
                 implementation(kotlin("test-annotations-common"))
             }
         }
-        val androidMain by getting {
-            libDependencies(
-                "webrtc",
-                "facebookLogin",
-                "google.playServicesAuth",
-                "android.material",
-                "android.activity",
-                "android.compose.accompanist.coil",
-                "android.browser",
-                "ktor.client.engine.cio",
-                "kotlin.coroutines.playServices",
-            )
+        if (withAndroid) {
+            val androidMain by getting {
+                libDependencies(
+                    "webrtc",
+                    "facebookLogin",
+                    "google.playServicesAuth",
+                    "android.material",
+                    "android.activity",
+                    "android.compose.accompanist.coil",
+                    "android.browser",
+                    "ktor.client.engine.cio",
+                    "kotlin.coroutines.playServices",
+                )
+            }
             val androidTest by getting {
                 libDependencies(
                     "tests.junit",

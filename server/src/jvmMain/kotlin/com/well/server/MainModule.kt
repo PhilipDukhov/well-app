@@ -11,7 +11,6 @@ import com.well.server.utils.createPrincipal
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
-import io.ktor.client.*
 import io.ktor.client.features.logging.*
 import io.ktor.client.request.forms.*
 import io.ktor.features.*
@@ -156,7 +155,7 @@ fun Application.module() {
                                     ),
                                     teamId = configProperty("social.apple.teamId")
                                 ),
-                            ).mapNotNull { pair -> pair.second?.let { pair.first to it } }
+                            ).map { pair -> pair.second.let { pair.first to it } }
                         ),
                         encodeInQuery = false,
 //                        block = { header("user-agent", "cheer-with-me") }

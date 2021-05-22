@@ -1,10 +1,9 @@
 import org.codehaus.groovy.runtime.GStringImpl
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.PluginDependenciesSpecScope
 import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
 import org.gradle.kotlin.dsl.add
-import org.gradle.kotlin.dsl.apply
+import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithPresetFunctions
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 private fun Project.mapAt(
@@ -19,6 +18,15 @@ private fun Project.mapAt(
             ?: throw IllegalStateException("Wrong path: $component missing at $path")
     }
     return Pair(map, last)
+}
+
+val withAndroid: Boolean
+    get() = System.getProperty("withAndroid")!!.toBoolean()
+
+fun KotlinTargetContainerWithPresetFunctions.androidWithAndroid() {
+    if (withAndroid) {
+        android()
+    }
 }
 
 fun Project.libsAt(path: String): List<String> =
@@ -159,11 +167,11 @@ private fun Project.customDependencies(libs: List<String>): List<Dependency> =
                 result + Dependency.Test(dep)
             dep.startsWith(":") ->
                 result + Dependency.Module(dep)
-//            dep == "kotlin.coroutines.core" ->
-//                result + Dependency.Implementation(
-//                    "org.jetbrains.kotlinx:kotlinx-coroutines-core",
-//                    version("kotlinCoroutines")
-//                )
+            dep == "kotlin.coroutines.core" ->
+                result + Dependency.Implementation(
+                    "org.jetbrains.kotlinx:kotlinx-coroutines-core",
+                    version("kotlinCoroutines")
+                )
             dep.endsWith(".*") -> {
                 result + libsAt(dep.dropLast(2)).map(Dependency::Implementation)
             }

@@ -1,12 +1,16 @@
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
-    id("com.android.library")
+    if (withAndroid) {
+        id("com.android.library")
+    } else {
+        `java-library`
+    }
 }
 
 kotlin {
     ios()
-    android()
+    androidWithAndroid()
     jvm()
     sourceSets {
         all {
@@ -24,8 +28,10 @@ kotlin {
         val jvmMain by getting {
 
         }
-        val androidMain by getting {
-            dependsOn(jvmMain)
+        if (withAndroid) {
+            val androidMain by getting {
+                dependsOn(jvmMain)
+            }
         }
     }
 }

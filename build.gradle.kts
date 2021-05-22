@@ -1,7 +1,3 @@
-import com.android.build.gradle.AppPlugin
-import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.LibraryPlugin
-
 object Constants {
     val javaVersion = JavaVersion.VERSION_11
     const val group = "com.well"
@@ -29,8 +25,6 @@ repositories {
     mavenCentral()
 }
 
-val gradlePluginVersion = extra["gradlePluginVersion"] as String
-
 allprojects {
     @Suppress("UnstableApiUsage")
     repositories {
@@ -55,49 +49,13 @@ allprojects {
     apply(from = "${rootDir}/dependencies.gradle")
 }
 
-val multiplatformModules = listOf(
-    ":modules:models",
-    ":modules:utils",
-    ":modules:napier",
-    ":modules:atomic",
-    ":modules:annotations",
-    ":sharedMobile",
-)
+if (withAndroid) {
+    apply(from = "${rootDir}/androidPluginsSetup.gradle.kts")
+}
 
 subprojects {
     group = Constants.group
     version = Constants.version
-    plugins.matching { it is AppPlugin || it is LibraryPlugin }.whenPluginAdded {
-        configure<BaseExtension> {
-            setCompileSdkVersion(30)
-            buildToolsVersion = "30.0.3"
-
-            defaultConfig {
-                minSdkVersion(23)
-                targetSdkVersion(30)
-                versionCode = 102191720
-                versionName = Constants.version
-            }
-            buildTypes {
-                getByName("release") {
-                    isMinifyEnabled = false
-                }
-            }
-            compileOptions {
-                sourceCompatibility = Constants.javaVersion
-                targetCompatibility = Constants.javaVersion
-            }
-        }
-    }
-    plugins.withType<org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper> {
-        plugins.whenPluginAdded {
-            extensions
-                .findByType<com.android.build.gradle.LibraryExtension>()
-                ?.apply {
-                    sourceSets["main"]?.manifest?.srcFile("src/androidMain/AndroidManifest.xml")
-                }
-        }
-    }
     plugins.withType<org.jetbrains.kotlin.gradle.plugin.KotlinBasePluginWrapper> {
         this@subprojects.run {
             tasks {
@@ -118,23 +76,6 @@ subprojects {
         )
         kotlinOptions {
             useIR = true
-        }
-    }
-
-    if (gradlePluginVersion.first() == '7' && !version("kotlin").startsWith("1.5")) {
-        if (multiplatformModules.contains(path)) {
-            configurations {
-                listOf(
-                    "androidTestApi",
-                    "androidTestDebugApi",
-                    "androidTestReleaseApi",
-                    "testApi",
-                    "testDebugApi",
-                    "testReleaseApi",
-                ).forEach {
-                    create(it) {}
-                }
-            }
         }
     }
 
