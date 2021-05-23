@@ -338,6 +338,7 @@ deps.txt
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 
-deploy/*
+serverDeploy/.git
+serverDeploy/server-1.0-SNAPSHOT-all.jar
 
 *.p8
