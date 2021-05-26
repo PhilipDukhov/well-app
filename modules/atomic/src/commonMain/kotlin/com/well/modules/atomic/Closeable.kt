@@ -36,18 +36,18 @@ class CloseableFuture(
     scope: CoroutineScope,
     task: suspend () -> Closeable,
 ) : Closeable {
-    private val closeable = AtomicRef<Closeable?>(null)
+    private var closeable by AtomicRef<Closeable?>(null)
 
     init {
-        closeable.value = scope.launch {
-            closeable.value = task().freeze()
+        closeable = scope.launch {
+            closeable = task().freeze()
         }.asCloseable().freeze()
     }
 
     override fun close() {
-        closeable.value?.close()
+        closeable?.close()
     }
 
     override fun toString(): String =
-        closeable.value.toString()
+        closeable.toString()
 }

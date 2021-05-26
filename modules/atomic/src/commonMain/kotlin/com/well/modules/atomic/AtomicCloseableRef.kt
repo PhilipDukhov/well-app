@@ -1,12 +1,12 @@
 package com.well.modules.atomic
 
 class AtomicCloseableRef {
-    private val ref = AtomicRef<Closeable?>(null)
+    private var ref by AtomicRef<Closeable?>(null)
 
     var value: Closeable?
-        get() = ref.value
+        get() = ref
         set(value) {
-            ref.value?.close()
-            ref.value = value
+            ref?.close()
+            ref = value
         }
 }

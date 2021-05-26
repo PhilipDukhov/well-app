@@ -48,7 +48,7 @@ class NetworkManager(
 
     private val webSocketScope = CoroutineScope(Dispatchers.Default)
 
-    private val webSocketSession = AtomicRef<WebSocketSession?>(null)
+    private var webSocketSession by AtomicRef<WebSocketSession?>(null)
     private val listeners = AtomicMutableList<WebSocketMessageListener>()
 
     private val _state = MutableStateFlow(Disconnected)
@@ -63,7 +63,7 @@ class NetworkManager(
                 try {
                     _state.value = Connecting
                     client.ws("/mainWebSocket") {
-                        webSocketSession.value = this
+                        webSocketSession = this
                         _state.value = Connected
                         for (string in incoming) {
                             Napier.i("websocket msg: $string")
@@ -85,7 +85,7 @@ class NetworkManager(
                 } finally {
                     val wasConnected = _state.value == Connected
                     _state.value = Disconnected
-                    webSocketSession.value = null
+                    webSocketSession = null
                     if (!wasConnected) {
                         delay(5000L)
                     }
@@ -106,7 +106,7 @@ class NetworkManager(
 
     suspend fun send(msg: WebSocketMsg) {
         try {
-            webSocketSession.value?.send(
+            webSocketSession?.send(
                 Json.encodeToString(
                     WebSocketMsg.serializer(),
                     msg

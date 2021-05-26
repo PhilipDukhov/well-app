@@ -3,15 +3,11 @@ package com.well.modules.utils.puerh
 import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
 import com.well.modules.atomic.AtomicRef
-import com.well.modules.utils.puerh.Feature
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 abstract class EffectHandler<Eff : Any, Msg : Any>(open val coroutineScope: CoroutineScope) : CloseableContainer() {
-    private val _listener = AtomicRef<((Msg) -> Unit)?>(null)
-    var listener: ((Msg) -> Unit)?
-        get() = _listener.value
-        set(value) { _listener.value = value }
+    var listener by AtomicRef<((Msg) -> Unit)?>(null)
 
     open fun setListener(listener: suspend (Msg) -> Unit) {
         this.listener = { msg -> coroutineScope.launch { listener(msg) } }

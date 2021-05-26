@@ -68,12 +68,12 @@ class CallEffectHandler(
         val webRtcManagerListener = object : WebRtcManagerI.Listener, Closeable {
             lateinit var handlerRef: CallEffectHandler
 
-            private val closed = AtomicRef(false)
+            private var closed by AtomicRef(false)
             private val handler: CallEffectHandler?
-                get() = if (closed.value) null else handlerRef
+                get() = if (closed) null else handlerRef
 
             override fun close() {
-                closed.value = true
+                closed = true
             }
 
             override fun updateCaptureDimensions(dimensions: Size) {

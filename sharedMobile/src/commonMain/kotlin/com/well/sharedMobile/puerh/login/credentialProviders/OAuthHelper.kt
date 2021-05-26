@@ -20,8 +20,8 @@ internal class OAuthHelper(
     private val name: String,
     private val contextHelper: ContextHelper,
 ) {
-    private val getCredentialsJob = AtomicRef<Job>()
-    private val getCredentialsContinuation = AtomicRef<CancellableContinuation<AuthCredential>>()
+    private var getCredentialsJob by AtomicRef<Job>()
+    private var getCredentialsContinuation by AtomicRef<CancellableContinuation<AuthCredential>>()
     companion object {
         const val requestCode = 89781
     }
@@ -46,8 +46,8 @@ internal class OAuthHelper(
             throw IllegalStateException("Redirect expected")
         } catch (redirect: RedirectResponseException) {
             suspendCancellableCoroutine { continuation ->
-                getCredentialsContinuation.value = continuation
-                getCredentialsJob.value = CoroutineScope(Dispatchers.Default).launch {
+                getCredentialsContinuation = continuation
+                getCredentialsJob = CoroutineScope(Dispatchers.Default).launch {
                     try {
                         continuation.resume(
                             processCallbackUrl(
@@ -66,10 +66,10 @@ internal class OAuthHelper(
 
     fun handleCallbackUrl(url: String): Boolean {
         try {
-            getCredentialsContinuation.value?.resume(
+            getCredentialsContinuation?.resume(
                 processCallbackUrl(url)
             )
-            getCredentialsJob.value?.cancel()
+            getCredentialsJob?.cancel()
             return true
         } catch (t: Throwable) {
 
@@ -78,8 +78,8 @@ internal class OAuthHelper(
     }
 
     fun cancel() {
-        getCredentialsContinuation.value?.cancel()
-        getCredentialsJob.value?.cancel()
+        getCredentialsContinuation?.cancel()
+        getCredentialsJob?.cancel()
     }
 
     private fun processCallbackUrl(url: String): AuthCredential =

@@ -1,11 +1,11 @@
 package com.well.modules.atomic
 
 class AtomicLateInitRef<T> {
-    private val ref = AtomicRef<T?>(null)
+    private var ref by AtomicRef<T?>(null)
 
     var value: T
-        get() = ref.value!!
+        get() = ref!!
         set(value) {
-            ref.value = value
+            ref = value
         }
 }

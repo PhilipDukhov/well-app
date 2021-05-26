@@ -34,7 +34,7 @@ actual suspend fun PermissionsHandler.requestPermissions(vararg types: Type): Li
 //        Microphone -> RECORD_AUDIO
 //    }
 //    if (ContextCompat.checkSelfPermission(
-//        context.componentActivity,
+//        context.androidContext,
 //        permission
 //    ) == PackageManager.PERMISSION_GRANTED) {
 //        return Authorized

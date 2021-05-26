@@ -14,8 +14,8 @@ import com.well.sharedMobile.puerh.call.webRtc.RtcMsg.ImageSharingContainer.Msg 
 class DrawingEffectHandler(
     val webRtcSendListener: (RtcMsg) -> Unit,
 ) {
-    private val waitingForPathConfirmation = AtomicRef(false)
-    private val pendingPaths = AtomicRef<List<Path>?>()
+    private var waitingForPathConfirmation by AtomicRef(false)
+    private var pendingPaths by AtomicRef<List<Path>?>()
 
     fun handleEffect(eff: Eff) {
         when (eff) {
@@ -47,12 +47,12 @@ class DrawingEffectHandler(
                 )
             }
             is Eff.UploadPaths -> {
-                if (!waitingForPathConfirmation.value) {
-                    waitingForPathConfirmation.value = true
-                    pendingPaths.value = null
+                if (!waitingForPathConfirmation) {
+                    waitingForPathConfirmation = true
+                    pendingPaths = null
                     webRtcSendListener(RtcMsg.UpdatePaths(eff.paths))
                 } else {
-                    pendingPaths.value = eff.paths
+                    pendingPaths = eff.paths
                 }
             }
             is Eff.NotifyClear -> {
@@ -76,8 +76,8 @@ class DrawingEffectHandler(
                 Msg.UpdateRemoteImageContainerSize(msg.size)
             }
             RtcMsg.ConfirmUpdatePaths -> {
-                waitingForPathConfirmation.value = false
-                val pendingPaths = pendingPaths.value
+                waitingForPathConfirmation = false
+                val pendingPaths = pendingPaths
                 if (pendingPaths != null) {
                     handleEffect(Eff.UploadPaths(pendingPaths))
                 }

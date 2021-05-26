@@ -2,14 +2,13 @@ package com.well.sharedMobile.puerh.call
 
 import com.well.modules.atomic.AtomicMutableMap
 import com.well.modules.atomic.AtomicRef
-import com.well.modules.atomic.inc
 import com.well.modules.utils.map
 import kotlin.math.min
 
 private typealias ChunkId = Int
 
 class DataChannelChunkManager {
-    private val dataMsgId = AtomicRef(0)
+    private var dataMsgId by AtomicRef(0)
     private val incompleteMessages = AtomicMutableMap<ChunkId, Pair<Set<Int>, ByteArray>>()
     private val maxChunkByteSize = 63000
 
