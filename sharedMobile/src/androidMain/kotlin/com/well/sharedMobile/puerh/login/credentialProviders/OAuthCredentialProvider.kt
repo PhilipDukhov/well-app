@@ -3,18 +3,16 @@ package com.well.sharedMobile.puerh.login.credentialProviders
 import android.app.Activity.RESULT_CANCELED
 import android.content.Intent
 import com.well.sharedMobile.puerh._topLevel.ContextHelper
-import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 
 internal actual class OAuthCredentialProvider actual constructor(
     name: String,
     contextHelper: ContextHelper,
-) : CredentialProvider(contextHelper.context) {
+) : CredentialProvider(contextHelper.appContext) {
     private val oAuthHelper = OAuthHelper(name, contextHelper)
     private var handleActivityResultCancelJob: Job? = null
 

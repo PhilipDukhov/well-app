@@ -1,11 +1,11 @@
 package com.well.modules.utils.dataStore
 
-import com.well.modules.utils.Context
+import com.well.modules.utils.AppContext
 import com.well.modules.utils.platform.Platform
 import com.well.modules.utils.platform.isDebug
 import kotlin.native.concurrent.SharedImmutable
 
-expect class DataStore(context: Context) {
+expect class DataStore(appContext: AppContext) {
     internal inline fun <reified T> getValue(key: Key<T>): T?
     internal inline fun <reified T> setValue(
         value: T?,

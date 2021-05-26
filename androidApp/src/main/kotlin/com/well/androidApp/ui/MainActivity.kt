@@ -16,7 +16,7 @@ import com.well.sharedMobile.puerh.login.credentialProviders.FacebookProvider
 import com.well.sharedMobile.puerh.login.credentialProviders.GoogleProvider
 import com.well.sharedMobile.puerh.login.handleActivityResult
 import com.well.sharedMobile.utils.napier.NapierProxy
-import com.well.modules.utils.Context
+import com.well.modules.utils.AppContext
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.well.sharedMobile.puerh.login.credentialProviders.AppleOAuthProvider
 import com.well.sharedMobile.puerh.login.handleOnNewIntent
@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
 
     private val featureProvider = FeatureProvider(
-        Context(this),
+        AppContext(this),
         webRtcManagerGenerator = { iceServers, listener ->
             WebRtcManager(
                 iceServers,
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                     tokenId = resources.getString(R.string.google_web_client_id)
                 )
                 SocialNetwork.Apple -> AppleOAuthProvider(
-                    context = context,
+                    appContext = context,
                     clientId = resources.getString(R.string.apple_server_client_id),
                     redirectUri = resources.getString(R.string.apple_auth_redirect_url),
                 )

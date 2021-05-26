@@ -14,24 +14,23 @@ import com.well.modules.utils.*
 import com.well.modules.atomic.AtomicLateInitRef
 import com.well.modules.atomic.CloseableContainer
 import com.well.modules.atomic.freeze
+import com.well.modules.db.DatabaseFactory
 import com.well.modules.napier.Napier
-import com.well.modules.utils.base.puerh.SyncFeature
+import com.well.modules.utils.puerh.SyncFeature
 import com.well.modules.utils.dataStore.authToken
 import com.well.modules.utils.dataStore.welcomeShowed
 import com.well.modules.utils.permissionsHandler.PermissionsHandler
-import com.well.modules.utils.permissionsHandler.PermissionsHandler.Type.*
 import com.well.modules.utils.platform.Platform
 import com.well.modules.utils.platform.isDebug
 import com.well.modules.utils.puerh.*
 import com.well.sharedMobile.puerh.login.credentialProviders.OAuthCredentialProvider
 import com.well.sharedMobile.puerh.welcome.WelcomeFeature
-import io.ktor.client.*
 import kotlinx.coroutines.*
 
 class FeatureProvider(
-    val context: Context,
+    val appContext: AppContext,
     internal val webRtcManagerGenerator: (List<String>, WebRtcManagerI.Listener) -> WebRtcManagerI,
-    providerGenerator: (SocialNetwork, Context) -> CredentialProvider,
+    providerGenerator: (SocialNetwork, AppContext) -> CredentialProvider,
 ) {
     private val coroutineContext = Dispatchers.Default
     internal val sessionCloseableContainer = CloseableContainer()
@@ -40,13 +39,13 @@ class FeatureProvider(
             SocialNetwork.Twitter -> {
                 OAuthCredentialProvider("twitter", contextHelper)
             }
-            else -> providerGenerator(network, context)
+            else -> providerGenerator(network, appContext)
         }
     }
-    internal val platform = Platform(context)
-    internal val permissionsHandler = PermissionsHandler(context.permissionsHandlerContext)
+    internal val platform = Platform(appContext)
+    internal val permissionsHandler = PermissionsHandler(appContext.permissionsHandlerContext)
     internal val coroutineScope = CoroutineScope(coroutineContext)
-    internal val contextHelper = ContextHelper(context)
+    internal val contextHelper = ContextHelper(appContext)
     internal val networkManager = AtomicLateInitRef<NetworkManager>()
     internal val nonInitializedUserToken = AtomicLateInitRef<String>()
     internal val callCloseableContainer = CloseableContainer()
@@ -98,7 +97,7 @@ class FeatureProvider(
                     }
                 }
                 Eff.SystemBack -> {
-                    context.systemBack()
+                    appContext.systemBack()
                 }
                 is Eff.LoginEff -> {
                     when (eff.eff) {

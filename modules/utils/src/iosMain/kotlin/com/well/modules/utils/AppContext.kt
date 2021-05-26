@@ -4,7 +4,7 @@ import platform.UIKit.UIApplication
 import platform.UIKit.UIViewController
 import com.well.modules.utils.permissionsHandler.PermissionHandlerContext
 
-actual data class Context(
+actual data class AppContext(
     val rootController: UIViewController,
     val application: UIApplication,
     val launchOptions: Map<Any?, Any>?,

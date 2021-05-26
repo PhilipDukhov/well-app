@@ -8,12 +8,10 @@ import com.well.sharedMobile.utils.ImageContainer
 import com.well.modules.utils.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlin.coroutines.coroutineContext
 
-internal expect class ContextHelper(context: Context) {
-    val context: Context
+internal expect class ContextHelper(appContext: AppContext) {
+    val appContext: AppContext
     fun showAlert(alert: Alert)
     fun showSheet(actions: List<Action>): Closeable
     fun openUrl(url: String)

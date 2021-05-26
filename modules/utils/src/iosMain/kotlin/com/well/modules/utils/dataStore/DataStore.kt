@@ -1,9 +1,9 @@
 package com.well.modules.utils.dataStore
 
-import com.well.modules.utils.Context
+import com.well.modules.utils.AppContext
 import platform.Foundation.NSUserDefaults
 
-actual class DataStore actual constructor(context: Context) {
+actual class DataStore actual constructor(appContext: AppContext) {
     private val userDefaults = NSUserDefaults.standardUserDefaults
 
     internal actual inline fun <reified T> getValue(

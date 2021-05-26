@@ -2,7 +2,7 @@ package com.well.sharedMobile.puerh._topLevel
 
 import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.freeze
-import com.well.modules.utils.Context
+import com.well.modules.utils.AppContext
 import com.well.modules.utils.mapNotNull
 import com.well.modules.utils.resumeWithException
 import com.well.sharedMobile.networking.Constants
@@ -33,7 +33,7 @@ import platform.UIKit.UIViewController
 import platform.darwin.NSObject
 import kotlin.coroutines.resume
 
-internal actual class ContextHelper actual constructor(actual val context: Context) {
+internal actual class ContextHelper actual constructor(actual val appContext: AppContext) {
     actual fun showAlert(alert: Alert) {
         presentViewController(
             UIAlertController.alertControllerWithTitle(
@@ -110,7 +110,7 @@ internal actual class ContextHelper actual constructor(actual val context: Conte
                         }
                     }
                 )
-                session.presentationContextProvider = context.rootController as? ASWebAuthenticationPresentationContextProvidingProtocol
+                session.presentationContextProvider = appContext.rootController as? ASWebAuthenticationPresentationContextProvidingProtocol
                 session.start()
                 continuation.invokeOnCancellation {
                     println("continuation.invokeOnCancellation")
@@ -130,7 +130,7 @@ internal actual class ContextHelper actual constructor(actual val context: Conte
     }
 
     private fun topmostController(): UIViewController {
-        var topmost = context.rootController
+        var topmost = appContext.rootController
         while (topmost.presentedViewController != null && !topmost.presentedViewController!!.isBeingDismissed()) {
             topmost = topmost.presentedViewController!!
         }

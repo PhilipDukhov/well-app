@@ -6,13 +6,13 @@ import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
 import com.well.modules.utils.permissionsHandler.PermissionHandlerContext
 
-actual class Context(val componentActivity: ComponentActivity) {
+actual class AppContext(val androidContext: ComponentActivity) {
     actual val permissionsHandlerContext: PermissionHandlerContext
-        get() = PermissionHandlerContext(componentActivity)
+        get() = PermissionHandlerContext(androidContext)
 
     actual fun systemBack() {
         MainScope().launch {
-            componentActivity.onBackPressedDispatcher.onBackPressed()
+            androidContext.onBackPressedDispatcher.onBackPressed()
         }
     }
 }

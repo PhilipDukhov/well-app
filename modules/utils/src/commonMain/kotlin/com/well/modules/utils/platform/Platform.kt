@@ -1,10 +1,10 @@
 package com.well.modules.utils.platform
 
-import com.well.modules.utils.Context
+import com.well.modules.utils.AppContext
 import com.well.modules.utils.dataStore.DataStore
 
-class Platform(context: Context) {
-    val dataStore = DataStore(context)
+class Platform(appContext: AppContext) {
+    val dataStore = DataStore(appContext)
 
     enum class Platform {
         Ios,

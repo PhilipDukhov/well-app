@@ -6,24 +6,19 @@ import android.net.Uri
 import android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
-import com.well.modules.utils.Context
+import com.well.modules.utils.AppContext
 import com.well.sharedMobile.utils.ImageContainer
 import com.well.modules.atomic.Closeable
 import kotlinx.coroutines.*
 import kotlin.coroutines.resume
 import androidx.browser.customtabs.CustomTabsIntent
-import android.content.pm.ResolveInfo
-import java.lang.Exception
 import androidx.browser.customtabs.CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION
 
 import android.content.pm.PackageManager
-import android.preference.PreferenceManager
-import androidx.browser.customtabs.CustomTabsService
-import androidx.core.content.ContextCompat
 
-internal actual class ContextHelper actual constructor(actual val context: Context) {
+internal actual class ContextHelper actual constructor(actual val appContext: AppContext) {
     actual fun showAlert(alert: Alert) =
-        AlertDialog.Builder(context.componentActivity)
+        AlertDialog.Builder(appContext.androidContext)
             .setTitle(alert.title)
             .setMessage(alert.description)
             .setPositiveButton(alert.positiveAction)
@@ -32,7 +27,7 @@ internal actual class ContextHelper actual constructor(actual val context: Conte
             .show()
 
     actual fun showSheet(actions: List<Action>): Closeable {
-        val builder = BottomSheetDialogBuilder(context.componentActivity)
+        val builder = BottomSheetDialogBuilder(appContext.androidContext)
         actions.forEach(builder::add)
         builder.show()
         return object : Closeable {
@@ -46,7 +41,7 @@ internal actual class ContextHelper actual constructor(actual val context: Conte
 
     actual fun openUrl(url: String) {
         MainScope().launch {
-            context.componentActivity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            appContext.androidContext.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
         }
     }
 
@@ -69,7 +64,7 @@ internal actual class ContextHelper actual constructor(actual val context: Conte
                 )
                 intent
             }
-            context.componentActivity.startActivityForResult(intent, requestCode)
+            appContext.androidContext.startActivityForResult(intent, requestCode)
         }
     }
 
@@ -90,11 +85,11 @@ internal actual class ContextHelper actual constructor(actual val context: Conte
     private fun Alert.Action.handle() = when (this) {
         Alert.Action.Ok -> Unit
         Alert.Action.Settings ->
-            context.componentActivity.startActivity(
+            appContext.androidContext.startActivity(
                 Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                     data = Uri.fromParts(
                         "package",
-                        context.componentActivity.packageName,
+                        appContext.androidContext.packageName,
                         null
                     )
                 }
@@ -115,12 +110,12 @@ internal actual class ContextHelper actual constructor(actual val context: Conte
             continuation = null
         }
 
-    private val imagePickerLauncher = context.componentActivity.registerForActivityResult(
+    private val imagePickerLauncher = appContext.androidContext.registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
         val data = it.data?.data
         if (data != null) {
-            continuation?.resume(ImageContainer(data, context.componentActivity))
+            continuation?.resume(ImageContainer(data, appContext.androidContext))
         } else {
             continuation?.cancel(IllegalStateException("imagePickerLauncher result: ${it.resultCode}"))
         }
@@ -140,7 +135,7 @@ internal actual class ContextHelper actual constructor(actual val context: Conte
 
     private fun getDefaultBrowser(): String? {
         val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com"))
-        val packageManager = context.componentActivity.packageManager
+        val packageManager = appContext.androidContext.packageManager
         val resolveInfo = packageManager.resolveActivity(
             browserIntent,
             PackageManager.MATCH_DEFAULT_ONLY
@@ -150,7 +145,7 @@ internal actual class ContextHelper actual constructor(actual val context: Conte
     }
 
     private fun getCustomTabsPackages(): List<String> {
-        val packageManager = context.componentActivity.packageManager
+        val packageManager = appContext.androidContext.packageManager
         val activityIntent =
             Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com"))
         val resolvedActivityList =
