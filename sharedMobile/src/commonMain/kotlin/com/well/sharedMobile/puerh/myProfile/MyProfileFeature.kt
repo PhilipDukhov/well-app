@@ -8,7 +8,7 @@ import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.State.EditingStatu
 import com.well.sharedMobile.puerh.πModels.NavigationBarModel
 import com.well.sharedMobile.utils.ImageContainer
 import com.well.sharedMobile.utils.profileImage
-import com.well.modules.utils.base.UrlUtil
+import com.well.modules.utils.UrlUtil
 import com.well.modules.utils.toSetOf
 import com.well.modules.utils.withEmptySet
 import com.well.sharedMobile.utils.currentTimeZoneIdentifier

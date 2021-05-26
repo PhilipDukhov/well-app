@@ -1,4 +1,4 @@
-package com.well.modules.utils.base
+package com.well.modules.utils
 
 import android.webkit.URLUtil
 

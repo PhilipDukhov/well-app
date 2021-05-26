@@ -1,11 +1,8 @@
-package com.well.modules.utils.base.puerh
+package com.well.modules.utils.puerh
 
+import com.well.modules.atomic.*
 import com.well.modules.napier.Napier
-import com.well.modules.atomic.AtomicMutableList
-import com.well.modules.atomic.AtomicRef
-import com.well.modules.atomic.Closeable
-import com.well.modules.atomic.addListenerAndMakeCloseable
-import com.well.modules.atomic.notifyAll
+import com.well.modules.utils.puerh.Feature
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlin.coroutines.CoroutineContext
@@ -18,12 +15,8 @@ class SyncFeature<Msg : Any, Model : Any, Eff : Any>(
 ) : Feature<Msg, Model, Eff> {
     private val effectScope = CoroutineScope(Dispatchers.Default)
     private val reducerMutex = Mutex()
-    private val _currentState = AtomicRef(initialState)
-    override var currentState: Model
-        get() = _currentState.value
-        private set(value) {
-            _currentState.value = value
-        }
+    override var currentState by AtomicRef(initialState)
+        private set
 
     private val stateListeners = AtomicMutableList<(state: Model) -> Unit>()
     private val effListeners = AtomicMutableList<(eff: Eff) -> Unit>()
