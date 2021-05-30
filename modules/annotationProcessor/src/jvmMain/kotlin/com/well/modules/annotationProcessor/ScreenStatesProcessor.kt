@@ -1,4 +1,4 @@
-@file:Suppress("MemberVisibilityCanBePrivate")
+@file:Suppress("MemberVisibilityCanBePrivate", "HasPlatformType")
 
 package com.well.modules.annotationProcessor
 
@@ -7,10 +7,12 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.LambdaTypeName
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.TypeVariableName
 import com.well.modules.annotations.ScreenStates
 import java.io.File
 import java.lang.IllegalStateException
@@ -38,6 +40,7 @@ class ScreenStatesProcessor : AbstractProcessor() {
         roundEnv: RoundEnvironment?
     ): Boolean {
         roundEnv?.getElementsAnnotatedWith(ScreenStates::class.java)?.forEach { element ->
+            println("getElementsAnnotatedWith $element")
             if (element.kind != ElementKind.CLASS) {
                 processingEnv.println(
                     Kind.ERROR,
@@ -75,6 +78,8 @@ class ContainerInfo(
     element: Element,
     val processingEnv: ProcessingEnvironment,
 ) {
+    val pairClassName = ClassName("kotlin", "Pair")
+    val setClassName = ClassName("kotlin.collections", "Set")
     val annotation = element.getAnnotation(ScreenStates::class.java)!!
     val packageName = processingEnv.elementUtils.getPackageOf(element).toString()
     val screenStateName = "ScreenState"
@@ -83,15 +88,16 @@ class ContainerInfo(
     val containerFeatureStateClassName = containerFeatureClassName.nestedClass("State")
     val containerFeatureMsgClassName = containerFeatureClassName.nestedClass("Msg")
     val containerFeatureEffClassName = containerFeatureClassName.nestedClass("Eff")
-    val reducerResultClassName = ClassName("kotlin", "Pair")
-        .parameterizedBy(
-            containerFeatureStateClassName,
-            ClassName("kotlin.collections", "Set")
-                .parameterizedBy(containerFeatureEffClassName)
-        )
+    val reducerResultClassName = pairClassName.parameterizedBy(
+        containerFeatureStateClassName,
+        setClassName.parameterizedBy(containerFeatureEffClassName)
+    )
     val featureInfos = annotation.safeFeatures.map {
         FeatureInfo(it, this, processingEnv)
     }
+    val napierClassName = ClassName("com.well.modules.napier", "Napier")
+    val withEmptySetClassName = ClassName("com.well.modules.utils", "withEmptySet")
+    val letNamedClassName = ClassName("com.well.modules.utils", "letNamed")
 
     val ScreenStates.safeFeatures: List<TypeMirror>
         get() {
@@ -136,7 +142,7 @@ class ContainerInfo(
                         )
                         .returns(reducerResultClassName)
                         .addModifiers(KModifier.INTERNAL)
-                        .beginControlFlow("return when(state.currentScreen)")
+                        .beginControlFlow("when (state.topScreen)")
                 featureInfos
                     .forEach { featureInfo ->
                         val reducerFunc = featureInfo.featureReducerFunc()
@@ -162,15 +168,102 @@ class ContainerInfo(
                 addFunction(
                     reduceBackMsgFuncBuilder
                         .addStatement(
-                            "else -> state to setOf(%T.SystemBack)",
-                            containerFeatureEffClassName
+                            """
+                                else -> {
+                                    val tab = state.selectedScreenPosition.tab
+                                    if (state.tabs[tab]!!.count() > 1) {
+                                        state.copyPop(tab).%T()
+                                    } else {
+                                        state to setOf(%T.SystemBack)
+                                    }
+                                }
+                            """.trimIndent(),
+                            withEmptySetClassName,
+                            containerFeatureEffClassName,
                         )
                         .endControlFlow()
                         .build()
                 )
+                addFunction(reduceScreenFunc())
             }
-            .suppressWarningTypes("RedundantVisibilityModifier")
+            .addAnnotation(
+                AnnotationSpec.suppressWarningTypes("RedundantVisibilityModifier")
+            )
             .build()
+
+    fun reduceScreenFunc(): FunSpec {
+        val screenState = TypeVariableName("SS", bounds = listOf(screenStateClassName))
+            .copy(reified = true)
+        val msg = TypeVariableName("M")
+        val state = TypeVariableName("S")
+        val eff = TypeVariableName("E")
+        return FunSpec
+            .builder("reduceScreen")
+            .addModifiers(KModifier.INLINE, KModifier.INTERNAL)
+            .apply {
+                listOf(
+                    screenState,
+                    msg,
+                    state,
+                    eff,
+                ).forEach(::addTypeVariable)
+            }
+            .addParameter(
+                ParameterSpec.builder(
+                    "msg",
+                    msg
+                ).build()
+            )
+            .addParameter(
+                ParameterSpec.builder(
+                    "state",
+                    containerFeatureStateClassName
+                ).build()
+            )
+            .addParameter(
+                ParameterSpec.builder(
+                    "reducer",
+                    LambdaTypeName.get(
+                        returnType = pairClassName.parameterizedBy(
+                            state,
+                            setClassName
+                                .parameterizedBy(eff)
+                        ),
+                        parameters = arrayOf(msg, state),
+                    )
+                ).build()
+            )
+            .addParameter(
+                ParameterSpec.builder(
+                    "effCreator",
+                    LambdaTypeName.get(
+                        returnType = containerFeatureEffClassName,
+                        parameters = arrayOf(eff),
+                    )
+                ).build()
+            )
+            .returns(reducerResultClassName)
+            .addStatement(
+                """
+                val (screen, position) = state.tabs.screenAndPositionOfTopOrNull<SS>(state)
+                    ?: run {
+                        %T.e("reduceScreen ${'$'}msg | ${'$'}state")
+                        return state.%T()
+                    }
+                val (newScreenState, effs) = reducer(msg, screen.baseState as S)
+                val newEffs = effs.mapTo(HashSet(), effCreator)
+                return state.changeScreen<SS>(position) {
+                    baseCopy(newScreenState as Any) as SS
+                } to newEffs
+                """,
+                napierClassName,
+                withEmptySetClassName,
+            )
+            .addAnnotation(
+                AnnotationSpec.suppressWarningTypes("UNCHECKED_CAST")
+            )
+            .build()
+    }
 
     fun statesClass() =
         TypeSpec
@@ -199,7 +292,7 @@ class ContainerInfo(
             )
             .apply {
                 val sealedSubclasses = featureInfos.map { it.featureClass() } +
-                    annotation.empties.map { emptyStateType(it, screenStateClassName) }
+                        annotation.empties.map { emptyStateType(it, screenStateClassName) }
                 sealedSubclasses.forEach(::addType)
             }
             .build()
@@ -230,6 +323,7 @@ class FeatureInfo(
 ) {
     val feature = processingEnv.typeUtils.asElement(featureTypeMirror)!! as TypeElement
     val featureBackMsg = processingEnv.elementUtils.getTypeElement("$feature.Msg.Back")
+    val featurePushEff = processingEnv.elementUtils.getTypeElement("$feature.Eff.Push")
     val featureName = feature.simpleName.toString()
 
     init {
@@ -299,7 +393,7 @@ class FeatureInfo(
             .returns(containerInfo.reducerResultClassName)
             .addStatement(
                 """
-                return reduceScreen<
+                val (newState, effs) = reduceScreen<
                     %T,
                     %T,
                     %T,
@@ -310,7 +404,7 @@ class FeatureInfo(
                     %T::reducer,
                     %T::${featureShortName}Eff
                 ) 
-                """,
+                """.trimIndent(),
                 screenClassName,
                 featureMsgClassName,
                 featureStateClassName,
@@ -318,6 +412,30 @@ class FeatureInfo(
                 featureClassName,
                 containerInfo.containerFeatureEffClassName
             )
+            .apply {
+                if (featurePushEff != null) {
+                    addStatement(
+                        """
+                        effs.mapNotNull {
+                            val pushEff = (it as? %1T.${featureShortName}Eff)?.eff as? %T ?:
+                            return@mapNotNull null
+                            it to pushEff.screen
+                        }.firstOrNull()
+                            ?.%T { pushEff, screen ->
+                                return newState.copyPush(screen = screen) to
+                                        effs.toMutableSet().apply {
+                                            remove(pushEff)
+                                            add(%1T.TopScreenUpdated(screen))
+                                        }
+                            }
+                        """.trimIndent(),
+                        containerInfo.containerFeatureEffClassName,
+                        featurePushEff,
+                        containerInfo.letNamedClassName,
+                    )
+                }
+            }
+            .addStatement("return newState to effs")
             .addModifiers(KModifier.INTERNAL)
             .build()
 }
@@ -332,17 +450,9 @@ fun FunSpec.Companion.baseCopy() =
                 .build()
         )
 
-fun FileSpec.Builder.suppressWarningTypes(vararg types: String): FileSpec.Builder = apply {
-    if (types.isEmpty()) {
-        return@apply
-    }
-
-    val format = "%S,".repeat(types.count()).trimEnd(',')
-    addAnnotation(
-        AnnotationSpec.builder(ClassName("", "Suppress"))
-            .addMember(format, *types)
-            .build()
-    )
-}
+fun AnnotationSpec.Companion.suppressWarningTypes(vararg types: String) =
+    builder(ClassName("", "Suppress"))
+        .addMember("%S,".repeat(types.count()).trimEnd(','), *types)
+        .build()
 
 const val kaptKotlinGeneratedOption = "kapt.kotlin.generated"

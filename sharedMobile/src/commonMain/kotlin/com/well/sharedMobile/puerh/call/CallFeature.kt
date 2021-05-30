@@ -39,6 +39,7 @@ object CallFeature {
                     count = 0,
                     average = 0.0,
                 ),
+                lastEdited = 0.0,
             )
         ).first.run {
             copy(

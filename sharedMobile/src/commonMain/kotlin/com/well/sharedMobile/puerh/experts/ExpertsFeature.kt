@@ -32,9 +32,6 @@ object ExpertsFeature {
     }
 
     sealed class Msg {
-        companion object {
-
-        }
         data class OnConnectionStatusChange(val connectionStatus: NetworkManager.Status) : Msg()
         data class OnUsersUpdated(val users: List<User>) : Msg()
         data class OnUserSelected(val user: User) : Msg()
@@ -150,7 +147,7 @@ object ExpertsFeature {
 
     private fun State.reduceUpdateListIfConnected(): Pair<State, Set<Eff>> =
         copy(
-            updatingFilter = true,
+            updatingFilter = false,
             users = emptyList(),
         ) toSetOf if (connectionStatus == Connected) {
             Eff.UpdateList(filterState.filter)

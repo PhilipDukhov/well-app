@@ -22,6 +22,9 @@ struct MyProfileScreen: View {
         state.navigationBarModel.map {
             ModeledNavigationBar(model: $0, listener: listener)
         }
+        if !state.loaded {
+            ProgressView()
+        }
         ZStack(alignment: .topLeading) {
             ScrollView {
                 ForEach(state.groups, id: \.self) { group in
@@ -39,14 +42,13 @@ struct MyProfileScreen: View {
                 InactiveOverlay(showActivityIndicator: false)
             }
         }.sheet(isPresented: $editingRating) {
-            RatingScreen(user: state.user) { rating in
-                listener(MyProfileFeature.MsgRate(rating: rating))
-                editingRating = false
+            state.user.map { user in
+                RatingScreen(user: user) { rating in
+                    listener(MyProfileFeature.MsgRate(rating: rating))
+                    editingRating = false
+                }
             }
         }
-        CustomTabBar(selected: 0, onExpertsClick: {
-            listener(MyProfileFeature.MsgBack())
-        }).padding()
     }
 
     @ViewBuilder
@@ -246,6 +248,6 @@ private extension User.Type_ {
 
 extension User.RatingInfo: Identifiable {
     public var id: String {
-        "\(currentUserRating?.value)"
+        "\(String(describing: currentUserRating?.value))"
     }
 }

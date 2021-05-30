@@ -11,23 +11,23 @@ import FBSDKCoreKit
 import FBSDKLoginKit
 
 final class FacebookProvider: CredentialProvider {
-    private let context: Context
+    private let appContext: AppContext
     private let loginManager = LoginManager()
     
-    override init(context: Context) {
-        self.context = context
-        super.init(context: context)
+    override init(appContext: AppContext) {
+        self.appContext = appContext
+        super.init(appContext: appContext)
         Settings.isAdvertiserIDCollectionEnabled = false
         ApplicationDelegate.shared.application(
-            context.application,
-            didFinishLaunchingWithOptions: context.launchOptions as? [UIApplication.LaunchOptionsKey: Any]
+            appContext.application,
+            didFinishLaunchingWithOptions: appContext.launchOptions as? [UIApplication.LaunchOptionsKey: Any]
         )
     }
     
     override func getCredentials(completionHandler: @escaping (AuthCredential?, Error?) -> Void) {
         loginManager.logIn(
             permissions: [],
-            viewController: context.rootController
+            viewController: appContext.rootController
         ) { result in
             switch result {
             case let .success(_, _, token):

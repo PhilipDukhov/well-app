@@ -3,7 +3,6 @@ import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
 import org.gradle.kotlin.dsl.add
-import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithPresetFunctions
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 private fun Project.mapAt(
@@ -18,15 +17,6 @@ private fun Project.mapAt(
             ?: throw IllegalStateException("Wrong path: $component missing at $path")
     }
     return Pair(map, last)
-}
-
-val withAndroid: Boolean
-    get() = System.getProperty("withAndroid")!!.toBoolean()
-
-fun KotlinTargetContainerWithPresetFunctions.androidWithAndroid() {
-    if (withAndroid) {
-        android()
-    }
 }
 
 fun Project.libsAt(path: String): List<String> =
@@ -99,12 +89,14 @@ fun NamedDomainObjectCollection<KotlinSourceSet>.usePredefinedExperimentalAnnota
         (annotations.toList() +
                 listOf(
                     "kotlinx.coroutines.InternalCoroutinesApi",
+                    "kotlinx.coroutines.FlowPreview",
+                    "kotlinx.coroutines.ExperimentalCoroutinesApi",
                     "kotlin.ExperimentalUnsignedTypes",
                     "kotlin.contracts.ExperimentalContracts",
                     "kotlin.time.ExperimentalTime",
                     "io.ktor.util.InternalAPI",
                     "io.ktor.util.KtorExperimentalAPI",
-                    "io.ktor.utils.io.core.ExperimentalIoApi"
+                    "io.ktor.utils.io.core.ExperimentalIoApi",
                 )).forEach {
             languageSettings.useExperimentalAnnotation(it)
         }

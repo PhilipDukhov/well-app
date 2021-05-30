@@ -33,7 +33,7 @@ class CallEffectHandler(
         .map { it == NetworkManager.Status.Connected }
         .distinctUntilChanged()
     private val candidates = MutableSharedFlow<WebSocketMsg.Candidate>(replay = Int.MAX_VALUE)
-    private val candidatesSendCloseable = AtomicCloseableRef()
+    private val candidatesSendCloseable = AtomicCloseableRef<Closeable>()
     private val webRtcManager: WebRtcManagerI
     private val imageSharingEffectHandler = DrawingEffectHandler {
         send(RtcMsg.ImageSharingContainer(it))

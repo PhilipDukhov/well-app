@@ -56,7 +56,7 @@ struct ExpertsScreen: View {
             ProgressView()
             Spacer()
         } else if state.users.isEmpty {
-            Text("Тo users satisfying the filter")
+            Text("No users satisfying the filter")
             Spacer()
         } else {
             ScrollView {
@@ -74,72 +74,6 @@ struct ExpertsScreen: View {
                             listener(ExpertsFeature.MsgOnUserFavorite(user: user))
                         }
                         Divider()
-                    }
-                }
-            }
-        }
-        CustomTabBar(selected: 1, onAccountClick: {
-            listener(ExpertsFeature.MsgOnCurrentUserSelected())
-        }).padding()
-    }
-}
-
-struct CustomTabBar: View {
-    struct Item {
-        enum ImageContent {
-            case systemName(String)
-            case uiImage(UIImage)
-        }
-
-        let imageContent: ImageContent
-        let title: String
-        let action: () -> Void
-
-        @ViewBuilder
-        var image: some View {
-            switch imageContent {
-            case .systemName(let name):
-                Image(systemName: name).font(.system(size: 30))
-            case .uiImage(let image):
-                Image(uiImage: image)
-                    .resizable()
-                    .frame(width: 30, height: 26)
-            }
-        }
-    }
-
-    let items: [Item]
-    let selected: Int
-
-    init(selected: Int, onAccountClick: @escaping () -> Void = {
-    }, onExpertsClick: @escaping () -> Void = {
-    }) {
-        self.selected = selected
-        items = [
-            Item(imageContent: .systemName("person.fill"), title: "My Profile", action: onAccountClick),
-            Item(imageContent: .uiImage(R.image.profile.expert()!), title: "Experts", action: onExpertsClick),
-            Item(imageContent: .systemName("message.fill"), title: "Messages", action: {
-            }),
-            Item(imageContent: .systemName("bell.fill"), title: "Notice", action: {
-            }),
-        ]
-    }
-
-    var body: some View {
-        VStack(spacing: 10) {
-            Divider()
-            HStack {
-                ForEachEnumerated(items) { i, item in
-                    Button(action: item.action) {
-                        VStack {
-                            item.image
-                            Text(item.title)
-                                .font(.system(size: 14))
-                        }
-                            .foregroundColor(i == selected ? SwiftUI.Color(hex: 0x1B3D6D) : ColorConstants.LightGray.toColor())
-                    }
-                    if i != items.count {
-                        Spacer()
                     }
                 }
             }

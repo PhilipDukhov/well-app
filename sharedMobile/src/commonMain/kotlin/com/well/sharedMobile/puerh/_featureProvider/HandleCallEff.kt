@@ -9,6 +9,7 @@ import com.well.sharedMobile.puerh.call.CallFeature
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature
 import com.well.modules.atomic.CloseableFuture
 import com.well.modules.atomic.freeze
+import com.well.modules.db.insertOrReplace
 import com.well.modules.utils.permissionsHandler.PermissionsHandler
 import com.well.modules.utils.permissionsHandler.requestPermissions
 import com.well.modules.utils.puerh.addEffectHandler
@@ -34,7 +35,7 @@ internal suspend fun FeatureProvider.handleCallEff(
             )
         }
         is CallFeature.Eff.End -> {
-            networkManager.value.send(
+            networkManager.send(
                 WebSocketMsg.EndCall(WebSocketMsg.EndCall.Reason.Decline)
             )
             endCall(listener)
@@ -90,7 +91,7 @@ private fun FeatureProvider.createWebRtcManagerHandler(
     feature
         .addEffectHandler(
             CallEffectHandler(
-                networkManager.value,
+                networkManager,
                 webRtcManagerGenerator,
                 coroutineScope,
             )
@@ -145,6 +146,11 @@ internal fun FeatureProvider.createWebSocketMessageHandler(
         }
         is WebSocketMsg.EndCall -> {
             endCall(listener)
+        }
+        is WebSocketMsg.UpdateUsers -> {
+            database.usersQueries.transaction {
+                msg.users.forEach(database.usersQueries::insertOrReplace)
+            }
         }
         else -> Unit
     }

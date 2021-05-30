@@ -3,6 +3,9 @@ package com.well.modules.utils.dataStore
 import com.well.modules.utils.AppContext
 import com.well.modules.utils.platform.Platform
 import com.well.modules.utils.platform.isDebug
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import kotlin.native.concurrent.SharedImmutable
 
 expect class DataStore(appContext: AppContext) {
@@ -20,19 +23,13 @@ expect class Key<T> {
 expect inline fun <reified T : Any> createKey(name: String): Key<T>
 
 @SharedImmutable
-internal val deviceUuidKey = createKey<String>("deviceUuidKey")
-var DataStore.deviceUUID: String?
-    get() = getValue(deviceUuidKey)
-    set(value) = setValue(value, deviceUuidKey)
+private val authInfoKey = createKey<String>(if (Platform.isDebug) "debugAuthInfoKey" else "authInfoKey")
+var DataStore.authInfo: AuthInfo?
+    get() = getValue(authInfoKey)?.let { Json.decodeFromString(it) }
+    set(value) = setValue(Json.encodeToString(value), authInfoKey)
 
 @SharedImmutable
-internal val authTokenKey = createKey<String>(if (Platform.isDebug) "debugAuthTokenKey" else "authTokenKey")
-var DataStore.authToken: String?
-    get() = getValue(authTokenKey)
-    set(value) = setValue(value, authTokenKey)
-
-@SharedImmutable
-internal val welcomeShowedKey = createKey<Boolean>("welcomeShowedKey")
+private val welcomeShowedKey = createKey<Boolean>("welcomeShowedKey")
 var DataStore.welcomeShowed: Boolean
     get() = getValue(welcomeShowedKey) ?: false
     set(value) = setValue(value, welcomeShowedKey)

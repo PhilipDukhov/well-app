@@ -8,12 +8,12 @@ import UIKit
 import AuthenticationServices
 
 final class AppleProvider: CredentialProvider {
-    private let context: Context
+    private let appContext: AppContext
     private var completionHandler: ((AuthCredential?, Error?) -> Void)?
 
-    override init(context: Context) {
-        self.context = context
-        super.init(context: context)
+    override init(appContext: AppContext) {
+        self.appContext = appContext
+        super.init(appContext: appContext)
     }
 
     override func getCredentials(completionHandler: @escaping (AuthCredential?, Error?) -> Void) {
@@ -24,7 +24,7 @@ final class AppleProvider: CredentialProvider {
 
         let authorizationController = ASAuthorizationController(authorizationRequests: [request])
         authorizationController.delegate = self
-        authorizationController.presentationContextProvider = context.rootController as? ASAuthorizationControllerPresentationContextProviding
+        authorizationController.presentationContextProvider = appContext.rootController as? ASAuthorizationControllerPresentationContextProviding
         authorizationController.performRequests()
     }
 }

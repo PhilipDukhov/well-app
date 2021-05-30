@@ -192,9 +192,6 @@ fun Application.module() {
             route("user") {
                 put { updateUser(dependencies) }
                 post("uploadProfileImage") { uploadProfileImage(dependencies) }
-                post("filteredList") {
-                    filterUsers(dependencies)
-                }
                 post("rate") {
                     rate(dependencies)
                 }

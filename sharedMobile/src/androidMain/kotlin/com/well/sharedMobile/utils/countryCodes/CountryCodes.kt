@@ -1,7 +1,21 @@
 package com.well.sharedMobile.utils.countryCodes
 
+import android.os.Build
+import com.well.modules.utils.AppContext
+import java.util.*
+
 actual fun countryCodesList(): Set<String> =
-    TODO()
+    Locale.getISOCountries().toSet()
+
+actual fun currentCountryCode(appContext: AppContext): String? =
+    appContext.androidContext.resources.configuration
+        .run {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                locales[0]
+            } else {
+                locale
+            }
+        }?.country?.ifEmpty { null }
 
 actual fun nameForCountryCode(countryCode: String): String =
-    TODO()
+    Locale("", countryCode).country

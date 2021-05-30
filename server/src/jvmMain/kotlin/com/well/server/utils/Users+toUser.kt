@@ -15,6 +15,7 @@ fun Users.toUser(
     User(
         id = id,
         initialized = initialized,
+        lastEdited = lastEdited,
         favorite = if (isCurrent) false else
             database.favoritesQueries.isFavorite(currentUid, id).executeAsOne(),
         fullName = fullName,

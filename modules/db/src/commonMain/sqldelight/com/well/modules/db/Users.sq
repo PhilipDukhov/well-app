@@ -1,0 +1,45 @@
+import com.well.modules.models.User;
+import kotlin.collections.Set;
+
+CREATE TABLE Users (
+    id INTEGER AS Int NOT NULL PRIMARY KEY,
+    initialized INTEGER AS Boolean NOT NULL,
+    lastEdited REAL NOT NULL,
+    fullName TEXT NOT NULL,
+    type TEXT AS User.Type NOT NULL,
+    favorite INTEGER AS Boolean NOT NULL,
+    email TEXT,
+    profileImageUrl TEXT,
+    phoneNumber TEXT,
+    timeZoneIdentifier TEXT,
+    credentials TEXT AS User.Credentials,
+    academicRank TEXT AS User.AcademicRank,
+    languages TEXT AS Set<User.Language> NOT NULL,
+    skills TEXT AS Set<User.Skill> NOT NULL,
+    bio TEXT,
+    education TEXT,
+    professionalMemberships TEXT,
+    publications TEXT,
+    twitter TEXT,
+    doximity TEXT,
+
+    countryCode TEXT,
+    ratingInfo TEXT AS User.RatingInfo NOT NULL
+);
+
+insertOrReplace:
+INSERT OR REPLACE
+INTO Users (id, initialized, lastEdited, fullName, type, favorite, email, profileImageUrl, phoneNumber, timeZoneIdentifier, credentials, academicRank, languages, skills, bio, education, professionalMemberships, publications, twitter, doximity, countryCode, ratingInfo)
+VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+getAllIdsWithEdited:
+SELECT id, lastEdited FROM Users;
+
+getByIds:
+SELECT * FROM Users WHERE id IN ?;
+
+getById:
+SELECT * FROM Users WHERE id = ?;
+
+deleteAll:
+DELETE FROM Users;

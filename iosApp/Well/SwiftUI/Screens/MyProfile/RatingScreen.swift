@@ -53,7 +53,7 @@ struct RatingScreen: View {
                     Spacer().frame(height: 20)
                     starSelector
                     Spacer().frame(height: 50)
-                    textEditor
+                    ProjectTextEditor(placeholder: "Tell us about your experience", text: $text)
                     Spacer().frame(minHeight: 70)
                     Button {
                         send(Rating(value: Int32(selectedRating), text: text))
@@ -65,31 +65,6 @@ struct RatingScreen: View {
                 }
             }.padding()
         }
-    }
-
-    @ViewBuilder
-    private var textEditor: some View {
-        ZStack {
-            TextEditor(text: $text)
-                .fillMaxWidth()
-                .padding(.vertical, 10)
-                .padding(.horizontal, 15)
-            if text.isEmpty {
-                HStack {
-                    Text("Tell us about your experience")
-                        .foregroundColorKMM(ColorConstants.LightGray)
-                        .padding(.vertical, 10)
-                        .padding(.horizontal, 15 + 4)
-                    Spacer()
-                }
-            }
-        }.fillMaxWidth()
-            .frame(minWidth: 150)
-            .overlay(
-                RoundedRectangle(cornerRadius: 14)
-                    .stroke(ColorConstants.LightGray.toColor(), lineWidth: 2)
-                    .padding(1)
-            )
     }
 
     @ViewBuilder

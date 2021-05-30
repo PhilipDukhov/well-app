@@ -1,6 +1,8 @@
 package com.well.modules.utils
 
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 inline fun <A, B, RA, RB> Pair<A, B>.map(
     transformA: (A) -> RA,
@@ -59,10 +61,12 @@ suspend fun <R> tryF(
     throw t
 }
 
-fun <F, S> Pair<F, S>.named(block: (F, S) -> Unit) = block(first, second)
+inline fun <F, S, R> Pair<F, S>.letNamed(block: (F, S) -> R): R {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    return block(first, second)
+}
 
-fun <F, S> Collection<Pair<F, S>>.forEachNamed(block: (F, S) -> Unit) = forEach { it.named(block) }
+fun <F, S> Collection<Pair<F, S>>.forEachNamed(block: (F, S) -> Unit) = forEach { it.letNamed(block) }
 
-fun <A, B, C> Triple<A, B, C>.named(block: (A, B, C) -> Unit) = block(first, second, third)
-
-fun <A, B, C> Collection<Triple<A, B, C>>.forEachNamed(block: (A, B, C) -> Unit) = forEach { it.named(block) }

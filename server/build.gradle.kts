@@ -26,10 +26,11 @@ kotlin {
         withJava()
     }
     sourceSets {
-        usePredefinedExperimentalAnnotations("KtorExperimentalLocationsAPI")
+        usePredefinedExperimentalAnnotations("KtorExperimentalLocationsAPI", "FlowPreview")
         val commonMain by getting {
             libDependencies(
                 ":modules:models",
+                ":modules:dbHelper",
             )
         }
 
@@ -45,6 +46,8 @@ kotlin {
                 "ktor.authJwt",
                 "ktor.metrics",
                 "ktor.websockets",
+                "sqldelight.coroutinesExtensions",
+                "sqldelight.jdbcDriver",
                 "google.apiClient",
                 "google.httpClientApacheV2",
                 "logback",

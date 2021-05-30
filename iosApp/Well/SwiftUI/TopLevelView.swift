@@ -32,37 +32,79 @@ struct TopLevelView: View {
             filterScreen()
         } else {
             switch state.currentScreen {
-            case let state as ScreenState.Welcome:
-                WelcomeScreen(state: state.state) {
-                    listener(TopLevelFeature.MsgWelcomeMsg(msg: $0))
-                }
+            case let screen as TopLevelFeature.StateScreenSingle:
+                screenView(screen: screen.screen)
 
-            case is ScreenState.Launch:
-                EmptyView()
-
-            case let state as ScreenState.Login:
-                LoginScreen(state: state.state) {
-                    listener(TopLevelFeature.MsgLoginMsg(msg: $0))
-                }
-
-            case let state as ScreenState.MyProfile:
-                MyProfileScreen(state: state.state) {
-                    listener(TopLevelFeature.MsgMyProfileMsg(msg: $0))
-                }
-
-            case let state as ScreenState.Experts:
-                ExpertsScreen(state: state.state) {
-                    listener(TopLevelFeature.MsgExpertsMsg(msg: $0))
-                }
-
-            case let state as ScreenState.Call:
-                CallScreen(state: state.state) {
-                    listener(TopLevelFeature.MsgCallMsg(msg: $0))
-                }
+            case let tabsScreen as TopLevelFeature.StateScreenTabs:
+                TabView(selection: Binding<TopLevelFeature.StateTab>(get: { state.selectedTab }, set: { tab in
+                    listener(TopLevelFeature.MsgSelectTab(tab: tab))
+                })) {
+                    ForEachEnumerated(tabsScreen.tabs) { i, tabScreen in
+                        VStack(spacing: 0) {
+                            screenView(screen: tabScreen.screen)
+                        }
+                            .tabItem {
+                                tabScreen.tab.icon()
+                                Text("\(tabScreen.tab)")
+                            }
+                            .tag(tabScreen.tab)
+                    }
+                }.accentColor(SwiftUI.Color(hex: 0x1B3D6D))
 
             default:
-                EmptyView()
+                fatalError("state.currentScreen unexpected \(state.currentScreen)")
             }
+        }
+    }
+
+    @ViewBuilder
+    func screenView(screen: ScreenState) -> some View {
+        switch screen {
+        case let state as ScreenState.Welcome:
+            WelcomeScreen(state: state.state) {
+                listener(TopLevelFeature.MsgWelcomeMsg(msg: $0))
+            }
+
+        case is ScreenState.Launch:
+            EmptyView()
+
+        case let state as ScreenState.Login:
+            LoginScreen(state: state.state) {
+                listener(TopLevelFeature.MsgLoginMsg(msg: $0))
+            }
+
+        case let state as ScreenState.MyProfile:
+            MyProfileScreen(state: state.state) {
+                listener(TopLevelFeature.MsgMyProfileMsg(msg: $0))
+            }
+
+        case let state as ScreenState.Experts:
+            ExpertsScreen(state: state.state) {
+                listener(TopLevelFeature.MsgExpertsMsg(msg: $0))
+            }
+
+        case let state as ScreenState.Call:
+            CallScreen(state: state.state) {
+                listener(TopLevelFeature.MsgCallMsg(msg: $0))
+            }
+
+        case let state as ScreenState.More:
+            MoreScreen(state: state.state) {
+                listener(TopLevelFeature.MsgMoreMsg(msg: $0))
+            }
+
+        case let state as ScreenState.About:
+            AboutScreen(state: state.state) {
+                listener(TopLevelFeature.MsgAboutMsg(msg: $0))
+            }
+
+        case let state as ScreenState.Support:
+            SupportScreen(state: state.state) {
+                listener(TopLevelFeature.MsgSupportMsg(msg: $0))
+            }
+
+        default:
+            EmptyView()
         }
     }
 
@@ -111,5 +153,29 @@ final class TimeCounter {
         return times.map {
             $0.1
         }.reduce(0, +) / (times[0].0.timeIntervalSince(times.last!.0))
+    }
+}
+
+private extension TopLevelFeature.StateTab {
+    func icon() -> Image {
+        switch self {
+        case .myprofile:
+            return Image(systemName: "person.fill")
+        case .experts:
+            return Image(uiImage: R.image.profile.expert()!)
+        case .more:
+            return Image(systemName: "ellipsis")
+
+//            calendar "My calendar"
+//            person.badge.plus "Invite a colleague"
+//            building.columns "WELL Academy"
+//            clock.arrow.circlepath "Activity history"
+//            face.smiling "Sponsor & donate"
+//            wrench "Technical support"
+//            info.circle "About"
+
+        default:
+            fatalError("need image for tab \(self)")
+        }
     }
 }

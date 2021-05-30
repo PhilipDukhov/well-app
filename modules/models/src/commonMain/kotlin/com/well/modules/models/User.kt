@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 data class User(
     val id: UserId,
     val initialized: Boolean = true,
+    val lastEdited: Double,
     val favorite: Boolean = false,
     val fullName: String,
     val type: Type,

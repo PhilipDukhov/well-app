@@ -1,13 +1,15 @@
 package com.well.sharedMobile.puerh._topLevel
 
 import com.well.modules.napier.Napier
+import com.well.modules.utils.toSetOf
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.State
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.State.*
 import com.well.modules.utils.withEmptySet
+import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.Eff
 
-typealias ReducerResult = Pair<State, Set<TopLevelFeature.Eff>>
+typealias ReducerResult = Pair<State, Set<Eff>>
 
-private inline fun <reified R : ScreenState> Map<Tab, List<ScreenState>>.screenAndPositionOfTopOrNull(
+internal inline fun <reified R : ScreenState> Map<Tab, List<ScreenState>>.screenAndPositionOfTopOrNull(
     state: State,
 ): Pair<R, ScreenPosition>? {
     keys.sortedBy { tab ->
@@ -39,7 +41,7 @@ internal fun State.copyReplace(
 }
 
 internal fun State.copyPush(
-    tab: Tab,
+    tab: Tab = selectedScreenPosition.tab,
     screen: ScreenState,
 ): State {
     val (tabs, screenPosition) = tabs.push(tab, screen)
@@ -51,7 +53,7 @@ internal fun State.copyPush(
 
 internal fun State.copyPop(
     tab: Tab = selectedScreenPosition.tab,
-    fallbackTab: Tab = Tab.Main,
+    fallbackTab: Tab = Tab.Experts,
 ): State {
     val (tabs, screenPosition) = tabs.pop(tab, fallbackTab)
     return copy(
@@ -62,7 +64,7 @@ internal fun State.copyPop(
 
 internal fun State.copyHideTab(
     tab: Tab,
-    fallbackTab: Tab = Tab.Main,
+    fallbackTab: Tab = Tab.Experts,
 ): State {
     val (tabs, screenPosition) = tabs.modify(tab, fallbackTab) {
         listOf()
@@ -128,21 +130,4 @@ internal fun <T : ScreenState> Map<Tab, List<ScreenState>>.copy(
         }
 }
 
-@Suppress("UNCHECKED_CAST")
-internal inline fun <reified SS : ScreenState, M, S, E> reduceScreen(
-    msg: M,
-    state: State,
-    reducer: (M, S) -> Pair<S, Set<E>>,
-    effCreator: (E) -> TopLevelFeature.Eff,
-): ReducerResult {
-    val (screen, position) = state.tabs.screenAndPositionOfTopOrNull<SS>(state)
-        ?: run {
-            Napier.e("reduceScreen $msg | $state")
-            return state.withEmptySet()
-        }
-    val (newScreenState, effs) = reducer(msg, screen.baseState as S)
-    val newEffs = effs.mapTo(HashSet(), effCreator)
-    return state.changeScreen<SS>(position) {
-        baseCopy(newScreenState as Any) as SS
-    } to newEffs
-}
+internal fun State.reduceScreenChanged() = this toSetOf Eff.TopScreenUpdated(topScreen)

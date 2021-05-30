@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform")
+    kotlin("plugin.serialization")
     if (withAndroid) {
         id("com.android.library")
     }
@@ -15,6 +16,7 @@ kotlin {
                 ":modules:napier",
                 ":modules:atomic",
                 "kotlin.coroutines.core",
+                "kotlin.serializationJson",
                 "kotlin.stdLib",
             )
         }

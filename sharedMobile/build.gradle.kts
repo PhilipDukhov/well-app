@@ -55,10 +55,12 @@ kotlin {
             libDependencies(
                 ":modules:atomic",
                 ":modules:annotations",
+                ":modules:db",
                 "kotlin.serializationJson",
-                "ktor.client.core",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",
+                "ktor.client.core",
+                "sqldelight.coroutinesExtensions",
             )
             dependencies {
                 iosExportModules.forEach {

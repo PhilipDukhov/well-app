@@ -22,22 +22,22 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         NapierProxy().initializeLogging()
         // swiftlint:disable:next trailing_closure
         featureProvider = FeatureProvider(
-            context: .init(
+            appContext: .init(
                 rootController: rootViewController,
                 application: application,
                 launchOptions: launchOptions
             ),
             webRtcManagerGenerator: WebRtcManager.init,
-            providerGenerator: { socialNetwork, context -> CredentialProvider in
+            providerGenerator: { socialNetwork, appContext -> CredentialProvider in
                 switch socialNetwork {
                 case .facebook:
-                    return FacebookProvider(context: context)
+                    return FacebookProvider(appContext: appContext)
 
                 case .google:
-                    return GoogleProvider(context: context)
+                    return GoogleProvider(appContext: appContext)
 
                 case .apple:
-                    return AppleProvider(context: context)
+                    return AppleProvider(appContext: appContext)
 
                 default: fatalError()
                 }

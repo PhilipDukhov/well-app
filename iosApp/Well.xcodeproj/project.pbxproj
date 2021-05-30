@@ -9,12 +9,16 @@
 /* Begin PBXBuildFile section */
 		0902BD0460D4849CA1790CBB /* Pods_Well.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8560B869390C33CC211DA86 /* Pods_Well.framework */; };
 		347D1284F7802A92EBD89A49 /* RatingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D120E9EF2045F5DDC5CD6 /* RatingScreen.swift */; };
+		347D15604CDC1A62ED92D445 /* ProjectTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D13C627400CA9EA09C776 /* ProjectTextEditor.swift */; };
 		347D15DDABDD467C0CC08BF1 /* RatingInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D10162C3E3F617B8B7A24 /* RatingInfoView.swift */; };
 		347D1737EF6D0ED04DA9AC65 /* ForEachEnumerated.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D1C3FB3AB18BE58691534 /* ForEachEnumerated.swift */; };
 		347D178406E17BBA44CDAA45 /* SelectableHVStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D1AAC642FF35292FB7CA4 /* SelectableHVStack.swift */; };
 		347D1A25C3F01A6BE29610D2 /* UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D17D8B928F2A6E88E67E8 /* UIKit.swift */; };
 		347D1A87588CBF1F893DF5A8 /* ActionButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D153B0C1410B1F25CD661 /* ActionButtonStyle.swift */; };
 		347D1B5FCCA8AC2CBCFFF0DD /* ToggleFavoriteButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D14BAE525CB97AED4334F /* ToggleFavoriteButton.swift */; };
+		347D1EF0863AA4967A9629E1 /* SupportScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D1015E6F913660F210818 /* SupportScreen.swift */; };
+		347D1FC94691586F8E442AEF /* AboutScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D13A469E07DE98EF0A87D /* AboutScreen.swift */; };
+		4A3A82BA26626D70003DD1F3 /* MoreScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D19F97DCC9822CBBE4C71 /* MoreScreen.swift */; };
 		4A570D4E2642760200569A40 /* R.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51625602503C945009E103B /* R.generated.swift */; };
 		4AE3A0F626443820005BB554 /* FilterScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE3A0F526443820005BB554 /* FilterScreen.swift */; };
 		7555FF7F242A565900829871 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF7E242A565900829871 /* AppDelegate.swift */; };
@@ -96,11 +100,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		347D1015E6F913660F210818 /* SupportScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SupportScreen.swift; sourceTree = "<group>"; };
 		347D10162C3E3F617B8B7A24 /* RatingInfoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatingInfoView.swift; sourceTree = "<group>"; };
 		347D120E9EF2045F5DDC5CD6 /* RatingScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatingScreen.swift; sourceTree = "<group>"; };
+		347D13A469E07DE98EF0A87D /* AboutScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutScreen.swift; sourceTree = "<group>"; };
+		347D13C627400CA9EA09C776 /* ProjectTextEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectTextEditor.swift; sourceTree = "<group>"; };
 		347D14BAE525CB97AED4334F /* ToggleFavoriteButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToggleFavoriteButton.swift; sourceTree = "<group>"; };
 		347D153B0C1410B1F25CD661 /* ActionButtonStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionButtonStyle.swift; sourceTree = "<group>"; };
 		347D17D8B928F2A6E88E67E8 /* UIKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIKit.swift; sourceTree = "<group>"; };
+		347D19F97DCC9822CBBE4C71 /* MoreScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MoreScreen.swift; sourceTree = "<group>"; };
 		347D1AAC642FF35292FB7CA4 /* SelectableHVStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SelectableHVStack.swift; sourceTree = "<group>"; };
 		347D1C3FB3AB18BE58691534 /* ForEachEnumerated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForEachEnumerated.swift; sourceTree = "<group>"; };
 		4AE3A0F526443820005BB554 /* FilterScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterScreen.swift; sourceTree = "<group>"; };
@@ -193,6 +201,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		347D13C2A748FF89D63D6154 /* More */ = {
+			isa = PBXGroup;
+			children = (
+				347D19F97DCC9822CBBE4C71 /* MoreScreen.swift */,
+				347D13A469E07DE98EF0A87D /* AboutScreen.swift */,
+				347D1015E6F913660F210818 /* SupportScreen.swift */,
+			);
+			path = More;
+			sourceTree = "<group>";
+		};
 		4AE3A0F426443813005BB554 /* Filter */ = {
 			isa = PBXGroup;
 			children = (
@@ -306,6 +324,7 @@
 				347D1AAC642FF35292FB7CA4 /* SelectableHVStack.swift */,
 				347D1C3FB3AB18BE58691534 /* ForEachEnumerated.swift */,
 				347D14BAE525CB97AED4334F /* ToggleFavoriteButton.swift */,
+				347D13C627400CA9EA09C776 /* ProjectTextEditor.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -453,6 +472,7 @@
 				D5F0A09A2578AC29002A55DB /* Experts */,
 				D5087658259A64A2000A57E5 /* Call */,
 				D556940825D471D60012EA36 /* MyProfile */,
+				347D13C2A748FF89D63D6154 /* More */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -705,6 +725,7 @@
 				D56803342638320400CFE16B /* ImageLoader.swift in Sources */,
 				D5680319263831A500CFE16B /* Bundle+displayName.swift in Sources */,
 				D568033F2638322500CFE16B /* SelectionScreen.swift in Sources */,
+				4A3A82BA26626D70003DD1F3 /* MoreScreen.swift in Sources */,
 				D56803422638322500CFE16B /* MyProfileScreen.swift in Sources */,
 				4A570D4E2642760200569A40 /* R.generated.swift in Sources */,
 				D568034E26383DA900CFE16B /* SearchBar.swift in Sources */,
@@ -726,6 +747,9 @@
 				347D1B5FCCA8AC2CBCFFF0DD /* ToggleFavoriteButton.swift in Sources */,
 				347D1284F7802A92EBD89A49 /* RatingScreen.swift in Sources */,
 				347D1A25C3F01A6BE29610D2 /* UIKit.swift in Sources */,
+				347D1FC94691586F8E442AEF /* AboutScreen.swift in Sources */,
+				347D1EF0863AA4967A9629E1 /* SupportScreen.swift in Sources */,
+				347D15604CDC1A62ED92D445 /* ProjectTextEditor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -883,6 +907,74 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"c++\"",
+					"-l\"stdc++\"",
+					"-l\"z\"",
+					"-framework",
+					"\"AppAuth\"",
+					"-framework",
+					"\"CoreGraphics\"",
+					"-framework",
+					"\"CoreText\"",
+					"-framework",
+					"\"FBSDKCoreKit\"",
+					"-framework",
+					"\"FBSDKLoginKit\"",
+					"-framework",
+					"\"Foundation\"",
+					"-framework",
+					"\"GTMAppAuth\"",
+					"-framework",
+					"\"GTMSessionFetcher\"",
+					"-framework",
+					"\"GoogleSignIn\"",
+					"-framework",
+					"\"Introspect\"",
+					"-framework",
+					"\"LocalAuthentication\"",
+					"-framework",
+					"\"Rswift\"",
+					"-framework",
+					"\"SafariServices\"",
+					"-framework",
+					"\"Security\"",
+					"-framework",
+					"\"SharedMobile\"",
+					"-framework",
+					"\"SystemConfiguration\"",
+					"-framework",
+					"\"UIKit\"",
+					"-framework",
+					"\"WebRTC\"",
+					"-weak_framework",
+					"\"Accelerate\"",
+					"-weak_framework",
+					"\"Accounts\"",
+					"-weak_framework",
+					"\"AdSupport\"",
+					"-weak_framework",
+					"\"AudioToolbox\"",
+					"-weak_framework",
+					"\"AuthenticationServices\"",
+					"-weak_framework",
+					"\"CoreGraphics\"",
+					"-weak_framework",
+					"\"Foundation\"",
+					"-weak_framework",
+					"\"QuartzCore\"",
+					"-weak_framework",
+					"\"Security\"",
+					"-weak_framework",
+					"\"Social\"",
+					"-weak_framework",
+					"\"StoreKit\"",
+					"-weak_framework",
+					"\"UIKit\"",
+					"-lsqlite3",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.well.app.debug;
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME)";
@@ -911,6 +1003,74 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-l\"c++\"",
+					"-l\"stdc++\"",
+					"-l\"z\"",
+					"-framework",
+					"\"AppAuth\"",
+					"-framework",
+					"\"CoreGraphics\"",
+					"-framework",
+					"\"CoreText\"",
+					"-framework",
+					"\"FBSDKCoreKit\"",
+					"-framework",
+					"\"FBSDKLoginKit\"",
+					"-framework",
+					"\"Foundation\"",
+					"-framework",
+					"\"GTMAppAuth\"",
+					"-framework",
+					"\"GTMSessionFetcher\"",
+					"-framework",
+					"\"GoogleSignIn\"",
+					"-framework",
+					"\"Introspect\"",
+					"-framework",
+					"\"LocalAuthentication\"",
+					"-framework",
+					"\"Rswift\"",
+					"-framework",
+					"\"SafariServices\"",
+					"-framework",
+					"\"Security\"",
+					"-framework",
+					"\"SharedMobile\"",
+					"-framework",
+					"\"SystemConfiguration\"",
+					"-framework",
+					"\"UIKit\"",
+					"-framework",
+					"\"WebRTC\"",
+					"-weak_framework",
+					"\"Accelerate\"",
+					"-weak_framework",
+					"\"Accounts\"",
+					"-weak_framework",
+					"\"AdSupport\"",
+					"-weak_framework",
+					"\"AudioToolbox\"",
+					"-weak_framework",
+					"\"AuthenticationServices\"",
+					"-weak_framework",
+					"\"CoreGraphics\"",
+					"-weak_framework",
+					"\"Foundation\"",
+					"-weak_framework",
+					"\"QuartzCore\"",
+					"-weak_framework",
+					"\"Security\"",
+					"-weak_framework",
+					"\"Social\"",
+					"-weak_framework",
+					"\"StoreKit\"",
+					"-weak_framework",
+					"\"UIKit\"",
+					"-lsqlite3",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.well.app;

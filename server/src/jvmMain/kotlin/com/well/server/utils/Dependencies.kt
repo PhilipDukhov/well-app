@@ -1,10 +1,9 @@
 package com.well.server.utils
 
 import com.well.modules.models.UserId
-import com.well.modules.models.WebSocketMsg
 import com.well.modules.models.createBaseHttpClient
+import com.well.server.routing.user.UserSession
 import io.ktor.application.*
-import io.ktor.http.cio.websocket.*
 import java.util.*
 
 class Dependencies(app: Application) {
@@ -20,23 +19,23 @@ class Dependencies(app: Application) {
             environment.configProperty("aws.bucketName"),
         )
     }
-    val connectedUserSessions: MutableMap<UserId, WebSocketSession> = Collections.synchronizedMap(
-        mutableMapOf<UserId, WebSocketSession>()
+    val connectedUserSessions: MutableMap<UserId, UserSession> = Collections.synchronizedMap(
+        mutableMapOf<UserId, UserSession>()
     )
 
     val client = createBaseHttpClient()
 
     suspend fun notifyCurrentUserUpdated(id: UserId) {
-        connectedUserSessions[id]?.let { session ->
-            session.send(
-                WebSocketMsg.CurrentUser(
-                    getCurrentUser(id).also {
-                        println("getCurrentUser $it")
-                    }
-                )
-            )
-            notifyOnline()
-        }
+//        connectedUserSessions[id]?.let { session ->
+//            session.send(
+//                WebSocketMsg.CurrentUser(
+//                    getCurrentUser(id).also {
+//                        println("getCurrentUser $it")
+//                    }
+//                )
+//            )
+//            notifyOnline()
+//        }
     }
 
     suspend fun notifyOnline() = connectedUserSessions.run {

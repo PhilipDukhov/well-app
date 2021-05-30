@@ -10,19 +10,19 @@ import SharedMobile
 import GoogleSignIn
 
 final class GoogleProvider: CredentialProvider {
-    private let context: Context
+    private let appContext: AppContext
     private let signIn = GIDSignIn.sharedInstance()!
     // swiftlint:disable:next weak_delegate
     private var signInDelegate: Delegate?
     
-    override init(context: Context) {
-        self.context = context
-        super.init(context: context)
+    override init(appContext: AppContext) {
+        self.appContext = appContext
+        super.init(appContext: appContext)
         signIn.clientID = Bundle.main.object(forInfoDictionaryKey: "googleClientId") as? String
     }
     
     override func getCredentials(completionHandler: @escaping (AuthCredential?, Error?) -> Void) {
-        signIn.presentingViewController = context.rootController
+        signIn.presentingViewController = appContext.rootController
         signInDelegate = Delegate(completionHandler: completionHandler)
         signIn.delegate = signInDelegate
         signIn.signIn()

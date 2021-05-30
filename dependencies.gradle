@@ -88,11 +88,6 @@ ext.Libs = [
                 websockets   : "io.ktor:ktor-websockets:$versions.ktor",
         ],
         server                     : [
-                sqldelight                  : [
-                        runtimeJvm          : "com.squareup.sqldelight:runtime-jvm:$versions.sqldelight",
-                        jdbcDriver          : "com.squareup.sqldelight:jdbc-driver:$versions.sqldelight",
-                        coroutinesExtensions: "com.squareup.sqldelight:coroutines-extensions:$versions.sqldelight",
-                ],
                 aws                         : [
                         s3 : "com.amazonaws:aws-java-sdk-s3:$versions.aws",
                         sns: "com.amazonaws:aws-java-sdk-sns:$versions.aws",
@@ -107,11 +102,18 @@ ext.Libs = [
                 ],
                 micrometerRegistryPrometheus: "io.micrometer:micrometer-registry-prometheus:1.6.5",
         ],
+        sqldelight                 : [
+                runtime      : "com.squareup.sqldelight:runtime:$versions.sqldelight",
+                coroutinesExtensions: "com.squareup.sqldelight:coroutines-extensions:$versions.sqldelight",
+                androidDriver: "com.squareup.sqldelight:android-driver:$versions.sqldelight",
+                nativeDriver : "com.squareup.sqldelight:native-driver:$versions.sqldelight",
+                jdbcDriver          : "com.squareup.sqldelight:jdbc-driver:$versions.sqldelight",
+        ],
         tests                      : [
                 junit: "junit:junit:4.13.2",
         ],
 ]
 def gradlePluginVersion = System.getProperty("gradlePluginVersion")
 if (gradlePluginVersion != null) {
-        ext.Libs["build"]["gradle"] = "com.android.tools.build:gradle:$gradlePluginVersion"
+    ext.Libs["build"]["gradle"] = "com.android.tools.build:gradle:$gradlePluginVersion"
 }

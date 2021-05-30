@@ -34,6 +34,15 @@ struct NavigationBar<Title: View, LV: View, RV: View>: View {
     let minContentHeight: CGFloat?
 
     init(
+        title: String
+    ) where Title == Text, RV == EmptyView, LV == EmptyView {
+        self.title = Self.createTitle(title)
+        self.leftItem = nil
+        self.rightItem = nil
+        self.minContentHeight = nil
+    }
+
+    init(
         title: Title
     ) where RV == EmptyView, LV == EmptyView {
         self.title = title

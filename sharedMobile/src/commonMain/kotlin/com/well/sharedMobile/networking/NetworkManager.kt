@@ -10,7 +10,6 @@ import com.well.sharedMobile.puerh.call.resizedImage
 import com.well.sharedMobile.utils.ImageContainer
 import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
-import com.well.modules.utils.MutableStateFlow
 import com.well.modules.atomic.*
 import com.well.modules.napier.Napier
 import com.well.modules.utils.tryF
@@ -52,10 +51,8 @@ class NetworkManager(
     private val listeners = AtomicMutableList<WebSocketMessageListener>()
 
     private val _state = MutableStateFlow(Disconnected)
-    private val _currentUser = MutableStateFlow<User?>()
 
     val state = _state.asStateFlow()
-    val currentUser = _currentUser.asStateFlow()
 
     init {
         webSocketScope.launch {
@@ -67,16 +64,12 @@ class NetworkManager(
                         _state.value = Connected
                         for (string in incoming) {
                             Napier.i("websocket msg: $string")
-                            val msg = Json.decodeFromString(
-                                WebSocketMsg.serializer(),
-                                string
+                            listeners.notifyAll(
+                                Json.decodeFromString(
+                                    WebSocketMsg.serializer(),
+                                    string
+                                )
                             )
-                            when (msg) {
-                                is WebSocketMsg.CurrentUser ->
-                                    _currentUser.value = msg.user
-                                else ->
-                                    listeners.notifyAll(msg)
-                            }
                         }
                     }
                 } catch (t: Throwable) {
@@ -153,12 +146,6 @@ class NetworkManager(
     suspend fun putUser(user: User) = tryCheckAuth {
         client.client.put<Unit>("/user") {
             body = user
-        }
-    }
-
-    suspend fun filteredUsersList(filter: UsersFilter) = tryCheckAuth {
-        client.client.post<List<User>>("/user/filteredList") {
-            body = filter
         }
     }
 

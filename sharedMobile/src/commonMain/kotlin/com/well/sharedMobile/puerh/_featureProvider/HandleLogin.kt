@@ -1,21 +1,28 @@
 package com.well.sharedMobile.puerh._featureProvider
 
+import com.well.modules.atomic.asCloseable
+import com.well.modules.db.insertOrReplace
+import com.well.modules.db.usersPresenceFlow
 import com.well.modules.models.AuthResponse
 import com.well.modules.models.User
-import com.well.sharedMobile.networking.NetworkManager
-import com.well.sharedMobile.puerh._topLevel.Alert
-import com.well.sharedMobile.puerh._topLevel.TopLevelFeature
-import com.well.sharedMobile.puerh.login.LoginFeature
-import com.well.sharedMobile.puerh.login.SocialNetwork
-import com.well.sharedMobile.puerh.experts.ExpertsApiEffectHandler
-import com.well.modules.utils.dataStore.authToken
-import com.well.modules.utils.dataStore.deviceUUID
+import com.well.modules.models.WebSocketMsg
+import com.well.modules.utils.dataStore.AuthInfo
+import com.well.modules.utils.dataStore.authInfo
 import com.well.modules.utils.puerh.EffectHandler
 import com.well.modules.utils.puerh.adapt
 import com.well.modules.utils.puerh.wrapWithEffectHandler
-import com.well.modules.utils.randomUUIDString
+import com.well.sharedMobile.networking.NetworkManager
+import com.well.sharedMobile.puerh._topLevel.Alert
+import com.well.sharedMobile.puerh._topLevel.ScreenState
+import com.well.sharedMobile.puerh._topLevel.TopLevelFeature
+import com.well.sharedMobile.puerh.experts.ExpertsApiEffectHandler
+import com.well.sharedMobile.puerh.login.LoginFeature
+import com.well.sharedMobile.puerh.login.SocialNetwork
+import com.well.sharedMobile.puerh.myProfile.MyProfileFeature
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 suspend fun FeatureProvider.socialNetworkLogin(
@@ -37,51 +44,77 @@ fun FeatureProvider.gotAuthResponse(
     authResponse: AuthResponse,
     listener: (TopLevelFeature.Msg) -> Unit,
 ) {
+    val authInfo = authResponse.toAuthInfo()
     if (!authResponse.user.initialized) {
-        nonInitializedUserToken.value = authResponse.token
-        sessionCloseableContainer.close()
-        networkManager.value = NetworkManager(
+        nonInitializedAuthInfo.value = authInfo
+        networkManager = NetworkManager(
             authResponse.token,
             startWebSocket = false,
             unauthorizedHandler = {
-                sessionCloseableContainer.close()
+                sessionInfo = null
             })
-        sessionCloseableContainer.addCloseableChild(networkManager.value)
-        listener.invoke(TopLevelFeature.Msg.OpenUserProfile(authResponse.user, isCurrent = true))
+        sessionInfo!!.addCloseableChild(networkManager)
+        listener.invoke(
+            TopLevelFeature.Msg.Push(
+                ScreenState.MyProfile(
+                    MyProfileFeature.initialState(
+                        isCurrent = true,
+                        authResponse.user
+                    )
+                )
+            )
+        )
     } else {
-        loggedIn(authResponse.token, listener)
+        loggedIn(authInfo, user = authResponse.user, listener = listener)
     }
 }
 
 fun FeatureProvider.loggedIn(
-    token: String,
+    authInfo: AuthInfo,
+    user: User? = null,
     listener: (TopLevelFeature.Msg) -> Unit,
 ) {
-    sessionCloseableContainer.close()
-    networkManager.value = NetworkManager(token, startWebSocket = true, unauthorizedHandler = {
+    sessionInfo = SessionInfo(authInfo.id)
+    user?.let(database.usersQueries::insertOrReplace)
+    networkManager = NetworkManager(authInfo.token, startWebSocket = true, unauthorizedHandler = {
         logOut(listener)
     })
     val effectHandler: EffectHandler<TopLevelFeature.Eff, TopLevelFeature.Msg> =
         ExpertsApiEffectHandler(
-            networkManager.value,
+            networkManager,
+            database,
             coroutineScope,
         ).adapt(
             effAdapter = { (it as? TopLevelFeature.Eff.ExpertsEff)?.eff },
             msgAdapter = { TopLevelFeature.Msg.ExpertsMsg(it) }
         )
     listOf(
-        networkManager.value
+        networkManager
             .addListener(createWebSocketMessageHandler(listener)),
+        notifyUsersDBPresenceCloseable(),
         effectHandler,
-        networkManager.value,
-    ).forEach(sessionCloseableContainer::addCloseableChild)
+        networkManager,
+    ).forEach(sessionInfo!!::addCloseableChild)
     feature.wrapWithEffectHandler(effectHandler)
-    platform.dataStore.authToken = token
-    listener.invoke(TopLevelFeature.Msg.LoggedIn)
+    platform.dataStore.authInfo = authInfo
+    listener.invoke(TopLevelFeature.Msg.LoggedIn(authInfo.id))
 }
 
 fun FeatureProvider.logOut(listener: (TopLevelFeature.Msg) -> Unit) {
-    sessionCloseableContainer.close()
-    platform.dataStore.authToken = null
+    sessionInfo = null
+    platform.dataStore.authInfo = null
+    database.usersQueries.deleteAll()
     listener.invoke(TopLevelFeature.Msg.OpenLoginScreen)
 }
+
+private fun AuthResponse.toAuthInfo() = AuthInfo(token = token, id = user.id)
+
+private fun FeatureProvider.notifyUsersDBPresenceCloseable() =
+    coroutineScope.launch {
+        networkManager.state
+            .filter { it == NetworkManager.Status.Connected }
+            .combine(database.usersQueries.usersPresenceFlow()) { _, usersPresence ->
+                WebSocketMsg.SetUsersPresence(usersPresence)
+            }
+            .collect(networkManager::send)
+    }.asCloseable()

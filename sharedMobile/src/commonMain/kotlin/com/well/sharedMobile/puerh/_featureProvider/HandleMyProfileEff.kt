@@ -4,7 +4,6 @@ import com.well.modules.napier.Napier
 import com.well.sharedMobile.puerh._topLevel.*
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Eff
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
-import com.well.modules.utils.dataStore.authToken
 import com.well.sharedMobile.puerh.experts.ExpertsFeature
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -36,7 +35,7 @@ internal suspend fun FeatureProvider.handleMyProfileEff(
             }
         }
         is Eff.UploadUser -> {
-            networkManager.value.apply {
+            networkManager.apply {
                 var user = eff.user
                 if (eff.newProfileImage != null) {
                     user = user.copy(profileImageUrl = uploadImage(user.id, eff.newProfileImage))
@@ -55,7 +54,7 @@ internal suspend fun FeatureProvider.handleMyProfileEff(
             }
         }
         is Eff.SetUserFavorite -> {
-            networkManager.value.setFavorite(eff.setter)
+            networkManager.setFavorite(eff.setter)
         }
         is Eff.ShowError
         -> {
@@ -65,7 +64,7 @@ internal suspend fun FeatureProvider.handleMyProfileEff(
             listener(TopLevelMsg.Pop)
         }
         is Eff.InitializationFinished -> {
-            loggedIn(nonInitializedUserToken.value, listener)
+            loggedIn(nonInitializedAuthInfo.value, listener = listener)
         }
         is Eff.Call -> {
             listener(TopLevelMsg.StartCall(eff.user))
@@ -74,12 +73,12 @@ internal suspend fun FeatureProvider.handleMyProfileEff(
             logOut(listener)
         }
         is Eff.BecomeExpert -> {
-            networkManager.value.apply {
+            networkManager.apply {
                 requestBecomeExpert()
             }
         }
         is Eff.RatingRequest -> {
-            networkManager.value.apply {
+            networkManager.apply {
                 rate(eff.ratingRequest)
                 listener(TopLevelMsg.ExpertsMsg(ExpertsFeature.Msg.Reload))
             }

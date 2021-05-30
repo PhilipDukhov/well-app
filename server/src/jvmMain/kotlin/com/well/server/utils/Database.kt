@@ -1,10 +1,9 @@
 package com.well.server.utils
 
-import com.squareup.sqldelight.ColumnAdapter
 import com.squareup.sqldelight.EnumColumnAdapter
-import com.squareup.sqldelight.TransacterImpl
-import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.sqlite.driver.asJdbcDriver
+import com.well.modules.dbHelper.SetEnumColumnAdapter
+import com.well.modules.dbHelper.migrateIfNeeded
 import com.well.server.Database
 import com.well.server.Users
 import com.zaxxer.hikari.HikariConfig
@@ -88,76 +87,4 @@ fun initialiseDatabase(app: Application): Database {
             }
         }
     return db
-}
-
-private class SqlDriverTransacter(driver: SqlDriver) : TransacterImpl(driver)
-
-fun SqlDriver.migrateIfNeeded(schema: SqlDriver.Schema) {
-    val sqlDriverTransacter = SqlDriverTransacter(this)
-    val result = sqlDriverTransacter.transactionWithResult<Pair<Boolean, Int>> {
-        var needsMetaTable = false
-        val version = try {
-            executeQuery(
-                null,
-                "SELECT value FROM __sqldelight__ WHERE name = 'schema_version'",
-                0
-            ).use {
-                (if (it.next()) it.getLong(0)?.toInt() else 0) ?: 0
-            }
-        } catch (e: Exception) {
-            needsMetaTable = true
-            0
-        }
-        needsMetaTable to version
-    }
-    val (needsMetaTable, version) = result
-    if (version >= schema.version) {
-        return
-    }
-    println("migration $version -> ${schema.version}")
-    sqlDriverTransacter.transaction {
-        if (version == 0) schema.create(this@migrateIfNeeded) else schema.migrate(
-            this@migrateIfNeeded,
-            version,
-            schema.version
-        )
-        if (needsMetaTable) {
-            execute(
-                null,
-                "CREATE TABLE __sqldelight__(name VARCHAR(64) NOT NULL PRIMARY KEY, value VARCHAR(64))",
-                0
-            )
-        }
-        if (version == 0) {
-            execute(
-                null,
-                "INSERT INTO __sqldelight__(name, value) VALUES('schema_version', ${schema.version})",
-                0
-            )
-        } else {
-            execute(
-                null,
-                "UPDATE __sqldelight__ SET value='${schema.version}' WHERE name='schema_version'",
-                0
-            )
-        }
-    }
-}
-
-@Suppress("FunctionName")
-private inline fun <reified T : Enum<T>> SetEnumColumnAdapter() =
-    SetEnumColumnAdapter(enumValues<T>())
-
-private class SetEnumColumnAdapter<T : Enum<T>>(
-    private val enumValues: Array<out T>
-) : ColumnAdapter<Set<T>, String> {
-    override fun decode(databaseValue: String): Set<T> =
-        if (databaseValue.isNotEmpty())
-            databaseValue
-                .split(",")
-                .mapTo(HashSet()) { value -> enumValues.first { it.name == value } }
-        else setOf()
-
-    override fun encode(value: Set<T>) =
-        value.joinToString(separator = ",") { it.name }
 }

@@ -5,8 +5,23 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class WebSocketMsg {
     @Serializable
-    data class CurrentUser(
-        val user: User,
+    data class UpdateUsers(
+        val users: List<User>,
+    ) : WebSocketMsg()
+
+    @Serializable
+    data class SetExpertsFilter(
+        val filter: UsersFilter?,
+    ) : WebSocketMsg()
+
+    @Serializable
+    data class SetUsersPresence(
+        val usersPresence: List<UserPresenceInfo>,
+    ) : WebSocketMsg()
+
+    @Serializable
+    data class ListFilteredExperts(
+        val userIds: List<UserId>,
     ) : WebSocketMsg()
 
     // Call

@@ -5,6 +5,7 @@ import kotlin.collections.Set;
 CREATE TABLE Users (
     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     createdDate REAL NOT NULL,
+    lastEdited REAL NOT NULL,
     initialized BOOLEAN NOT NULL DEFAULT FALSE,
     fullName TEXT NOT NULL,
     type TEXT AS User.Type NOT NULL,
@@ -62,42 +63,46 @@ SELECT id FROM Users WHERE appleId = ?;
 -- Create
 
 insertFacebook:
-INSERT INTO Users(fullName, createdDate,  type, facebookId, email, languages, skills)
-VALUES (?, UNIX_TIMESTAMP(), ?, ?, ?, '', '');
+INSERT INTO Users(fullName, createdDate, lastEdited, type, facebookId, email, languages, skills)
+VALUES (?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), ?, ?, ?, '', '');
 
 insertGoogle:
-INSERT INTO Users(fullName, createdDate,  type, googleId, email, languages, skills)
-VALUES (?, UNIX_TIMESTAMP(), ?, ?, ?, '', '');
+INSERT INTO Users(fullName, createdDate, lastEdited, type, googleId, email, languages, skills)
+VALUES (?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), ?, ?, ?, '', '');
 
 insertTwitter:
-INSERT INTO Users(fullName, createdDate, type, twitterId, languages, skills)
-VALUES ('', UNIX_TIMESTAMP(), ?, ?, '', '');
+INSERT INTO Users(fullName, createdDate, lastEdited, type, twitterId, languages, skills)
+VALUES ('', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), ?, ?, '', '');
 
 insertApple:
-INSERT INTO Users(fullName, createdDate, type, appleId, email, languages, skills)
-VALUES (?, UNIX_TIMESTAMP(), ?, ?, ?, '', '');
+INSERT INTO Users(fullName, createdDate, lastEdited, type, appleId, email, languages, skills)
+VALUES (?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), ?, ?, ?, '', '');
 
 -- Update
 
 updateProfileImage:
 UPDATE Users
-SET profileImageUrl = ?
+SET lastEdited = UNIX_TIMESTAMP(),
+    profileImageUrl = ?
 WHERE id = ?;
 
 updateType:
 UPDATE Users
-SET type = ?
+SET lastEdited = UNIX_TIMESTAMP(),
+    type = ?
 WHERE id = ?;
 
 updateRating:
 UPDATE Users
-SET averageRating = :average,
+SET lastEdited = UNIX_TIMESTAMP(),
+    averageRating = :average,
     ratingsCount = :count
 WHERE id = ?;
 
 updateUser:
 UPDATE Users
-SET initialized = TRUE,
+SET lastEdited = UNIX_TIMESTAMP(),
+    initialized = TRUE,
     fullName = ?,
     email = ?,
     profileImageUrl = ?,
@@ -118,10 +123,11 @@ WHERE id = ?;
 
 -- Filter
 filter:
-SELECT * FROM Users
+SELECT id FROM Users
 WHERE
     initialized = TRUE
     AND id != :uid
+    AND (:specificIdsRegexp = '' OR id REGEXP :specificIdsRegexp)
     AND (:nameFilter = '' OR LOCATE(:nameFilter, fullName) > 0)
     AND (:favorites = FALSE OR
         id IN (
@@ -131,14 +137,13 @@ WHERE
     AND (:skillsRegexp = '' OR skills REGEXP :skillsRegexp)
     AND (:academicRankRegexp = '' OR academicRank REGEXP :academicRankRegexp)
     AND (:languagesRegexp = '' OR languages REGEXP :languagesRegexp)
-    AND (:countryCodeRegex = '' OR countryCode REGEXP :countryCodeRegex)
+    AND (:countryCode = '' OR countryCode = :countryCode)
     AND (:withReviews = FALSE OR ratingsCount > 0)
     AND (:rating = NULL OR averageRating >= :rating)
     LIMIT 10
 ;
 
 --     val sortBy: SortBy = SortBy.Popularity,
---     val rating: Rating = Rating.All,
 
 -- Clean
 selectUninitialized:

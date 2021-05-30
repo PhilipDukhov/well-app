@@ -30,9 +30,11 @@ actual class ConsoleAntilog actual constructor(
         throwable: Throwable?,
         message: String?
     ) {
+        println("performLog")
         if (priority == Napier.Level.ASSERT) {
             assert(crashAssert) { buildLog(priority, tag, message) }
         } else {
+            println("println")
             println(buildLog(priority, tag, message))
         }
     }

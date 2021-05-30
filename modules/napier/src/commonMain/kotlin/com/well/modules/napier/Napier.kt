@@ -24,6 +24,7 @@ object Napier {
 
     @PublishedApi
     internal fun rawLog(priority: Level, tag: String?, throwable: Throwable?, message: String?) {
+        println("baseArray $baseArray")
         baseArray.forEach { it.rawLog(priority, tag, throwable, message) }
     }
 
@@ -64,6 +65,7 @@ object Napier {
     }
 
     fun e(message: () -> String, throwable: Throwable? = null, tag: String? = null) {
+        println("log(Level.ERROR, tag, throwable, message)")
         log(Level.ERROR, tag, throwable, message)
     }
 
@@ -83,6 +85,8 @@ object Napier {
 
     fun log(priority: Level, tag: String? = null, throwable: Throwable? = null, message: () -> String) {
         if (isEnable(priority, tag)) {
+
+            println("rawLog(priority, tag, throwable, message())")
             rawLog(priority, tag, throwable, message())
         }
     }
