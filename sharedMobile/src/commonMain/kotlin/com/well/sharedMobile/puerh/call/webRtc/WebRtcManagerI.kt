@@ -15,7 +15,7 @@ interface WebRtcManagerI: Closeable {
         }
         fun updateCaptureDimensions(dimensions: Size)
         fun updateRemoveVideoContext(viewContext: VideoViewContext?)
-        fun addCandidate(candidate: WebSocketMsg.Candidate)
+        fun addCandidate(candidate: WebSocketMsg.Call.Candidate)
         fun sendOffer(webRTCSessionDescriptor: String)
         fun sendAnswer(webRTCSessionDescriptor: String)
         fun dataChannelStateChanged(state: DataChannelState)
@@ -27,7 +27,7 @@ interface WebRtcManagerI: Closeable {
     fun sendOffer()
     fun acceptOffer(webRTCSessionDescriptor: String)
     fun acceptAnswer(webRTCSessionDescriptor: String)
-    fun acceptCandidate(candidate: WebSocketMsg.Candidate)
+    fun acceptCandidate(candidate: WebSocketMsg.Call.Candidate)
     fun sendData(data: ByteArray)
     fun syncDeviceState(deviceState: LocalDeviceState)
 }

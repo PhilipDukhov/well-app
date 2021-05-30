@@ -114,7 +114,7 @@ private fun FeatureProvider.notifyUsersDBPresenceCloseable() =
         networkManager.state
             .filter { it == NetworkManager.Status.Connected }
             .combine(database.usersQueries.usersPresenceFlow()) { _, usersPresence ->
-                WebSocketMsg.SetUsersPresence(usersPresence)
+                WebSocketMsg.Front.SetUsersPresence(usersPresence)
             }
             .collect(networkManager::send)
     }.asCloseable()

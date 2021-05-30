@@ -36,7 +36,7 @@ internal suspend fun FeatureProvider.handleCallEff(
         }
         is CallFeature.Eff.End -> {
             networkManager.send(
-                WebSocketMsg.EndCall(WebSocketMsg.EndCall.Reason.Decline)
+                WebSocketMsg.Call.EndCall(WebSocketMsg.Call.EndCall.Reason.Decline)
             )
             endCall(listener)
         }
@@ -135,7 +135,7 @@ internal fun FeatureProvider.createWebSocketMessageHandler(
     listener: (TopLevelMsg) -> Unit
 ): (WebSocketMsg) -> Unit = { msg ->
     when (msg) {
-        is WebSocketMsg.IncomingCall -> {
+        is WebSocketMsg.Back.IncomingCall -> {
             listener.invoke(TopLevelMsg.IncomingCall(msg))
             coroutineScope.launch {
                 handleCallPermissions()?.also {
@@ -144,10 +144,10 @@ internal fun FeatureProvider.createWebSocketMessageHandler(
                 }
             }
         }
-        is WebSocketMsg.EndCall -> {
+        is WebSocketMsg.Call.EndCall -> {
             endCall(listener)
         }
-        is WebSocketMsg.UpdateUsers -> {
+        is WebSocketMsg.Back.UpdateUsers -> {
             database.usersQueries.transaction {
                 msg.users.forEach(database.usersQueries::insertOrReplace)
             }

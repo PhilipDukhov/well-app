@@ -2,8 +2,6 @@ package com.well.server.routing
 
 import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMsg
-import com.well.modules.models.WebSocketMsg.EndCall.Reason.Busy
-import com.well.modules.models.WebSocketMsg.EndCall.Reason.Offline
 import com.well.server.routing.user.UserSession
 import com.well.server.utils.Dependencies
 import com.well.server.utils.authUid
@@ -35,29 +33,27 @@ suspend fun DefaultWebSocketServerSession.mainWebSocket(dependencies: Dependenci
                 .let { msg ->
                     println("$currentUid $msg")
                     when (msg) {
-                        is WebSocketMsg.IncomingCall,
-                        is WebSocketMsg.UpdateUsers,
-                        is WebSocketMsg.ListFilteredExperts,
+                        is WebSocketMsg.Back,
                         -> throw IllegalStateException("$msg can't be sent by users")
-                        is WebSocketMsg.SetExpertsFilter -> {
+                        is WebSocketMsg.Front.SetExpertsFilter -> {
                             println("emit expertsFilterFlow ${msg.filter}")
                             currentUserSession.expertsFilterFlow.emit(msg.filter)
                         }
-                        is WebSocketMsg.SetUsersPresence -> {
+                        is WebSocketMsg.Front.SetUsersPresence -> {
                             currentUserSession.usersPresenceInfoFlow.emit(msg.usersPresence)
                         }
-                        is WebSocketMsg.InitiateCall -> {
-                            val session = dependencies.connectedUserSessions[msg.uid]
+                        is WebSocketMsg.Front.InitiateCall -> {
+                            val session = dependencies.connectedUserSessionsFlow[msg.uid]
                             if (session == null) {
-                                send(WebSocketMsg.EndCall(Offline))
+                                send(WebSocketMsg.Call.EndCall(WebSocketMsg.Call.EndCall.Reason.Offline))
                                 return
                             }
                             if (calls.any { it.uids.contains(currentUid) }) {
-                                send(WebSocketMsg.EndCall(Busy))
+                                send(WebSocketMsg.Call.EndCall(WebSocketMsg.Call.EndCall.Reason.Busy))
                                 return
                             }
                             session.send(
-                                WebSocketMsg.IncomingCall(
+                                WebSocketMsg.Back.IncomingCall(
                                     dependencies.getUser(
                                         uid = msg.uid,
                                         currentUid = currentUid,
@@ -66,18 +62,19 @@ suspend fun DefaultWebSocketServerSession.mainWebSocket(dependencies: Dependenci
                             )
                             calls.add(Call(currentUid, msg.uid))
                         }
-                        is WebSocketMsg.Answer,
-                        is WebSocketMsg.Offer,
-                        is WebSocketMsg.Candidate ->
-                            dependencies.callPartnerId(currentUid)!!
+                        is WebSocketMsg.Call -> {
+                            callPartnerId(currentUid)!!
                                 .run {
-                                    dependencies.connectedUserSessions[value]!!
+                                    dependencies.connectedUserSessionsFlow[value]!!
                                         .send(msg)
                                 }
-                        is WebSocketMsg.EndCall -> dependencies.endCall(
-                            currentUid,
-                            msg.reason
-                        )
+                        }
+                        is WebSocketMsg.Call.EndCall -> {
+                            dependencies.endCall(
+                                currentUid,
+                                msg.reason
+                            )
+                        }
                     }
                 }
             else -> Unit
@@ -92,15 +89,15 @@ suspend fun DefaultWebSocketServerSession.mainWebSocket(dependencies: Dependenci
 private suspend fun Dependencies.userDisconnected(
     uid: UserId
 ) {
-    connectedUserSessions.remove(uid)
-    notifyOnline()
+    connectedUserSessionsFlow.remove(uid)
+    database.usersQueries.updateLastOnline(uid)
 
     // notify call users that current if offline
     // TODO: wait user to reconnect
-    endCall(uid, Offline)
+    endCall(uid, WebSocketMsg.Call.EndCall.Reason.Offline)
 }
 
-private fun Dependencies.callPartnerId(uid: UserId) =
+private fun callPartnerId(uid: UserId) =
     calls
         .withIndex()
         .firstOrNull { it.value.uids.contains(uid) }
@@ -115,10 +112,10 @@ private fun Dependencies.callPartnerId(uid: UserId) =
 
 private suspend fun Dependencies.endCall(
     uid: UserId,
-    reason: WebSocketMsg.EndCall.Reason,
+    reason: WebSocketMsg.Call.EndCall.Reason,
 ) = callPartnerId(uid)
     ?.run {
-        connectedUserSessions[value]!!.send(WebSocketMsg.EndCall(reason))
+        connectedUserSessionsFlow[value]!!.send(WebSocketMsg.Call.EndCall(reason))
         calls.removeAt(index)
     }
 

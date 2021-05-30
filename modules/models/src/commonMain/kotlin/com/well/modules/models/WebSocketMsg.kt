@@ -5,73 +5,86 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class WebSocketMsg {
     @Serializable
-    data class UpdateUsers(
-        val users: List<User>,
-    ) : WebSocketMsg()
-
-    @Serializable
-    data class SetExpertsFilter(
-        val filter: UsersFilter?,
-    ) : WebSocketMsg()
-
-    @Serializable
-    data class SetUsersPresence(
-        val usersPresence: List<UserPresenceInfo>,
-    ) : WebSocketMsg()
-
-    @Serializable
-    data class ListFilteredExperts(
-        val userIds: List<UserId>,
-    ) : WebSocketMsg()
-
-    // Call
-    @Serializable
-    data class InitiateCall(
-        val uid: UserId,
-    ) : WebSocketMsg()
-
-    @Serializable
-    data class IncomingCall(
-        val user: User,
-    ) : WebSocketMsg()
-
-    @Serializable
-    data class Offer(
-        val sessionDescriptor: String,
-    ) : WebSocketMsg() {
-        override fun toString(): String =
-            super.toString()
-                .prepareToDebug()
-    }
-
-    @Serializable
-    data class Answer(
-        val sessionDescriptor: String,
-    ) : WebSocketMsg() {
-        override fun toString(): String =
-            super.toString()
-                .prepareToDebug()
-    }
-
-    @Serializable
-    data class Candidate(
-        val sdpMid: String,
-        val sdpMLineIndex: Int,
-        val sdp: String,
-    ) : WebSocketMsg()
-
-    @Serializable
-    data class EndCall(val reason: Reason) : WebSocketMsg() {
+    sealed class Front: WebSocketMsg() {
         @Serializable
-        sealed class Reason {
-            @Serializable
-            object Offline : Reason()
+        data class InitiateCall(
+            val uid: UserId,
+        ) : Front()
 
-            @Serializable
-            object Decline : Reason()
+        @Serializable
+        data class SetExpertsFilter(
+            val filter: UsersFilter?,
+        ) : Front()
 
+        @Serializable
+        data class SetUsersPresence(
+            val usersPresence: List<UserPresenceInfo>,
+        ) : Front()
+    }
+
+    @Serializable
+    sealed class Back: WebSocketMsg() {
+        @Serializable
+        data class UpdateUsers(
+            val users: List<User>,
+        ) : Back()
+
+        @Serializable
+        data class ListFilteredExperts(
+            val userIds: List<UserId>,
+        ) : Back()
+
+        @Serializable
+        data class OnlineStatus(
+            val userIds: List<UserId>,
+        ) : Back()
+
+        @Serializable
+        data class IncomingCall(
+            val user: User,
+        ) : Back()
+    }
+
+    sealed class Call: WebSocketMsg() {
+
+        @Serializable
+        data class Offer(
+            val sessionDescriptor: String,
+        ) : Call() {
+            override fun toString(): String =
+                super.toString()
+                    .prepareToDebug()
+        }
+
+        @Serializable
+        data class Answer(
+            val sessionDescriptor: String,
+        ) : Call() {
+            override fun toString(): String =
+                super.toString()
+                    .prepareToDebug()
+        }
+
+        @Serializable
+        data class Candidate(
+            val sdpMid: String,
+            val sdpMLineIndex: Int,
+            val sdp: String,
+        ) : Call()
+
+        @Serializable
+        data class EndCall(val reason: Reason) : Call() {
             @Serializable
-            object Busy : Reason()
+            sealed class Reason {
+                @Serializable
+                object Offline : Reason()
+
+                @Serializable
+                object Decline : Reason()
+
+                @Serializable
+                object Busy : Reason()
+            }
         }
     }
 }

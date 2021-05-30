@@ -6,6 +6,9 @@ import com.well.modules.dbHelper.SerializableColumnAdapter
 import com.well.modules.dbHelper.SetEnumColumnAdapter
 import com.well.modules.dbHelper.migrateIfNeeded
 import com.well.modules.utils.AppContext
+import com.well.modules.utils.platform.Platform
+import com.well.modules.utils.platform.isDebug
+import com.well.modules.utils.platform.prodTesting
 
 class DatabaseManager(appContext: AppContext) {
     private val driverFactory = DatabaseDriverFactory(appContext)
@@ -19,7 +22,7 @@ class DatabaseManager(appContext: AppContext) {
 
     private fun open() {
         driver = driverFactory
-            .createDriver("database.db")
+            .createDriver(if (Platform.isDebug) "debugDatabase.db" else "prodDatabase.db")
         database = Database(
             driver,
             UsersAdapter = Users.Adapter(

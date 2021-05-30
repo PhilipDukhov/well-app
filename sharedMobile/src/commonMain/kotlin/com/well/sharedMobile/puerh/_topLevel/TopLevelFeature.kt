@@ -110,7 +110,7 @@ object TopLevelFeature {
         data class SupportMsg(val msg: SupportFeature.Msg) : Msg()
 
         data class StartCall(val user: User) : Msg()
-        data class IncomingCall(val incomingCall: WebSocketMsg.IncomingCall) : Msg()
+        data class IncomingCall(val incomingCall: WebSocketMsg.Back.IncomingCall) : Msg()
         object EndCall : Msg()
 
         object StopImageSharing : Msg()

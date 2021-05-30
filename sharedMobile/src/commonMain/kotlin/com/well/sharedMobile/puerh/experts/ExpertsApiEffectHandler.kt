@@ -52,7 +52,7 @@ class ExpertsApiEffectHandler(
                     }
                 }.asCloseable(),
                 addListener { webSocketMsg ->
-                    if (webSocketMsg is WebSocketMsg.ListFilteredExperts) {
+                    if (webSocketMsg is WebSocketMsg.Back.ListFilteredExperts) {
                         coroutineScope.launch {
                             filteredExpertsIdsFlow.emit(webSocketMsg.userIds)
                         }
@@ -66,7 +66,7 @@ class ExpertsApiEffectHandler(
                 coroutineScope.launch {
                     filterFlow
                         .collect {
-                            networkManager.send(WebSocketMsg.SetExpertsFilter(it))
+                            networkManager.send(WebSocketMsg.Front.SetExpertsFilter(it))
                         }
                 }.asCloseable(),
             ).forEach(::addCloseableChild)

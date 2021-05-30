@@ -153,7 +153,7 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
     }
 
     func acceptCandidate(
-        candidate: WebSocketMsg.Candidate
+        candidate: WebSocketMsg.CallCandidate
     ) {
         peerConnection.add(
             .init(
@@ -395,7 +395,7 @@ extension WebRtcManager: RTCPeerConnectionDelegate {
 }
 
 extension RTCIceCandidate {
-    fileprivate func toMessage() -> WebSocketMsg.Candidate {
+    fileprivate func toMessage() -> WebSocketMsg.CallCandidate {
         .init(
             sdpMid: sdpMid ?? "",
             sdpMLineIndex: sdpMLineIndex,

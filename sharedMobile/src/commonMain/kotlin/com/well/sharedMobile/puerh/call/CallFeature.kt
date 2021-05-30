@@ -18,7 +18,7 @@ object CallFeature {
         (State(user = user, status = Calling) toSetOf Eff.Initiate(user.id))
             .reduceInitialState()
 
-    fun incomingStateAndEffects(incomingCall: WebSocketMsg.IncomingCall) =
+    fun incomingStateAndEffects(incomingCall: WebSocketMsg.Back.IncomingCall) =
         State(incomingCall, incomingCall.user, Incoming)
             .withEmptySet<State, Eff>()
             .reduceInitialState()
@@ -52,7 +52,7 @@ object CallFeature {
         }
 
     data class State(
-        val incomingCall: WebSocketMsg.IncomingCall? = null,
+        val incomingCall: WebSocketMsg.Back.IncomingCall? = null,
         val user: User,
         val status: Status,
         val localDeviceState: LocalDeviceState = LocalDeviceState.default,
@@ -160,7 +160,7 @@ object CallFeature {
 
     sealed class Eff {
         data class Initiate(val userId: UserId) : Eff()
-        data class Accept(val incomingCall: WebSocketMsg.IncomingCall) : Eff()
+        data class Accept(val incomingCall: WebSocketMsg.Back.IncomingCall) : Eff()
         object End : Eff()
         object ChooseViewPoint : Eff()
         object SystemBack : Eff()

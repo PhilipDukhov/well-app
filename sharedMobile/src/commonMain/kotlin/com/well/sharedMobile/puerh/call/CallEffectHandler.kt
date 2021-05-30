@@ -32,7 +32,7 @@ class CallEffectHandler(
         .state
         .map { it == NetworkManager.Status.Connected }
         .distinctUntilChanged()
-    private val candidates = MutableSharedFlow<WebSocketMsg.Candidate>(replay = Int.MAX_VALUE)
+    private val candidates = MutableSharedFlow<WebSocketMsg.Call.Candidate>(replay = Int.MAX_VALUE)
     private val candidatesSendCloseable = AtomicCloseableRef<Closeable>()
     private val webRtcManager: WebRtcManagerI
     private val imageSharingEffectHandler = DrawingEffectHandler {
@@ -88,18 +88,18 @@ class CallEffectHandler(
                 }
             }
 
-            override fun addCandidate(candidate: WebSocketMsg.Candidate) {
+            override fun addCandidate(candidate: WebSocketMsg.Call.Candidate) {
                 coroutineScope.launch {
                     handler?.candidates?.emit(candidate)
                 }
             }
 
             override fun sendOffer(webRTCSessionDescriptor: String) {
-                handler?.send(WebSocketMsg.Offer(webRTCSessionDescriptor))
+                handler?.send(WebSocketMsg.Call.Offer(webRTCSessionDescriptor))
             }
 
             override fun sendAnswer(webRTCSessionDescriptor: String) {
-                handler?.send(WebSocketMsg.Answer(webRTCSessionDescriptor))
+                handler?.send(WebSocketMsg.Call.Answer(webRTCSessionDescriptor))
             }
 
             override fun dataChannelStateChanged(state: DataChannelState) {
@@ -208,16 +208,20 @@ class CallEffectHandler(
 
     private fun initiateCall(userId: UserId) =
         send(
-            WebSocketMsg.InitiateCall(
+            WebSocketMsg.Front.InitiateCall(
                 userId,
             )
         )
 
-    fun send(msg: WebSocketMsg) =
+    fun send(msg: WebSocketMsg.Front) = prepareSend(msg, NetworkManager::send)
+
+    fun send(msg: WebSocketMsg.Call) = prepareSend(msg, NetworkManager::send)
+
+    private fun <M: WebSocketMsg> prepareSend(msg: M, perform: suspend NetworkManager.(M) -> Unit) =
         msg.freeze()
             .let {
                 coroutineScope.launch {
-                    networkManager.send(msg)
+                    networkManager.perform(msg)
                 }
             }
             .also {
@@ -297,14 +301,14 @@ class CallEffectHandler(
 
     private fun listenWebSocketMessage(msg: WebSocketMsg) = runWebRtcManager {
         when (msg) {
-            is WebSocketMsg.Offer -> {
+            is WebSocketMsg.Call.Offer -> {
                 invokeCallMsg(Msg.UpdateStatus(State.Status.Connecting))
                 acceptOffer(msg.sessionDescriptor)
             }
-            is WebSocketMsg.Answer -> {
+            is WebSocketMsg.Call.Answer -> {
                 acceptAnswer(msg.sessionDescriptor)
             }
-            is WebSocketMsg.Candidate -> {
+            is WebSocketMsg.Call.Candidate -> {
                 acceptCandidate(msg)
             }
             else -> Unit

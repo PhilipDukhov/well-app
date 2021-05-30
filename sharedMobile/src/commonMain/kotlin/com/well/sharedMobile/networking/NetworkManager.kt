@@ -97,7 +97,11 @@ class NetworkManager(
         listeners.addListenerAndMakeCloseable(listener)
             .also(::addCloseableChild)
 
-    suspend fun send(msg: WebSocketMsg) {
+    suspend fun send(msg: WebSocketMsg.Front) = send(msg as WebSocketMsg)
+
+    suspend fun send(msg: WebSocketMsg.Call) = send(msg as WebSocketMsg)
+
+    private suspend fun send(msg: WebSocketMsg) {
         try {
             webSocketSession?.send(
                 Json.encodeToString(
