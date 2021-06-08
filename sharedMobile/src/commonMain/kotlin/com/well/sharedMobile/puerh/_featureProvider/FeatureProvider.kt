@@ -9,9 +9,9 @@ import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
 import com.well.modules.atomic.asCloseable
 import com.well.modules.atomic.freeze
-import com.well.modules.db.Database
-import com.well.modules.db.DatabaseManager
-import com.well.modules.db.toUser
+import com.well.modules.db.users.Database
+import com.well.modules.db.users.DatabaseManager
+import com.well.modules.db.users.toUser
 import com.well.modules.models.User
 import com.well.modules.napier.Napier
 import com.well.modules.utils.AppContext

@@ -30,7 +30,7 @@ kotlin {
         val commonMain by getting {
             libDependencies(
                 ":modules:models",
-                ":modules:dbHelper",
+                ":modules:db.helper",
             )
         }
 

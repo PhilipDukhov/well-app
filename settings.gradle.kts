@@ -12,8 +12,8 @@ val modules = mutableSetOf(
     "modules:atomic",
     "modules:napier",
     "modules:utils",
-    "modules:db",
-    "modules:dbHelper",
+    "modules:db:users",
+    "modules:db:helper",
 )
 if (withAndroid) {
     modules.add("androidApp")

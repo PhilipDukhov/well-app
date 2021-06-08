@@ -55,7 +55,7 @@ kotlin {
             libDependencies(
                 ":modules:atomic",
                 ":modules:annotations",
-                ":modules:db",
+                ":modules:db:users",
                 "kotlin.serializationJson",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",

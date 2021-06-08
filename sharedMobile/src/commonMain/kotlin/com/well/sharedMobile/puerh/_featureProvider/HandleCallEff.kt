@@ -9,7 +9,7 @@ import com.well.sharedMobile.puerh.call.CallFeature
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature
 import com.well.modules.atomic.CloseableFuture
 import com.well.modules.atomic.freeze
-import com.well.modules.db.insertOrReplace
+import com.well.modules.db.users.insertOrReplace
 import com.well.modules.utils.permissionsHandler.PermissionsHandler
 import com.well.modules.utils.permissionsHandler.requestPermissions
 import com.well.modules.utils.puerh.addEffectHandler

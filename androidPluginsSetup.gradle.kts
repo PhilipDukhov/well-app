@@ -49,8 +49,8 @@ subprojects {
                 ":modules:napier",
                 ":modules:atomic",
                 ":modules:annotations",
-                ":modules:db",
-                ":modules:dbHelper",
+                ":modules:db:users",
+                ":modules:db:helper",
                 ":sharedMobile",
             ).contains(path)
         ) {

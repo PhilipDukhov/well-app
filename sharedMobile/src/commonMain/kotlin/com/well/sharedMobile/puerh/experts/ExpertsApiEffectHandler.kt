@@ -4,8 +4,8 @@ import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import com.well.modules.atomic.AtomicRef
 import com.well.modules.atomic.asCloseable
-import com.well.modules.db.Database
-import com.well.modules.db.toUser
+import com.well.modules.db.users.Database
+import com.well.modules.db.users.toUser
 import com.well.modules.models.User
 import com.well.modules.models.UserId
 import com.well.modules.models.UsersFilter

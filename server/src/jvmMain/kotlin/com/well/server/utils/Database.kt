@@ -2,8 +2,8 @@ package com.well.server.utils
 
 import com.squareup.sqldelight.EnumColumnAdapter
 import com.squareup.sqldelight.sqlite.driver.asJdbcDriver
-import com.well.modules.dbHelper.SetEnumColumnAdapter
-import com.well.modules.dbHelper.migrateIfNeeded
+import com.well.modules.db.helper.SetEnumColumnAdapter
+import com.well.modules.db.helper.migrateIfNeeded
 import com.well.server.Database
 import com.well.server.Users
 import com.zaxxer.hikari.HikariConfig

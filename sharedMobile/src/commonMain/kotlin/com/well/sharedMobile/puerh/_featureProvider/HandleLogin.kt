@@ -1,8 +1,8 @@
 package com.well.sharedMobile.puerh._featureProvider
 
 import com.well.modules.atomic.asCloseable
-import com.well.modules.db.insertOrReplace
-import com.well.modules.db.usersPresenceFlow
+import com.well.modules.db.users.insertOrReplace
+import com.well.modules.db.users.usersPresenceFlow
 import com.well.modules.models.AuthResponse
 import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
