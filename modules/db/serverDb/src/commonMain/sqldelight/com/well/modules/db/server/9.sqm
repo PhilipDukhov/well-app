@@ -1,0 +1,9 @@
+CREATE TABLE ChatMessages (
+    id INTEGER AS Int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    creation DOUBLE NOT NULL,
+    fromId INTEGER AS Int NOT NULL,
+    peerId INTEGER AS Int NOT NULL,
+    text TEXT NOT NULL,
+    photoUrl TEXT,
+    photoAspectRatio REAL AS Float
+);

@@ -38,7 +38,6 @@ suspend fun PipelineContext<*, ApplicationCall>.updateUser(
                 twitter = twitter,
                 doximity = doximity,
             )
-        notifyCurrentUserUpdated(id)
     }
     call.respond(HttpStatusCode.OK)
 }

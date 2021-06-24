@@ -1,24 +1,43 @@
 package com.well.sharedMobile.networking
 
-import com.well.modules.models.*
-import com.well.sharedMobile.networking.NetworkManager.Status.*
+import com.well.modules.atomic.AtomicMutableList
+import com.well.modules.atomic.AtomicRef
+import com.well.modules.atomic.Closeable
+import com.well.modules.atomic.CloseableContainer
+import com.well.modules.atomic.addListenerAndMakeCloseable
+import com.well.modules.atomic.notifyAll
+import com.well.modules.models.FavoriteSetter
+import com.well.modules.models.RatingRequest
+import com.well.modules.models.Size
+import com.well.modules.models.User
+import com.well.modules.models.UserId
+import com.well.modules.models.WebSocketMsg
+import com.well.modules.napier.Napier
+import com.well.modules.utils.sharedImage.ImageContainer
+import com.well.modules.utils.tryF
+import com.well.sharedMobile.networking.NetworkManager.Status.Connected
+import com.well.sharedMobile.networking.NetworkManager.Status.Connecting
+import com.well.sharedMobile.networking.NetworkManager.Status.Disconnected
 import com.well.sharedMobile.networking.webSocketManager.WebSocketClient
 import com.well.sharedMobile.networking.webSocketManager.WebSocketMessageListener
 import com.well.sharedMobile.networking.webSocketManager.WebSocketSession
 import com.well.sharedMobile.networking.webSocketManager.ws
 import com.well.sharedMobile.puerh.call.resizedImage
-import com.well.sharedMobile.utils.ImageContainer
-import com.well.modules.atomic.Closeable
-import com.well.modules.atomic.CloseableContainer
-import com.well.modules.atomic.*
-import com.well.modules.napier.Napier
-import com.well.modules.utils.tryF
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import io.ktor.utils.io.core.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
 class NetworkManager(
@@ -52,7 +71,8 @@ class NetworkManager(
 
     private val _state = MutableStateFlow(Disconnected)
 
-    val state = _state.asStateFlow()
+    val stateFlow = _state.asStateFlow()
+    val isConnectedFlow = stateFlow.map { it == Connected }.distinctUntilChanged()
 
     init {
         webSocketScope.launch {
@@ -114,47 +134,59 @@ class NetworkManager(
         }
     }
 
-    suspend fun uploadImage(
+    suspend fun uploadProfilePicture(
         userId: UserId,
         image: ImageContainer
     ) = tryCheckAuth {
-        client.client.post<String>("/user/uploadProfileImage") {
-            body = MultiPartFormDataContent(
-                formData {
-                    var data: ByteArray
-                    var quality = 1f
-                    do {
-                        data = image
-                            .resizedImage(Size(2000))
-                            .asByteArray(quality)
-                        quality -= 0.2f
-                        Napier.i("quality $quality ${data.count()}")
-                    } while (data.count() > 250_000 && quality >= 0)
-                    appendInput(
-                        userId.toString(),
-                        Headers.build {
-                            append(
-                                HttpHeaders.ContentDisposition,
-                                "filename=uploadUserProfile.jpg"
-                            )
-                        },
-                        data.size.toLong()
-                    ) {
-                        buildPacket { writeFully(data) }
-                    }
-                }
-            )
+        client.client.post<String>("/user/uploadProfilePicture") {
+            body = image.toMultiPartFormDataContent(userId.toString())
         }
     }
 
+    suspend fun uploadMessagePicture(
+        image: ImageContainer
+    ) = tryCheckAuth {
+        client.client.post<String>("uploadMessageMedia") {
+            body = image.toMultiPartFormDataContent()
+        }
+    }
+
+    private fun ImageContainer.toMultiPartFormDataContent(key: String? = null) =
+        MultiPartFormDataContent(
+            formData {
+                var data: ByteArray
+                var quality = 1f
+                do {
+                    data = resizedImage(Size(2000))
+                        .asByteArray(quality)
+                    quality -= 0.2f
+                    Napier.i("quality $quality ${data.count()}")
+                } while (data.count() > 250_000 && quality >= 0)
+                appendInput(
+                    key ?: "key",
+                    Headers.build {
+                        append(
+                            HttpHeaders.ContentDisposition,
+                            "filename=uploadUserProfile.jpg"
+                        )
+                    },
+                    data.size.toLong()
+                ) {
+                    buildPacket { writeFully(data) }
+                }
+            }
+        )
+
     suspend fun putUser(user: User) = tryCheckAuth {
         client.client.put<Unit>("/user") {
+            contentType(ContentType.Application.Json)
             body = user
         }
     }
 
     suspend fun setFavorite(favoriteSetter: FavoriteSetter) = tryCheckAuth {
         client.client.post<Unit>("/user/setFavorite") {
+            contentType(ContentType.Application.Json)
             body = favoriteSetter
         }
     }
@@ -165,6 +197,7 @@ class NetworkManager(
 
     suspend fun rate(ratingRequest: RatingRequest) = tryCheckAuth {
         client.client.post<Unit>("/user/rate") {
+            contentType(ContentType.Application.Json)
             body = ratingRequest
         }
     }
@@ -216,3 +249,8 @@ data class ClientRequestException(val status: HttpStatusCode) : Exception() {
 data class ServerResponseException(val status: HttpStatusCode) : Exception() {
     constructor(exception: io.ktor.client.features.ServerResponseException) : this(exception.response.status)
 }
+
+fun <T> Flow<T>.combineToNetworkConnectedState(networkManager: NetworkManager): Flow<T> =
+    combine(networkManager.isConnectedFlow.filter { it }) { value, _ ->
+        value
+    }

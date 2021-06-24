@@ -47,16 +47,6 @@
                 <action android:name="android.telecom.ConnectionService" />
             </intent-filter>
         </service>
-<!--        <activity android:name="com.well.androidApp.ui.CustomTabActivity">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.VIEW" />-->
-
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
-<!--                <category android:name="android.intent.category.BROWSABLE" />-->
-
-<!--                <data android:scheme="world.endo.live.link" />-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
         <!--Facebook-->
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

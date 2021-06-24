@@ -60,6 +60,8 @@ class AwsManager(
             Url(s3Client.getResourceUrl(bucketName, key))
         }
 
+    fun exists(path: String) = s3Client.doesObjectExist(bucketName, path)
+
     private suspend fun Upload.await(): UploadResult = suspendCoroutine { continuation ->
         addProgressListener {
             try {

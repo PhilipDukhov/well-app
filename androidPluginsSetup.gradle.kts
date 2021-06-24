@@ -41,33 +41,4 @@ subprojects {
                 }
         }
     }
-    if (gradlePluginVersion.first() == '7' && !version("kotlin").startsWith("1.5")) {
-        if (
-            listOf(
-                ":modules:models",
-                ":modules:utils",
-                ":modules:napier",
-                ":modules:atomic",
-                ":modules:annotations",
-                ":modules:db:users",
-                ":modules:db:helper",
-                ":sharedMobile",
-            ).contains(path)
-        ) {
-            configurations {
-                listOf(
-                    "androidTestApi",
-                    "androidTestDebugApi",
-                    "androidTestReleaseApi",
-                    "testApi",
-                    "testDebugApi",
-                    "testReleaseApi",
-                ).forEach {
-                    create(it) {}
-                }
-            }
-        } else {
-            println("not included $path")
-        }
-    }
 }

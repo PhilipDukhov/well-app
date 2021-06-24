@@ -1,10 +1,11 @@
 package com.well.modules.utils
 
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
+import com.well.modules.utils.permissionsHandler.PermissionHandlerContext
+import com.well.modules.utils.sharedImage.ImageContainer
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
-import com.well.modules.utils.permissionsHandler.PermissionHandlerContext
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 actual class AppContext(val androidContext: ComponentActivity) {
     actual val permissionsHandlerContext: PermissionHandlerContext
@@ -14,6 +15,13 @@ actual class AppContext(val androidContext: ComponentActivity) {
         MainScope().launch {
             androidContext.onBackPressedDispatcher.onBackPressed()
         }
+    }
+
+    actual fun cacheImage(
+        image: ImageContainer,
+        url: String
+    ) {
+        TODO()
     }
 }
 

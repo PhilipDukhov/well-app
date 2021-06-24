@@ -51,6 +51,7 @@ data class Color(
         val BlackP = Color(0x01070E)
         val LightGray = Color(0xC4C4C4)
         val Pink = Color(0xF61F46)
+        val IncomingBubbleBackground = Color(0xE5E5EA)
 
         val Black = Color(0x000000)
         val White = Color(0xFFFFFF)

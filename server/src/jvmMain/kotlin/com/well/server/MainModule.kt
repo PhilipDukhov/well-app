@@ -1,13 +1,25 @@
 package com.well.server
 
-import com.auth0.jwk.JwkProviderBuilder
 import com.well.modules.models.Constants
-import com.well.server.routing.auth.*
+import com.well.server.routing.auth.AppleOauthResponse
+import com.well.server.routing.auth.appleLoginPrincipal
+import com.well.server.routing.auth.build
+import com.well.server.routing.auth.facebookLogin
+import com.well.server.routing.auth.googleLogin
+import com.well.server.routing.auth.sendEmail
+import com.well.server.routing.auth.sendSms
+import com.well.server.routing.auth.twitterLogin
 import com.well.server.routing.mainWebSocket
-import com.well.server.routing.user.*
+import com.well.server.routing.upload.uploadMessageMedia
+import com.well.server.routing.upload.uploadProfilePicture
+import com.well.server.routing.user.rate
+import com.well.server.routing.user.requestBecomeExpert
+import com.well.server.routing.user.setUserFavorite
+import com.well.server.routing.user.updateUser
 import com.well.server.utils.Dependencies
 import com.well.server.utils.configProperty
 import com.well.server.utils.createPrincipal
+import com.auth0.jwk.JwkProviderBuilder
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -189,9 +201,10 @@ fun Application.module() {
             webSocket(path = "mainWebSocket") {
                 mainWebSocket(dependencies)
             }
+            post("uploadMessageMedia") { uploadMessageMedia(dependencies) }
             route("user") {
                 put { updateUser(dependencies) }
-                post("uploadProfileImage") { uploadProfileImage(dependencies) }
+                post("uploadProfilePicture") { uploadProfilePicture(dependencies) }
                 post("rate") {
                     rate(dependencies)
                 }

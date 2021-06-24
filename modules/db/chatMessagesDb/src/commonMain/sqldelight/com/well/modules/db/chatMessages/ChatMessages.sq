@@ -1,0 +1,68 @@
+CREATE TABLE ChatMessages (
+    id INTEGER AS Int NOT NULL PRIMARY KEY,
+    creation REAL NOT NULL,
+    fromId INTEGER AS Int NOT NULL,
+    peerId INTEGER AS Int NOT NULL,
+    text TEXT NOT NULL,
+    photoUrl TEXT,
+    photoAspectRatio REAL AS Float
+);
+
+lastInsertId:
+SELECT last_insert_rowid();
+
+insert:
+INSERT OR REPLACE INTO ChatMessages (id, creation, fromId, peerId, text, photoUrl, photoAspectRatio)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+insertTmp:
+INSERT INTO ChatMessages (id, creation, fromId, peerId, text, photoUrl, photoAspectRatio)
+SELECT id, (SELECT (julianday('now') - 2440587.5) * 86400.0), ?, ?, ?, ?, ?
+    FROM (
+        SELECT
+            CASE WHEN id IS NULL
+                THEN -1
+                ELSE (MIN(0, id) - 1)
+            END
+            AS id
+        FROM (
+            SELECT MIN(id) AS id FROM TmpMessageIds
+        )
+    );
+
+delete:
+DELETE FROM ChatMessages WHERE id = ?;
+
+lastList:
+SELECT * FROM ChatMessages
+WHERE
+    (fromId = :id OR peerId = :id)
+    AND creation IN (
+        SELECT MAX(creation) AS creation FROM ChatMessages
+        WHERE fromId = :id OR peerId = :id
+        GROUP BY (CASE WHEN fromId = :id THEN peerId ELSE fromId END)
+    )
+ORDER BY ChatMessages.creation DESC
+;
+
+getById:
+SELECT * FROM ChatMessages
+WHERE id = ?;
+
+unreadCount:
+SELECT COUNT(id) FROM ChatMessages
+    WHERE id > (
+        SELECT messageId FROM LastReadMessages WHERE fromId = :fromId AND peerId = :peerId
+    )
+    AND fromId = :fromId AND peerId = :peerId
+;
+
+chatList:
+SELECT * FROM ChatMessages
+WHERE (fromId = :firstId AND peerId = :secondId) OR (fromId = :secondId AND peerId = :firstId);
+
+newestChatMessageId:
+SELECT id FROM ChatMessages
+WHERE id >= 0
+ORDER BY creation DESC
+LIMIT 1;

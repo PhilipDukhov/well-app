@@ -4,8 +4,8 @@ import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
 import com.well.modules.atomic.asCloseable
 import com.well.modules.napier.Napier
-import com.well.sharedMobile.utils.ImageContainer
-import com.well.modules.utils.*
+import com.well.modules.utils.AppContext
+import com.well.modules.utils.sharedImage.LocalImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -16,7 +16,7 @@ internal expect class ContextHelper(appContext: AppContext) {
     fun showSheet(actions: List<Action>): Closeable
     fun openUrl(url: String)
     suspend fun webAuthenticate(url: String, requestCode: Int): String
-    suspend fun pickSystemImage(): ImageContainer
+    suspend fun pickSystemImage(): LocalImage
 }
 
 internal suspend fun ContextHelper.showSheetThreadSafe(
@@ -40,7 +40,7 @@ internal suspend fun ContextHelper.showSheetThreadSafe(
     return closeableContainer
 }
 
-internal suspend fun ContextHelper.pickSystemImageSafe(): ImageContainer? = try {
+internal suspend fun ContextHelper.pickSystemImageSafe(): LocalImage? = try {
     pickSystemImage()
 } catch (t: Throwable) {
     Napier.e("pickSystemImageSafe failed", t)

@@ -45,7 +45,7 @@ struct TopLevelView: View {
                         }
                             .tabItem {
                                 tabScreen.tab.icon()
-                                Text("\(tabScreen.tab)")
+                                Text("\(tabScreen.tab.spacedName())")
                             }
                             .tag(tabScreen.tab)
                     }
@@ -101,6 +101,16 @@ struct TopLevelView: View {
         case let state as ScreenState.Support:
             SupportScreen(state: state.state) {
                 listener(TopLevelFeature.MsgSupportMsg(msg: $0))
+            }
+
+        case let state as ScreenState.ChatList:
+            ChatListScreen(state: state.state) {
+                listener(TopLevelFeature.MsgChatListMsg(msg: $0))
+            }
+
+        case let state as ScreenState.UserChat:
+            UserChatScreen(state: state.state) {
+                listener(TopLevelFeature.MsgUserChatMsg(msg: $0))
             }
 
         default:
@@ -163,16 +173,10 @@ private extension TopLevelFeature.StateTab {
             return Image(systemName: "person.fill")
         case .experts:
             return Image(uiImage: R.image.profile.expert()!)
+        case .chatlist:
+            return Image(systemName: "message.fill")
         case .more:
             return Image(systemName: "ellipsis")
-
-//            calendar "My calendar"
-//            person.badge.plus "Invite a colleague"
-//            building.columns "WELL Academy"
-//            clock.arrow.circlepath "Activity history"
-//            face.smiling "Sponsor & donate"
-//            wrench "Technical support"
-//            info.circle "About"
 
         default:
             fatalError("need image for tab \(self)")

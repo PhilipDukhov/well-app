@@ -1,13 +1,16 @@
 package com.well.sharedMobile.puerh._featureProvider
 
 import com.well.modules.napier.Napier
-import com.well.sharedMobile.puerh._topLevel.*
+import com.well.sharedMobile.puerh._topLevel.Alert
+import com.well.sharedMobile.puerh._topLevel.SuspendAction
+import com.well.sharedMobile.puerh._topLevel.pickSystemImageSafe
+import com.well.sharedMobile.puerh._topLevel.showSheetThreadSafe
+import com.well.sharedMobile.puerh.experts.ExpertsFeature
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Eff
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
-import com.well.sharedMobile.puerh.experts.ExpertsFeature
+import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.Msg as TopLevelMsg
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.Msg as TopLevelMsg
 
 internal suspend fun FeatureProvider.handleMyProfileEff(
     eff: Eff,
@@ -38,7 +41,7 @@ internal suspend fun FeatureProvider.handleMyProfileEff(
             networkManager.apply {
                 var user = eff.user
                 if (eff.newProfileImage != null) {
-                    user = user.copy(profileImageUrl = uploadImage(user.id, eff.newProfileImage))
+                    user = user.copy(profileImageUrl = uploadProfilePicture(user.id, eff.newProfileImage))
                 }
                 listener.invokeMyProfileMsg(
                     Msg.UserUploadFinished(
@@ -69,6 +72,9 @@ internal suspend fun FeatureProvider.handleMyProfileEff(
         is Eff.Call -> {
             listener(TopLevelMsg.StartCall(eff.user))
         }
+        is Eff.Message -> {
+            listener(TopLevelMsg.OpenUserChat(eff.uid))
+        }
         is Eff.Logout -> {
             logOut(listener)
         }
@@ -92,6 +98,6 @@ private fun ((TopLevelMsg) -> Unit).invokeMyProfileMsg(msg: Msg) =
 private suspend fun FeatureProvider.pickSystemImage(listener: (TopLevelMsg) -> Unit) {
     val image = contextHelper.pickSystemImageSafe()
     if (image != null) {
-        listener.invokeMyProfileMsg(Msg.UpdateImage(image))
+        listener.invokeMyProfileMsg(Msg.UpdateImage(image.toImageContainer()))
     }
 }

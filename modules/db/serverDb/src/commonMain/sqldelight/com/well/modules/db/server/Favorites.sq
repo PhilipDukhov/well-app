@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS Favourites (
+    owner INTEGER NOT NULL,
+    destination INTEGER NOT NULL,
+    PRIMARY KEY (owner, destination)
+);
+
+isFavorite:
+SELECT EXISTS (SELECT * FROM Favourites WHERE owner = ? AND destination = ?);
+
+addFavorite:
+INSERT INTO Favourites(owner, destination)
+VALUES (?, ?);
+
+removeFavorite:
+DELETE FROM Favourites WHERE (owner = ? AND destination = ?);

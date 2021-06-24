@@ -40,7 +40,13 @@ private extension MoreFeature.StateItem {
             return Image(systemName: "wrench")
         case .about:
             return Image(systemName: "info.circle")
-
+//            calendar "My calendar"
+//            person.badge.plus "Invite a colleague"
+//            building.columns "WELL Academy"
+//            clock.arrow.circlepath "Activity history"
+//            face.smiling "Sponsor & donate"
+//            wrench "Technical support"
+//            info.circle "About"
         default:
             fatalError("\(self) MoreFeature.StateItem icon needed ")
         }

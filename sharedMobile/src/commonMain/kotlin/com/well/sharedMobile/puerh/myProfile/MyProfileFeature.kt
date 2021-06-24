@@ -5,16 +5,14 @@ import com.well.modules.models.Rating
 import com.well.modules.models.RatingRequest
 import com.well.modules.models.User
 import com.well.modules.models.UserId
-import com.well.modules.utils.AppContext
-import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.State.EditingStatus
-import com.well.sharedMobile.puerh.πModels.NavigationBarModel
-import com.well.sharedMobile.utils.ImageContainer
-import com.well.sharedMobile.utils.profileImage
 import com.well.modules.utils.UrlUtil
 import com.well.modules.utils.toSetOf
 import com.well.modules.utils.withEmptySet
-import com.well.sharedMobile.utils.countryCodes.currentCountryCode
+import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.State.EditingStatus
+import com.well.sharedMobile.puerh.πModels.NavigationBarModel
+import com.well.modules.utils.sharedImage.ImageContainer
 import com.well.sharedMobile.utils.currentTimeZoneIdentifier
+import com.well.modules.utils.sharedImage.profileImage
 
 object MyProfileFeature {
     fun testState() = initialState(
@@ -87,6 +85,9 @@ object MyProfileFeature {
         internal val newImage: ImageContainer? = null,
         val editingStatus: EditingStatus = EditingStatus.Preview,
     ) {
+        init {
+            println("State $uid $user $originalUser")
+        }
         val loaded = user != null
         internal val image = newImage ?: user?.profileImage()
         val groups = if (user != null) {
@@ -170,6 +171,7 @@ object MyProfileFeature {
         object FinishEditing : Msg()
         object InitiateImageUpdate : Msg()
         object Call : Msg()
+        object Message : Msg()
         object ToggleFavorite : Msg()
         data class OpenUrl(val url: String) : Msg()
         data class RemoteUpdateUser(val user: User) : Msg()
@@ -190,6 +192,7 @@ object MyProfileFeature {
 
         data class ShowError(val throwable: Throwable) : Eff()
         data class Call(val user: User) : Eff()
+        data class Message(val uid: UserId) : Eff()
         data class RatingRequest(val ratingRequest: com.well.modules.models.RatingRequest) :
             Eff()
 
@@ -274,6 +277,10 @@ object MyProfileFeature {
                 }
                 is Msg.Call -> {
                     return@eff Eff.Call(state.user!!)
+                }
+                is Msg.Message -> {
+                    println("reduce Msg.Message ${state.uid} $state")
+                    return@eff Eff.Message(state.uid)
                 }
                 is Msg.OnLogout -> {
                     return@eff Eff.Logout

@@ -95,7 +95,6 @@ fun NamedDomainObjectCollection<KotlinSourceSet>.usePredefinedExperimentalAnnota
                     "kotlin.contracts.ExperimentalContracts",
                     "kotlin.time.ExperimentalTime",
                     "io.ktor.util.InternalAPI",
-                    "io.ktor.util.KtorExperimentalAPI",
                     "io.ktor.utils.io.core.ExperimentalIoApi",
                 )).forEach {
             languageSettings.useExperimentalAnnotation(it)
@@ -159,7 +158,7 @@ private fun Project.customDependencies(libs: List<String>): List<Dependency> =
                 result + Dependency.Test(dep)
             dep.startsWith(":") ->
                 result + Dependency.Module(dep)
-            dep == "kotlin.coroutines.core" ->
+            dep == "kotlin.coroutines.core-strictly" ->
                 result + Dependency.Implementation(
                     "org.jetbrains.kotlinx:kotlinx-coroutines-core",
                     version("kotlinCoroutines")

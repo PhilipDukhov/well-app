@@ -25,7 +25,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             appContext: .init(
                 rootController: rootViewController,
                 application: application,
-                launchOptions: launchOptions
+                launchOptions: launchOptions,
+                cacheImage: { image, url in
+                    ImageLoader.cache(image.uiImage, url)
+                }
             ),
             webRtcManagerGenerator: WebRtcManager.init,
             providerGenerator: { socialNetwork, appContext -> CredentialProvider in

@@ -7,10 +7,10 @@ package com.well.server.routing
 //
 //suspend fun DefaultWebSocketServerSession.call(dependencies: Dependencies) {
 //    val id = call.authUid
-//    dependencies.connectedUserSessions[id] = this
+//    dependencies.connectedUserSessionsFlow[id] = this
 //
 //    fun otherConnections() =
-//        dependencies.connectedUserSessions.filter { it.key != id }.values
+//        dependencies.connectedUserSessionsFlow.filter { it.key != id }.values
 //
 //    try {
 //        for (data in incoming) {
@@ -33,7 +33,7 @@ package com.well.server.routing
 //            }
 //        }
 //    } finally {
-//        dependencies.connectedUserSessions.remove(id)
+//        dependencies.connectedUserSessionsFlow.remove(id)
 //    }
 //}
 

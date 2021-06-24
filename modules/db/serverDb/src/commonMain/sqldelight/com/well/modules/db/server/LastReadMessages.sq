@@ -1,0 +1,26 @@
+CREATE TABLE LastReadMessages (
+    fromId INTEGER AS Int NOT NULL,
+    peerId INTEGER AS Int NOT NULL,
+    messageId INTEGER AS Int NOT NULL,
+
+    PRIMARY KEY (fromId, peerId)
+);
+
+delete:
+DELETE FROM LastReadMessages
+WHERE fromId = ? AND peerId = ?;
+
+-- TODO: use REPLACE when https://github.com/AlecStrong/sql-psi/issues/271 fixed
+insert:
+INSERT INTO LastReadMessages(fromId, peerId, messageId)
+VALUES (?, ?, ?);
+
+selectMessageId:
+SELECT messageId FROM LastReadMessages WHERE fromId = ? AND peerId = ?;
+
+select:
+SELECT * FROM LastReadMessages
+WHERE CONCAT(fromId, '|', peerId) IN :fromAndPeerIds;
+
+
+

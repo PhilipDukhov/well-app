@@ -28,14 +28,22 @@ final class ImageLoader: ObservableObject {
     }
 
     func load() {
-        guard !isLoading else { return }
+        guard !isLoading else {
+            return
+        }
 
         cancellable = Environment(\.imageLoadingFactory)
             .wrappedValue
             .image(at: url)
-            .handleEvents(receiveSubscription: { [weak self] _ in self?.onStart() },
-                receiveCompletion: { [weak self] _ in self?.onFinish() },
-                receiveCancel: { [weak self] in self?.onFinish() })
+            .handleEvents(receiveSubscription: { [weak self] _ in
+                self?.onStart()
+            },
+                receiveCompletion: { [weak self] _ in
+                    self?.onFinish()
+                },
+                receiveCancel: { [weak self] in
+                    self?.onFinish()
+                })
             .subscribe(on: Self.imageProcessingQueue)
             .receive(on: DispatchQueue.main)
             .assign(to: \.image, on: self)
@@ -51,6 +59,11 @@ final class ImageLoader: ObservableObject {
 
     private func onFinish() {
         isLoading = false
+    }
+
+    static func cache(_ image: UIImage, _ url: URL) {
+        Environment(\.imageLoadingFactory)
+            .wrappedValue.cache(image, url)
     }
 }
 
@@ -74,19 +87,31 @@ private final class ImageLoadingFactory {
     private var imageCache = TemporaryImageCache()
 
     func image(at url: URL) -> AnyPublisher<UIImage?, Never> {
-        imageCache[url].map { CurrentValueSubject($0).eraseToAnyPublisher() }
+        imageCache[url].map {
+            CurrentValueSubject($0).eraseToAnyPublisher()
+        }
         ?? processingRequests[url]
         ?? newRequest(url)
     }
 
     private func newRequest(_ url: URL) -> AnyPublisher<UIImage?, Never> {
         let newPublisher = URLSession.shared.dataTaskPublisher(for: url)
-            .map { UIImage(data: $0.data) }
+            .map {
+                UIImage(data: $0.data)
+            }
             .replaceError(with: nil)
             .handleEvents(
-                receiveOutput: { [weak self] in $0.map {self?.cache($0, url) }},
-                receiveCompletion: { [weak self] _ in self?.onRequestFinish(url) },
-                receiveCancel: { [weak self] in self?.onRequestFinish(url) }
+                receiveOutput: { [weak self] in
+                    $0.map {
+                        self?.cache($0, url)
+                    }
+                },
+                receiveCompletion: { [weak self] _ in
+                    self?.onRequestFinish(url)
+                },
+                receiveCancel: { [weak self] in
+                    self?.onRequestFinish(url)
+                }
             )
             .eraseToAnyPublisher()
         processingRequests[url] = newPublisher
@@ -97,7 +122,7 @@ private final class ImageLoadingFactory {
         processingRequests[url] = nil
     }
 
-    private func cache(_ image: UIImage, _ url: URL) {
+    func cache(_ image: UIImage, _ url: URL) {
         imageCache[url] = image
     }
 }

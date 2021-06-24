@@ -1,12 +1,12 @@
 package com.well.server.utils
 
 import com.well.modules.models.Rating
-import com.well.server.Users
+import com.well.modules.db.server.Users
 import com.well.modules.models.User
 import com.well.modules.models.User.Type
 import com.well.modules.models.UserId
-import com.well.server.Database
-import com.well.server.Ratings
+import com.well.modules.db.server.Database
+import com.well.modules.db.server.Ratings
 
 fun Users.toUser(
     currentUid: UserId,

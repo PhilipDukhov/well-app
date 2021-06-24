@@ -197,6 +197,14 @@ struct MyProfileScreen: View {
                     }
                 }
                 Button {
+                    listener(MyProfileFeature.MsgMessage())
+                } label: {
+                    Image(systemName: "message.fill")
+                        .font(.system(size: 20))
+                        .foregroundColorKMM(ColorConstants.Green)
+                        .padding()
+                }
+                Button {
                     listener(MyProfileFeature.MsgCall())
                 } label: {
                     Image(systemName: "phone.fill")

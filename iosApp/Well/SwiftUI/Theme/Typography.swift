@@ -15,15 +15,24 @@ struct TextStyle: Equatable {
     static let body1 = Self(fontWeight: .regular, fontSize: 18)
     static let body2 = Self(fontWeight: .regular, fontSize: 17)
     static let body3 = Self(fontWeight: .regular, fontSize: 16)
+    static let body4 = Self(fontWeight: .light, fontSize: 16)
     static let caption1 = Self(fontWeight: .regular, fontSize: 14)
     static let caption2 = Self(fontWeight: .light, fontSize: 12)
+
+    var uiFont: UIFont {
+        .systemFont(ofSize: fontSize, weight: fontWeight.toUIFontWeight())
+    }
+
+    var font: Font {
+        .system(size: fontSize, weight: fontWeight)
+    }
 }
 
 extension Text {
     @inline(__always) func style(
         _ style: TextStyle
     ) -> Text {
-        font(.system(size: style.fontSize, weight: style.fontWeight))
+        font(style.font)
     }
 }
 
@@ -31,12 +40,12 @@ extension View {
     @inline(__always) func style(
         _ style: TextStyle
     ) -> some View {
-        font(.system(size: style.fontSize, weight: style.fontWeight))
+        font(style.font)
     }
 }
 
-extension Font.Weight {
-    func toUIWeight() -> UIFont.Weight {
+private extension Font.Weight {
+    func toUIFontWeight() -> UIFont.Weight {
         switch self {
         case .ultraLight: return .ultraLight
         case .thin: return .thin

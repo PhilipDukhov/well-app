@@ -1,8 +1,9 @@
 package com.well.server.utils
 
+import com.well.modules.flowHelper.MutableMapFlow
 import com.well.modules.models.UserId
 import com.well.modules.models.createBaseHttpClient
-import com.well.server.routing.user.UserSession
+import com.well.server.routing.UserSession
 import io.ktor.application.*
 import java.util.*
 
@@ -19,37 +20,9 @@ class Dependencies(app: Application) {
             environment.configProperty("aws.bucketName"),
         )
     }
-    val connectedUserSessions: MutableMap<UserId, UserSession> = Collections.synchronizedMap(
-        mutableMapOf<UserId, UserSession>()
-    )
-
+    val connectedUserSessionsFlow = MutableMapFlow<UserId, UserSession>()
+    val callInfos: MutableList<CallInfo> = Collections.synchronizedList(mutableListOf<CallInfo>())
     val client = createBaseHttpClient()
-
-    suspend fun notifyCurrentUserUpdated(id: UserId) {
-//        connectedUserSessions[id]?.let { session ->
-//            session.send(
-//                WebSocketMsg.CurrentUser(
-//                    getCurrentUser(id).also {
-//                        println("getCurrentUser $it")
-//                    }
-//                )
-//            )
-//            notifyOnline()
-//        }
-    }
-
-    suspend fun notifyOnline() = connectedUserSessions.run {
-//        val users = onlineUsers()
-//        forEach { sessionPair ->
-//            sessionPair
-//                .value
-//                .send(
-//                    WebSocketMsg.OnlineUsersList(
-//                        users.filter { it.id != sessionPair.key }
-//                    )
-//                )
-//        }
-    }
 
     fun awsProfileImagePath(
         uid: UserId,

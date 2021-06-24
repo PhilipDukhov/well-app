@@ -3,7 +3,6 @@ import io.github.cdimascio.dotenv.dotenv
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
-    id("com.squareup.sqldelight")
     application
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
@@ -14,28 +13,19 @@ application {
     mainClassName = mainClass.get()
 }
 
-sqldelight {
-    database("Database") {
-        packageName = "com.well.server"
-        dialect = "mysql"
-    }
-}
-
 kotlin {
     jvm {
         withJava()
     }
     sourceSets {
         usePredefinedExperimentalAnnotations("KtorExperimentalLocationsAPI", "FlowPreview")
-        val commonMain by getting {
-            libDependencies(
-                ":modules:models",
-                ":modules:db.helper",
-            )
-        }
-
         val jvmMain by getting {
             libDependencies(
+                ":modules:db:helperDb",
+                ":modules:db:chatMessagesDb",
+                ":modules:db:serverDb",
+                ":modules:flowHelper",
+                ":modules:models",
                 "server.*",
                 "ktor.server.*",
                 "ktor.serialization",

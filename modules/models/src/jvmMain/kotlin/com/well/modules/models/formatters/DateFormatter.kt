@@ -16,3 +16,7 @@ actual fun DateFormatter.Companion.format(
     timeFormatter.timeZone = timeZone
     return "$timeZoneDisplayName ${timeFormatter.format(date.date)}"
 }
+actual fun DateFormatter.Companion.formatChatMessage(date: Date): String {
+    timeFormatter.timeZone = TimeZone.getDefault()
+    return timeFormatter.format(date.date)
+}

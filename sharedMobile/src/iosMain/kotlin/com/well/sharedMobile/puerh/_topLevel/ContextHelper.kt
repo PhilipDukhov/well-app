@@ -5,8 +5,8 @@ import com.well.modules.atomic.freeze
 import com.well.modules.utils.AppContext
 import com.well.modules.utils.mapNotNull
 import com.well.modules.utils.resumeWithException
+import com.well.modules.utils.sharedImage.LocalImage
 import com.well.sharedMobile.networking.Constants
-import com.well.sharedMobile.utils.ImageContainer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.invoke
@@ -147,7 +147,7 @@ internal actual class ContextHelper actual constructor(actual val appContext: Ap
         }
     }
 
-    actual suspend fun pickSystemImage(): ImageContainer =
+    actual suspend fun pickSystemImage(): LocalImage =
         Dispatchers.Main {
             suspendCancellableCoroutine { continuation ->
                 val imagePicker = UIImagePickerController()
@@ -162,7 +162,7 @@ internal actual class ContextHelper actual constructor(actual val appContext: Ap
                     ) {
                         val url = didFinishPickingMediaWithInfo[UIImagePickerControllerImageURL] as NSURL
                         picker.dismissViewControllerAnimated(true) {}
-                        continuation.resume(ImageContainer(url.path!!))
+                        continuation.resume(LocalImage(url.path!!))
                     }
 
                     override fun imagePickerControllerDidCancel(picker: UIImagePickerController) {

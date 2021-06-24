@@ -4,12 +4,14 @@ import com.squareup.sqldelight.EnumColumnAdapter
 import com.squareup.sqldelight.sqlite.driver.asJdbcDriver
 import com.well.modules.db.helper.SetEnumColumnAdapter
 import com.well.modules.db.helper.migrateIfNeeded
-import com.well.server.Database
-import com.well.server.Users
+import com.well.modules.db.server.ChatMessages
+import com.well.modules.db.server.Database
+import com.well.modules.db.server.Users
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.util.DriverDataSource
-import io.ktor.application.*
+import io.ktor.application.Application
+import io.ktor.application.ApplicationStopped
 import org.slf4j.LoggerFactory
 import java.io.File
 
@@ -74,8 +76,9 @@ fun initialiseDatabase(app: Application): Database {
             academicRankAdapter = EnumColumnAdapter(),
             languagesAdapter = SetEnumColumnAdapter(),
             skillsAdapter = SetEnumColumnAdapter(),
-        )
+        ),
     )
+
     app.environment.monitor.subscribe(ApplicationStopped) { driver.close() }
     db.usersQueries
         .selectUninitialized()

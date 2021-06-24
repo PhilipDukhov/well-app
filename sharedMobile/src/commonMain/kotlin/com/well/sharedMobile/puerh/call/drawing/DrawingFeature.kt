@@ -1,7 +1,7 @@
 package com.well.sharedMobile.puerh.call.drawing
 
 import com.well.modules.models.*
-import com.well.sharedMobile.utils.ImageContainer
+import com.well.modules.utils.sharedImage.ImageContainer
 import com.well.modules.utils.map
 import com.well.modules.utils.platform.Platform
 import com.well.modules.utils.platform.nativeScale

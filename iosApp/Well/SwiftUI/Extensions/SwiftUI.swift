@@ -11,7 +11,7 @@ extension View {
         opacity(visible ? 1 : 0)
             .zIndex(visible ? 1 : 0)
     }
-    
+
     @inline(__always)
     func fillMaxSize() -> some View {
         frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -50,7 +50,7 @@ extension View {
             alignment: alignment
         )
     }
-    
+
     @inline(__always)
     func frameInfinitable(
         size: CGSize,
@@ -64,7 +64,7 @@ extension View {
             alignment: alignment
         )
     }
-    
+
     @inline(__always)
     func frame(
         minSize: CGFloat,
@@ -85,10 +85,12 @@ extension View {
 
     @inline(__always)
     func printUI(_ vars: Any...) -> some View {
-        print(vars.map {
-            "\($0)"
-        }
-            .joined(separator: " "))
+        #if DEBUG
+            print(vars.map {
+                    "\($0)"
+                }
+                .joined(separator: " "))
+        #endif
         return EmptyView()
     }
 }

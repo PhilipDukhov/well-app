@@ -19,3 +19,8 @@ actual fun DateFormatter.Companion.format(date: Date, timeZoneIdentifier: String
     timeFormatter.timeZone = timeZoneFormatter.timeZone
     return "${timeZoneFormatter.stringFromDate(date.date)} ${timeFormatter.stringFromDate(date.date)}"
 }
+
+actual fun DateFormatter.Companion.formatChatMessage(date: Date): String {
+    timeFormatter.timeZone = NSTimeZone.defaultTimeZone
+    return timeFormatter.stringFromDate(date.date)
+}

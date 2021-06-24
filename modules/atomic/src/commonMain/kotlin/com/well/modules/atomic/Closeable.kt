@@ -2,6 +2,7 @@ package com.well.modules.atomic
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 interface Closeable {
@@ -29,6 +30,12 @@ fun Job.asCloseable() = object : Closeable {
         if (isActive) {
             cancel()
         }
+    }
+}
+
+fun CoroutineScope.asCloseable() = object : Closeable {
+    override fun close() {
+        cancel()
     }
 }
 

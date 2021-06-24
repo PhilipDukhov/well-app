@@ -1,7 +1,7 @@
 package com.well.sharedMobile.puerh.call
 
 import com.well.modules.models.Size
-import com.well.sharedMobile.utils.ImageContainer
+import com.well.modules.utils.sharedImage.ImageContainer
 
 fun ImageContainer.resizedImage(maxSize: Size): ImageContainer {
     if (size.width <= maxSize.width && size.height <= maxSize.width) {

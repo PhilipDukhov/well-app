@@ -1,0 +1,29 @@
+CREATE TABLE Ratings (
+    owner INTEGER NOT NULL,
+    destination INTEGER NOT NULL,
+    value INTEGER NOT NULL,
+    text TEXT,
+    PRIMARY KEY (owner, destination)
+);
+
+delete:
+DELETE FROM Ratings
+WHERE owner = ? AND destination = ?;
+
+-- TODO: use REPLACE when https://github.com/AlecStrong/sql-psi/issues/271 fixed
+add:
+INSERT INTO Ratings(owner, destination, value, text)
+VALUES (?, ?, ?, ?);
+
+get:
+SELECT *
+FROM Ratings
+WHERE destination = ? AND owner = ?;
+
+userRating:
+SELECT AVG(value), COUNT(owner)
+FROM Ratings
+WHERE destination = :uid;
+
+list:
+EXPLAIN SELECT * FROM Ratings;

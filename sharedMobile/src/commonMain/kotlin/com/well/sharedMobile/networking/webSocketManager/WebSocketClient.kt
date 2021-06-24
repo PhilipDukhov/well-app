@@ -24,7 +24,6 @@ internal class WebSocketClient(val config: Config) {
                 config.header.apply {
                     header(first, second)
                 }
-                contentType(ContentType.Application.Json)
             }
             install(WebSockets)
         }

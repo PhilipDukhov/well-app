@@ -7,6 +7,7 @@ import platform.Foundation.*
 @Serializable(with = DateSerializer::class)
 actual data class Date(val date: NSDate) {
     actual constructor(millis: Long) : this(NSDate.dateWithTimeIntervalSince1970(millis.toTimeInterval()))
+    actual constructor(seconds: Double) : this(NSDate.dateWithTimeIntervalSince1970(seconds))
     actual constructor() : this(NSDate())
 
     actual val millis = date.timeIntervalSince1970.toMillis()

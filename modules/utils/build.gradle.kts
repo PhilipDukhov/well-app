@@ -14,6 +14,7 @@ kotlin {
         val commonMain by getting {
             libDependencies(
                 ":modules:napier",
+                ":modules:models",
                 ":modules:atomic",
                 "kotlin.coroutines.core",
                 "kotlin.serializationJson",
@@ -26,12 +27,14 @@ kotlin {
                     "android.appCompat",
                     "android.dataStore",
                     "android.activity",
+                    "android.compose.accompanist.coil",
                 )
             }
         }
         val iosMain by getting {
             libDependencies(
                 "ktor.client.engine.ios",
+                "kotlin.coroutines.core-strictly",
             )
         }
     }

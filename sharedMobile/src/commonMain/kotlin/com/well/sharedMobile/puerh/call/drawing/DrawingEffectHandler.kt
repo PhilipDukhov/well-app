@@ -6,7 +6,7 @@ import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Eff
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg
 import com.well.sharedMobile.puerh.call.resizedImage
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.Msg as TopLevelMsg
-import com.well.sharedMobile.utils.asImageContainer
+import com.well.modules.utils.sharedImage.asImageContainer
 import com.well.modules.atomic.AtomicRef
 import com.well.modules.napier.Napier
 import com.well.sharedMobile.puerh.call.webRtc.RtcMsg.ImageSharingContainer.Msg as RtcMsg

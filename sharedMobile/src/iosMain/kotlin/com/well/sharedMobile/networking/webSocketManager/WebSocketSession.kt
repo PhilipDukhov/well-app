@@ -1,6 +1,6 @@
 package com.well.sharedMobile.networking.webSocketManager
 
-import com.well.sharedMobile.puerh.toNSData
+import com.well.modules.utils.toNSData
 import com.well.modules.utils.resumeWithException
 import com.well.modules.utils.toThrowable
 import kotlinx.coroutines.CoroutineScope

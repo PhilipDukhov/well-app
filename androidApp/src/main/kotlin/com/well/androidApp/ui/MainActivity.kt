@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             when (socialNetwork) {
                 SocialNetwork.Facebook -> FacebookProvider(context)
                 SocialNetwork.Google -> GoogleProvider(
-                    context = context,
+                    appContext = context,
                     tokenId = resources.getString(R.string.google_web_client_id)
                 )
                 SocialNetwork.Apple -> AppleOAuthProvider(

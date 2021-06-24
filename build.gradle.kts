@@ -74,9 +74,6 @@ subprojects {
             "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
             "-Xopt-in=kotlinx.serialization.ExperimentalSerializationApi",
         )
-        kotlinOptions {
-            useIR = true
-        }
     }
 
     apply(from = "${rootDir}/dependencies.gradle")

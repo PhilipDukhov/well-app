@@ -7,3 +7,4 @@ class DateFormatter {
 }
 
 expect fun DateFormatter.Companion.format(date: Date, timeZoneIdentifier: String): String
+expect fun DateFormatter.Companion.formatChatMessage(date: Date): String

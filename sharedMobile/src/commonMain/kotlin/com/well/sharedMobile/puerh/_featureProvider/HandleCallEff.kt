@@ -1,26 +1,27 @@
 package com.well.sharedMobile.puerh._featureProvider
 
+import com.well.modules.atomic.CloseableFuture
+import com.well.modules.atomic.freeze
 import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
-import com.well.sharedMobile.puerh._topLevel.*
+import com.well.modules.utils.permissionsHandler.PermissionsHandler
+import com.well.modules.utils.permissionsHandler.requestPermissions
+import com.well.modules.utils.puerh.addEffectHandler
+import com.well.sharedMobile.puerh._topLevel.Alert
+import com.well.sharedMobile.puerh._topLevel.SuspendAction
+import com.well.sharedMobile.puerh._topLevel.TopLevelFeature
+import com.well.sharedMobile.puerh._topLevel.pickSystemImageSafe
 import com.well.sharedMobile.puerh._topLevel.showSheetThreadSafe
 import com.well.sharedMobile.puerh.call.CallEffectHandler
 import com.well.sharedMobile.puerh.call.CallFeature
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature
-import com.well.modules.atomic.CloseableFuture
-import com.well.modules.atomic.freeze
-import com.well.modules.db.users.insertOrReplace
-import com.well.modules.utils.permissionsHandler.PermissionsHandler
-import com.well.modules.utils.permissionsHandler.requestPermissions
-import com.well.modules.utils.puerh.addEffectHandler
-import kotlinx.coroutines.launch
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.Msg as TopLevelMsg
 import com.well.sharedMobile.puerh.call.CallFeature.Msg as CallMsg
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg as DrawingMsg
 
 internal suspend fun FeatureProvider.handleCallEff(
     eff: CallFeature.Eff,
-    listener: (TopLevelMsg) -> Unit
+    listener: (TopLevelMsg) -> Unit,
 ) {
     when (eff) {
         is CallFeature.Eff.NotifyDeviceStateChanged,
@@ -103,7 +104,7 @@ private fun FeatureProvider.createWebRtcManagerHandler(
 
 private suspend fun FeatureProvider.handleRequestImageUpdate(
     eff: DrawingFeature.Eff.RequestImageUpdate,
-    listener: (TopLevelMsg) -> Unit
+    listener: (TopLevelMsg) -> Unit,
 ) {
     if (eff.alreadyHasImage) {
         contextHelper.showSheetThreadSafe(
@@ -126,39 +127,14 @@ private suspend fun FeatureProvider.pickSystemImage(listener: (TopLevelMsg) -> U
     val image = contextHelper.pickSystemImageSafe()
     if (image != null) {
         listener.invokeDrawingMsg(
-            DrawingMsg.LocalUpdateImage(image)
+            DrawingMsg.LocalUpdateImage(image.toImageContainer())
         )
-    }
-}
-
-internal fun FeatureProvider.createWebSocketMessageHandler(
-    listener: (TopLevelMsg) -> Unit
-): (WebSocketMsg) -> Unit = { msg ->
-    when (msg) {
-        is WebSocketMsg.Back.IncomingCall -> {
-            listener.invoke(TopLevelMsg.IncomingCall(msg))
-            coroutineScope.launch {
-                handleCallPermissions()?.also {
-                    listener(TopLevelMsg.EndCall)
-                    listener(TopLevelMsg.ShowAlert(it.first.alert))
-                }
-            }
-        }
-        is WebSocketMsg.Call.EndCall -> {
-            endCall(listener)
-        }
-        is WebSocketMsg.Back.UpdateUsers -> {
-            database.usersQueries.transaction {
-                msg.users.forEach(database.usersQueries::insertOrReplace)
-            }
-        }
-        else -> Unit
     }
 }
 
 internal suspend fun FeatureProvider.handleCall(
     user: User,
-    listener: (TopLevelMsg) -> Unit
+    listener: (TopLevelMsg) -> Unit,
 ) = handleCallPermissions()?.also {
     listener(TopLevelMsg.ShowAlert(it.first.alert))
 } ?: listener(TopLevelMsg.StartCall(user))
@@ -170,7 +146,7 @@ internal fun FeatureProvider.endCall(
     callCloseableContainer.close()
 }
 
-private suspend fun FeatureProvider.handleCallPermissions() =
+internal suspend fun FeatureProvider.handleCallPermissions() =
     permissionsHandler
         .requestPermissions(
             PermissionsHandler.Type.Camera,
@@ -189,7 +165,7 @@ private fun ((TopLevelMsg) -> Unit).invokeDrawingMsg(msg: DrawingMsg) =
         )
     )
 
-private val PermissionsHandler.Type.alert: Alert
+internal val PermissionsHandler.Type.alert: Alert
     get() = when (this) {
         PermissionsHandler.Type.Camera, PermissionsHandler.Type.Microphone -> Alert.CameraOrMicDenied
     }

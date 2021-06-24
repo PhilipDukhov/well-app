@@ -1,6 +1,7 @@
 package com.well.sharedMobile.puerh._featureProvider
 
 import com.well.modules.atomic.asCloseable
+import com.well.modules.db.chatMessages.insert
 import com.well.modules.db.users.insertOrReplace
 import com.well.modules.db.users.usersPresenceFlow
 import com.well.modules.models.AuthResponse
@@ -12,22 +13,28 @@ import com.well.modules.utils.puerh.EffectHandler
 import com.well.modules.utils.puerh.adapt
 import com.well.modules.utils.puerh.wrapWithEffectHandler
 import com.well.sharedMobile.networking.NetworkManager
+import com.well.sharedMobile.networking.combineToNetworkConnectedState
 import com.well.sharedMobile.puerh._topLevel.Alert
 import com.well.sharedMobile.puerh._topLevel.ScreenState
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature
+import com.well.sharedMobile.puerh.chatList.ChatListEffHandler
 import com.well.sharedMobile.puerh.experts.ExpertsApiEffectHandler
 import com.well.sharedMobile.puerh.login.LoginFeature
 import com.well.sharedMobile.puerh.login.SocialNetwork
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 suspend fun FeatureProvider.socialNetworkLogin(
     socialNetwork: SocialNetwork,
-    listener: (TopLevelFeature.Msg) -> Unit
+    listener: (TopLevelFeature.Msg) -> Unit,
 ) {
     try {
         gotAuthResponse(socialNetworkService.login(socialNetwork), listener)
@@ -75,27 +82,36 @@ fun FeatureProvider.loggedIn(
     listener: (TopLevelFeature.Msg) -> Unit,
 ) {
     sessionInfo = SessionInfo(authInfo.id)
-    user?.let(database.usersQueries::insertOrReplace)
+    databaseManager.open()
+    user?.let(usersDatabase.usersQueries::insertOrReplace)
     networkManager = NetworkManager(authInfo.token, startWebSocket = true, unauthorizedHandler = {
         logOut(listener)
     })
-    val effectHandler: EffectHandler<TopLevelFeature.Eff, TopLevelFeature.Msg> =
+    val scope = CoroutineScope(coroutineContext)
+    val effectHandlers = listOf<EffectHandler<TopLevelFeature.Eff, TopLevelFeature.Msg>>(
         ExpertsApiEffectHandler(
             networkManager,
-            database,
-            coroutineScope,
+            usersDatabase,
+            scope,
         ).adapt(
             effAdapter = { (it as? TopLevelFeature.Eff.ExpertsEff)?.eff },
             msgAdapter = { TopLevelFeature.Msg.ExpertsMsg(it) }
-        )
-    listOf(
+        ),
+        ChatListEffHandler(
+            authInfo.id,
+            networkManager,
+            usersDatabase,
+            messagesDatabase,
+            scope,
+        ),
+    )
+    (effectHandlers.map(feature::wrapWithEffectHandler) + listOf(
         networkManager
             .addListener(createWebSocketMessageHandler(listener)),
         notifyUsersDBPresenceCloseable(),
-        effectHandler,
         networkManager,
-    ).forEach(sessionInfo!!::addCloseableChild)
-    feature.wrapWithEffectHandler(effectHandler)
+        scope.asCloseable(),
+    )).forEach(sessionInfo!!::addCloseableChild)
     platform.dataStore.authInfo = authInfo
     listener.invoke(TopLevelFeature.Msg.LoggedIn(authInfo.id))
 }
@@ -103,7 +119,7 @@ fun FeatureProvider.loggedIn(
 fun FeatureProvider.logOut(listener: (TopLevelFeature.Msg) -> Unit) {
     sessionInfo = null
     platform.dataStore.authInfo = null
-    database.usersQueries.deleteAll()
+    databaseManager.clear()
     listener.invoke(TopLevelFeature.Msg.OpenLoginScreen)
 }
 
@@ -111,9 +127,9 @@ private fun AuthResponse.toAuthInfo() = AuthInfo(token = token, id = user.id)
 
 private fun FeatureProvider.notifyUsersDBPresenceCloseable() =
     coroutineScope.launch {
-        networkManager.state
-            .filter { it == NetworkManager.Status.Connected }
-            .combine(database.usersQueries.usersPresenceFlow()) { _, usersPresence ->
+        usersDatabase.usersQueries.usersPresenceFlow()
+            .combineToNetworkConnectedState(networkManager)
+            .map { usersPresence ->
                 WebSocketMsg.Front.SetUsersPresence(usersPresence)
             }
             .collect(networkManager::send)

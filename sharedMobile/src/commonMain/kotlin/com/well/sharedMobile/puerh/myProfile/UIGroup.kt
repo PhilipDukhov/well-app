@@ -2,7 +2,7 @@ package com.well.sharedMobile.puerh.myProfile
 
 import com.well.modules.models.User
 import com.well.sharedMobile.puerh.πModels.UIEditingField
-import com.well.sharedMobile.utils.SharedImage
+import com.well.modules.utils.sharedImage.SharedImage
 
 sealed class UIGroup {
     companion object {

@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+
 struct Label: UIViewRepresentable, Equatable {
     typealias UIViewType = UILabel
     let text: String
@@ -24,7 +25,7 @@ struct Label: UIViewRepresentable, Equatable {
         context: UIViewRepresentableContext<Self>
     ) {
         uiView.text = text
-        uiView.font = UIFont.systemFont(ofSize: style.fontSize, weight: style.fontWeight.toUIWeight())
+        uiView.font = style.uiFont
         uiView.textColor = textColor
         uiView.sizeToFit()
     }

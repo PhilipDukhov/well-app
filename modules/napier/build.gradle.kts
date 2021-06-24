@@ -17,5 +17,10 @@ kotlin {
                 "kotlin.stdLib",
             )
         }
+        val iosMain by getting {
+            libDependencies(
+                "kotlin.coroutines.core-strictly",
+            )
+        }
     }
 }

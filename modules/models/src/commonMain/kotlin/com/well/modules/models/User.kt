@@ -116,4 +116,6 @@ data class User(
         val average: Double,
         val currentUserRating: Rating? = null,
     )
+
+    val initials = fullName.split(" ").mapNotNull { it.firstOrNull()?.uppercaseChar() }.joinToString(separator = "")
 }

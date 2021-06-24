@@ -1,0 +1,22 @@
+CREATE TABLE LastReadMessages (
+    fromId INTEGER AS Int NOT NULL,
+    peerId INTEGER AS Int NOT NULL,
+    messageId INTEGER AS Int NOT NULL,
+
+    PRIMARY KEY (fromId, peerId)
+);
+
+insert:
+INSERT OR REPLACE INTO LastReadMessages(fromId, peerId, messageId)
+VALUES (?, ?, ?);
+
+select:
+SELECT * FROM LastReadMessages
+WHERE fromId || '|' || peerId IN :fromAndPeerIds;
+
+selectAll:
+SELECT * FROM LastReadMessages;
+
+isRead:
+SELECT * FROM LastReadMessages
+WHERE messageId = ?;

@@ -61,7 +61,7 @@ class ScreenStatesProcessor : AbstractProcessor() {
                     .file()
                     .writeTo(File(generatedSourcesRoot))
             } catch (t: Throwable) {
-                processingEnv.println(Kind.ERROR, "getElementsAnnotatedWith$t")
+                processingEnv.println(Kind.ERROR, "ContainerInfo(element, processingEnv) $t\n${t.stackTraceToString()}")
                 throw t
             }
         }
@@ -142,7 +142,7 @@ class ContainerInfo(
                         )
                         .returns(reducerResultClassName)
                         .addModifiers(KModifier.INTERNAL)
-                        .beginControlFlow("when (state.topScreen)")
+                        .beginControlFlow("return when (state.topScreen)")
                 featureInfos
                     .forEach { featureInfo ->
                         val reducerFunc = featureInfo.featureReducerFunc()
@@ -417,11 +417,11 @@ class FeatureInfo(
                     addStatement(
                         """
                         effs.mapNotNull {
-                            val pushEff = (it as? %1T.${featureShortName}Eff)?.eff as? %T ?:
+                            val pushEff = (it as? %1T.${featureShortName}Eff)?.eff as? %2T ?:
                             return@mapNotNull null
                             it to pushEff.screen
                         }.firstOrNull()
-                            ?.%T { pushEff, screen ->
+                            ?.%3T { pushEff, screen ->
                                 return newState.copyPush(screen = screen) to
                                         effs.toMutableSet().apply {
                                             remove(pushEff)

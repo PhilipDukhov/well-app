@@ -1,11 +1,9 @@
 package com.well.sharedMobile.puerh._topLevel
 
-import com.well.modules.napier.Napier
 import com.well.modules.utils.toSetOf
+import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.Eff
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.State
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.State.*
-import com.well.modules.utils.withEmptySet
-import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.Eff
 
 typealias ReducerResult = Pair<State, Set<Eff>>
 
@@ -13,11 +11,7 @@ internal inline fun <reified R : ScreenState> Map<Tab, List<ScreenState>>.screen
     state: State,
 ): Pair<R, ScreenPosition>? {
     keys.sortedBy { tab ->
-        if (state.selectedScreenPosition.tab == tab) {
-            1
-        } else {
-            0
-        }
+        state.selectedScreenPosition.tab != tab
     }.forEach { tab ->
         getValue(tab).withIndex().reversed().forEach {
             val (index, screen) = it
@@ -45,6 +39,16 @@ internal fun State.copyPush(
     screen: ScreenState,
 ): State {
     val (tabs, screenPosition) = tabs.push(tab, screen)
+    return copy(
+        tabs = tabs,
+        selectedScreenPosition = screenPosition
+    )
+}
+
+internal fun State.copyPopToRoot(
+    tab: Tab = selectedScreenPosition.tab,
+): State {
+    val (tabs, screenPosition) = tabs.popToRoot(tab)
     return copy(
         tabs = tabs,
         selectedScreenPosition = screenPosition
@@ -87,6 +91,12 @@ private fun Map<Tab, List<ScreenState>>.pop(
     fallbackTab: Tab,
 ) = modify(tab, fallbackTab) {
     it.dropLast(1)
+}
+
+private fun Map<Tab, List<ScreenState>>.popToRoot(
+    tab: Tab,
+) = modify(tab) {
+    listOf(it.first())
 }
 
 private fun Map<Tab, List<ScreenState>>.replace(

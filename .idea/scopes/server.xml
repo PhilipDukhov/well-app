@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="server" pattern="file[WELL.server.jvmMain]:*/&amp;&amp;!file[WELL.server.jvmMain]:logback.xml||file[WELL.server]:build.gradle.kts||file[WELL.modules.db.serverDb]:*/" />
+</component>

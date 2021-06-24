@@ -1,20 +1,22 @@
 package com.well.sharedMobile.puerh._topLevel
 
+import com.well.modules.atomic.Closeable
+import com.well.modules.utils.AppContext
+import com.well.modules.utils.sharedImage.LocalImage
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
-import com.well.modules.utils.AppContext
-import com.well.sharedMobile.utils.ImageContainer
-import com.well.modules.atomic.Closeable
-import kotlinx.coroutines.*
-import kotlin.coroutines.resume
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION
-
-import android.content.pm.PackageManager
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 internal actual class ContextHelper actual constructor(actual val appContext: AppContext) {
     actual fun showAlert(alert: Alert) =
@@ -96,8 +98,8 @@ internal actual class ContextHelper actual constructor(actual val appContext: Ap
             )
     }
 
-    actual suspend fun pickSystemImage(): ImageContainer =
-        suspendCancellableCoroutine<ImageContainer> { continuation ->
+    actual suspend fun pickSystemImage() =
+        suspendCancellableCoroutine<LocalImage> { continuation ->
             this.continuation = continuation
             val intents = listOf(
                 Intent(Intent.ACTION_GET_CONTENT),
@@ -115,13 +117,13 @@ internal actual class ContextHelper actual constructor(actual val appContext: Ap
     ) {
         val data = it.data?.data
         if (data != null) {
-            continuation?.resume(ImageContainer(data, appContext.androidContext))
+            continuation?.resume(LocalImage(data, appContext.androidContext))
         } else {
             continuation?.cancel(IllegalStateException("imagePickerLauncher result: ${it.resultCode}"))
         }
     }
 
-    private var continuation: CancellableContinuation<ImageContainer>? = null
+    private var continuation: CancellableContinuation<LocalImage>? = null
 
     private fun createChooser(intents: List<Intent>): Intent {
         val chooserIntent = Intent.createChooser(intents.first(), "Select Image")

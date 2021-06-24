@@ -1,22 +1,19 @@
 package com.well.sharedMobile.puerh.experts
 
-import com.squareup.sqldelight.runtime.coroutines.asFlow
-import com.squareup.sqldelight.runtime.coroutines.mapToList
-import com.well.modules.atomic.AtomicRef
 import com.well.modules.atomic.asCloseable
-import com.well.modules.db.users.Database
+import com.well.modules.db.users.UsersDatabase
 import com.well.modules.db.users.toUser
-import com.well.modules.models.User
 import com.well.modules.models.UserId
 import com.well.modules.models.UsersFilter
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.utils.puerh.EffectHandler
 import com.well.sharedMobile.networking.NetworkManager
+import com.well.sharedMobile.networking.combineToNetworkConnectedState
 import com.well.sharedMobile.puerh.experts.ExpertsFeature.Eff
 import com.well.sharedMobile.puerh.experts.ExpertsFeature.Msg
+import com.squareup.sqldelight.runtime.coroutines.asFlow
+import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
@@ -27,8 +24,8 @@ import kotlinx.coroutines.launch
 
 class ExpertsApiEffectHandler(
     private val networkManager: NetworkManager,
-    private val database: Database,
-    override val coroutineScope: CoroutineScope,
+    private val database: UsersDatabase,
+    coroutineScope: CoroutineScope,
 ) : EffectHandler<Eff, Msg>(coroutineScope) {
     private val filteredExpertsIdsFlow = MutableSharedFlow<List<UserId>>()
     private val inputFilterFlow = MutableStateFlow<UsersFilter?>(null)
@@ -47,7 +44,7 @@ class ExpertsApiEffectHandler(
         networkManager.apply {
             listOf(
                 coroutineScope.launch {
-                    state.collect {
+                    stateFlow.collect {
                         listener?.invoke(Msg.OnConnectionStatusChange(it))
                     }
                 }.asCloseable(),
@@ -59,12 +56,15 @@ class ExpertsApiEffectHandler(
                     }
                 },
                 coroutineScope.launch {
-                    filteredExpertsUsersFlow.collect {
+                    filteredExpertsUsersFlow
+                        .combineToNetworkConnectedState(networkManager)
+                        .collect {
                         listener?.invoke(Msg.OnUsersUpdated(it))
                     }
                 }.asCloseable(),
                 coroutineScope.launch {
                     filterFlow
+                        .combineToNetworkConnectedState(networkManager)
                         .collect {
                             networkManager.send(WebSocketMsg.Front.SetExpertsFilter(it))
                         }

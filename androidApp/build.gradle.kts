@@ -48,8 +48,6 @@ android {
         compose = true
     }
     kotlinOptions {
-        useIR = true
-
         freeCompilerArgs += listOf(
             "-Xopt-in=androidx.compose.ui.ExperimentalComposeUiApi",
             "-Xskip-prerelease-check",

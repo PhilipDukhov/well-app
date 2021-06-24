@@ -6,7 +6,6 @@ import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
-import kotlin.coroutines.CoroutineContext
 
 actual class WebSocketSession(
     private val socketSession: DefaultClientWebSocketSession,

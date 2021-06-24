@@ -3,8 +3,8 @@ package com.well.sharedMobile.puerh.more.about
 import com.well.modules.utils.toSetOf
 import com.well.modules.utils.withEmptySet
 import com.well.sharedMobile.puerh._topLevel.ScreenState
-import com.well.sharedMobile.utils.SharedImage
-import com.well.sharedMobile.utils.UrlImage
+import com.well.modules.utils.sharedImage.SharedImage
+import com.well.modules.utils.sharedImage.UrlImage
 
 object AboutFeature {
     data class State(val termsOpened: Boolean = false) {

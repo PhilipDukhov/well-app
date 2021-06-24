@@ -7,6 +7,7 @@ import com.well.modules.models.serializers.DateSerializer
 expect class Date {
     constructor()
     constructor(millis: Long)
+    constructor(seconds: Double)
 
     val millis: Long
     val millisSinceNow: Long

@@ -14,13 +14,13 @@ struct NavigationBarItem<V: View> {
     let enabled: Bool
     let handler: (() -> Void)?
 
-    init(view: V, enabled: Bool = true, handler: (() -> Void)?) {
+    init(view: V, enabled: Bool = true, handler: (() -> Void)? = nil) {
         self.view = view
         self.enabled = enabled
         self.handler = handler
     }
 
-    init(text: String, enabled: Bool = true, handler: (() -> Void)?) where V == Text {
+    init(text: String, enabled: Bool = true, handler: (() -> Void)? = nil) where V == Text {
         self.view = itemTextView(text)
         self.enabled = enabled
         self.handler = handler
@@ -90,6 +90,16 @@ struct NavigationBar<Title: View, LV: View, RV: View>: View {
         self.leftItem = nil
         self.rightItem = rightItem
         self.minContentHeight = minContentHeight
+    }
+
+    init(
+        leftItem: NavigationBarItem<LV>?,
+        rightItem: NavigationBarItem<RV>?
+    ) where Title == EmptyView {
+        self.title = EmptyView()
+        self.leftItem = leftItem
+        self.rightItem = rightItem
+        self.minContentHeight = nil
     }
 
     private static func createTitle(_ title: String) -> Text {

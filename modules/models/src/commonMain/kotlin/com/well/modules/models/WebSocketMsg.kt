@@ -1,5 +1,7 @@
 package com.well.modules.models
 
+import com.well.modules.models.chat.ChatMessage
+import com.well.modules.models.chat.LastReadMessage
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -20,6 +22,26 @@ sealed class WebSocketMsg {
         data class SetUsersPresence(
             val usersPresence: List<UserPresenceInfo>,
         ) : Front()
+
+        @Serializable
+        data class SetChatMessagePresence(
+            val messagePresenceId: ChatMessageId,
+        ) : Front()
+
+        @Serializable
+        data class UpdateChatReadStatePresence(
+            val lastReadMessages: List<LastReadMessage>,
+        ) : Front()
+
+        @Serializable
+        data class ChatMessageRead(
+            val messageId: ChatMessageId,
+        ) : Front()
+
+        @Serializable
+        data class CreateChatMessage(
+            val message: ChatMessage,
+        ) : Front()
     }
 
     @Serializable
@@ -35,18 +57,28 @@ sealed class WebSocketMsg {
         ) : Back()
 
         @Serializable
-        data class OnlineStatus(
-            val userIds: List<UserId>,
+        data class IncomingCall(
+            val user: User,
         ) : Back()
 
         @Serializable
-        data class IncomingCall(
-            val user: User,
+        data class UpdateMessages(
+            val messages: List<UpdateMessageInfo>,
+        ) : Back() {
+            @Serializable
+            data class UpdateMessageInfo(
+                val message: ChatMessage,
+                val tmpId: UserId? = null,
+            )
+        }
+
+        @Serializable
+        data class UpdateCharReadPresence(
+            val lastReadMessages: List<LastReadMessage>,
         ) : Back()
     }
 
     sealed class Call: WebSocketMsg() {
-
         @Serializable
         data class Offer(
             val sessionDescriptor: String,

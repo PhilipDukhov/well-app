@@ -12,14 +12,16 @@ extension String {
     func toURL() -> URL? {
         URL(string: self)
     }
-
-    var isNotEmpty: Bool {
-        !isEmpty
-    }
 }
 
 extension Data {
     func toString(encoding: String.Encoding) -> String? {
         String(data: self, encoding: encoding)
+    }
+}
+
+extension Collection {
+    var isNotEmpty: Bool {
+        !isEmpty
     }
 }

@@ -7,6 +7,9 @@ data class Size(
     val width: Float,
     val height: Float
 ) {
+    val aspectRatio: Float
+        get() = width / height
+
     constructor(
         width: Int,
         height: Int

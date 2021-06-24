@@ -1,18 +1,18 @@
 package com.well.sharedMobile.puerh._featureProvider
 
-import com.squareup.sqldelight.runtime.coroutines.asFlow
-import com.squareup.sqldelight.runtime.coroutines.mapToOne
 import com.well.modules.atomic.AtomicCloseableRef
 import com.well.modules.atomic.AtomicLateInitRef
-import com.well.modules.atomic.AtomicRef
 import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
 import com.well.modules.atomic.asCloseable
 import com.well.modules.atomic.freeze
-import com.well.modules.db.users.Database
-import com.well.modules.db.users.DatabaseManager
-import com.well.modules.db.users.toUser
-import com.well.modules.models.User
+import com.well.modules.db.chatMessages.ChatMessagesDatabase
+import com.well.modules.db.chatMessages.insert
+import com.well.modules.db.mobile.DatabaseManager
+import com.well.modules.db.users.UsersDatabase
+import com.well.modules.db.users.getByIdFlow
+import com.well.modules.db.users.insertOrReplace
+import com.well.modules.models.WebSocketMsg
 import com.well.modules.napier.Napier
 import com.well.modules.utils.AppContext
 import com.well.modules.utils.dataStore.AuthInfo
@@ -24,6 +24,7 @@ import com.well.modules.utils.platform.isDebug
 import com.well.modules.utils.puerh.ExecutorEffectHandler
 import com.well.modules.utils.puerh.ExecutorEffectsInterpreter
 import com.well.modules.utils.puerh.SyncFeature
+import com.well.modules.utils.puerh.adapt
 import com.well.modules.utils.puerh.wrapWithEffectHandler
 import com.well.sharedMobile.networking.NetworkManager
 import com.well.sharedMobile.puerh._topLevel.Alert
@@ -43,10 +44,11 @@ import com.well.sharedMobile.puerh.more.MoreFeature
 import com.well.sharedMobile.puerh.more.about.AboutFeature
 import com.well.sharedMobile.puerh.more.support.SupportFeature
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature
+import com.well.sharedMobile.puerh.userChat.UserChatEffHandler
+import com.well.sharedMobile.puerh.userChat.UserChatFeature
 import com.well.sharedMobile.puerh.welcome.WelcomeFeature
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -57,7 +59,7 @@ class FeatureProvider(
     internal val webRtcManagerGenerator: (List<String>, WebRtcManagerI.Listener) -> WebRtcManagerI,
     providerGenerator: (SocialNetwork, AppContext) -> CredentialProvider,
 ) {
-    private val coroutineContext = Dispatchers.Default
+    internal val coroutineContext = Dispatchers.Default
     internal var sessionInfo by AtomicCloseableRef<SessionInfo>()
     internal val socialNetworkService = SocialNetworkService { network ->
         when (network) {
@@ -74,14 +76,18 @@ class FeatureProvider(
     internal var networkManager by AtomicLateInitRef<NetworkManager>()
     internal val nonInitializedAuthInfo = AtomicLateInitRef<AuthInfo>()
     internal val callCloseableContainer = CloseableContainer()
-    private val userProfileUpdater = AtomicCloseableRef<Closeable>()
-    private val databaseManager = DatabaseManager(appContext)
-    internal val database: Database
-        get() = databaseManager.database
+    private var topScreenHandlerCloseable by AtomicCloseableRef<Closeable>()
+    internal val databaseManager = DatabaseManager(appContext)
+    internal val usersDatabase: UsersDatabase
+        get() = databaseManager.usersDatabase
+    internal val messagesDatabase: ChatMessagesDatabase
+        get() = databaseManager.messagesDatabase
 
     private val effectInterpreter: ExecutorEffectsInterpreter<Eff, Msg> =
         interpreter@{ eff, listener ->
             when (eff) {
+                is Eff.ChatListEff,
+                -> Unit
                 is Eff.ShowAlert -> {
                     MainScope().launch {
                         if (eff.alert is Alert.Throwable) {
@@ -180,31 +186,57 @@ class FeatureProvider(
                         }
                     }
                 }
+                is Eff.UserChatEff -> {
+                    when (eff.eff) {
+                        UserChatFeature.Eff.Back -> {
+                            listener(Msg.Pop)
+                        }
+                        is UserChatFeature.Eff.Call -> {
+                            listener(Msg.StartCall(eff.eff.user))
+                        }
+                        UserChatFeature.Eff.ChooseImage,
+                        is UserChatFeature.Eff.MarkMessageRead,
+                        is UserChatFeature.Eff.SendImage,
+                        is UserChatFeature.Eff.SendMessage,
+                        UserChatFeature.Eff.Back,
+                        -> Unit
+                    }
+                }
                 is Eff.TopScreenUpdated -> {
                     when (eff.screen) {
                         is ScreenState.MyProfile -> {
-                            userProfileUpdater.value =
+                            println("ScreenState.MyProfile ${eff.screen.state.uid}")
+                            topScreenHandlerCloseable =
                                 coroutineScope.launch {
-                                    database.usersQueries
-                                        .getById(eff.screen.state.uid)
-                                        .asFlow()
-                                        .mapToOne()
+                                    usersDatabase.usersQueries
+                                        .getByIdFlow(eff.screen.state.uid)
                                         .collect { user ->
                                             listener(
                                                 Msg.MyProfileMsg(
-                                                    MyProfileFeature.Msg.RemoteUpdateUser(
-                                                        user.toUser()
-                                                    )
+                                                    MyProfileFeature.Msg.RemoteUpdateUser(user)
                                                 )
                                             )
                                         }
                                 }.asCloseable()
                         }
-                        else -> {
-
+                        is ScreenState.UserChat -> {
+                            topScreenHandlerCloseable = feature.wrapWithEffectHandler(
+                                UserChatEffHandler(
+                                    currentUid = sessionInfo!!.uid,
+                                    peerUid = eff.screen.state.peerId,
+                                    networkManager = networkManager,
+                                    usersDatabase = usersDatabase,
+                                    messagesDatabase = messagesDatabase,
+                                    contextHelper = contextHelper,
+                                    coroutineScope = CoroutineScope(coroutineContext),
+                                ).adapt(
+                                    effAdapter = { (it as? Eff.UserChatEff)?.eff },
+                                    msgAdapter = { Msg.UserChatMsg(it) }
+                                )
+                            )
                         }
+                        else -> Unit
                     }
-
                 }
             }
         }
@@ -226,5 +258,53 @@ class FeatureProvider(
             handler
         )
         handler.freeze()
+    }
+
+    internal fun createWebSocketMessageHandler(
+        listener: (Msg) -> Unit,
+    ): (WebSocketMsg) -> Unit = { msg ->
+        when (msg) {
+            is WebSocketMsg.Front -> Unit
+            is WebSocketMsg.Call.EndCall -> {
+                endCall(listener)
+            }
+            is WebSocketMsg.Call -> Unit
+            is WebSocketMsg.Back.IncomingCall -> {
+                listener.invoke(Msg.IncomingCall(msg))
+                coroutineScope.launch {
+                    handleCallPermissions()?.also {
+                        listener(Msg.EndCall)
+                        listener(Msg.ShowAlert(it.first.alert))
+                    }
+                }
+            }
+            is WebSocketMsg.Back.ListFilteredExperts -> Unit
+            is WebSocketMsg.Back.UpdateUsers -> {
+                usersDatabase.usersQueries.run {
+                    transaction {
+                        msg.users.forEach(::insertOrReplace)
+                    }
+                }
+            }
+            is WebSocketMsg.Back.UpdateCharReadPresence -> {
+                messagesDatabase.lastReadMessagesQueries.run {
+                    transaction {
+                        msg.lastReadMessages.forEach(::insert)
+                    }
+                }
+            }
+            is WebSocketMsg.Back.UpdateMessages -> {
+                messagesDatabase.chatMessagesQueries.run {
+                    transaction {
+                        msg.messages.forEach { messageInfo ->
+                            messageInfo.tmpId?.let { tmpId ->
+                                delete(tmpId)
+                            }
+                            insert(messageInfo.message)
+                        }
+                    }
+                }
+            }
+        }
     }
 }

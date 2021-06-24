@@ -4,17 +4,20 @@ import com.well.modules.annotations.ScreenStates
 import com.well.modules.models.User
 import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMsg
-import com.well.sharedMobile.puerh.call.CallFeature
-import com.well.sharedMobile.puerh.login.LoginFeature
-import com.well.sharedMobile.puerh.experts.ExpertsFeature
-import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.State.*
-import com.well.sharedMobile.puerh.myProfile.MyProfileFeature
+import com.well.modules.models.spacedUppercaseName
 import com.well.modules.utils.map
 import com.well.modules.utils.toSetOf
 import com.well.modules.utils.withEmptySet
+import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.State.*
+import com.well.sharedMobile.puerh.call.CallFeature
+import com.well.sharedMobile.puerh.chatList.ChatListFeature
+import com.well.sharedMobile.puerh.experts.ExpertsFeature
+import com.well.sharedMobile.puerh.login.LoginFeature
 import com.well.sharedMobile.puerh.more.MoreFeature
 import com.well.sharedMobile.puerh.more.about.AboutFeature
 import com.well.sharedMobile.puerh.more.support.SupportFeature
+import com.well.sharedMobile.puerh.myProfile.MyProfileFeature
+import com.well.sharedMobile.puerh.userChat.UserChatFeature
 import com.well.sharedMobile.puerh.welcome.WelcomeFeature
 
 // remove build/tmp/kapt3 after updating features to refresh cache
@@ -31,6 +34,8 @@ import com.well.sharedMobile.puerh.welcome.WelcomeFeature
         MoreFeature::class,
         AboutFeature::class,
         SupportFeature::class,
+        ChatListFeature::class,
+        UserChatFeature::class,
     ]
 )
 object TopLevelFeature {
@@ -79,12 +84,12 @@ object TopLevelFeature {
 
         fun <T : ScreenState> changeScreen(
             screenPosition: ScreenPosition,
-            block: T.() -> T
+            block: T.() -> T,
         ): State = copy(tabs = tabs.copy(screenPosition = screenPosition, block = block))
 
         data class ScreenPosition(
             val tab: Tab,
-            val index: Int
+            val index: Int,
         )
 
         enum class Tab {
@@ -92,10 +97,13 @@ object TopLevelFeature {
 
             MyProfile,
             Experts,
+            ChatList,
             More,
 
             Overlay,
             ;
+
+            fun spacedName() = spacedUppercaseName()
         }
     }
 
@@ -105,9 +113,11 @@ object TopLevelFeature {
         data class MyProfileMsg(val msg: MyProfileFeature.Msg) : Msg()
         data class LoginMsg(val msg: LoginFeature.Msg) : Msg()
         data class ExpertsMsg(val msg: ExpertsFeature.Msg) : Msg()
+        data class ChatListMsg(val msg: ChatListFeature.Msg) : Msg()
         data class MoreMsg(val msg: MoreFeature.Msg) : Msg()
         data class AboutMsg(val msg: AboutFeature.Msg) : Msg()
         data class SupportMsg(val msg: SupportFeature.Msg) : Msg()
+        data class UserChatMsg(val msg: UserChatFeature.Msg) : Msg()
 
         data class StartCall(val user: User) : Msg()
         data class IncomingCall(val incomingCall: WebSocketMsg.Back.IncomingCall) : Msg()
@@ -121,6 +131,7 @@ object TopLevelFeature {
         data class SelectTab(val tab: Tab) : Msg()
         object OpenLoginScreen : Msg()
         object OpenWelcomeScreen : Msg()
+        data class OpenUserChat(val uid: UserId) : Msg()
         object Back : Msg()
         object Pop : Msg()
     }
@@ -136,6 +147,8 @@ object TopLevelFeature {
         data class WelcomeEff(val eff: WelcomeFeature.Eff) : Eff()
         data class LoginEff(val eff: LoginFeature.Eff) : Eff()
         data class ExpertsEff(val eff: ExpertsFeature.Eff) : Eff()
+        data class ChatListEff(val eff: ChatListFeature.Eff) : Eff()
+        data class UserChatEff(val eff: UserChatFeature.Eff) : Eff()
         data class MoreEff(val eff: MoreFeature.Eff) : Eff()
         data class AboutEff(val eff: AboutFeature.Eff) : Eff()
         data class SupportEff(val eff: SupportFeature.Eff) : Eff()
@@ -143,7 +156,7 @@ object TopLevelFeature {
 
     fun reducer(
         msg: Msg,
-        state: State
+        state: State,
     ): ReducerResult = run state@{
         return@reducer state toSetOf (run eff@{
             when (msg) {
@@ -160,12 +173,15 @@ object TopLevelFeature {
                     return@reducer state.copyPush(screen = msg.screen).reduceScreenChanged()
                 }
                 is Msg.SelectTab -> {
-                    return@reducer state.copy(
-                        selectedScreenPosition = ScreenPosition(
-                            tab = msg.tab,
-                            index = state.tabs[msg.tab]!!.indices.last
-                        ),
-                    ).reduceScreenChanged()
+                    return@reducer if (state.selectedScreenPosition.tab == msg.tab)
+                        state.copyPopToRoot().reduceScreenChanged()
+                    else
+                        state.copy(
+                            selectedScreenPosition = ScreenPosition(
+                                tab = msg.tab,
+                                index = state.tabs[msg.tab]!!.indices.last
+                            ),
+                        ).reduceScreenChanged()
                 }
                 is Msg.LoggedIn -> {
                     val newState = state.copy(
@@ -178,6 +194,7 @@ object TopLevelFeature {
                                 )
                             ),
                             Tab.Experts to listOf(ScreenState.Experts(ExpertsFeature.initialState())),
+                            Tab.ChatList to listOf(ScreenState.ChatList(ChatListFeature.State())),
                             Tab.More to listOf(ScreenState.More(MoreFeature.State())),
                         ),
                         selectedScreenPosition = ScreenPosition(Tab.Experts, 0),
@@ -207,6 +224,8 @@ object TopLevelFeature {
                 is Msg.MoreMsg,
                 is Msg.AboutMsg,
                 is Msg.SupportMsg,
+                is Msg.ChatListMsg,
+                is Msg.UserChatMsg,
                 -> {
                     return@reducer reduceScreenMsg(msg, state)
                 }
@@ -217,10 +236,21 @@ object TopLevelFeature {
                     return@reducer state.copyHideOverlay().reduceScreenChanged()
                 }
                 Msg.OpenLoginScreen -> {
-                    return@state state.copyReplace(screen = ScreenState.Login(LoginFeature.State()))
+                    return@state state.copy(
+                        tabs = mapOf(
+                            Tab.Login to listOf(
+                                ScreenState.Login(LoginFeature.State())
+                            ),
+                        ),
+                        selectedScreenPosition = ScreenPosition(Tab.Login, 0),
+                    )
                 }
                 Msg.OpenWelcomeScreen -> {
                     return@state state.copyReplace(screen = ScreenState.Welcome(WelcomeFeature.State()))
+                }
+                is Msg.OpenUserChat -> {
+                    return@reducer state.copyPush(screen = ScreenState.UserChat(UserChatFeature.State(peerId = msg.uid)))
+                        .reduceScreenChanged()
                 }
             }
         })

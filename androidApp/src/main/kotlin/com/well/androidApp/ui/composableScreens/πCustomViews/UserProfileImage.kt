@@ -1,6 +1,10 @@
 package com.well.androidApp.ui.composableScreens.πCustomViews
 
-import androidx.compose.foundation.Image
+import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
+import com.well.modules.models.Color
+import com.well.modules.models.User
+import com.well.modules.utils.sharedImage.SharedImage
+import com.well.modules.utils.sharedImage.profileImage
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.shape.CircleShape
@@ -8,13 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
-import com.well.modules.models.Color
-import com.well.modules.models.User
-import com.well.sharedMobile.utils.ImageContainer
-import com.well.sharedMobile.utils.SharedImage
-import com.well.sharedMobile.utils.UrlImage
-import com.well.sharedMobile.utils.profileImage
 
 @Suppress("NAME_SHADOWING")
 @Composable

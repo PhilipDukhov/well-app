@@ -15,8 +15,6 @@ import com.well.modules.utils.puerh.EffectHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import com.well.sharedMobile.puerh.call.webRtc.RtcMsg.ImageSharingContainer.Msg.UpdateImage as ImgSharingUpdateImage
@@ -26,12 +24,8 @@ import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.Msg as TopLevelMsg
 class CallEffectHandler(
     private val networkManager: NetworkManager,
     webRtcManagerGenerator: (List<String>, WebRtcManagerI.Listener) -> WebRtcManagerI,
-    override val coroutineScope: CoroutineScope,
+    coroutineScope: CoroutineScope,
 ) : EffectHandler<TopLevelEff, TopLevelMsg>(coroutineScope) {
-    private val candidatesSendState = networkManager
-        .state
-        .map { it == NetworkManager.Status.Connected }
-        .distinctUntilChanged()
     private val candidates = MutableSharedFlow<WebSocketMsg.Call.Candidate>(replay = Int.MAX_VALUE)
     private val candidatesSendCloseable = AtomicCloseableRef<Closeable>()
     private val webRtcManager: WebRtcManagerI
@@ -133,7 +127,7 @@ class CallEffectHandler(
         addCloseableChild(webRtcManagerListener)
         addCloseableChild(
             coroutineScope.launch {
-                candidatesSendState
+                networkManager.isConnectedFlow
                     .collect { shouldSend ->
                         candidatesSendCloseable.value =
                             if (shouldSend)

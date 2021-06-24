@@ -4,6 +4,7 @@
 //
 
 import CoreGraphics
+import SharedMobile
 
 extension CGRect {
     var mid: CGPoint {
@@ -12,6 +13,12 @@ extension CGRect {
 }
 
 extension Int32 {
+    func toCGFloat() -> CGFloat {
+        CGFloat(self)
+    }
+}
+
+extension KotlinFloat {
     func toCGFloat() -> CGFloat {
         CGFloat(self)
     }

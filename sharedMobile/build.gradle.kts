@@ -55,7 +55,10 @@ kotlin {
             libDependencies(
                 ":modules:atomic",
                 ":modules:annotations",
-                ":modules:db:users",
+                ":modules:db:mobileDb",
+                ":modules:db:chatMessagesDb",
+                ":modules:db:usersDb",
+                ":modules:flowHelper",
                 "kotlin.serializationJson",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",
@@ -88,7 +91,6 @@ kotlin {
                     "google.playServicesAuth",
                     "android.material",
                     "android.activity",
-                    "android.compose.accompanist.coil",
                     "android.browser",
                     "ktor.client.engine.cio",
                     "kotlin.coroutines.playServices",
@@ -106,6 +108,7 @@ kotlin {
         val iosMain by getting {
             libDependencies(
                 "ktor.client.engine.ios",
+                "kotlin.coroutines.core-strictly",
             )
         }
     }

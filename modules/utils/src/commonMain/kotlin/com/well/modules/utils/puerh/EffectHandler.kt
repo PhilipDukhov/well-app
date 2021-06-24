@@ -3,11 +3,16 @@ package com.well.modules.utils.puerh
 import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
 import com.well.modules.atomic.AtomicRef
+import com.well.modules.atomic.asCloseable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-abstract class EffectHandler<Eff : Any, Msg : Any>(open val coroutineScope: CoroutineScope) : CloseableContainer() {
+abstract class EffectHandler<Eff : Any, Msg : Any>(val coroutineScope: CoroutineScope) : CloseableContainer() {
     var listener by AtomicRef<((Msg) -> Unit)?>(null)
+
+    init {
+        addCloseableChild(coroutineScope.asCloseable())
+    }
 
     open fun setListener(listener: suspend (Msg) -> Unit) {
         this.listener = { msg -> coroutineScope.launch { listener(msg) } }
@@ -31,7 +36,7 @@ fun <Eff1 : Any, Msg1 : Any, Eff2 : Any, Msg2 : Any> EffectHandler<Eff1, Msg1>.a
 fun <Msg : Any, State : Any, Eff : Any> Feature<Msg, State, Eff>.wrapWithEffectHandler(
     effectHandler: EffectHandler<Eff, Msg>,
     initialEffects: Set<Eff> = emptySet()
-) = apply {
+) = run {
     addEffectHandler(effectHandler, initialEffects)
 }
 

@@ -1,0 +1,38 @@
+CREATE TABLE ChatMessages (
+    id INTEGER AS Int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    creation DOUBLE NOT NULL,
+    fromId INTEGER AS Int NOT NULL,
+    peerId INTEGER AS Int NOT NULL,
+    text TEXT NOT NULL,
+    photoUrl TEXT,
+    photoAspectRatio REAL AS Float
+);
+
+insert:
+INSERT INTO ChatMessages (creation, fromId, peerId, text, photoUrl, photoAspectRatio)
+VALUES (?, ?, ?, ?, ?, ?);
+
+lastInsertId:
+SELECT LAST_INSERT_ID();
+
+getAllForUser:
+SELECT * FROM ChatMessages
+WHERE
+    (fromId = :id OR peerId = :id)
+    AND (id > :lastPresentedId)
+    ;
+
+peerIdsList:
+SELECT (CASE WHEN fromId = :id THEN peerId ELSE fromId END) FROM ChatMessages
+WHERE
+    (fromId = :id OR peerId = :id)
+    AND creation IN (
+        SELECT MAX(creation) AS creation FROM ChatMessages
+        WHERE fromId = :id OR peerId = :id
+        GROUP BY (CASE WHEN fromId = :id THEN peerId ELSE fromId END)
+    )
+ORDER BY ChatMessages.creation DESC
+;
+
+getById:
+SELECT * FROM ChatMessages WHERE id = ?;

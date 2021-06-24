@@ -17,8 +17,9 @@ repositories {
     mavenCentral()
 }
 
-apply(from = "../dependenciesResolver.gradle.kts")
-val kotlinVersion = extra["kotlinVersion"]!! as String
+apply(from = "${projectDir.parent}/dependenciesResolver.gradle.kts")
+apply(from = "${projectDir.parent}/dependencies.gradle")
+val kotlinVersion = (extra["Versions"] as Map<*, *>)["kotlin"] as String
 val gradlePluginVersion = extra.properties["gradlePluginVersion"] as? String
 
 dependencies {

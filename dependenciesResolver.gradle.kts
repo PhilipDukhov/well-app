@@ -31,19 +31,19 @@ val executor = Executor.AndroidStudio
 //    }
 //}
 
-val withAndroid = true
-//executor == Executor.AndroidStudio && run {
-//    // Loads the local.properties file
-//    val localProperties = java.io.File("$root/local.properties").takeIf { it.exists() }
-//        ?.inputStream()?.use { java.util.Properties().apply { load(it) } }
-//        ?: error("Please create a local.properties file (sample in local.sample.properties).")
-//
-//    // There need to be at least either sdk.dir or skip.android in the file
-//    if (localProperties["sdk.dir"] == null && localProperties["skipAndroid"] != "true") {
-//        error("local.properties: sdk.dir == null && skip.android != true")
-//    }
-//    localProperties["skipAndroid"] != "true"
-//}
+//val withAndroid = true
+val withAndroid = executor == Executor.AndroidStudio && run {
+    // Loads the local.properties file
+    val localProperties = java.io.File("$root/local.properties").takeIf { it.exists() }
+        ?.inputStream()?.use { java.util.Properties().apply { load(it) } }
+        ?: error("Please create a local.properties file (sample in local.sample.properties).")
+
+    // There need to be at least either sdk.dir or skip.android in the file
+    if (localProperties["sdk.dir"] == null && localProperties["skipAndroid"] != "true") {
+        error("local.properties: sdk.dir == null && skip.android != true")
+    }
+    localProperties["skipAndroid"] != "true"
+}
 
 System.setProperty("withAndroid", withAndroid.toString())
 
@@ -51,15 +51,12 @@ val properties = java.io.File("$rootDir/gradle.properties").takeIf { it.exists()
     ?.inputStream()?.use { java.util.Properties().apply { load(it) } }
     ?: error("gradle.properties not found $rootDir/gradle.properties")
 
-val kotlinVersion = properties[/*if (withAndroid) "kotlinVersion14" else*/ "kotlinVersion15"]!! as String
 val gradlePluginVersion = if (executor != Executor.AndroidStudio) null
-    else properties["gradlePluginVersion7"]!! as String
-System.setProperty("kotlinVersion", kotlinVersion)
+    else properties["gradlePluginVersion"]!! as String
 if (gradlePluginVersion != null) {
     System.setProperty("gradlePluginVersion", gradlePluginVersion)
     extra["gradlePluginVersion"] = gradlePluginVersion
 }
 extra["withAndroid"] = withAndroid
-extra["kotlinVersion"] = kotlinVersion
 
-println("executor:$executor withAndroid:$withAndroid gradlePluginVersion:$gradlePluginVersion kotlinVersion:$kotlinVersion")
+println("executor:$executor withAndroid:$withAndroid gradlePluginVersion:$gradlePluginVersion")

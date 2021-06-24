@@ -1,0 +1,8 @@
+CREATE TABLE TmpMessageIds (
+    id INTEGER AS Int NOT NULL PRIMARY KEY
+);
+
+updateTmpId {
+    DELETE FROM TmpMessageIds;
+    INSERT INTO TmpMessageIds VALUES(?);
+}

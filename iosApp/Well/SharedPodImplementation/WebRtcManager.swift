@@ -415,7 +415,7 @@ extension WebRtcManager: RTCDataChannelDelegate {
         _ dataChannel: RTCDataChannel,
         didReceiveMessageWith buffer: RTCDataBuffer
     ) {
-        listener.receiveData(data: UtilsKt.toByteArray(buffer.data))
+        listener.receiveData(data: NSData_byteArrayKt.toByteArray(buffer.data))
     }
 }
 

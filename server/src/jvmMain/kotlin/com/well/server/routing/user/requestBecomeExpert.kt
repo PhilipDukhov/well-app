@@ -28,7 +28,6 @@ suspend fun PipelineContext<*, ApplicationCall>.requestBecomeExpert(
                     id = uid,
                     type = User.Type.PendingExpert
                 )
-            notifyCurrentUserUpdated(uid)
             call.respond(HttpStatusCode.OK, Unit)
         }
         else -> {
