@@ -19,7 +19,8 @@ sealed class Alert(
     data class Throwable(val throwable: kotlin.Throwable) :
         Alert(
             title = throwable.userReadableDescription()
-                ?: (if (Platform.isDebug) "${throwable::class} $throwable" else Strings.somethingWentWrong),
+                ?: "${throwable::class} $throwable",
+//                (if (Platform.isDebug) "${throwable::class} $throwable" else Strings.somethingWentWrong),
             description = if (Platform.isDebug) "${throwable::class} $throwable" else "",
             positiveAction = Action.Ok
         )

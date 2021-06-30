@@ -60,7 +60,6 @@ fun FeatureProvider.gotAuthResponse(
             unauthorizedHandler = {
                 sessionInfo = null
             })
-        sessionInfo!!.addCloseableChild(networkManager)
         listener.invoke(
             TopLevelFeature.Msg.Push(
                 ScreenState.MyProfile(

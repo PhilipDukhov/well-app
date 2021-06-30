@@ -1,5 +1,6 @@
 package com.well.sharedMobile.puerh._featureProvider
 
+import com.well.modules.atomic.AtomicCloseableLateInitRef
 import com.well.modules.atomic.AtomicCloseableRef
 import com.well.modules.atomic.AtomicLateInitRef
 import com.well.modules.atomic.Closeable
@@ -73,7 +74,7 @@ class FeatureProvider(
     internal val permissionsHandler = PermissionsHandler(appContext.permissionsHandlerContext)
     internal val coroutineScope = CoroutineScope(coroutineContext)
     internal val contextHelper = ContextHelper(appContext)
-    internal var networkManager by AtomicLateInitRef<NetworkManager>()
+    internal var networkManager by AtomicCloseableLateInitRef<NetworkManager>()
     internal val nonInitializedAuthInfo = AtomicLateInitRef<AuthInfo>()
     internal val callCloseableContainer = CloseableContainer()
     private var topScreenHandlerCloseable by AtomicCloseableRef<Closeable>()
@@ -206,18 +207,20 @@ class FeatureProvider(
                     when (eff.screen) {
                         is ScreenState.MyProfile -> {
                             println("ScreenState.MyProfile ${eff.screen.state.uid}")
-                            topScreenHandlerCloseable =
-                                coroutineScope.launch {
-                                    usersDatabase.usersQueries
-                                        .getByIdFlow(eff.screen.state.uid)
-                                        .collect { user ->
-                                            listener(
-                                                Msg.MyProfileMsg(
-                                                    MyProfileFeature.Msg.RemoteUpdateUser(user)
+                            if (eff.screen.state.user?.initialized != false) {
+                                topScreenHandlerCloseable =
+                                    coroutineScope.launch {
+                                        usersDatabase.usersQueries
+                                            .getByIdFlow(eff.screen.state.uid)
+                                            .collect { user ->
+                                                listener(
+                                                    Msg.MyProfileMsg(
+                                                        MyProfileFeature.Msg.RemoteUpdateUser(user)
+                                                    )
                                                 )
-                                            )
-                                        }
-                                }.asCloseable()
+                                            }
+                                    }.asCloseable()
+                            }
                         }
                         is ScreenState.UserChat -> {
                             topScreenHandlerCloseable = feature.wrapWithEffectHandler(
