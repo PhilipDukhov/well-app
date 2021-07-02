@@ -1,0 +1,7 @@
+CREATE TABLE LastReadMessages (
+    fromId INTEGER AS Int NOT NULL,
+    peerId INTEGER AS Int NOT NULL,
+    messageId INTEGER AS Int NOT NULL,
+
+    PRIMARY KEY (fromId, peerId)
+);

@@ -2,23 +2,22 @@ package com.well.server.routing
 
 import com.well.modules.db.helper.adaptedIntersectionRegex
 import com.well.modules.db.helper.adaptedOneOfRegex
-import com.well.modules.db.server.ChatMessages
 import com.well.modules.db.server.LastReadMessages
 import com.well.modules.db.server.insertChatMessage
-import com.well.modules.db.server.toLastReadMessage
 import com.well.modules.db.server.toChatMessage
+import com.well.modules.db.server.toLastReadMessage
 import com.well.modules.flowHelper.MutableSetFlow
 import com.well.modules.flowHelper.asSingleFlow
 import com.well.modules.flowHelper.filterIterable
 import com.well.modules.flowHelper.filterNotEmpty
 import com.well.modules.flowHelper.flatMapLatest
 import com.well.modules.flowHelper.mapIterable
-import com.well.modules.models.chat.ChatMessage
 import com.well.modules.models.ChatMessageId
 import com.well.modules.models.UserId
 import com.well.modules.models.UserPresenceInfo
 import com.well.modules.models.UsersFilter
 import com.well.modules.models.WebSocketMsg
+import com.well.modules.models.chat.ChatMessage
 import com.well.modules.models.chat.LastReadMessage
 import com.well.server.utils.CallInfo
 import com.well.server.utils.Dependencies
@@ -38,7 +37,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.joda.time.Weeks
-import java.util.Date
+import java.util.*
 
 class UserSession(
     private val currentUid: UserId,
@@ -145,20 +144,18 @@ class UserSession(
             .flatMapLatest()
     private val newReadStatesFlow =
         chatReadStatePresenceFlow
-            .filterNotEmpty()
             .flatMapLatest { chatReadStatePresence ->
+                val chatReadStatePresenceMap = chatReadStatePresence
+                    .groupBy { it.fromId to it.peerId }
+                    .mapValues { it.value.first() }
                 dependencies.database.lastReadMessagesQueries
-                    .select(
-                        fromAndPeerIds = chatReadStatePresence.map {
-                            "${it.fromId}|$currentUid"
-                        }
-                    )
+                    .selectByPeerId(currentUid)
                     .asFlow()
                     .mapToList()
                     .filterIterable { databaseLRM ->
-                        chatReadStatePresence.first { presenceLRM ->
-                            databaseLRM.fromId == presenceLRM.fromId
-                        }.messageId > databaseLRM.messageId
+                        val currentReadState = chatReadStatePresenceMap[databaseLRM.fromId to databaseLRM.peerId]
+                            ?: return@filterIterable true
+                        databaseLRM.messageId > currentReadState.messageId
                     }
                     .mapIterable(LastReadMessages::toLastReadMessage)
             }
@@ -171,7 +168,12 @@ class UserSession(
             newMessagesFlow.map(WebSocketMsg.Back::UpdateMessages),
             newReadStatesFlow.map(WebSocketMsg.Back::UpdateCharReadPresence),
         ).forEach {
-            launch { it.collect(::send) }
+            launch {
+                it.collect {
+                    println("$currentUid send $it")
+                    send(it)
+                }
+            }
         }
     }
 
@@ -218,6 +220,35 @@ class UserSession(
                 chatMessageRead(msg.messageId)
             }
             is WebSocketMsg.Front.UpdateChatReadStatePresence -> {
+                dependencies.database.run {
+                    transaction {
+                        val newLastReads = msg.lastReadMessages
+                            .filter { it.peerId == currentUid }
+                        if (newLastReads.isEmpty()) return@transaction
+                        val currentLastReads = lastReadMessagesQueries.select(
+                            fromAndPeerIds = newLastReads
+                                .map { "${it.fromId}|$currentUid" }
+                        ).executeAsList()
+                            .groupBy { it.fromId }.mapValues { it.value.first() }
+                        newLastReads.forEach { newLastRead ->
+                            val currentLastRead = currentLastReads[newLastRead.fromId]
+                            if (currentLastRead != null && currentLastRead.messageId >= newLastRead.messageId) {
+                                return@forEach
+                            }
+                            if (currentLastRead != null) {
+                                lastReadMessagesQueries.delete(
+                                    fromId = newLastRead.fromId,
+                                    peerId = newLastRead.peerId,
+                                )
+                            }
+                            lastReadMessagesQueries.insert(
+                                fromId = newLastRead.fromId,
+                                peerId = newLastRead.peerId,
+                                messageId = newLastRead.messageId,
+                            )
+                        }
+                    }
+                }
                 chatReadStatePresenceFlow.emit(msg.lastReadMessages)
             }
         }

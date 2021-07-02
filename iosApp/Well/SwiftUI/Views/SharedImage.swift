@@ -29,7 +29,7 @@ struct SharedImage<Placeholder: View>: View {
         aspectRatio: CGFloat? = nil,
         contentMode: ContentMode = .fill
     ) {
-        self.image = UrlImage(url: url.path!)
+        self.image = UrlImage(url: url.absoluteString!)
         self.placeholder = placeholder
         self.aspectRatio = aspectRatio
         self.contentMode = contentMode
@@ -48,6 +48,7 @@ struct SharedImage<Placeholder: View>: View {
                         }
                     },
                     image: {
+                        printUI("SharedImage buildImage")
                         buildImage(uiImage: $0)
                     }
                 )
@@ -65,6 +66,6 @@ struct SharedImage<Placeholder: View>: View {
     private func buildImage(uiImage: UIImage) -> some View {
         Image(uiImage: uiImage)
             .resizable()
-            .aspectRatio(contentMode: .fill)
+            .aspectRatio(contentMode: contentMode)
     }
 }

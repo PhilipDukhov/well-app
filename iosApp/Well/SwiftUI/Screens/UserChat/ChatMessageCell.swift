@@ -5,8 +5,17 @@
 import SwiftUI
 import SharedMobile
 
+extension ChatMessage.ContentImage: Identifiable {
+    public var id: String {
+        url
+    }
+}
+
 struct ChatMessageCell: View {
     let message: ChatMessageWithStatus
+
+    @State
+    private var fullscreenImage: ChatMessage.ContentImage?
 
     var body: some View {
         let incoming = message.status.isIncoming
@@ -19,13 +28,20 @@ struct ChatMessageCell: View {
                 .padding(EdgeInsets(top: 5, leading: incoming ? 22 : 17, bottom: 5, trailing: incoming ? 17 : 22))
                 .background(
                     Image("bubble")
-                        .foregroundColorKMM(ColorConstants.LightBlue)
+                        .foregroundColorKMM(incoming ? ColorConstants.LightBlue : ColorConstants.LightGray)
                         .rotation3DEffect(.degrees(incoming ? 180 : 0), axis: (x: 0, y: 1, z: 0))
                 )
             if incoming {
                 Spacer(minLength: .minSpacerWidth)
             }
         }
+            .sheet(item: $fullscreenImage) { fullscreenImage in
+                SharedImage(url: NSURL(string: fullscreenImage.url)!,
+                    placeholder: ActivityIndicator(),
+                    aspectRatio: fullscreenImage.aspectRatio?.toCGFloat(),
+                    contentMode: .fit
+                )
+            }
     }
 
     private func dateAndStatus() -> some View {
@@ -39,15 +55,23 @@ struct ChatMessageCell: View {
     private func contentView(content: ChatMessage.Content) -> some View {
         switch message.message.content {
         case let content as ChatMessage.ContentImage:
-            SharedImage(url: NSURL(string: content.url)!, placeholder: ActivityIndicator(), aspectRatio: content.aspectRatio?.toCGFloat())
+            SharedImage(
+                url: NSURL(string: content.url)!,
+                placeholder: ActivityIndicator(),
+                aspectRatio: content.aspectRatio?.toCGFloat()
+            )
+                .frame(width: UIScreen.main.bounds.width / 2.5)
+                .onTapGesture {
+                    fullscreenImage = content
+                }
 
         case let content as ChatMessage.ContentText:
             ZStack(alignment: .bottomTrailing) {
-                VStack(alignment: .leading) {
-                    Text("\(message.message.id); \(message.message.creation); " + content.text)
+                // two dateAndStatus hack to align text left and date right
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(content.text)
                         .style(.body4)
                     dateAndStatus()
-                        .font(.system(size: 7))
                         .foregroundColor(.clear)
                 }
                 dateAndStatus()

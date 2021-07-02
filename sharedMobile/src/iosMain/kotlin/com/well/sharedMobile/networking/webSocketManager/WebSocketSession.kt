@@ -1,14 +1,16 @@
 package com.well.sharedMobile.networking.webSocketManager
 
-import com.well.modules.utils.toNSData
 import com.well.modules.utils.resumeWithException
+import com.well.modules.utils.toNSData
 import com.well.modules.utils.toThrowable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import platform.Foundation.*
+import platform.Foundation.NSError
+import platform.Foundation.NSURLSessionWebSocketMessage
+import platform.Foundation.NSURLSessionWebSocketTask
 import kotlin.coroutines.resume
 import kotlin.native.concurrent.freeze
 
@@ -42,6 +44,7 @@ actual class WebSocketSession(
     ) {
         when {
             nsError != null -> {
+                println("channel.close(nsError.toThrowable()) $nsError ${nsError.localizedDescription}")
                 channel.close(nsError.toThrowable())
             }
             message != null -> {

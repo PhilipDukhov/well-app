@@ -28,10 +28,10 @@ final class ImageLoader: ObservableObject {
     }
 
     func load() {
+        print("ImageLoader load")
         guard !isLoading else {
             return
         }
-
         cancellable = Environment(\.imageLoadingFactory)
             .wrappedValue
             .image(at: url)
@@ -40,9 +40,11 @@ final class ImageLoader: ObservableObject {
             },
                 receiveCompletion: { [weak self] _ in
                     self?.onFinish()
+                    print("ImageLoader self?.onFinish()")
                 },
                 receiveCancel: { [weak self] in
                     self?.onFinish()
+                    print("ImageLoader receiveCancel")
                 })
             .subscribe(on: Self.imageProcessingQueue)
             .receive(on: DispatchQueue.main)
@@ -95,6 +97,7 @@ private final class ImageLoadingFactory {
     }
 
     private func newRequest(_ url: URL) -> AnyPublisher<UIImage?, Never> {
+        print("newRequest(_ url: URL) \(url)")
         let newPublisher = URLSession.shared.dataTaskPublisher(for: url)
             .map {
                 UIImage(data: $0.data)

@@ -31,14 +31,17 @@ struct UserChatScreen: View {
                 }
             )
         )
-        ChatsList(messages: state.messages)
+        ChatsList(messages: state.messages) { message in
+            print("send MsgMarkMessageRead \(message)")
+            listener(UserChatFeature.MsgMarkMessageRead(message: message))
+        }
         Spacer(minLength: 0)
         HStack {
-//            Button {
-//                listener(UserChatFeature.MsgChooseImage())
-//            } label: {
-//                Image(systemName: "photo")
-//            }
+            Button {
+                listener(UserChatFeature.MsgChooseImage())
+            } label: {
+                Image(systemName: "photo")
+            }
             TextField("Message", text: $text, onCommit: send)
                 .style(.body4)
                 .foregroundColorKMM(ColorConstants.Black)
@@ -85,6 +88,7 @@ struct UserChatScreen: View {
 
 private struct ChatsList: View {
     let messages: [ChatMessageWithStatus]
+    let markRead: (ChatMessage) -> Void
 
     @State
     private var visibleMessages = Set<Int32>()
@@ -105,6 +109,9 @@ private struct ChatsList: View {
                                 .id(id)
                                 .onAppear {
                                     visibleMessages.insert(id)
+                                    if message.status == ChatMessageWithStatus.Status.incomingunread {
+                                        markRead(message.message)
+                                    }
                                 }
                                 .onDisappear {
                                     visibleMessages.remove(id)

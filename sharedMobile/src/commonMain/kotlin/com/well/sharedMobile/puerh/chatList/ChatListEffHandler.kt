@@ -9,7 +9,6 @@ import com.well.modules.db.chatMessages.toLastReadMessage
 import com.well.modules.db.users.Users
 import com.well.modules.db.users.UsersDatabase
 import com.well.modules.db.users.toUser
-import com.well.modules.flowHelper.asSingleFlow
 import com.well.modules.flowHelper.flattenFlow
 import com.well.modules.flowHelper.mapIterable
 import com.well.modules.models.ChatMessageId
@@ -105,7 +104,6 @@ class ChatListEffHandler(
             lastPresentMessageIdFlow
                 .combineToNetworkConnectedState(networkManager)
                 .collect { lastPresentMessageId ->
-                    println("lastPresentMessageId $lastPresentMessageId")
                     networkManager.send(
                         WebSocketMsg.Front.SetChatMessagePresence(
                             messagePresenceId = lastPresentMessageId
@@ -117,13 +115,25 @@ class ChatListEffHandler(
             lastReadPresenceFlow
                 .combineToNetworkConnectedState(networkManager)
                 .collect { lastReadPresence ->
-                    println("lastReadPresence $lastReadPresence")
                     networkManager.send(
                         WebSocketMsg.Front.UpdateChatReadStatePresence(
                             lastReadPresence
                         )
                     )
                 }
+//            networkManager.onConnectedFlow
+//                .collect {
+//                    val lastReadMessages = messagesDatabase.lastReadMessagesQueries
+//                        .selectAll()
+//                        .executeAsList()
+//                        .map(LastReadMessages::toLastReadMessage)
+//                    println("lastReadPresence $lastReadMessages")
+//                    networkManager.send(
+//                        WebSocketMsg.Front.UpdateChatReadStatePresence(
+//                            lastReadMessages
+//                        )
+//                    )
+//                }
         }
     }
 

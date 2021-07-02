@@ -73,6 +73,7 @@ class NetworkManager(
 
     val stateFlow = _state.asStateFlow()
     val isConnectedFlow = stateFlow.map { it == Connected }.distinctUntilChanged()
+    val onConnectedFlow = isConnectedFlow.filter { it }.map { Unit }
 
     init {
         webSocketScope.launch {
@@ -95,6 +96,7 @@ class NetworkManager(
                 } catch (t: Throwable) {
                     if (handleUnauthorized(t)) break
                     Napier.e("web socket connection error", t)
+                    println("web socket connection error $t")
                 } finally {
                     val wasConnected = _state.value == Connected
                     _state.value = Disconnected
@@ -123,6 +125,7 @@ class NetworkManager(
 
     private suspend fun send(msg: WebSocketMsg) {
         try {
+            println("send WebSocketMsg: $msg")
             webSocketSession?.send(
                 Json.encodeToString(
                     WebSocketMsg.serializer(),
@@ -251,6 +254,6 @@ data class ServerResponseException(val status: HttpStatusCode) : Exception() {
 }
 
 fun <T> Flow<T>.combineToNetworkConnectedState(networkManager: NetworkManager): Flow<T> =
-    combine(networkManager.isConnectedFlow.filter { it }) { value, _ ->
+    combine(networkManager.onConnectedFlow) { value, _ ->
         value
     }

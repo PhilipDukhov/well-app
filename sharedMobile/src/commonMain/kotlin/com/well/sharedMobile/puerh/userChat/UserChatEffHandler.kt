@@ -59,26 +59,39 @@ internal class UserChatEffHandler(
             is Eff.Call,
             -> Unit
             Eff.ChooseImage -> {
-                println("Eff.ChooseImage")
                 coroutineScope.launch {
-                    println("Eff.ChooseImage2")
                     listener?.invoke(Msg.SendImage(contextHelper.pickSystemImage()))
                 }
             }
-            is Eff.MarkMessageRead -> TODO()
+            is Eff.MarkMessageRead -> {
+                messagesDatabase.transaction {
+                    messagesDatabase.lastReadMessagesQueries
+                        .run {
+                            val message = eff.message
+                            val currentLast = selectSingle(
+                                fromId = message.fromId,
+                                peerId = message.peerId,
+                            ).executeAsOneOrNull()
+                            if (currentLast == null || currentLast.messageId < message.id) {
+                                insert(fromId = message.fromId, peerId = message.peerId, messageId = message.id)
+                                println("insert lastReadMessagesQueries $message")
+                            }
+                        }
+                }
+            }
             is Eff.SendImage -> {
-                println("Eff.SendImage")
                 val imageContainer = eff.image.toImageContainer()
                 val newMessage: ChatMessage = messagesDatabase
                     .insertTmpMessage(
                         fromId = currentUid,
                         peerId = peerUid,
-                        content = ChatMessage.Content.Image(eff.image.path, aspectRatio = imageContainer.size.aspectRatio),
+                        content = ChatMessage.Content.Image(
+                            eff.image.path,
+                            aspectRatio = imageContainer.size.aspectRatio
+                        ),
                     )
-                println("Eff.SendImage $newMessage")
                 coroutineScope.launch {
                     val photoUrl = networkManager.uploadMessagePicture(imageContainer)
-                    println("Eff.SendImage uploadMessagePicture $photoUrl")
                     contextHelper.appContext.cacheImage(
                         image = imageContainer,
                         url = photoUrl,

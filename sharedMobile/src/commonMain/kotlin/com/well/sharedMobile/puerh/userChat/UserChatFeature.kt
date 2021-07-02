@@ -1,8 +1,8 @@
 package com.well.sharedMobile.puerh.userChat
 
-import com.well.modules.models.ChatMessageId
 import com.well.modules.models.User
 import com.well.modules.models.UserId
+import com.well.modules.models.chat.ChatMessage
 import com.well.modules.utils.sharedImage.LocalImage
 import com.well.modules.utils.toSetOf
 import com.well.modules.utils.withEmptySet
@@ -18,7 +18,7 @@ object UserChatFeature {
     sealed class Msg {
         data class UpdateUser(val user: User) : Msg()
         data class UpdateMessages(val messages: List<ChatMessageWithStatus>) : Msg()
-        data class MarkMessageRead(val messageId: ChatMessageId) : Msg()
+        data class MarkMessageRead(val message: ChatMessage) : Msg()
         data class SendMessage(val string: String) : Msg()
         object ChooseImage: Msg()
         data class SendImage(val image: LocalImage) : Msg()
@@ -28,7 +28,7 @@ object UserChatFeature {
 
     sealed class Eff {
         object ChooseImage: Eff()
-        data class MarkMessageRead(val messageId: ChatMessageId) : Eff()
+        data class MarkMessageRead(val message: ChatMessage) : Eff()
         data class SendMessage(val string: String, val peerId: UserId) : Eff()
         data class SendImage(val image: LocalImage, val peerId: UserId) : Eff()
         object Back : Eff()
@@ -45,7 +45,7 @@ object UserChatFeature {
                     return@eff Eff.ChooseImage
                 }
                 is Msg.MarkMessageRead -> {
-                    return@eff Eff.MarkMessageRead(msg.messageId)
+                    return@eff Eff.MarkMessageRead(msg.message)
                 }
                 is Msg.SendImage -> {
                     return@eff Eff.SendImage(image = msg.image, peerId = state.peerId)

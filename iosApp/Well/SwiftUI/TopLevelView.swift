@@ -36,7 +36,9 @@ struct TopLevelView: View {
                 screenView(screen: screen.screen)
 
             case let tabsScreen as TopLevelFeature.StateScreenTabs:
-                TabView(selection: Binding<TopLevelFeature.StateTab>(get: { state.selectedTab }, set: { tab in
+                TabView(selection: Binding<TopLevelFeature.StateTab>(get: {
+                    state.selectedTab
+                }, set: { tab in
                     listener(TopLevelFeature.MsgSelectTab(tab: tab))
                 })) {
                     ForEachEnumerated(tabsScreen.tabs) { i, tabScreen in
@@ -119,6 +121,7 @@ struct TopLevelView: View {
     }
 
     @State var filterState = FilterFeature.State(filter: UsersFilter.Companion().default(searchString: ""))
+
     @ViewBuilder
     func filterScreen() -> some View {
 //        FilterScreen(state: filterState) { msg in
@@ -167,16 +170,17 @@ final class TimeCounter {
 }
 
 private extension TopLevelFeature.StateTab {
-    func icon() -> Image {
+    @ViewBuilder
+    func icon() -> some View {
         switch self {
         case .myprofile:
-            return Image(systemName: "person.fill")
+            Image(systemName: "person.fill")
         case .experts:
-            return Image(uiImage: R.image.profile.expert()!)
+            Image("expertTab")
         case .chatlist:
-            return Image(systemName: "message.fill")
+            Image(systemName: "message.fill")
         case .more:
-            return Image(systemName: "ellipsis")
+            Image("moreTab")
 
         default:
             fatalError("need image for tab \(self)")

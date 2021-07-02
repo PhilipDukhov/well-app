@@ -10,6 +10,10 @@ insert:
 INSERT OR REPLACE INTO LastReadMessages(fromId, peerId, messageId)
 VALUES (?, ?, ?);
 
+selectSingle:
+SELECT * FROM LastReadMessages
+WHERE fromId = ? AND peerId = ?;
+
 select:
 SELECT * FROM LastReadMessages
 WHERE fromId || '|' || peerId IN :fromAndPeerIds;

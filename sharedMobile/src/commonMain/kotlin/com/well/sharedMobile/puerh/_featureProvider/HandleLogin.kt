@@ -1,7 +1,6 @@
 package com.well.sharedMobile.puerh._featureProvider
 
 import com.well.modules.atomic.asCloseable
-import com.well.modules.db.chatMessages.insert
 import com.well.modules.db.users.insertOrReplace
 import com.well.modules.db.users.usersPresenceFlow
 import com.well.modules.models.AuthResponse
@@ -9,7 +8,6 @@ import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.utils.dataStore.AuthInfo
 import com.well.modules.utils.dataStore.authInfo
-import com.well.modules.utils.puerh.EffectHandler
 import com.well.modules.utils.puerh.adapt
 import com.well.modules.utils.puerh.wrapWithEffectHandler
 import com.well.sharedMobile.networking.NetworkManager
@@ -25,12 +23,8 @@ import com.well.sharedMobile.puerh.myProfile.MyProfileFeature
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 suspend fun FeatureProvider.socialNetworkLogin(
     socialNetwork: SocialNetwork,
@@ -87,7 +81,7 @@ fun FeatureProvider.loggedIn(
         logOut(listener)
     })
     val scope = CoroutineScope(coroutineContext)
-    val effectHandlers = listOf<EffectHandler<TopLevelFeature.Eff, TopLevelFeature.Msg>>(
+    val effectHandlers = listOf(
         ExpertsApiEffectHandler(
             networkManager,
             usersDatabase,

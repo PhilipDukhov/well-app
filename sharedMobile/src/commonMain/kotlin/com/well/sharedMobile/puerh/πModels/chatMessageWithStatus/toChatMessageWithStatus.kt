@@ -16,7 +16,7 @@ private sealed class ChatMessageStatusContainer(open val message: ChatMessage) {
     data class Status(val status: ChatMessageWithStatus.Status, override val message: ChatMessage) :
         ChatMessageStatusContainer(message)
 
-    data class Sent(override val message: ChatMessage) : ChatMessageStatusContainer(message)
+    data class TBD(override val message: ChatMessage) : ChatMessageStatusContainer(message)
 }
 
 fun Flow<List<ChatMessage>>.toChatMessageWithStatusFlow(
@@ -27,46 +27,51 @@ fun Flow<List<ChatMessage>>.toChatMessageWithStatusFlow(
     val containers = chatList
         .map { message ->
             when {
-                message.peerId == currentUid -> {
-                    ChatMessageStatusContainer.Status(Status.IncomingRead, message)
-                }
                 message.id < 0 -> {
                     ChatMessageStatusContainer.Status(Status.OutgoingSending, message)
                 }
                 else -> {
-                    ChatMessageStatusContainer.Sent(message)
+                    ChatMessageStatusContainer.TBD(message)
                 }
             }
         }
-    val sentContainers = containers
-        .mapNotNull { it as? ChatMessageStatusContainer.Sent }
+    val tbdContainers = containers
+        .mapNotNull { it as? ChatMessageStatusContainer.TBD }
     val statusContainers = containers.mapNotNull { it as? ChatMessageStatusContainer.Status }
-    if (sentContainers.isNotEmpty())
+    if (tbdContainers.isNotEmpty())
         messagesDatabase
             .lastReadMessagesQueries
             .select(
-                fromAndPeerIds =
-                sentContainers
+                fromAndPeerIds = tbdContainers
                     .groupBy {
                         it.message.peerId to it.message.fromId
                     }
-                    .map {
-                        "${it.value.first().message.peerId}|$currentUid"
-                }
+                    .map { entries ->
+                        entries.value.first().let {
+                            "${it.message.fromId}|${it.message.peerId}"
+                        }
+                    }
             )
             .asFlow()
             .mapToList()
             .map { lastReadMessages ->
-                val lastReadContainers = sentContainers
+                val lastReadMessagesMap = lastReadMessages.groupBy {
+                    it.peerId to it.fromId
+                }.mapValues { it.value.first() }
+                val lastReadContainers = tbdContainers
                     .map { container ->
-                        val lastReadMessageId = lastReadMessages
-                            .firstOrNull { it.peerId == container.message.peerId }
-                            ?.messageId
+                        val key = container.message.let { it.peerId to it.fromId }
+                        val lastReadMessageId = lastReadMessagesMap[key]?.messageId
+                        val read = container.message.id <= lastReadMessageId ?: -1
+                        val status = if (container.message.peerId == currentUid) {
+                            if (read) Status.IncomingRead
+                            else Status.IncomingUnread
+                        } else {
+                            if (read) Status.OutgoingRead
+                            else Status.OutgoingSent
+                        }
                         ChatMessageStatusContainer.Status(
-                            status = if (container.message.id <= lastReadMessageId ?: -1)
-                                Status.OutgoingRead
-                            else
-                                Status.OutgoingSent,
+                            status = status,
                             message = container.message
                         )
                     }
