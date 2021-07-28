@@ -1,25 +1,31 @@
 package com.well.androidApp.ui.test
 
+import com.well.androidApp.ui.composableScreens.πCustomViews.BackPressHandler
+import com.well.androidApp.ui.test.TestScreen.Call
+import com.well.androidApp.ui.test.TestScreen.Local
+import com.well.androidApp.ui.test.TestScreen.MyProfile
+import com.well.androidApp.ui.test.TestScreen.Slider
+import com.well.androidApp.ui.test.TestScreen.UserChat
+import com.well.androidApp.ui.test.TestScreen.UserRating
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.well.androidApp.ui.test.TestScreen.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
 @Suppress("RedundantNullableReturnType")
 val testScreen: TestScreen? = null
@@ -29,15 +35,36 @@ enum class TestScreen {
     Call,
     MyProfile,
     Slider,
+    UserChat,
+    UserRating,
 }
 
 @Composable
 fun TestComposeScreen(testScreen: TestScreen) {
-    when (testScreen) {
-        Call -> CallTest()
-        MyProfile -> MyProfileTest()
-        Slider -> SliderTest()
-        Local -> LocalTestScreen()
+    var opened by remember {
+        mutableStateOf(false)
+    }
+    if (opened) {
+        BackPressHandler {
+            opened = false
+        }
+        when (testScreen) {
+            Call -> CallTest()
+            MyProfile -> MyProfileTest()
+            Slider -> SliderTest()
+            Local -> LocalTestScreen()
+            UserChat -> UserChatTest()
+            UserRating -> UserRatingTest()
+        }
+    } else {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Button(onClick = { opened = true }) {
+                Text("Open")
+            }
+        }
     }
 }
 

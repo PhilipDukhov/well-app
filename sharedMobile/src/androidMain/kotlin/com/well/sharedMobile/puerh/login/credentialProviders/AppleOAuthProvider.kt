@@ -1,11 +1,11 @@
 package com.well.sharedMobile.puerh.login.credentialProviders
 
+import com.well.modules.utils.AppContext
+import com.well.sharedMobile.networking.Constants
+import com.well.sharedMobile.puerh._topLevel.WebAuthenticator
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import com.well.modules.utils.AppContext
-import com.well.sharedMobile.networking.Constants
-import com.well.sharedMobile.puerh._topLevel.ContextHelper
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,13 +13,16 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import com.well.sharedMobile.BuildKonfig
 
-class AppleOAuthProvider(appContext: AppContext, private val clientId: String, private val redirectUri: String): CredentialProvider(appContext) {
+class AppleOAuthProvider(
+    appContext: AppContext,
+    private val webAuthenticator: WebAuthenticator,
+) : CredentialProvider(appContext) {
     private val requestCode = 98234
     private var handleActivityResultCancelJob: Job? = null
     private var webAuthenticateJob: Job? = null
     private var getCredentialsContinuation: CancellableContinuation<AuthCredential>? = null
-    private val contextHelper = ContextHelper(appContext)
 
     override suspend fun getCredentials(): AuthCredential =
         suspendCancellableCoroutine {
@@ -28,16 +31,16 @@ class AppleOAuthProvider(appContext: AppContext, private val clientId: String, p
                 .parse("https://appleid.apple.com/auth/authorize")
                 .buildUpon().apply {
                     appendQueryParameter("response_type", "code,id_token")
-                    appendQueryParameter("client_id", clientId)
-                    appendQueryParameter("response_mode","form_post")
-                    appendQueryParameter("redirect_uri", redirectUri)
+                    appendQueryParameter("client_id", BuildKonfig.apple_server_client_id)
+                    appendQueryParameter("response_mode", "form_post")
+                    appendQueryParameter("redirect_uri", BuildKonfig.apple_auth_redirect_url)
                     appendQueryParameter("scope", "email,name")
 //                appendQueryParameter("state", state)
                 }
                 .build()
                 .toString()
             webAuthenticateJob = CoroutineScope(Dispatchers.Default).launch {
-                contextHelper.webAuthenticate(url, requestCode)
+                webAuthenticator.webAuthenticate(url, requestCode)
             }
         }
 
@@ -49,9 +52,11 @@ class AppleOAuthProvider(appContext: AppContext, private val clientId: String, p
         Constants.oauthCallbackPath("apple").let { oauthCallbackPath ->
             return when {
                 url.startsWith(oauthCallbackPath) -> {
-                    TODO(url.substring(
-                        oauthCallbackPath.length
-                    ))
+                    TODO(
+                        url.substring(
+                            oauthCallbackPath.length
+                        )
+                    )
                     true
                 }
                 else -> false

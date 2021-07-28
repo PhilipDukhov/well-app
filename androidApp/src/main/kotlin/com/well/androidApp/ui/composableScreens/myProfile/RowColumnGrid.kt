@@ -1,16 +1,16 @@
 package com.well.androidApp.ui.composableScreens.myProfile
 
+import com.well.modules.utils.forEachNamed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.well.modules.utils.forEachNamed
 
 @Composable
 fun RowColumnGrid(
     modifier: Modifier = Modifier,
-    separator: Dp = 7.dp,
+    spacing: Dp = 7.dp,
     content: @Composable () -> Unit
 ) {
     Layout(
@@ -19,17 +19,17 @@ fun RowColumnGrid(
     ) { measurables, constraints ->
         var currentRow = 0
         var currentOrigin = Origin.Zero
-        val separatorValue = separator.toPx().toInt()
+        val spacingValue = spacing.toPx().toInt()
         val placeables = measurables.map { measurable ->
             val placeable = measurable.measure(constraints)
 
             if (currentOrigin.x > 0f && currentOrigin.x + placeable.width > constraints.maxWidth) {
                 currentRow += 1
-                currentOrigin = currentOrigin.copyNextRow(y = placeable.height + separatorValue)
+                currentOrigin = currentOrigin.copyNextRow(y = placeable.height + spacingValue)
             }
 
             placeable to currentOrigin.also {
-                currentOrigin = it.offset(x = placeable.width + separatorValue)
+                currentOrigin = it.offset(x = placeable.width + spacingValue)
             }
         }
 

@@ -4,9 +4,6 @@ package com.well.modules.flowHelper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.transform
 
 class MutableSetFlow<T>(value: Set<T> = emptySet()): Flow<Set<T>> {
     private val flow = MutableStateFlow(value)
@@ -22,7 +19,7 @@ class MutableSetFlow<T>(value: Set<T> = emptySet()): Flow<Set<T>> {
             add(element)
         }
 
-    suspend fun modify(modification: MutableSet<T>.() -> Boolean): Boolean =
+    private suspend fun modify(modification: MutableSet<T>.() -> Boolean): Boolean =
         flow.value.toMutableSet()
             .let { value ->
                 value.modification()

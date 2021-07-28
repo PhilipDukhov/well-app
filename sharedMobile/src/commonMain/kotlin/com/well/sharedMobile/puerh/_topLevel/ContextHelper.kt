@@ -10,12 +10,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
-internal expect class ContextHelper(appContext: AppContext) {
+internal expect class ContextHelper(appContext: AppContext): WebAuthenticator {
     val appContext: AppContext
     fun showAlert(alert: Alert)
     fun showSheet(actions: List<Action>): Closeable
     fun openUrl(url: String)
-    suspend fun webAuthenticate(url: String, requestCode: Int): String
+    override suspend fun webAuthenticate(url: String, requestCode: Int): String
     suspend fun pickSystemImage(): LocalImage
 }
 

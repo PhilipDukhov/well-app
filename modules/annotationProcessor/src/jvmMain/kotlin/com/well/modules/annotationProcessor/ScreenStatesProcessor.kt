@@ -2,6 +2,7 @@
 
 package com.well.modules.annotationProcessor
 
+import com.well.modules.annotations.ScreenStates
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
@@ -13,9 +14,7 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeVariableName
-import com.well.modules.annotations.ScreenStates
 import java.io.File
-import java.lang.IllegalStateException
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
@@ -26,7 +25,7 @@ import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.MirroredTypesException
 import javax.lang.model.type.TypeMirror
-import javax.tools.Diagnostic.*
+import javax.tools.Diagnostic.Kind
 
 @SupportedSourceVersion(SourceVersion.RELEASE_11)
 class ScreenStatesProcessor : AbstractProcessor() {
@@ -140,7 +139,7 @@ class ContainerInfo(
                                 containerFeatureStateClassName
                             ).build()
                         )
-                        .returns(reducerResultClassName)
+                        .returns(reducerResultClassName.copy(nullable = true))
                         .addModifiers(KModifier.INTERNAL)
                         .beginControlFlow("return when (state.topScreen)")
                 featureInfos
@@ -167,20 +166,7 @@ class ContainerInfo(
                 )
                 addFunction(
                     reduceBackMsgFuncBuilder
-                        .addStatement(
-                            """
-                                else -> {
-                                    val tab = state.selectedScreenPosition.tab
-                                    if (state.tabs[tab]!!.count() > 1) {
-                                        state.copyPop(tab).%T()
-                                    } else {
-                                        state to setOf(%T.SystemBack)
-                                    }
-                                }
-                            """.trimIndent(),
-                            withEmptySetClassName,
-                            containerFeatureEffClassName,
-                        )
+                        .addStatement("else -> null")
                         .endControlFlow()
                         .build()
                 )

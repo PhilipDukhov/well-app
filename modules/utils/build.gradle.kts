@@ -27,7 +27,7 @@ kotlin {
                     "android.appCompat",
                     "android.dataStore",
                     "android.activity",
-                    "android.compose.accompanist.coil",
+                    "android.coil",
                 )
             }
         }

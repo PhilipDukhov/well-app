@@ -1,5 +1,22 @@
 package com.well.androidApp.ui.composableScreens.myProfile
 
+import com.well.androidApp.R
+import com.well.androidApp.ui.composableScreens.πCustomViews.BackPressHandler
+import com.well.androidApp.ui.composableScreens.πCustomViews.Control
+import com.well.androidApp.ui.composableScreens.πCustomViews.InactiveOverlay
+import com.well.androidApp.ui.composableScreens.πCustomViews.ModeledNavigationBar
+import com.well.androidApp.ui.composableScreens.πCustomViews.ProfileImage
+import com.well.androidApp.ui.composableScreens.πCustomViews.RatingInfoView
+import com.well.androidApp.ui.composableScreens.πCustomViews.ToggleFavoriteButton
+import com.well.androidApp.ui.composableScreens.πCustomViews.controlMinSize
+import com.well.androidApp.ui.composableScreens.πExt.Image
+import com.well.androidApp.ui.composableScreens.πExt.heightPlusTopSystemBars
+import com.well.androidApp.ui.composableScreens.πExt.toColor
+import com.well.modules.models.Color
+import com.well.modules.models.User
+import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
+import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.State
+import com.well.sharedMobile.puerh.myProfile.UIGroup
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,9 +29,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -29,35 +47,24 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.navigationBarsPadding
-import com.well.androidApp.R
-import com.well.androidApp.ui.composableScreens.πCustomViews.Control
-import com.well.androidApp.ui.composableScreens.πCustomViews.InactiveOverlay
-import com.well.androidApp.ui.composableScreens.πCustomViews.ModeledNavigationBar
-import com.well.androidApp.ui.composableScreens.πCustomViews.UserProfileImage
-import com.well.androidApp.ui.composableScreens.πCustomViews.controlMinSize
-import com.well.androidApp.ui.composableScreens.πExt.Image
-import com.well.androidApp.ui.composableScreens.πExt.heightPlusTopSystemBars
-import com.well.androidApp.ui.composableScreens.πExt.toColor
-import com.well.modules.models.Color
-import com.well.modules.models.User
-import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
-import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.State
-import com.well.sharedMobile.puerh.myProfile.UIGroup
 
 @Composable
 fun MyProfileScreen(
     state: State,
     listener: (Msg) -> Unit,
 ) {
-    val modalContent = remember { mutableStateOf<(@Composable () -> Unit)?>(null) }
+    var modalContent by remember { mutableStateOf<(@Composable () -> Unit)?>(null) }
 
-    if (modalContent.value == null) {
+    if (modalContent == null) {
         Content(state, listener, showModalContent = {
-            modalContent.value = it
+            modalContent = it
         })
     } else {
+        BackPressHandler {
+            modalContent = null
+        }
         Box(Modifier.fillMaxSize()) {
-            modalContent.value?.invoke()
+            modalContent?.invoke()
         }
     }
 }
@@ -81,27 +88,25 @@ private fun Content(
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightPlusTopSystemBars(controlMinSize)
-//                    .height(50.dp)
             )
         }
         val paddingModifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
+        println("state.groups ${state.groups}")
         Box {
-//            LazyColumn(
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .navigationBarsPadding()
-                    .verticalScroll(rememberScrollState())
             ) {
                 state.groups.forEach { group ->
                     when (group) {
                         is UIGroup.Preview -> {
-                            group.fields.forEach { field -> // items(group.fields)
-                                PreviewField(field, paddingModifier)
+                            items(group.fields) { field ->
+                                PreviewField(field, paddingModifier, listener)
                             }
                         }
                         is UIGroup.Editing -> {
-                            group.fields.forEach { field ->  // items(group.fields)
+                            items(group.fields) { field ->
                                 EditingField(
                                     field,
                                     listener,
@@ -114,22 +119,37 @@ private fun Content(
                             }
                         }
                         is UIGroup.Header -> {
-//                            item {
-                            if (state.isCurrent) {
-                                CurrentUserHeader(
-                                    group,
-                                    listener,
-                                    paddingModifier
-                                )
-                            } else {
-                                OtherUserHeader(group, listener, paddingModifier)
+                            item {
+                                if (state.isCurrent) {
+                                    CurrentUserHeader(
+                                        modifier = paddingModifier,
+                                        header = group,
+                                        listener = listener,
+                                    )
+                                } else {
+                                    OtherUserHeader(
+                                        modifier = paddingModifier,
+                                        header = group,
+                                        listener = listener,
+                                        editRating = {
+                                            showModalContent {
+                                                RatingScreen(
+                                                    user = state.user!!,
+                                                    maxCharacters = state.maxRatingCharacters,
+                                                    rate = {
+                                                        listener(Msg.Rate(it))
+                                                    }
+                                                )
+                                            }
+                                        },
+                                    )
+                                }
                             }
-//                            }
                         }
                     }
-//                    item {
-                    Divider()
-//                    }
+                    item {
+                        Divider()
+                    }
                 }
             }
             if (state.editingStatus == State.EditingStatus.Uploading) {
@@ -150,7 +170,7 @@ private fun CurrentUserHeader(
         modifier = modifier,
     ) {
         header.image?.let {
-            UserProfileImage(
+            ProfileImage(
                 it,
                 modifier = Modifier
                     .size(100.dp)
@@ -200,14 +220,15 @@ private fun CurrentUserHeader(
 private fun OtherUserHeader(
     header: UIGroup.Header,
     listener: (Msg) -> Unit,
+    editRating: () -> Unit,
     modifier: Modifier,
 ) {
-    UserProfileImage(
+    ProfileImage(
         header.image,
-        squareCircleShaped = false,
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(1.2f)
+            .aspectRatio(1.2f),
+        squareCircleShaped = false
     )
     Column(modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -226,16 +247,39 @@ private fun OtherUserHeader(
                     )
                 }
             }
+            ToggleFavoriteButton(favorite = header.favorite, toggle = {
+                listener(Msg.ToggleFavorite)
+            })
+            Control(onClick = {
+                listener.invoke(Msg.Message)
+            }) {
+                Icon(
+                    painterResource(R.drawable.ic_round_chat_bubble_24),
+                    contentDescription = "",
+                    tint = Color.Green.toColor(),
+                )
+            }
             Control(onClick = {
                 listener.invoke(Msg.Call)
             }) {
-                Image(
+                Icon(
                     painterResource(R.drawable.ic_baseline_call_24),
-                    colorFilter = ColorFilter.tint(Color.Green.toColor())
+                    contentDescription = "",
+                    tint = Color.Green.toColor(),
                 )
             }
         }
         header.nameWithCredentials?.let { Text(it, style = MaterialTheme.typography.h4) }
+        Control(onClick = {
+            listener.invoke(Msg.Call)
+        }) {
+            Icon(
+                painterResource(R.drawable.ic_baseline_call_24),
+                contentDescription = "",
+                tint = Color.Green.toColor(),
+            )
+        }
+        RatingInfoView(header.ratingInfo, viewAll = editRating)
     }
 }
 

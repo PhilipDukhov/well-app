@@ -10,14 +10,14 @@ struct TextStyle: Equatable {
     let fontSize: CGFloat
 
     static let h4 = Self(fontWeight: .bold, fontSize: 30)
-    static let title1 = Self(fontWeight: .regular, fontSize: 21)
-    static let title2 = Self(fontWeight: .bold, fontSize: 17)
+    static let subtitle1 = Self(fontWeight: .regular, fontSize: 21)
+    static let subtitle2 = Self(fontWeight: .bold, fontSize: 17)
     static let body1 = Self(fontWeight: .regular, fontSize: 18)
-    static let body2 = Self(fontWeight: .regular, fontSize: 17)
-    static let body3 = Self(fontWeight: .regular, fontSize: 16)
-    static let body4 = Self(fontWeight: .light, fontSize: 16)
-    static let caption1 = Self(fontWeight: .regular, fontSize: 14)
-    static let caption2 = Self(fontWeight: .light, fontSize: 12)
+    static let body1Light = Self(fontWeight: .regular, fontSize: 18)
+    static let body2 = Self(fontWeight: .regular, fontSize: 16)
+    static let body2Light = Self(fontWeight: .light, fontSize: 16)
+    static let caption = Self(fontWeight: .regular, fontSize: 13)
+    static let captionLight = Self(fontWeight: .light, fontSize: 13)
 
     var uiFont: UIFont {
         .systemFont(ofSize: fontSize, weight: fontWeight.toUIFontWeight())

@@ -11,7 +11,7 @@ internal fun User.editingGroups() = listOf(
         listOf(
             UIEditingField(
                 placeholder = Strings.fullName,
-                UIEditingField.Content.Text(textNonNullable = fullName),
+                UIEditingField.Content.textNonNullable(textNonNullable = fullName),
             ) { Msg.UpdateUser(copy(fullName = it.text)) },
             UIEditingField.createSingleSelectionList(
                 placeholder = Strings.credentials,
@@ -31,7 +31,7 @@ internal fun User.editingGroups() = listOf(
             ) { Msg.UpdateUser(copy(email = it.email)) },
             UIEditingField(
                 placeholder = Strings.phoneNumber,
-                UIEditingField.Content.Text(textNullable = phoneNumber),
+                UIEditingField.Content.textNullable(textNullable = phoneNumber),
             ) { Msg.UpdateUser(copy(phoneNumber = it.text)) },
         )
     ),
@@ -66,11 +66,11 @@ internal fun User.editingGroups() = listOf(
             ) { Msg.UpdateUser(copy(languages = it)) },
             UIEditingField(
                 placeholder = Strings.missionBio,
-                UIEditingField.Content.Text(textNullable = education),
+                UIEditingField.Content.textNullable(textNullable = education),
             ) { Msg.UpdateUser(copy(education = it.text)) },
             UIEditingField(
                 placeholder = Strings.professionalMemberships,
-                UIEditingField.Content.Text(textNullable = professionalMemberships),
+                UIEditingField.Content.textNullable(textNullable = professionalMemberships),
             ) { Msg.UpdateUser(copy(professionalMemberships = it.text)) },
         )
     ),
@@ -79,15 +79,15 @@ internal fun User.editingGroups() = listOf(
         listOf(
             UIEditingField(
                 placeholder = Strings.publications,
-                UIEditingField.Content.Text(textNullable = publications),
+                UIEditingField.Content.textNullable(textNullable = publications),
             ) { Msg.UpdateUser(copy(publications = it.text)) },
             UIEditingField(
                 placeholder = "${Strings.twitter} ${Strings.link}",
-                UIEditingField.Content.Text(textNullable = twitter),
+                UIEditingField.Content.textNullable(textNullable = twitter),
             ) { Msg.UpdateUser(copy(twitter = it.text)) },
             UIEditingField(
                 placeholder = "${Strings.doximity} ${Strings.link}",
-                UIEditingField.Content.Text(textNullable = doximity),
+                UIEditingField.Content.textNullable(textNullable = doximity),
             ) { Msg.UpdateUser(copy(doximity = it.text)) },
         )
     ),

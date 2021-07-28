@@ -47,7 +47,7 @@ struct TopLevelView: View {
                         }
                             .tabItem {
                                 tabScreen.tab.icon()
-                                Text("\(tabScreen.tab.spacedName())")
+                                Text(tabScreen.tab.spacedName())
                             }
                             .tag(tabScreen.tab)
                     }

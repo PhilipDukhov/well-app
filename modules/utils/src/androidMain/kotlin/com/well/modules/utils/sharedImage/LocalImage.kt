@@ -8,7 +8,7 @@ actual data class LocalImage(
     val context: Context,
 ) : SharedImage() {
     override val coilDataAny: Any = uri
-    actual val path = uri.path!!
+    actual val path = uri.toString()
 
     actual fun toImageContainer(): ImageContainer = ImageContainer(uri = uri, context = context)
 }

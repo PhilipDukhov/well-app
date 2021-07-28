@@ -52,10 +52,6 @@ struct EditingField<Msg: AnyObject>: View {
     @ViewBuilder
     private func content() -> some View {
         HStack {
-            if let image = fieldContent.icon?.image {
-                Image(uiImage: image)
-                    .foregroundColorKMM(ColorConstants.Silver)
-            }
             if isTextField {
                 TextField(
                     field.placeholder,
@@ -164,16 +160,5 @@ fileprivate struct ProfileSelectionScreen: View {
             multipleSelection: multipleSelection,
             onSelectionChanged: onSelectionChanged
         )
-    }
-}
-
-extension UIEditingFieldContent.Icon {
-    var image: UIImage {
-        switch self {
-        case .location:
-            return R.image.profile.location()!
-
-        default: fatalError()
-        }
     }
 }

@@ -3,6 +3,7 @@ package com.well.sharedMobile.networking.webSocketManager
 import com.well.sharedMobile.networking.createBaseServerClient
 import io.ktor.client.*
 import io.ktor.client.features.*
+import io.ktor.client.features.logging.*
 import io.ktor.client.features.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -26,6 +27,9 @@ internal class WebSocketClient(val config: Config) {
                 }
             }
             install(WebSockets)
+            install(Logging) {
+                level = LogLevel.ALL
+            }
         }
     }
 }

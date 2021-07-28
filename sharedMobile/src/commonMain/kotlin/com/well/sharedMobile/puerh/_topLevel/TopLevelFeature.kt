@@ -55,7 +55,11 @@ object TopLevelFeature {
     ) {
         val backButtonNeeded = selectedScreenPosition.index > 0
         val currentScreen = run {
-            if (listOf(Tab.Overlay, Tab.Login).contains(selectedScreenPosition.tab)) {
+            if (listOf(
+                    Tab.Overlay,
+                    Tab.Login
+                ).contains(selectedScreenPosition.tab) || selectedScreenPosition.index > 0
+            ) {
                 Screen.Single(
                     tabs.getValue(selectedScreenPosition.tab)[selectedScreenPosition.index]
                 )
@@ -73,6 +77,8 @@ object TopLevelFeature {
 
         sealed class Screen {
             data class Tabs(val tabs: List<TabScreen>) : Screen() {
+                operator fun get(tab: Tab): TabScreen = tabs.first { it.tab == tab }
+
                 data class TabScreen(val tab: Tab, val screen: ScreenState)
             }
 
@@ -104,6 +110,15 @@ object TopLevelFeature {
             ;
 
             fun spacedName() = spacedUppercaseName()
+
+            fun isTabBar() = when (this) {
+                MyProfile,
+                Experts,
+                ChatList,
+                More,
+                -> true
+                else -> false
+            }
         }
     }
 
@@ -164,10 +179,15 @@ object TopLevelFeature {
                     return@reducer state toSetOf Eff.ShowAlert(msg.alert)
                 }
                 is Msg.Back -> {
-                    return@reducer reduceBackMsg(state)
+                    val childBackReducerResult = reduceBackMsg(state)
+                    if (childBackReducerResult != null) {
+                        return@reducer childBackReducerResult
+                    } else {
+                        return@reducer state.reducePop()
+                    }
                 }
                 is Msg.Pop -> {
-                    return@reducer state.copyPop().reduceScreenChanged()
+                    return@reducer state.reducePop()
                 }
                 is Msg.Push -> {
                     return@reducer state.copyPush(screen = msg.screen).reduceScreenChanged()
@@ -249,7 +269,15 @@ object TopLevelFeature {
                     return@state state.copyReplace(screen = ScreenState.Welcome(WelcomeFeature.State()))
                 }
                 is Msg.OpenUserChat -> {
-                    return@reducer state.copyPush(screen = ScreenState.UserChat(UserChatFeature.State(peerId = msg.uid)))
+                    return@reducer state
+                        .copyPush(
+                            screen = ScreenState.UserChat(
+                                UserChatFeature.State(
+                                    peerId = msg.uid,
+                                    backToUser = state.topScreen is ScreenState.UserChat,
+                                )
+                            )
+                        )
                         .reduceScreenChanged()
                 }
             }
@@ -266,4 +294,11 @@ object TopLevelFeature {
         copyHideTab(
             Tab.Overlay
         )
+
+    private fun State.reducePop() =
+        if (selectedTab.isTabBar() && selectedScreenPosition.index == 0) {
+            this toSetOf Eff.SystemBack
+        } else {
+            copyPop().reduceScreenChanged()
+        }
 }

@@ -57,6 +57,7 @@ internal class UserChatEffHandler(
         when (eff) {
             Eff.Back,
             is Eff.Call,
+            is Eff.OpenUserProfile,
             -> Unit
             Eff.ChooseImage -> {
                 coroutineScope.launch {
@@ -81,13 +82,14 @@ internal class UserChatEffHandler(
             }
             is Eff.SendImage -> {
                 val imageContainer = eff.image.toImageContainer()
+                val aspectRatio = imageContainer.size.aspectRatio
                 val newMessage: ChatMessage = messagesDatabase
                     .insertTmpMessage(
                         fromId = currentUid,
                         peerId = peerUid,
                         content = ChatMessage.Content.Image(
                             eff.image.path,
-                            aspectRatio = imageContainer.size.aspectRatio
+                            aspectRatio = aspectRatio
                         ),
                     )
                 coroutineScope.launch {
@@ -99,7 +101,10 @@ internal class UserChatEffHandler(
                     networkManager.send(
                         WebSocketMsg.Front.CreateChatMessage(
                             message = newMessage.copy(
-                                content = ChatMessage.Content.Image(photoUrl),
+                                content = ChatMessage.Content.Image(
+                                    photoUrl,
+                                    aspectRatio = aspectRatio
+                                )
                             )
                         )
                     )

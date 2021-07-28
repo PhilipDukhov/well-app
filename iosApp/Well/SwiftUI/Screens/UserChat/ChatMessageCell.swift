@@ -44,23 +44,20 @@ struct ChatMessageCell: View {
             }
     }
 
-    private func dateAndStatus() -> some View {
-        HStack(spacing: 0) {
-            Text(message.date + " ")
-            message.status.icon()
-        }.font(.system(size: 7))
-    }
-
     @ViewBuilder
     private func contentView(content: ChatMessage.Content) -> some View {
         switch message.message.content {
         case let content as ChatMessage.ContentImage:
+            let width = UIScreen.main.bounds.width / 2.5
             SharedImage(
                 url: NSURL(string: content.url)!,
-                placeholder: ActivityIndicator(),
-                aspectRatio: content.aspectRatio?.toCGFloat()
+                placeholder: ActivityIndicator()
             )
-                .frame(width: UIScreen.main.bounds.width / 2.5)
+                .frame(
+                    width: width,
+                    height: content.aspectRatio.map { aspectRatio in
+                        width / aspectRatio.toCGFloat()
+                    })
                 .onTapGesture {
                     fullscreenImage = content
                 }
@@ -70,7 +67,7 @@ struct ChatMessageCell: View {
                 // two dateAndStatus hack to align text left and date right
                 VStack(alignment: .leading, spacing: 0) {
                     Text(content.text)
-                        .style(.body4)
+                        .style(.body2Light)
                     dateAndStatus()
                         .foregroundColor(.clear)
                 }
@@ -80,6 +77,13 @@ struct ChatMessageCell: View {
 
         default: fatalError("ChatMessage.Content unexpected: \(content)")
         }
+    }
+
+    private func dateAndStatus() -> some View {
+        HStack(spacing: 0) {
+            Text(message.date + " ")
+            message.status.icon()
+        }.font(.system(size: 7))
     }
 }
 

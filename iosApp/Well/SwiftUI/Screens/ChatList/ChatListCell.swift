@@ -15,20 +15,20 @@ struct ChatListCell: View {
                 Spacer()
                 HStack {
                     Text(item.user.fullName)
-                        .style(.caption1)
+                        .style(.caption)
                     Spacer()
                     Text(item.lastMessage.date)
-                        .style(.caption2)
+                        .style(.captionLight)
                         .foregroundColorKMM(ColorConstants.DarkGrey)
                 }
                 HStack(spacing: 7) {
                     Text(item.lastMessage.message.contentDescription())
-                        .style(.caption2)
+                        .style(.captionLight)
                         .foregroundColorKMM(ColorConstants.DarkGrey)
                     Spacer()
                     if item.unreadCount > 0 {
                         Text("\(item.unreadCount)")
-                            .style(.body3)
+                            .style(.body2)
                             .foregroundColorKMM(ColorConstants.White)
                             .background(
                                 GeometryReader { geometry in

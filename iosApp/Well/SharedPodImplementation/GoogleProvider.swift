@@ -11,47 +11,31 @@ import GoogleSignIn
 
 final class GoogleProvider: CredentialProvider {
     private let appContext: AppContext
-    private let signIn = GIDSignIn.sharedInstance()!
-    // swiftlint:disable:next weak_delegate
-    private var signInDelegate: Delegate?
-    
+
     override init(appContext: AppContext) {
         self.appContext = appContext
         super.init(appContext: appContext)
-        signIn.clientID = Bundle.main.object(forInfoDictionaryKey: "googleClientId") as? String
     }
     
     override func getCredentials(completionHandler: @escaping (AuthCredential?, Error?) -> Void) {
-        signIn.presentingViewController = appContext.rootController
-        signInDelegate = Delegate(completionHandler: completionHandler)
-        signIn.delegate = signInDelegate
-        signIn.signIn()
+        GIDSignIn.sharedInstance.signIn(
+            with: GIDConfiguration(clientID: Bundle.main.object(forInfoDictionaryKey: "googleClientId") as! String),
+            presenting: appContext.rootController
+        ) { user, error in
+            if let token = user?.authentication.idToken {
+                completionHandler(AuthCredential.GoogleCredential(token: token), nil)
+                return
+            }
+            guard let error = error as? GIDSignInError else { fatalError("No token and no error \(String(describing: error))") }
+            if error.code == .canceled {
+                completionHandler(nil, KotlinCancellationException().toNSError())
+            } else {
+                completionHandler(nil, error)
+            }
+        }
     }
     
     override func application(app: UIApplication, openURL: URL, options: [AnyHashable: Any] = [:]) -> Bool {
-        signIn.handle(openURL)
-    }
-}
-
-final private class Delegate: NSObject, GIDSignInDelegate {
-    let completionHandler: (AuthCredential?, Error?) -> Void
-    
-    init(completionHandler: @escaping (AuthCredential?, Error?) -> Void) {
-        self.completionHandler = completionHandler
-        super.init()
-    }
-    
-    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
-        signIn.delegate = nil
-        if let token = user?.authentication?.idToken {
-            completionHandler(AuthCredential.GoogleCredential(token: token), nil)
-            return
-        }
-        guard let error = error as NSError? else { fatalError("No token and no error") }
-        if error.domain == kGIDSignInErrorDomain && GIDSignInErrorCode(rawValue: error.code) == .canceled {
-            completionHandler(nil, KotlinCancellationException().toNSError())
-        } else {
-            completionHandler(nil, error)
-        }
+        GIDSignIn.sharedInstance.handle(openURL)
     }
 }

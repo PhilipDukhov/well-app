@@ -104,6 +104,7 @@ class ChatListEffHandler(
             lastPresentMessageIdFlow
                 .combineToNetworkConnectedState(networkManager)
                 .collect { lastPresentMessageId ->
+                    println("WebSocketMsg.Front.SetChatMessagePresence $lastPresentMessageId")
                     networkManager.send(
                         WebSocketMsg.Front.SetChatMessagePresence(
                             messagePresenceId = lastPresentMessageId

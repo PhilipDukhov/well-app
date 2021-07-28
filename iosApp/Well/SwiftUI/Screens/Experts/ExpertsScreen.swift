@@ -27,7 +27,7 @@ struct ExpertsScreen: View {
                 view: HStack {
                     Image(systemName: "line.horizontal.3.decrease.circle")
                     Text("Filter")
-                }.style(.title2),
+                }.style(.subtitle2),
                 handler: {
                     filterPresented = true
                 }
@@ -69,9 +69,9 @@ struct ExpertsScreen: View {
                 VStack {
                     ForEach(state.users, id: \.id) { user in
                         UserCell(user: user) {
-                            listener(ExpertsFeature.MsgOnUserSelected(user: user))
-                        } toggleFavorite: {
                             listener(ExpertsFeature.MsgOnUserFavorite(user: user))
+                        }.onTapGesture {
+                            listener(ExpertsFeature.MsgOnUserSelected(user: user))
                         }
                         Divider()
                     }

@@ -1,8 +1,11 @@
 package com.well.androidApp.ui.composableScreens.πCustomViews
 
+import com.well.androidApp.ui.composableScreens.πExt.Image
+import com.well.androidApp.ui.composableScreens.πExt.thenOrNull
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
@@ -17,13 +20,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.well.androidApp.ui.composableScreens.πExt.Image
-import com.well.androidApp.ui.composableScreens.πExt.thenOrNull
 
 data class ControlItem(
     val enabled: Boolean = true,
-    val handler: () -> Unit,
-    val view: @Composable () -> Unit
+    val handler: () -> Unit = {},
+    val view: @Composable BoxScope.() -> Unit
 ) {
     constructor(
         enabled: Boolean = true,
@@ -72,7 +73,7 @@ fun Control(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onClick: () -> Unit,
-    content: @Composable () -> Unit,
+    content: @Composable BoxScope.() -> Unit,
 ) = Box(
     contentAlignment = Alignment.Center,
     modifier = modifier

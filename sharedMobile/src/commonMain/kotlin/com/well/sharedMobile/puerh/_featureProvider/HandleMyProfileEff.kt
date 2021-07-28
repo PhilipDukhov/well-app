@@ -63,7 +63,7 @@ internal suspend fun FeatureProvider.handleMyProfileEff(
         -> {
             listener(TopLevelMsg.ShowAlert(Alert.Throwable(eff.throwable)))
         }
-        is Eff.Pop -> {
+        is Eff.Back -> {
             listener(TopLevelMsg.Pop)
         }
         is Eff.InitializationFinished -> {

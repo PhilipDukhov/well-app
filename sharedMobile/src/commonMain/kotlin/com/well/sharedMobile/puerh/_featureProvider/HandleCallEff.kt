@@ -67,9 +67,6 @@ internal suspend fun FeatureProvider.handleCallEff(
                 },
             )
         }
-        CallFeature.Eff.SystemBack -> {
-            appContext.systemBack()
-        }
         is CallFeature.Eff.DrawingEff -> {
             when (eff.eff) {
                 is DrawingFeature.Eff.NotifyViewSizeUpdate,

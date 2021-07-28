@@ -1,11 +1,13 @@
 package com.well.modules.utils.sharedImage
 
-import com.well.modules.utils.toNSData
-import platform.UIKit.UIImage
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 
-actual fun ByteArray.asImageContainer(): ImageContainer =
-    ImageContainer(
-        UIImage(
-            toNSData()
-        )
+actual fun ByteArray.asImageContainer() = ImageContainer(asBitmap())
+
+fun ByteArray.asBitmap(): Bitmap =
+    BitmapFactory.decodeByteArray(
+        this,
+        0,
+        count()
     )

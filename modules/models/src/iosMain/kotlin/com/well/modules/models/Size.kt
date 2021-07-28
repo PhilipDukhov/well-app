@@ -1,15 +1,10 @@
 package com.well.modules.models
 
-import kotlinx.cinterop.CValue
-import kotlinx.cinterop.useContents
 import platform.CoreGraphics.CGSize
 import platform.CoreGraphics.CGSizeMake
 
 fun Size.toCGSize() =
     CGSizeMake(width.toDouble(), height.toDouble())
 
-fun CValue<CGSize>.toSize() =
-    useContents {
-        Size(width.toFloat(), height.toFloat())
-    }
+fun CGSize.toSize() = Size(width.toFloat(), height.toFloat())
 

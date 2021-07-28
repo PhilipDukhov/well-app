@@ -29,12 +29,12 @@ struct FilterScreen: View {
                     }, set: {
                         listener(FilterFeature.MsgSetSortByIndex(index: Int32($0)))
                     })
-                ) { item, selected in
+                ) { item, _ in
                     Text("\(item.name)")
                         .padding(.vertical, 5)
                         .padding(.horizontal, 10)
                 }
-            }.style(.body2).padding()
+            }.style(.body1Light).padding()
             Divider()
             ForEach(state.fields, id: \.self) { field in
                 EditingField1(field, listener: listener)
@@ -43,7 +43,7 @@ struct FilterScreen: View {
             }
             HStack {
                 Text("Rating")
-                    .style(.body2).padding()
+                    .style(.body1).padding()
                 Spacer()
             }
             SelectableHVStack(
@@ -56,6 +56,7 @@ struct FilterScreen: View {
             ) { item, selected in
                 HStack {
                     Text("\(item.title)")
+                        .style(.body1Light)
                     if item != UsersFilter.Rating.all {
                         Image(systemName: "star.fill")
                             .foregroundColorKMM(selected ? ColorConstants.White : ColorConstants.LightGray)
@@ -83,9 +84,7 @@ struct FilterScreen: View {
                 listener(FilterFeature.MsgClear())
             } label: {
                 Text("clear all")
-                    .frame(height: 57)
-                    .foregroundColorKMM(ColorConstants.MediumBlue)
-            }
+            }.buttonStyle(ActionButtonStyle(style: .white))
         }
     }
 }
@@ -114,7 +113,7 @@ fileprivate struct EditingField1<Msg: AnyObject>: View {
                 Spacer()
                 Image(systemName: "chevron.right")
                     .foregroundColorKMM(ColorConstants.LightGray)
-            }.style(.body2)
+            }.style(.body1)
                 .padding(.vertical, 7)
         }
             .sheet(isPresented: $showModal) {
@@ -167,7 +166,7 @@ fileprivate struct FilterSelectionScreen: View {
                     KotlinInt(integerLiteral: $0)
                 })
                 let allVariantsSelected = selection == allVariants
-                return NavigationBarItem(text: allVariantsSelected ? "Deselect all" : "Select all") {
+                    return NavigationBarItem(text: allVariantsSelected ? "Deselect all" : "Select all") {
                     selection = allVariantsSelected ? Set() : allVariants
                 }
             }()

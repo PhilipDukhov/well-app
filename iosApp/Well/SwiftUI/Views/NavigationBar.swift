@@ -14,13 +14,21 @@ struct NavigationBarItem<V: View> {
     let enabled: Bool
     let handler: (() -> Void)?
 
-    init(view: V, enabled: Bool = true, handler: (() -> Void)? = nil) {
+    init(
+        view: V,
+        enabled: Bool = true,
+        handler: (() -> Void)? = nil
+    ) {
         self.view = view
         self.enabled = enabled
         self.handler = handler
     }
 
-    init(text: String, enabled: Bool = true, handler: (() -> Void)? = nil) where V == Text {
+    init(
+        text: String,
+        enabled: Bool = true,
+        handler: (() -> Void)? = nil
+    ) where V == Text {
         self.view = itemTextView(text)
         self.enabled = enabled
         self.handler = handler
@@ -28,7 +36,7 @@ struct NavigationBarItem<V: View> {
 }
 
 struct NavigationBar<Title: View, LV: View, RV: View>: View {
-    let title: Title
+    let title: NavigationBarItem<Title>?
     let leftItem: NavigationBarItem<LV>?
     let rightItem: NavigationBarItem<RV>?
     let minContentHeight: CGFloat?
@@ -45,7 +53,7 @@ struct NavigationBar<Title: View, LV: View, RV: View>: View {
     init(
         title: Title
     ) where RV == EmptyView, LV == EmptyView {
-        self.title = title
+        self.title = NavigationBarItem(view: title)
         self.leftItem = nil
         self.rightItem = nil
         self.minContentHeight = nil
@@ -86,7 +94,7 @@ struct NavigationBar<Title: View, LV: View, RV: View>: View {
         rightItem: NavigationBarItem<RV>?,
         minContentHeight: CGFloat? = nil
     ) where LV == EmptyView, Title == EmptyView {
-        self.title = EmptyView()
+        self.title = nil
         self.leftItem = nil
         self.rightItem = rightItem
         self.minContentHeight = minContentHeight
@@ -96,20 +104,20 @@ struct NavigationBar<Title: View, LV: View, RV: View>: View {
         leftItem: NavigationBarItem<LV>?,
         rightItem: NavigationBarItem<RV>?
     ) where Title == EmptyView {
-        self.title = EmptyView()
+        self.title = nil
         self.leftItem = leftItem
         self.rightItem = rightItem
         self.minContentHeight = nil
     }
 
-    private static func createTitle(_ title: String) -> Text {
-        Text(title.isEmpty ? " " : title)
+    private static func createTitle(_ title: String) -> NavigationBarItem<Text> {
+        NavigationBarItem(text: title.isEmpty ? " " : title)
     }
 
     var body: some View {
         ZStack(alignment: .top) {
-            title
-                .style(.title2)
+            title.map(control)
+                .style(.subtitle2)
                 .frame(height: controlMinSize)
             HStack {
                 leftItem.map(control)
@@ -185,5 +193,5 @@ extension NavigationBarModelItemContent {
 }
 
 private func itemTextView(_ text: String) -> Text {
-    Text(text).style(.body3)
+    Text(text).style(.body2)
 }

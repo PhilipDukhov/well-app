@@ -20,3 +20,9 @@ kotlin {
         }
     }
 }
+
+android {
+    defaultConfig {
+
+    }
+}

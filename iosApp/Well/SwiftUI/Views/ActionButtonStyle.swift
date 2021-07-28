@@ -18,7 +18,7 @@ struct ActionButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .style(.title1)
+            .style(.subtitle1)
             .foregroundColorKMM(foreground)
             .frame(height: 57)
             .fillMaxWidth()

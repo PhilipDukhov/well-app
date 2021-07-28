@@ -1,22 +1,21 @@
 package com.well.androidApp.call.webRtc
 
+import com.well.androidApp.utils.Utilities
+import com.well.modules.atomic.Closeable
+import com.well.modules.atomic.CloseableContainer
+import com.well.modules.models.Size
+import com.well.modules.models.WebSocketMsg
+import com.well.modules.napier.Napier
+import com.well.modules.utils.getSystemService
+import com.well.sharedMobile.puerh.call.VideoViewContext
+import com.well.sharedMobile.puerh.call.webRtc.LocalDeviceState
+import com.well.sharedMobile.puerh.call.webRtc.WebRtcManagerI
+import com.well.sharedMobile.puerh.call.webRtc.WebRtcManagerI.Listener.DataChannelState
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.os.Build
-import com.well.androidApp.utils.Utilities
-import com.well.androidApp.utils.firstMapOrNull
-import com.well.modules.models.WebSocketMsg
-import com.well.modules.models.Size
-import com.well.sharedMobile.puerh.call.VideoViewContext
-import com.well.sharedMobile.puerh.call.webRtc.LocalDeviceState
-import com.well.sharedMobile.puerh.call.webRtc.WebRtcManagerI
-import com.well.sharedMobile.puerh.call.webRtc.WebRtcManagerI.Listener.DataChannelState
-import com.well.modules.atomic.Closeable
-import com.well.modules.atomic.CloseableContainer
-import com.well.modules.napier.Napier
-import com.well.modules.utils.getSystemService
 import kotlinx.coroutines.*
 import org.webrtc.*
 import java.nio.ByteBuffer
@@ -196,7 +195,7 @@ class WebRtcManager(
                     super.onIceCandidate(iceCandidate)
                     CoroutineScope(Dispatchers.IO).launch {
                         listener.addCandidate(
-                            WebSocketMsg.Candidate(
+                            WebSocketMsg.Call.Candidate(
                                 iceCandidate.sdpMid,
                                 iceCandidate.sdpMLineIndex,
                                 iceCandidate.sdp,
@@ -280,7 +279,7 @@ class WebRtcManager(
         )
     }
 
-    override fun acceptCandidate(candidate: WebSocketMsg.Candidate) {
+    override fun acceptCandidate(candidate: WebSocketMsg.Call.Candidate) {
         peerConnection.addIceCandidate(
             IceCandidate(
                 candidate.sdpMid,
@@ -369,7 +368,7 @@ class WebRtcManager(
     private fun createVideoCapturer(frontFacing: Boolean): CameraVideoCapturer? =
         enumerator.deviceNames
             .sortedBy { frontFacing != enumerator.isFrontFacing(it) }
-            .firstMapOrNull {
+            .firstNotNullOfOrNull {
                 enumerator.createCapturer(it, null)
             }
 

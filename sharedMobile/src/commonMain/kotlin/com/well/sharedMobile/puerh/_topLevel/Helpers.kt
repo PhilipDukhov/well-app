@@ -3,7 +3,8 @@ package com.well.sharedMobile.puerh._topLevel
 import com.well.modules.utils.toSetOf
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.Eff
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.State
-import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.State.*
+import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.State.ScreenPosition
+import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.State.Tab
 
 typealias ReducerResult = Pair<State, Set<Eff>>
 
@@ -59,6 +60,9 @@ internal fun State.copyPop(
     tab: Tab = selectedScreenPosition.tab,
     fallbackTab: Tab = Tab.Experts,
 ): State {
+    if (selectedScreenPosition.index == 0 && tab.isTabBar()) {
+        return this
+    }
     val (tabs, screenPosition) = tabs.pop(tab, fallbackTab)
     return copy(
         tabs = tabs,

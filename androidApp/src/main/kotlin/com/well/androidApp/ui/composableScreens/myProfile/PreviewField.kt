@@ -1,6 +1,17 @@
 package com.well.androidApp.ui.composableScreens.myProfile
 
-import androidx.compose.foundation.layout.*
+import com.well.androidApp.R
+import com.well.androidApp.ui.composableScreens.πCustomViews.ActionButton
+import com.well.androidApp.ui.composableScreens.πExt.Image
+import com.well.androidApp.ui.composableScreens.πExt.toColor
+import com.well.modules.models.Color
+import com.well.sharedMobile.puerh.myProfile.UIPreviewField
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -11,28 +22,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.well.androidApp.R
-import com.well.androidApp.ui.composableScreens.πExt.Image
-import com.well.androidApp.ui.composableScreens.πExt.toColor
-import com.well.modules.models.Color
-import com.well.sharedMobile.puerh.myProfile.UIPreviewField
 
 @Composable
-fun PreviewField(
+fun <Msg> PreviewField(
     field: UIPreviewField,
     modifier: Modifier,
+    listener: (Msg) -> Unit,
 ) {
     Column(
         modifier = modifier
     ) {
-        Text(
-            text = field.title,
-            color = Color.LightGray.toColor(),
-            modifier = Modifier
-        )
+        if (field.title.isNotBlank()) {
+            Text(
+                text = field.title,
+                color = Color.LightGray.toColor(),
+                modifier = Modifier
+            )
+        }
         Spacer(modifier = Modifier.height(5.dp))
-        val content = field.content
-        when (content) {
+        when (val content = field.content) {
             is UIPreviewField.Content.Text -> {
                 Text(content.text)
             }
@@ -65,6 +73,14 @@ fun PreviewField(
                             )
                         }
                     }
+                }
+            }
+            is UIPreviewField.Content.Button<*> -> {
+                ActionButton(onClick = {
+                    @Suppress("UNCHECKED_CAST")
+                    listener(content.msg as Msg)
+                }) {
+                    Text(content.title)
                 }
             }
         }

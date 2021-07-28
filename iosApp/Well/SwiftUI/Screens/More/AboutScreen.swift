@@ -40,9 +40,9 @@ private struct TeamMemberCell: View {
                 .padding(.trailing)
             VStack(alignment: .leading) {
                 Text(user.name)
-                    .style(.caption1)
+                    .style(.caption)
                 Text(user.position)
-                    .style(.caption2)
+                    .style(.captionLight)
             }
             Spacer()
             Button(action: onTwitterSelect) {

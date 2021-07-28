@@ -23,7 +23,7 @@ struct MoreScreen: View {
                             .font(.system(size: 25))
                             .foregroundColorKMM(ColorConstants.LightBlue)
                         Text("\(item)")
-                            .style(.body2)
+                            .style(.body1)
                         Spacer()
                     }.padding()
                 }

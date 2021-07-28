@@ -36,6 +36,11 @@ struct UserChatScreen: View {
             listener(UserChatFeature.MsgMarkMessageRead(message: message))
         }
         Spacer(minLength: 0)
+        userInput()
+    }
+
+    @ViewBuilder
+    func userInput() -> some View {
         HStack {
             Button {
                 listener(UserChatFeature.MsgChooseImage())
@@ -43,7 +48,7 @@ struct UserChatScreen: View {
                 Image(systemName: "photo")
             }
             TextField("Message", text: $text, onCommit: send)
-                .style(.body4)
+                .style(.body2Light)
                 .foregroundColorKMM(ColorConstants.Black)
                 .padding(.vertical, 3)
                 .padding(.horizontal, 8)
@@ -75,7 +80,7 @@ struct UserChatScreen: View {
                 ProfileImage(user)
                     .frame(size: 40)
                 Text(user.fullName)
-                    .style(.title2)
+                    .style(.subtitle2)
             }
         }
     }

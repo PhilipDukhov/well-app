@@ -6,13 +6,13 @@ import com.well.modules.models.RatingRequest
 import com.well.modules.models.User
 import com.well.modules.models.UserId
 import com.well.modules.utils.UrlUtil
+import com.well.modules.utils.sharedImage.ImageContainer
+import com.well.modules.utils.sharedImage.profileImage
 import com.well.modules.utils.toSetOf
 import com.well.modules.utils.withEmptySet
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.State.EditingStatus
 import com.well.sharedMobile.puerh.πModels.NavigationBarModel
-import com.well.modules.utils.sharedImage.ImageContainer
 import com.well.sharedMobile.utils.currentTimeZoneIdentifier
-import com.well.modules.utils.sharedImage.profileImage
 
 object MyProfileFeature {
     fun testState() = initialState(
@@ -85,6 +85,8 @@ object MyProfileFeature {
         internal val newImage: ImageContainer? = null,
         val editingStatus: EditingStatus = EditingStatus.Preview,
     ) {
+        val maxRatingCharacters = 150
+
         init {
             println("State $uid $user $originalUser")
         }
@@ -196,7 +198,7 @@ object MyProfileFeature {
         data class RatingRequest(val ratingRequest: com.well.modules.models.RatingRequest) :
             Eff()
 
-        object Pop : Eff()
+        object Back : Eff()
         object InitializationFinished : Eff()
         object Logout : Eff()
         object BecomeExpert : Eff()
@@ -237,7 +239,7 @@ object MyProfileFeature {
                     if (state.user?.initialized == true) {
                         when (state.editingStatus) {
                             EditingStatus.Preview -> {
-                                return@eff Eff.Pop
+                                return@eff Eff.Back
                             }
                             EditingStatus.Editing -> {
                                 return@state state.copy(
@@ -248,7 +250,7 @@ object MyProfileFeature {
                             EditingStatus.Uploading -> return@state state
                         }
                     } else {
-                        return@eff Eff.Pop
+                        return@eff Eff.Back
                     }
                 }
                 is Msg.FinishEditing -> {

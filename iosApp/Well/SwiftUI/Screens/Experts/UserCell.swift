@@ -12,7 +12,6 @@ import Combine
 
 struct UserCell: View {
     let user: User
-    let onSelect: () -> Void
     let toggleFavorite: () -> Void
 
     var body: some View {
@@ -22,16 +21,16 @@ struct UserCell: View {
                 .padding(.trailing)
             VStack(alignment: .leading) {
                 Text(user.fullName)
-                    .style(.caption1)
+                    .style(.caption)
                 user.academicRank.map { academicRank in
                     Text(academicRank.localizedDescription())
-                        .style(.caption2)
+                        .style(.captionLight)
                 }
                 user.countryName().map { countryName in
                     HStack {
                         Image(uiImage: R.image.profile.location()!)
                         Text(countryName)
-                            .style(.caption2)
+                            .style(.captionLight)
                     }
                 }
             }
@@ -42,6 +41,5 @@ struct UserCell: View {
                 ToggleFavoriteButton(favorite: user.favorite, action: toggleFavorite)
             }
         }.padding().background(Color.white)
-            .onTapGesture(perform: onSelect)
     }
 }

@@ -549,7 +549,6 @@
 				7555FF79242A565900829871 /* Resources */,
 				7555FFB4242A642300829871 /* Embed Frameworks */,
 				491238037572C75B2A859A9E /* [CP] Embed Pods Frameworks */,
-				A5E7015DBF93AB468F44F78B /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -645,23 +644,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A5E7015DBF93AB468F44F78B /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		D51DA36D2503C44700123642 /* R.swift */ = {

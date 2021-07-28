@@ -95,23 +95,26 @@ actual class ImageContainer(private val content: Content) : SharedImage() {
         )
     }
 
-    actual fun asByteArray(compressionQuality: Float): ByteArray =
+    actual fun asByteArray(compressionQuality: Float): ByteArray {
+        val output = ByteArrayOutputStream()
+        getBitmap().compress(
+            Bitmap.CompressFormat.JPEG,
+            (compressionQuality * 100).toInt(),
+            output
+        )
+        return output.toByteArray()
+    }
+
+    fun getBitmap(): Bitmap =
         when (content) {
             is Content.Bitmap -> {
-                val output = ByteArrayOutputStream()
-                content.bitmap.compress(
-                    Bitmap.CompressFormat.JPEG,
-                    (compressionQuality * 100).toInt(),
-                    output
-                )
-                output.toByteArray()
+                content.bitmap
             }
             is Content.Uri -> {
                 content
                     .inputStream()
                     .readBytes()
-                    .asImageContainer()
-                    .asByteArray(compressionQuality) //applying compressionQuality
+                    .asBitmap()
             }
         }
 }

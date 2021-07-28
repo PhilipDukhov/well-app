@@ -1,11 +1,11 @@
 package com.well.sharedMobile.puerh.πModels
 
+import com.well.modules.models.spacedUppercaseName
 import com.well.sharedMobile.utils.countryCodes.countryCodesList
 import com.well.sharedMobile.utils.countryCodes.emojiFlagForCountryCode
 import com.well.sharedMobile.utils.countryCodes.nameForCountryCode
-import com.well.modules.models.spacedUppercaseName
 
-data class UIEditingField<Content, Msg> internal constructor(
+data class UIEditingField<Content, Msg>  constructor(
     val placeholder: String,
     val content: Content,
     val updateMsg: (Content) -> Msg,
@@ -24,7 +24,7 @@ data class UIEditingField<Content, Msg> internal constructor(
             updateValue(it.selectedItems.firstOrNull())
         }
 
-        internal inline fun <reified T : Enum<T>, Msg> createMultipleSelectionList(
+         inline fun <reified T : Enum<T>, Msg> createMultipleSelectionList(
             placeholder: String,
             selection: Set<T>,
             crossinline updateValue: (Set<T>) -> Msg,
@@ -38,16 +38,15 @@ data class UIEditingField<Content, Msg> internal constructor(
         }
     }
 
-    sealed class Content(open val icon: Icon? = null) {
+    sealed class Content {
         open fun valid(): Boolean = true
 
         companion object {
-            internal fun Text(
+            internal fun textNullable(
                 textNullable: String?,
-                icon: Icon? = null,
-            ) = Text(text = textNullable ?: "", nullable = true, icon = icon)
+            ) = Text(text = textNullable ?: "", nullable = true)
 
-            internal fun Text(
+            internal fun textNonNullable(
                 textNonNullable: String,
             ) = Text(text = textNonNullable, nullable = false)
 
@@ -57,8 +56,7 @@ data class UIEditingField<Content, Msg> internal constructor(
         data class Text internal constructor(
             val text: String,
             val nullable: Boolean = true,
-            override val icon: Icon? = null
-        ) : Content(icon) {
+        ) : Content() {
             override fun toString(): String = text
 
             override fun valid(): Boolean =
@@ -84,8 +82,8 @@ data class UIEditingField<Content, Msg> internal constructor(
         }
 
         @Suppress("DataClassPrivateConstructor")
-        data class List<Item> private constructor(
-            internal val selectedItems: Set<Item>,
+        data class List<Item>  constructor(
+             val selectedItems: Set<Item>,
             private val items: Set<Item>,
             private val descriptor: (Item) -> String,
             private val sortBy: (Item, String) -> String = { _, description -> description },
@@ -94,6 +92,8 @@ data class UIEditingField<Content, Msg> internal constructor(
             val itemDescriptions: kotlin.collections.List<String>
             val selectionIndices: Set<Int>
             internal val itemsList: kotlin.collections.List<Item>
+
+            fun doCopy(selectionIndices: Set<Int>) = copy(selectedItems = itemsList.slice(selectionIndices).toSet())
 
             init {
                 val sortedItemsAndDescriptions = items
@@ -147,7 +147,7 @@ data class UIEditingField<Content, Msg> internal constructor(
                     descriptor = { enumValue: T -> enumValue.spacedUppercaseName() },
                 )
 
-                internal inline fun <reified T : Enum<T>> createMultipleSelection(
+                 inline fun <reified T : Enum<T>> createMultipleSelection(
                     selection: Set<T>,
                 ) = List(
                     selectedItems = selection,
@@ -156,13 +156,6 @@ data class UIEditingField<Content, Msg> internal constructor(
                     multipleSelectionAvailable = true,
                 )
             }
-
-            @Suppress("unused")
-            fun doCopy(selectionIndices: Set<Int>) = copy(selectedItems = itemsList.slice(selectionIndices).toSet())
-        }
-
-        enum class Icon {
-            Location,
         }
     }
 }

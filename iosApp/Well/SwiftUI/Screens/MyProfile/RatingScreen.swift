@@ -47,7 +47,7 @@ struct RatingScreen: View {
                 Spacer().frame(height: 18)
                 ScrollView {
                     Text(user.ratingInfo.currentUserRating != nil ? "Update your review" : "Please write a review about")
-                        .style(.body3)
+                        .style(.body2)
                     Text(user.fullName)
                         .style(.h4)
                     Spacer().frame(height: 20)

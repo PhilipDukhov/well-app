@@ -1,5 +1,10 @@
 package com.well.androidApp.ui.composableScreens.myProfile
 
+import com.well.androidApp.ui.composableScreens.πCustomViews.BackPressHandler
+import com.well.androidApp.ui.composableScreens.πCustomViews.ControlItem
+import com.well.androidApp.ui.composableScreens.πCustomViews.NavigationBar
+import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
+import com.well.sharedMobile.puerh.πModels.UIEditingField
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -7,19 +12,11 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.focus.*
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
-import com.well.androidApp.R
-import com.well.androidApp.ui.composableScreens.πCustomViews.BackPressHandler
-import com.well.androidApp.ui.composableScreens.πExt.Image
-import com.well.androidApp.ui.composableScreens.πExt.toColor
-import com.well.modules.models.Color
-import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
-import com.well.sharedMobile.puerh.πModels.UIEditingField
 
 @Composable
 fun <Content> EditingField(
@@ -50,14 +47,6 @@ fun <Content> EditingField(
                     }
                 }
             } else null,
-            leadingIcon = {
-                content.icon?.let {
-                    Image(
-                        painterResource(it.drawable),
-                        colorFilter = ColorFilter.tint(Color.LightBlue.toColor())
-                    )
-                }
-            },
             onTextInputEditingHandler = onTextInputEditingHandler,
             onFinishEditing = { newText ->
                 textContentUpdated(newText, field, listener)
@@ -72,20 +61,28 @@ private fun ModalContent(
     listener: (Msg) -> Unit,
     showModalContent: ((@Composable () -> Unit)?) -> Unit,
 ) {
-    SelectionScreen(
-        title = field.placeholder,
-        selection = field.content.selectionIndices,
-        variants = field.content.itemDescriptions,
-        multipleSelection = field.content.multipleSelectionAvailable,
-        onSelectionChanged = {
-            @Suppress("UNCHECKED_CAST")
-            listener(field.updateMsg(field.content.doCopy(selectionIndices = it)))
-            showModalContent(null)
-        },
-        onCancel = {
-            showModalContent(null)
-        },
-    )
+    val selectionState = remember { mutableStateOf(field.content.selectionIndices) }
+    val onFinish = { selection: Set<Int> ->
+        listener(field.updateMsg(field.content.doCopy(selectionIndices = selection)))
+        showModalContent(null)
+    }
+    Column(Modifier.fillMaxSize()) {
+        NavigationBar(
+            title = field.placeholder,
+            leftItem = ControlItem(text = "Cancel") {
+                showModalContent(null)
+            },
+            rightItem = if (field.content.multipleSelectionAvailable) ControlItem(text = "Done") {
+                onFinish(selectionState.value)
+            } else null,
+        )
+        SelectionScreen(
+            selectionState = selectionState,
+            variants = field.content.itemDescriptions,
+            multipleSelection = field.content.multipleSelectionAvailable,
+            onFinish = onFinish,
+        )
+    }
 }
 
 @Composable
@@ -93,39 +90,30 @@ private fun EditingTextField(
     text: String,
     title: String,
     onClick: (() -> Unit)?,
-    leadingIcon: @Composable (() -> Unit)?,
     onTextInputEditingHandler: ((() -> Unit)?) -> Unit,
     onFinishEditing: (String) -> Unit,
 ) {
-    var focusedState by remember { mutableStateOf(false) }
+    var isFocused by remember { mutableStateOf(false) }
     LocalSoftwareKeyboardController.current?.run {
-        if (focusedState)
+        if (isFocused)
             show()
         else
             hide()
     }
     var textState by remember { mutableStateOf(text) }
-    var focusState by remember { mutableStateOf(FocusState.Inactive) }
-    val dismissKeyboard = { focusedState = false }
     val focusManager = LocalFocusManager.current
     val finishEditing = {
-        focusedState = false
+        isFocused = false
         onFinishEditing(textState)
         focusManager.clearFocus()
-        dismissKeyboard()
     }
 
     // Intercept back navigation if there's a InputSelector visible
-    if (focusedState) {
-        BackPressHandler(onBackPressed = dismissKeyboard)
+    if (isFocused) {
+        BackPressHandler {
+            isFocused = false
+        }
     }
-//    visualTransformation: VisualTransformation = VisualTransformation.None,
-//    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-//    keyboardActions: KeyboardActions = KeyboardActions.Default,
-//    singleLine: Boolean = false,
-//    maxLines: Int = Int.MAX_VALUE,
-//    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-//    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors()
     OutlinedTextField(
         value = textState,
         onValueChange = {
@@ -141,40 +129,30 @@ private fun EditingTextField(
                 )
             }
         },
-        leadingIcon = leadingIcon,
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(
             onDone = { finishEditing() }
         ),
         colors = TextFieldDefaults.textFieldColors(),
-//        inactiveColor = Color.Black.toColor(),
-//        activeColor = Color.Green.toColor(),
-//        onTextInputStarted = {
-//            keyboardController = it
-//            focusedState = true
-//        },
         modifier = Modifier
             .fillMaxWidth()
             .onFocusChanged {
-                if (focusState == it) return@onFocusChanged
+                if (isFocused == it.isFocused) return@onFocusChanged
+                println("isFocused = ${it.isFocused}")
+                isFocused = it.isFocused
                 if (onClick != null) {
-                    if (it == FocusState.Active) {
+                    if (isFocused) {
                         onClick()
-                        focusedState = false
+                        isFocused = false
                     }
                 } else {
-                    when (it) {
-                        FocusState.Active -> {
-                            onTextInputEditingHandler(finishEditing)
-                        }
-                        FocusState.Inactive -> {
-                            onTextInputEditingHandler(null)
-                            finishEditing()
-                        }
-                        else -> Unit
+                    if (isFocused) {
+                        onTextInputEditingHandler(finishEditing)
+                    } else {
+                        onTextInputEditingHandler(null)
+                        finishEditing()
                     }
                 }
-                focusState = it
             }
     )
 }
@@ -197,10 +175,3 @@ private fun <Content> textContentUpdated(
         )
     )
 }
-
-private val UIEditingField.Content.Icon.drawable
-    get() = when (this) {
-        UIEditingField.Content.Icon.Location -> {
-            R.drawable.ic_outline_location_on_24
-        }
-    }

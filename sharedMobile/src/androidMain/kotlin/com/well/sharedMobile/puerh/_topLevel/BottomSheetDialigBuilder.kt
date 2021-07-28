@@ -1,16 +1,15 @@
 package com.well.sharedMobile.puerh._topLevel
 
+import com.well.modules.utils.ui.toDp
 import android.content.Context
 import android.view.Gravity
-import android.widget.LinearLayout
 import androidx.appcompat.widget.LinearLayoutCompat
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textview.MaterialTextView
-import com.well.modules.utils.ui.toDp
 
 data class BottomSheetDialogBuilder(val context: Context) {
     private val linearLayout = LinearLayoutCompat(context).apply {
-        orientation = LinearLayout.VERTICAL
+        orientation = LinearLayoutCompat.VERTICAL
         layoutParams = LinearLayoutCompat.LayoutParams(
             LinearLayoutCompat.LayoutParams.MATCH_PARENT,
             LinearLayoutCompat.LayoutParams.WRAP_CONTENT

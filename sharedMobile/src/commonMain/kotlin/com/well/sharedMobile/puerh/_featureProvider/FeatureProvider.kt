@@ -34,6 +34,7 @@ import com.well.sharedMobile.puerh._topLevel.ScreenState
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.Eff
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.Msg
+import com.well.sharedMobile.puerh._topLevel.WebAuthenticator
 import com.well.sharedMobile.puerh.call.webRtc.WebRtcManagerI
 import com.well.sharedMobile.puerh.experts.ExpertsFeature
 import com.well.sharedMobile.puerh.login.LoginFeature
@@ -54,11 +55,10 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-
 class FeatureProvider(
     val appContext: AppContext,
     internal val webRtcManagerGenerator: (List<String>, WebRtcManagerI.Listener) -> WebRtcManagerI,
-    providerGenerator: (SocialNetwork, AppContext) -> CredentialProvider,
+    providerGenerator: (SocialNetwork, AppContext, WebAuthenticator) -> CredentialProvider,
 ) {
     internal val coroutineContext = Dispatchers.Default
     internal var sessionInfo by AtomicCloseableRef<SessionInfo>()
@@ -67,7 +67,7 @@ class FeatureProvider(
             SocialNetwork.Twitter -> {
                 OAuthCredentialProvider("twitter", contextHelper)
             }
-            else -> providerGenerator(network, appContext)
+            else -> providerGenerator(network, appContext, contextHelper)
         }
     }
     internal val platform = Platform(appContext)
@@ -189,18 +189,29 @@ class FeatureProvider(
                 }
                 is Eff.UserChatEff -> {
                     when (eff.eff) {
+                        UserChatFeature.Eff.ChooseImage,
+                        is UserChatFeature.Eff.MarkMessageRead,
+                        is UserChatFeature.Eff.SendImage,
+                        is UserChatFeature.Eff.SendMessage,
+                        -> Unit
                         UserChatFeature.Eff.Back -> {
                             listener(Msg.Pop)
                         }
                         is UserChatFeature.Eff.Call -> {
                             listener(Msg.StartCall(eff.eff.user))
                         }
-                        UserChatFeature.Eff.ChooseImage,
-                        is UserChatFeature.Eff.MarkMessageRead,
-                        is UserChatFeature.Eff.SendImage,
-                        is UserChatFeature.Eff.SendMessage,
-                        UserChatFeature.Eff.Back,
-                        -> Unit
+                        is UserChatFeature.Eff.OpenUserProfile -> {
+                            listener(
+                                Msg.Push(
+                                    ScreenState.MyProfile(
+                                        state = MyProfileFeature.initialState(
+                                            isCurrent = false,
+                                            user = eff.eff.user,
+                                        )
+                                    )
+                                )
+                            )
+                        }
                     }
                 }
                 is Eff.TopScreenUpdated -> {

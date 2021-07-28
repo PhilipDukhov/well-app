@@ -1,5 +1,7 @@
 package com.well.androidApp.ui.composableScreens.πExt
 
+import com.well.modules.models.Color
+import com.well.modules.models.Point
 import android.util.DisplayMetrics
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,12 +28,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.well.modules.models.Color
-import com.well.modules.models.Point
 import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.toPaddingValues
+import com.google.accompanist.insets.rememberInsetsPaddingValues
 
 fun Size(size: Float): Size = Size(size, size)
 
@@ -93,7 +97,9 @@ fun TextKMM(
 fun Modifier.heightPlusTopSystemBars(height: Dp) =
     composed {
         height(
-            height + LocalWindowInsets.current.systemBars.toPaddingValues()
+            height + rememberInsetsPaddingValues(
+                insets = LocalWindowInsets.current.systemBars
+            )
                 .calculateTopPadding()
         )
     }
@@ -101,7 +107,9 @@ fun Modifier.heightPlusTopSystemBars(height: Dp) =
 fun Modifier.heightPlusBottomSystemBars(height: Dp) =
     composed {
         height(
-            height + LocalWindowInsets.current.systemBars.toPaddingValues()
+            height + rememberInsetsPaddingValues(
+                insets = LocalWindowInsets.current.systemBars
+            )
                 .calculateBottomPadding()
         )
     }

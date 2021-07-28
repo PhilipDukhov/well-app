@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-internal actual class ContextHelper actual constructor(actual val appContext: AppContext) {
+internal actual class ContextHelper actual constructor(actual val appContext: AppContext): WebAuthenticator {
     actual fun showAlert(alert: Alert) =
         AlertDialog.Builder(appContext.androidContext)
             .setTitle(alert.title)
@@ -47,7 +47,7 @@ internal actual class ContextHelper actual constructor(actual val appContext: Ap
         }
     }
 
-    actual suspend fun webAuthenticate(
+    actual override suspend fun webAuthenticate(
         url: String,
         requestCode: Int
     ): String = suspendCancellableCoroutine {

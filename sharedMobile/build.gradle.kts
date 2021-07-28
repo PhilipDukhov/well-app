@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 
 plugins {
     kotlin("multiplatform")
@@ -9,6 +10,7 @@ plugins {
         id("com.android.library")
     }
     kotlin("kapt")
+    id("com.codingfeline.buildkonfig")
 }
 
 val generatedKotlinSources: String = "$projectDir/src/gen/kotlin"
@@ -16,6 +18,22 @@ val generatedKotlinSources: String = "$projectDir/src/gen/kotlin"
 kapt {
     javacOptions {
         option("-Akapt.kotlin.generated=$generatedKotlinSources")
+    }
+}
+
+buildkonfig {
+    packageName = "com.well.sharedMobile"
+
+    defaultConfigs {
+        val dotEnv = DotEnv(project)
+        mapOf(
+            "google_web_client_id" to dotEnv.googleWebClientIdFull,
+            "apple_server_client_id" to dotEnv["APPLE_SEVER_CLIENT_ID"],
+            "apple_auth_redirect_url" to dotEnv["APPLE_AUTH_REDIRECT_URL"],
+        ).forEach {
+            println("buildConfigField(STRING, ${it.key}, ${it.value}) ")
+            buildConfigField(STRING, it.key, it.value)
+        }
     }
 }
 
@@ -33,7 +51,6 @@ kotlin {
         this.frameworkName = frameworkName
         summary = frameworkName
         homepage = "-"
-        license = "-"
         ios.deploymentTarget = project.version("iosDeploymentTarget")
     }
     val iosExportModules = listOf(
@@ -63,6 +80,7 @@ kotlin {
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",
                 "ktor.client.core",
+                "ktor.client.logging",
                 "sqldelight.coroutinesExtensions",
             )
             dependencies {

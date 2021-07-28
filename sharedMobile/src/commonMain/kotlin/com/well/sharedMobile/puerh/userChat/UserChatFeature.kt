@@ -12,6 +12,7 @@ object UserChatFeature {
     data class State(
         internal val peerId: UserId,
         val user: User? = null,
+        val backToUser: Boolean,
         val messages: List<ChatMessageWithStatus> = listOf(),
     )
 
@@ -20,19 +21,21 @@ object UserChatFeature {
         data class UpdateMessages(val messages: List<ChatMessageWithStatus>) : Msg()
         data class MarkMessageRead(val message: ChatMessage) : Msg()
         data class SendMessage(val string: String) : Msg()
-        object ChooseImage: Msg()
+        object ChooseImage : Msg()
         data class SendImage(val image: LocalImage) : Msg()
+        object OpenUserProfile : Msg()
         object Back : Msg()
         object Call : Msg()
     }
 
     sealed class Eff {
-        object ChooseImage: Eff()
+        object ChooseImage : Eff()
         data class MarkMessageRead(val message: ChatMessage) : Eff()
         data class SendMessage(val string: String, val peerId: UserId) : Eff()
         data class SendImage(val image: LocalImage, val peerId: UserId) : Eff()
         object Back : Eff()
         data class Call(val user: User) : Eff()
+        data class OpenUserProfile(val user: User) : Eff()
     }
 
     fun reducer(
@@ -51,9 +54,11 @@ object UserChatFeature {
                     return@eff Eff.SendImage(image = msg.image, peerId = state.peerId)
                 }
                 is Msg.SendMessage -> {
-                    val message = msg.string.trim()
-                    if (message.isNotEmpty())
-                        return@eff Eff.SendMessage(string = message, peerId = state.peerId)
+                    if (msg.string.isNotBlank())
+                        return@eff Eff.SendMessage(
+                            string = msg.string.trim(),
+                            peerId = state.peerId
+                        )
                     else
                         return@state state
                 }
@@ -65,6 +70,12 @@ object UserChatFeature {
                 }
                 Msg.Back -> return@eff Eff.Back
                 Msg.Call -> return@eff Eff.Call(state.user!!)
+                Msg.OpenUserProfile -> {
+                    if (state.backToUser)
+                        return@eff Eff.Back
+                    else
+                        return@eff Eff.OpenUserProfile(state.user!!)
+                }
             }
         })
     }.withEmptySet()

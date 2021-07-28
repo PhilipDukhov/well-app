@@ -31,7 +31,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             ),
             webRtcManagerGenerator: WebRtcManager.init,
-            providerGenerator: { socialNetwork, appContext -> CredentialProvider in
+            providerGenerator: { socialNetwork, appContext, _ in
                 switch socialNetwork {
                 case .facebook:
                     return FacebookProvider(appContext: appContext)

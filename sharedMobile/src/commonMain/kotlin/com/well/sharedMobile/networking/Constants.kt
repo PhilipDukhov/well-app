@@ -9,7 +9,9 @@ import io.ktor.http.*
 
 fun createBaseServerClient() = createBaseHttpClient().config {
     defaultRequest {
-        url.protocol = Constants.protocol
+        if (url.protocol == URLProtocol.HTTP) {
+            url.protocol = Constants.httpProtocol
+        }
         host = Constants.host
         if (Constants.port != null) {
             port = Constants.port
@@ -18,8 +20,8 @@ fun createBaseServerClient() = createBaseHttpClient().config {
 }
 
 object Constants: com.well.modules.models.BaseConstants() {
-    val protocol = if (Platform.isDebug) URLProtocol.HTTP else URLProtocol.HTTPS
-    val webSocketProtocol = if (protocol == URLProtocol.HTTPS) URLProtocol.WSS else URLProtocol.WS
+    val httpProtocol = if (Platform.isDebug) URLProtocol.HTTP else URLProtocol.HTTPS
+    val webSocketProtocol = if (httpProtocol == URLProtocol.HTTPS) URLProtocol.WSS else URLProtocol.WS
     val host = if (Platform.isDebug)
         "dukhovwellserver-new.com"
     else

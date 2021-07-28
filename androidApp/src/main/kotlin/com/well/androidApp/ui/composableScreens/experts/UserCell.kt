@@ -1,21 +1,32 @@
 package com.well.androidApp.ui.composableScreens.experts
 
+import com.well.androidApp.R
+import com.well.androidApp.ui.composableScreens.theme.captionLight
+import com.well.androidApp.ui.composableScreens.πCustomViews.ProfileImage
+import com.well.androidApp.ui.composableScreens.πCustomViews.RatingInfoView
+import com.well.androidApp.ui.composableScreens.πCustomViews.ToggleFavoriteButton
+import com.well.androidApp.ui.composableScreens.πExt.toColor
+import com.well.modules.models.Color
+import com.well.modules.models.User
+import com.well.sharedMobile.utils.countryCodes.countryName
+import com.well.sharedMobile.utils.countryCodes.localizedDescription
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.well.androidApp.ui.composableScreens.πCustomViews.UserProfileImage
-import com.well.androidApp.ui.composableScreens.πExt.Image
-import com.well.modules.models.User
-import com.well.androidApp.R
-import com.well.androidApp.ui.composableScreens.πCustomViews.Control
-import com.well.androidApp.ui.composableScreens.πExt.toColor
-import com.well.modules.models.Color
 
 private val padding = 16.dp
 
@@ -23,7 +34,7 @@ private val padding = 16.dp
 fun UserCell(
     user: User,
     onSelect: () -> Unit,
-    onCall: () -> Unit,
+    onToggleFavorite: () -> Unit,
 ) = Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = Modifier
@@ -31,21 +42,44 @@ fun UserCell(
         .clickable(onClick = onSelect)
         .padding(padding)
 ) {
-    UserProfileImage(
+    ProfileImage(
         user,
         modifier = Modifier
             .size(40.dp)
     )
     Spacer(modifier = Modifier.width(padding))
-    Text(
-        text = user.fullName,
-        maxLines = 1,
-    )
-    Spacer(modifier = Modifier.weight(1f))
-    Control(onClick = onCall) {
-        Image(
-            painterResource(R.drawable.ic_baseline_call_24),
-            colorFilter = ColorFilter.tint(Color.Green.toColor())
+    Column {
+        Text(
+            text = user.fullName,
+            maxLines = 1,
+            style = MaterialTheme.typography.caption,
         )
+
+        user.academicRank?.let { academicRank ->
+            Text(
+                text = academicRank.localizedDescription(),
+                maxLines = 1,
+                style = MaterialTheme.typography.captionLight,
+            )
+        }
+
+        user.countryName()?.let { countryName ->
+            Row {
+                Icon(
+                    painter = painterResource(R.drawable.ic_outline_location_on_24),
+                    contentDescription = "",
+                    tint = Color.LightBlue.toColor(),
+                )
+                Text(
+                    text = countryName,
+                    style = MaterialTheme.typography.captionLight,
+                )
+            }
+        }
+    }
+    Spacer(modifier = Modifier.weight(1f))
+    Column(horizontalAlignment = Alignment.End) {
+        RatingInfoView(ratingInfo = user.ratingInfo)
+        ToggleFavoriteButton(favorite = user.favorite, toggle = onToggleFavorite)
     }
 }

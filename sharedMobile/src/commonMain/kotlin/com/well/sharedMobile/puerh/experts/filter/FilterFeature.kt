@@ -3,7 +3,6 @@ package com.well.sharedMobile.puerh.experts.filter
 import com.well.modules.models.UsersFilter
 import com.well.modules.utils.toSetOf
 import com.well.modules.utils.withEmptySet
-import com.well.sharedMobile.puerh.myProfile.MyProfileFeature
 import com.well.sharedMobile.puerh.πModels.UIEditingField
 
 object FilterFeature {
@@ -38,7 +37,7 @@ object FilterFeature {
                     Msg.Update(copy(countryCode = it.selectedItems.firstOrNull()))
                 }
             ),
-        )
+        ) as List<UIEditingField<UIEditingField.Content.List<*>, Msg.Update>>
     }
 
     sealed class Msg {

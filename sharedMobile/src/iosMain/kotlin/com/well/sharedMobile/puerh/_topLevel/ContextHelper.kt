@@ -33,7 +33,7 @@ import platform.UIKit.UIViewController
 import platform.darwin.NSObject
 import kotlin.coroutines.resume
 
-internal actual class ContextHelper actual constructor(actual val appContext: AppContext) {
+internal actual class ContextHelper actual constructor(actual val appContext: AppContext): WebAuthenticator {
     actual fun showAlert(alert: Alert) {
         presentViewController(
             UIAlertController.alertControllerWithTitle(
@@ -88,7 +88,7 @@ internal actual class ContextHelper actual constructor(actual val appContext: Ap
         }
     }
 
-    actual suspend fun webAuthenticate(url: String, requestCode: Int): String {
+    actual override suspend fun webAuthenticate(url: String, requestCode: Int): String {
         return suspendCancellableCoroutine { continuation ->
             MainScope().launch {
                 val session = ASWebAuthenticationSession(

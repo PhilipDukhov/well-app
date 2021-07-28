@@ -1,26 +1,27 @@
 package com.well.androidApp.ui
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.runtime.CompositionLocalProvider
 import com.well.androidApp.R
 import com.well.androidApp.call.webRtc.WebRtcManager
 import com.well.androidApp.ui.composableScreens.theme.Theme
 import com.well.androidApp.ui.composableScreens.πCustomViews.LocalBackPressedDispatcher
+import com.well.modules.utils.AppContext
 import com.well.sharedMobile.puerh._featureProvider.FeatureProvider
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature
 import com.well.sharedMobile.puerh.login.SocialNetwork
+import com.well.sharedMobile.puerh.login.credentialProviders.AppleOAuthProvider
 import com.well.sharedMobile.puerh.login.credentialProviders.FacebookProvider
 import com.well.sharedMobile.puerh.login.credentialProviders.GoogleProvider
 import com.well.sharedMobile.puerh.login.handleActivityResult
-import com.well.sharedMobile.utils.napier.NapierProxy
-import com.well.modules.utils.AppContext
-import com.google.accompanist.insets.ProvideWindowInsets
-import com.well.sharedMobile.puerh.login.credentialProviders.AppleOAuthProvider
 import com.well.sharedMobile.puerh.login.handleOnNewIntent
-import java.lang.IllegalStateException
+import com.well.sharedMobile.utils.napier.NapierProxy
+import android.content.Intent
+import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.core.view.WindowCompat
+import com.google.accompanist.insets.ProvideWindowInsets
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
     init {
@@ -36,17 +37,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 listener,
             )
         },
-        providerGenerator = { socialNetwork, context ->
+        providerGenerator = { socialNetwork, context, webAuthenticator ->
             when (socialNetwork) {
                 SocialNetwork.Facebook -> FacebookProvider(context)
-                SocialNetwork.Google -> GoogleProvider(
-                    appContext = context,
-                    tokenId = resources.getString(R.string.google_web_client_id)
-                )
+                SocialNetwork.Google -> GoogleProvider(context)
                 SocialNetwork.Apple -> AppleOAuthProvider(
                     appContext = context,
-                    clientId = resources.getString(R.string.apple_server_client_id),
-                    redirectUri = resources.getString(R.string.apple_auth_redirect_url),
+                    webAuthenticator = webAuthenticator,
                 )
                 SocialNetwork.Twitter
                 -> throw IllegalStateException("Twitter should be handler earlier")
@@ -54,10 +51,18 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
     )
 
+    init {
+        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                featureProvider.feature.accept(TopLevelFeature.Msg.Back)
+            }
+        })
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        println("MainActivity onCreate ${intent.dataString}")
 
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         featureProvider.feature
             .listenState {
                 setContent {
@@ -87,9 +92,5 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         if (!featureProvider.handleActivityResult(requestCode, resultCode, data)) {
             super.onActivityResult(requestCode, resultCode, data)
         }
-    }
-
-    override fun onBackPressed() {
-        featureProvider.feature.accept(TopLevelFeature.Msg.Back)
     }
 }

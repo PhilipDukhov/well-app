@@ -12,11 +12,13 @@ class ConverterTest {
         val imageSize = Size(100, 100)
         val drawingConverter1 = Converter(
             containerSize = Size(100, 150),
-            imageSize = imageSize
+            aspectRatio = imageSize,
+            contentMode = Converter.ContentMode.AspectFit,
         )
         val drawingConverter2 = Converter(
             containerSize = Size(200, 250),
-            imageSize = imageSize
+            aspectRatio = imageSize,
+            contentMode = Converter.ContentMode.AspectFit,
         )
 
         listOf(

@@ -1,7 +1,17 @@
 package com.well.androidApp.ui.composableScreens.call.drawing
 
+import com.well.androidApp.ui.composableScreens.πExt.Image
+import com.well.androidApp.ui.composableScreens.πExt.toColor
+import com.well.modules.models.Size
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg
+import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.State
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -9,12 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
-import com.google.accompanist.coil.rememberCoilPainter
-import com.well.androidApp.ui.composableScreens.πExt.Image
-import com.well.androidApp.ui.composableScreens.πExt.toColor
-import com.well.modules.models.Size
-import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg
-import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.State
+import coil.compose.rememberImagePainter
 
 @Composable
 fun DrawingPanel(
@@ -45,7 +50,7 @@ fun DrawingPanel(
         {
             state.image?.let {
                 Image(
-                    rememberCoilPainter(it.coilDataAny),
+                    rememberImagePainter(it.coilDataAny),
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
