@@ -1,13 +1,13 @@
 def versions = [
         iosDeploymentTarget: "14.0",
-        kotlin             : "1.5.10",
-        compose            : "1.0.0",
-        androidActivity    : "1.3.0",
-        accompanist        : "0.15.0",
-        kotlinSerialization: "1.2.1",// kotlin 1.5.20+ -> 1.2.2
-        coil               : "1.3.0",
-        kotlinCoroutines   : "1.5.0-native-mt", // kotlin 1.5.20+ -> 1.5.1
-        ktor               : "1.6.1",
+        kotlin             : "1.5.21",
+        compose            : "1.0.1",
+        androidActivity    : "1.3.1",
+        accompanist        : "0.16.1",
+        kotlinSerialization: "1.2.2",
+        coil               : "1.3.2",
+        kotlinCoroutines   : "1.5.1-native-mt",
+        ktor               : "1.6.2",
         sqldelight         : "1.5.1",
         bouncycastle       : "1.69",
         aws                : "1.12.31",
@@ -22,7 +22,7 @@ ext.Libs = [
                 dotenv              : "io.github.cdimascio:dotenv-kotlin:6.2.2",
                 sqldelight          : "com.squareup.sqldelight:gradle-plugin:$versions.sqldelight",
                 gradleVersionsPlugin: "com.github.ben-manes:gradle-versions-plugin:0.39.0",
-                buildKonfig: "com.codingfeline.buildkonfig:buildkonfig-gradle-plugin:0.8.0",
+                buildKonfig         : "com.codingfeline.buildkonfig:buildkonfig-gradle-plugin:0.9.0",
         ],
         kotlin                     : [
                 stdLib           : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin",
@@ -43,6 +43,7 @@ ext.Libs = [
                 coil      : "io.coil-kt:coil:$versions.coil",
                 compose   : [
                         ui                   : "androidx.compose.ui:ui:$versions.compose",
+                        util                 : "androidx.compose.ui:ui-util:$versions.compose",
                         foundation           : "androidx.compose.foundation:foundation:$versions.compose",
                         material             : "androidx.compose.material:material:$versions.compose",
                         materialIconsCore    : "androidx.compose.material:material-icons-core:$versions.compose",
@@ -51,7 +52,7 @@ ext.Libs = [
                         constraintLayout     : "androidx.constraintlayout:constraintlayout-compose:1.0.0-beta01",
                         coil                 : "io.coil-kt:coil-compose:$versions.coil",
                         accompanist          : [
-                                insets      : "com.google.accompanist:accompanist-insets:$versions.accompanist",
+                                insets: "com.google.accompanist:accompanist-insets:$versions.accompanist",
                         ],
                 ],
         ],
@@ -89,17 +90,18 @@ ext.Libs = [
                 serialization: "io.ktor:ktor-serialization:$versions.ktor",
                 metrics      : "io.ktor:ktor-metrics:$versions.ktor",
                 websockets   : "io.ktor:ktor-websockets:$versions.ktor",
+                utils        : "io.ktor:ktor-utils:$versions.ktor",
         ],
         server                     : [
-                aws                         : [
+                aws               : [
                         s3 : "com.amazonaws:aws-java-sdk-s3:$versions.aws",
                         sns: "com.amazonaws:aws-java-sdk-sns:$versions.aws",
                         ses: "com.amazonaws:aws-java-sdk-ses:$versions.aws",
                 ],
-                hikariCP                    : "com.zaxxer:HikariCP:5.0.0",
-                h2database                  : "com.h2database:h2:1.4.200",
-                mysqlConnectorJava          : "mysql:mysql-connector-java:8.0.26",
-                bouncycastle                : [
+                hikariCP          : "com.zaxxer:HikariCP:5.0.0",
+                h2database        : "com.h2database:h2:1.4.200",
+                mysqlConnectorJava: "mysql:mysql-connector-java:8.0.26",
+                bouncycastle      : [
                         bcprov: "org.bouncycastle:bcprov-jdk15on:$versions.bouncycastle",
                         bcpkix: "org.bouncycastle:bcpkix-jdk15on:$versions.bouncycastle",
                 ],
