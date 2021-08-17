@@ -1,10 +1,10 @@
 package com.well.androidApp.ui.composableScreens.myProfile
 
-import com.well.androidApp.ui.composableScreens.πCustomViews.BackPressHandler
 import com.well.androidApp.ui.composableScreens.πCustomViews.ControlItem
 import com.well.androidApp.ui.composableScreens.πCustomViews.NavigationBar
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
 import com.well.sharedMobile.puerh.πModels.UIEditingField
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -110,7 +110,7 @@ private fun EditingTextField(
 
     // Intercept back navigation if there's a InputSelector visible
     if (isFocused) {
-        BackPressHandler {
+        BackHandler {
             isFocused = false
         }
     }

@@ -31,7 +31,6 @@ buildkonfig {
             "apple_server_client_id" to dotEnv["APPLE_SEVER_CLIENT_ID"],
             "apple_auth_redirect_url" to dotEnv["APPLE_AUTH_REDIRECT_URL"],
         ).forEach {
-            println("buildConfigField(STRING, ${it.key}, ${it.value}) ")
             buildConfigField(STRING, it.key, it.value)
         }
     }

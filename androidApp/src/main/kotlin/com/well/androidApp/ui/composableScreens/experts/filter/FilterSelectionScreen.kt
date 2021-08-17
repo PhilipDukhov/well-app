@@ -1,9 +1,9 @@
 package com.well.androidApp.ui.composableScreens.experts.filter
 
 import com.well.androidApp.ui.composableScreens.myProfile.SelectionScreen
-import com.well.androidApp.ui.composableScreens.πCustomViews.BackPressHandler
 import com.well.androidApp.ui.composableScreens.πCustomViews.ControlItem
 import com.well.androidApp.ui.composableScreens.πCustomViews.NavigationBar
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,9 +21,9 @@ fun ColumnScope.FilterSelectionScreen(
 ) {
     val selectionState = remember { mutableStateOf(initialSelection) }
     var selection by selectionState
-    BackPressHandler(onBackPressed = {
+    BackHandler {
         onFinish(selection)
-    })
+    }
     NavigationBar(
         title = title,
         rightItem = if (!multipleSelection) null else {

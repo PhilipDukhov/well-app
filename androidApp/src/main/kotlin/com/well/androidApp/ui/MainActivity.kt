@@ -1,9 +1,7 @@
 package com.well.androidApp.ui
 
-import com.well.androidApp.R
 import com.well.androidApp.call.webRtc.WebRtcManager
 import com.well.androidApp.ui.composableScreens.theme.Theme
-import com.well.androidApp.ui.composableScreens.πCustomViews.LocalBackPressedDispatcher
 import com.well.modules.utils.AppContext
 import com.well.sharedMobile.puerh._featureProvider.FeatureProvider
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature
@@ -19,11 +17,10 @@ import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.view.WindowCompat
 import com.google.accompanist.insets.ProvideWindowInsets
 
-class MainActivity : AppCompatActivity {
+class MainActivity : AppCompatActivity() {
     init {
         NapierProxy.initializeLogging()
     }
@@ -68,11 +65,7 @@ class MainActivity : AppCompatActivity {
                 setContent {
                     Theme {
                         ProvideWindowInsets {
-                            CompositionLocalProvider(
-                                LocalBackPressedDispatcher provides onBackPressedDispatcher,
-                            ) {
-                                TopLevelScreen(it, featureProvider.feature::accept)
-                            }
+                            TopLevelScreen(it, featureProvider.feature::accept)
                         }
                     }
                 }

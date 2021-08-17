@@ -1,7 +1,6 @@
 package com.well.androidApp.ui.composableScreens.myProfile
 
 import com.well.androidApp.R
-import com.well.androidApp.ui.composableScreens.πCustomViews.BackPressHandler
 import com.well.androidApp.ui.composableScreens.πCustomViews.Control
 import com.well.androidApp.ui.composableScreens.πCustomViews.InactiveOverlay
 import com.well.androidApp.ui.composableScreens.πCustomViews.ModeledNavigationBar
@@ -17,6 +16,7 @@ import com.well.modules.models.User
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.State
 import com.well.sharedMobile.puerh.myProfile.UIGroup
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -60,7 +60,7 @@ fun MyProfileScreen(
             modalContent = it
         })
     } else {
-        BackPressHandler {
+            BackHandler {
             modalContent = null
         }
         Box(Modifier.fillMaxSize()) {

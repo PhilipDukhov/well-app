@@ -1,12 +1,12 @@
 package com.well.androidApp.ui.test
 
-import com.well.androidApp.ui.composableScreens.πCustomViews.BackPressHandler
 import com.well.androidApp.ui.test.TestScreen.Call
 import com.well.androidApp.ui.test.TestScreen.Local
 import com.well.androidApp.ui.test.TestScreen.MyProfile
 import com.well.androidApp.ui.test.TestScreen.Slider
 import com.well.androidApp.ui.test.TestScreen.UserChat
 import com.well.androidApp.ui.test.TestScreen.UserRating
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -45,7 +45,7 @@ fun TestComposeScreen(testScreen: TestScreen) {
         mutableStateOf(false)
     }
     if (opened) {
-        BackPressHandler {
+        BackHandler {
             opened = false
         }
         when (testScreen) {
