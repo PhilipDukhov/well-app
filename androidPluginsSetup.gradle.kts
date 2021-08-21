@@ -12,12 +12,12 @@ val gradlePluginVersion = System.getProperty("gradlePluginVersion")!!
 subprojects {
     plugins.matching { it is AppPlugin || it is LibraryPlugin }.whenPluginAdded {
         configure<BaseExtension> {
-            setCompileSdkVersion(30)
+            setCompileSdkVersion(31)
             buildToolsVersion = "30.0.3"
 
             defaultConfig {
                 minSdk = 23
-                targetSdk = 30
+                targetSdk = 31
                 versionCode = 102191720
                 versionName = Constants.version
             }
