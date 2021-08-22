@@ -13,12 +13,12 @@ kotlin {
         usePredefinedExperimentalAnnotations()
         val commonMain by getting {
             libDependencies(
-                ":modules:napier",
                 ":modules:models",
                 ":modules:atomic",
                 "kotlin.coroutines.core",
                 "kotlin.serializationJson",
                 "kotlin.stdLib",
+                "napier",
             )
         }
         if (withAndroid) {

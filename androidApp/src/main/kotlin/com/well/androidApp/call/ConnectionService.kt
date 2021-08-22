@@ -3,7 +3,7 @@ package com.well.androidApp.call
 import android.telecom.Connection
 import android.telecom.ConnectionRequest
 import android.telecom.PhoneAccountHandle
-import com.well.modules.napier.Napier
+import io.github.aakira.napier.Napier
 
 class ConnectionService: android.telecom.ConnectionService() {
 

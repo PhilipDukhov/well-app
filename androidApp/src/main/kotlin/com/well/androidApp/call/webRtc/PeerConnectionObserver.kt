@@ -1,7 +1,11 @@
 package com.well.androidApp.call.webRtc
 
-import com.well.modules.napier.Napier
-import org.webrtc.*
+import io.github.aakira.napier.Napier
+import org.webrtc.DataChannel
+import org.webrtc.IceCandidate
+import org.webrtc.MediaStream
+import org.webrtc.PeerConnection
+import org.webrtc.RtpReceiver
 
 open class PeerConnectionObserver : PeerConnection.Observer {
     private val tag = this.javaClass.simpleName

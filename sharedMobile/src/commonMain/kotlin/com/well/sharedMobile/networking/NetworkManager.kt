@@ -12,7 +12,6 @@ import com.well.modules.models.Size
 import com.well.modules.models.User
 import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMsg
-import com.well.modules.napier.Napier
 import com.well.modules.utils.sharedImage.ImageContainer
 import com.well.modules.utils.tryF
 import com.well.sharedMobile.networking.NetworkManager.Status.Connected
@@ -23,6 +22,7 @@ import com.well.sharedMobile.networking.webSocketManager.WebSocketMessageListene
 import com.well.sharedMobile.networking.webSocketManager.WebSocketSession
 import com.well.sharedMobile.networking.webSocketManager.ws
 import com.well.sharedMobile.puerh.call.resizedImage
+import io.github.aakira.napier.Napier
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*

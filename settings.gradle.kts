@@ -10,7 +10,6 @@ val modules = mutableSetOf(
     ":modules:annotationProcessor",
     ":modules:models",
     ":modules:atomic",
-    ":modules:napier",
     ":modules:utils",
     ":modules:db:usersDb",
     ":modules:db:chatMessagesDb",

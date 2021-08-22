@@ -1,6 +1,6 @@
 package com.well.sharedMobile.networking.webSocketManager
 
-import com.well.modules.napier.Napier
+import io.github.aakira.napier.Napier
 import io.ktor.client.features.websocket.*
 import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.*

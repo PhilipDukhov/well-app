@@ -5,7 +5,6 @@ import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
 import com.well.modules.models.Size
 import com.well.modules.models.WebSocketMsg
-import com.well.modules.napier.Napier
 import com.well.modules.utils.getSystemService
 import com.well.sharedMobile.puerh.call.VideoViewContext
 import com.well.sharedMobile.puerh.call.webRtc.LocalDeviceState
@@ -16,6 +15,7 @@ import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.os.Build
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.*
 import org.webrtc.*
 import java.nio.ByteBuffer

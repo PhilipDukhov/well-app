@@ -54,7 +54,6 @@ kotlin {
     }
     val iosExportModules = listOf(
         ":modules:models",
-        ":modules:napier",
         ":modules:utils",
     ).map { project(it) }
     targets.withType<KotlinNativeTarget> {
@@ -81,6 +80,7 @@ kotlin {
                 "ktor.client.core",
                 "ktor.client.logging",
                 "sqldelight.coroutinesExtensions",
+                "napier",
             )
             dependencies {
                 iosExportModules.forEach {

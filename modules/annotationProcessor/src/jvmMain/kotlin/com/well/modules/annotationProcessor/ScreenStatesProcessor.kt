@@ -94,7 +94,7 @@ class ContainerInfo(
     val featureInfos = annotation.safeFeatures.map {
         FeatureInfo(it, this, processingEnv)
     }
-    val napierClassName = ClassName("com.well.modules.napier", "Napier")
+    val napierClassName = ClassName("io.github.aakira.napier", "Napier")
     val withEmptySetClassName = ClassName("com.well.modules.utils", "withEmptySet")
     val letNamedClassName = ClassName("com.well.modules.utils", "letNamed")
 

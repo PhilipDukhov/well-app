@@ -14,7 +14,6 @@ import com.well.modules.db.users.UsersDatabase
 import com.well.modules.db.users.getByIdFlow
 import com.well.modules.db.users.insertOrReplace
 import com.well.modules.models.WebSocketMsg
-import com.well.modules.napier.Napier
 import com.well.modules.utils.AppContext
 import com.well.modules.utils.dataStore.AuthInfo
 import com.well.modules.utils.dataStore.authInfo
@@ -49,6 +48,7 @@ import com.well.sharedMobile.puerh.myProfile.MyProfileFeature
 import com.well.sharedMobile.puerh.userChat.UserChatEffHandler
 import com.well.sharedMobile.puerh.userChat.UserChatFeature
 import com.well.sharedMobile.puerh.welcome.WelcomeFeature
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope

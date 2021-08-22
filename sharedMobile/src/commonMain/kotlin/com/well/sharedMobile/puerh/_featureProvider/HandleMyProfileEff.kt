@@ -1,6 +1,5 @@
 package com.well.sharedMobile.puerh._featureProvider
 
-import com.well.modules.napier.Napier
 import com.well.sharedMobile.puerh._topLevel.Alert
 import com.well.sharedMobile.puerh._topLevel.SuspendAction
 import com.well.sharedMobile.puerh._topLevel.pickSystemImageSafe
@@ -9,6 +8,7 @@ import com.well.sharedMobile.puerh.experts.ExpertsFeature
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Eff
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.Msg as TopLevelMsg
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 

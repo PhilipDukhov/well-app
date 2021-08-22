@@ -1,9 +1,9 @@
 package com.well.sharedMobile.networking.webSocketManager
 
 import com.well.modules.atomic.freeze
-import com.well.modules.napier.Napier
 import com.well.modules.utils.toThrowable
 import com.well.sharedMobile.networking.getThrowable
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.suspendCancellableCoroutine

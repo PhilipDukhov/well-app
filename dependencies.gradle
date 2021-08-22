@@ -115,6 +115,7 @@ ext.Libs = [
                 jdbcDriver          : "com.squareup.sqldelight:jdbc-driver:$versions.sqldelight",
                 sqliteDriver        : "com.squareup.sqldelight:sqlite-driver:$versions.sqldelight",
         ],
+        napier: "io.github.aakira:napier:2.0.0",
         tests                      : [
                 junit: "junit:junit:4.13.2",
         ],

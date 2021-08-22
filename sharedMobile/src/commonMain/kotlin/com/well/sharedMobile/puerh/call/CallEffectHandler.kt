@@ -8,7 +8,6 @@ import com.well.modules.atomic.freeze
 import com.well.modules.models.Size
 import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMsg
-import com.well.modules.napier.Napier
 import com.well.modules.utils.puerh.EffectHandler
 import com.well.sharedMobile.networking.NetworkManager
 import com.well.sharedMobile.puerh.call.CallFeature.Eff
@@ -21,6 +20,7 @@ import com.well.sharedMobile.puerh.call.webRtc.WebRtcManagerI.Listener.DataChann
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.Eff as TopLevelEff
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.Msg as TopLevelMsg
 import com.well.sharedMobile.puerh.call.webRtc.RtcMsg.ImageSharingContainer.Msg.UpdateImage as ImgSharingUpdateImage
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect

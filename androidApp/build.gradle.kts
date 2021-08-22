@@ -33,6 +33,7 @@ libDependencies(
     ":modules:models",
     ":modules:utils",
     ":sharedMobile",
+    "napier",
 )
 
 android {
