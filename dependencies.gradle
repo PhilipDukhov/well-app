@@ -1,31 +1,30 @@
 def versions = [
         iosDeploymentTarget: "14.0",
-        kotlin             : "1.5.21",
-        compose            : "1.0.1",
-        // compose            : "1.1.0-alpha02",
+        kotlin             : "1.5.30",
+        compose            : "1.1.0-alpha03",
         androidActivity    : "1.3.1",
-        accompanist        : "0.17.0",
+        accompanist        : "0.18.0",
         kotlinSerialization: "1.2.2",
         coil               : "1.3.2",
-        kotlinCoroutines   : "1.5.1-native-mt",
-        ktor               : "1.6.2",
+        kotlinCoroutines   : "1.5.2-native-mt",
+        ktor               : "1.6.3",
         sqldelight         : "1.5.1",
         bouncycastle       : "1.69",
-        aws                : "1.12.31",
+        aws                : "1.12.60",
 ]
 
 ext.Versions = versions
 ext.Libs = [
-        build                      : [
+        build        : [
                 kotlin              : "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin",
                 kotlinSerialization : "org.jetbrains.kotlin:kotlin-serialization:$versions.kotlin",
-                googleServices      : "com.google.gms:google-services:4.3.8",
+                googleServices      : "com.google.gms:google-services:4.3.10",
                 dotenv              : "io.github.cdimascio:dotenv-kotlin:6.2.2",
                 sqldelight          : "com.squareup.sqldelight:gradle-plugin:$versions.sqldelight",
                 gradleVersionsPlugin: "com.github.ben-manes:gradle-versions-plugin:0.39.0",
                 buildKonfig         : "com.codingfeline.buildkonfig:buildkonfig-gradle-plugin:0.9.0",
         ],
-        kotlin                     : [
+        kotlin       : [
                 stdLib           : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin",
                 reflect          : "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin",
                 coroutines       : [
@@ -34,12 +33,12 @@ ext.Libs = [
                 ],
                 serializationJson: "org.jetbrains.kotlinx:kotlinx-serialization-json:$versions.kotlinSerialization",
         ],
-        android                    : [
+        android      : [
                 appCompat : "androidx.appcompat:appcompat:1.3.1",
                 material  : "com.google.android.material:material:1.4.0",
                 annotation: "androidx.annotation:annotation:1.1.0",
                 activity  : "androidx.activity:activity-ktx:$versions.androidActivity",
-                dataStore : "androidx.datastore:datastore-preferences:1.0.0-rc02",
+                dataStore : "androidx.datastore:datastore-preferences:1.0.0",
                 browser   : "androidx.browser:browser:1.3.0",
                 coil      : "io.coil-kt:coil:$versions.coil",
                 compose   : [
@@ -50,27 +49,26 @@ ext.Libs = [
                         materialIconsCore    : "androidx.compose.material:material-icons-core:$versions.compose",
                         materialIconsExtended: "androidx.compose.material:material-icons-extended:$versions.compose",
                         activity             : "androidx.activity:activity-compose:$versions.androidActivity",
-                        constraintLayout     : "androidx.constraintlayout:constraintlayout-compose:1.0.0-beta01",
+                        constraintLayout     : "androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02",
                         coil                 : "io.coil-kt:coil-compose:$versions.coil",
                         accompanist          : [
                                 insets: "com.google.accompanist:accompanist-insets:$versions.accompanist",
                         ],
                 ],
         ],
-        google                     : [
+        google       : [
                 playServicesAuth  : "com.google.android.gms:play-services-auth:19.2.0",
                 apiClient         : "com.google.api-client:google-api-client:1.32.1",
-                httpClientApacheV2: "com.google.http-client:google-http-client-apache-v2:1.39.2",
+                httpClientApacheV2: "com.google.http-client:google-http-client-apache-v2:1.40.0",
         ],
-        firebase                   : [
-                bom      : "com.google.firebase:firebase-bom:28.3.0",
+        firebase     : [
+                bom      : "com.google.firebase:firebase-bom:28.4.0",
                 analytics: "com.google.firebase:firebase-analytics-ktx",
         ],
-        facebookLogin              : "com.facebook.android:facebook-login:11.1.1",
-        viewbindingpropertydelegate: "com.kirich1409.viewbindingpropertydelegate:viewbindingpropertydelegate:1.3.0",
-        webrtc                     : "org.webrtc:google-webrtc:1.0.32006",
-        logback                    : "ch.qos.logback:logback-classic:1.2.4",
-        ktor                       : [
+        facebookLogin: "com.facebook.android:facebook-login:11.2.0",
+        webrtc       : "org.webrtc:google-webrtc:1.0.32006",
+        logback      : "ch.qos.logback:logback-classic:1.2.5",
+        ktor         : [
                 server       : [
                         netty            : "io.ktor:ktor-server-netty:$versions.ktor",
                         core             : "io.ktor:ktor-server-core:$versions.ktor",
@@ -93,7 +91,7 @@ ext.Libs = [
                 websockets   : "io.ktor:ktor-websockets:$versions.ktor",
                 utils        : "io.ktor:ktor-utils:$versions.ktor",
         ],
-        server                     : [
+        server       : [
                 aws               : [
                         s3 : "com.amazonaws:aws-java-sdk-s3:$versions.aws",
                         sns: "com.amazonaws:aws-java-sdk-sns:$versions.aws",
@@ -107,7 +105,7 @@ ext.Libs = [
                         bcpkix: "org.bouncycastle:bcpkix-jdk15on:$versions.bouncycastle",
                 ],
         ],
-        sqldelight                 : [
+        sqldelight   : [
                 runtime             : "com.squareup.sqldelight:runtime:$versions.sqldelight",
                 coroutinesExtensions: "com.squareup.sqldelight:coroutines-extensions:$versions.sqldelight",
                 androidDriver       : "com.squareup.sqldelight:android-driver:$versions.sqldelight",
@@ -115,8 +113,8 @@ ext.Libs = [
                 jdbcDriver          : "com.squareup.sqldelight:jdbc-driver:$versions.sqldelight",
                 sqliteDriver        : "com.squareup.sqldelight:sqlite-driver:$versions.sqldelight",
         ],
-        napier: "io.github.aakira:napier:2.0.0",
-        tests                      : [
+        napier       : "io.github.aakira:napier:2.1.0",
+        tests        : [
                 junit: "junit:junit:4.13.2",
         ],
 ]
