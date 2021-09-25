@@ -10,13 +10,10 @@ internal actual suspend fun WebSocketClient.ws(
     client.ws(path, request = {
         url.protocol = config.webSocketProtocol
     }) {
-        println("WebSocketClient start")
         try {
             block(WebSocketSession(this, CoroutineScope(coroutineContext)))
         } catch (t: Throwable) {
-            println("WebSocketClient crash $t")
             throw t
         }
-        println("WebSocketClient end")
     }
 }

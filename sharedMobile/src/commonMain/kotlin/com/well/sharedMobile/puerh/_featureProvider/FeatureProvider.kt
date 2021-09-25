@@ -17,7 +17,6 @@ import com.well.modules.models.WebSocketMsg
 import com.well.modules.utils.AppContext
 import com.well.modules.utils.dataStore.AuthInfo
 import com.well.modules.utils.dataStore.authInfo
-import com.well.modules.utils.dataStore.welcomeShowed
 import com.well.modules.utils.permissionsHandler.PermissionsHandler
 import com.well.modules.utils.platform.Platform
 import com.well.modules.utils.platform.isDebug
@@ -93,7 +92,6 @@ class FeatureProvider(
                     MainScope().launch {
                         if (eff.alert is Alert.Throwable) {
                             Napier.e("", eff.alert.throwable)
-                            println(eff.alert.throwable.stackTraceToString())
                         }
                         contextHelper.showAlert(eff.alert)
                     }

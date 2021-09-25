@@ -5,6 +5,7 @@ import com.well.modules.flowHelper.asSingleFlow
 import com.well.modules.flowHelper.mapIterable
 import com.well.modules.models.UserId
 import com.well.modules.models.chat.ChatMessage
+import io.github.aakira.napier.Napier
 import com.well.sharedMobile.puerh.πModels.chatMessageWithStatus.ChatMessageWithStatus.Status
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
@@ -23,7 +24,7 @@ fun Flow<List<ChatMessage>>.toChatMessageWithStatusFlow(
     currentUid: UserId,
     messagesDatabase: ChatMessagesDatabase,
 ) = flatMapLatest { chatList ->
-    println("toChatMessageWithStatusFlow $chatList")
+    Napier.i("toChatMessageWithStatusFlow $chatList")
     val containers = chatList
         .map { message ->
             when {

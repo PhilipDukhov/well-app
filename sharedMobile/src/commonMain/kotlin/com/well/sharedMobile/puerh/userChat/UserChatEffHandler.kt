@@ -10,6 +10,7 @@ import com.well.modules.flowHelper.mapIterable
 import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.models.chat.ChatMessage
+import io.github.aakira.napier.Napier
 import com.well.modules.utils.puerh.EffectHandler
 import com.well.sharedMobile.networking.NetworkManager
 import com.well.sharedMobile.puerh._topLevel.ContextHelper
@@ -48,7 +49,7 @@ internal class UserChatEffHandler(
         coroutineScope.launch {
             messagesFlow.collect {
                 listener?.invoke(Msg.UpdateMessages(it))
-                println("Msg.UpdateMessages $it")
+                Napier.i("Msg.UpdateMessages $it")
             }
         }
     }
@@ -75,7 +76,7 @@ internal class UserChatEffHandler(
                             ).executeAsOneOrNull()
                             if (currentLast == null || currentLast.messageId < message.id) {
                                 insert(fromId = message.fromId, peerId = message.peerId, messageId = message.id)
-                                println("insert lastReadMessagesQueries $message")
+                                Napier.i("insert lastReadMessagesQueries $message")
                             }
                         }
                 }
@@ -117,7 +118,7 @@ internal class UserChatEffHandler(
                         peerId = peerUid,
                         content = ChatMessage.Content.Text(eff.string),
                     )
-                println("Eff.SendMessage $newMessage")
+                Napier.i("Eff.SendMessage $newMessage")
                 coroutineScope.launch {
                     networkManager.send(WebSocketMsg.Front.CreateChatMessage(message = newMessage))
                 }

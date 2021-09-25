@@ -1,5 +1,10 @@
 package com.well.androidApp.ui.composableScreens.call
 
+import com.well.androidApp.R
+import com.well.androidApp.ui.composableScreens.πCustomViews.Control
+import com.well.androidApp.ui.composableScreens.πExt.Image
+import io.github.aakira.napier.Napier
+import com.well.sharedMobile.puerh.call.CallFeature
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,10 +16,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
-import com.well.androidApp.R
-import com.well.androidApp.ui.composableScreens.πCustomViews.Control
-import com.well.androidApp.ui.composableScreens.πExt.Image
-import com.well.sharedMobile.puerh.call.CallFeature
 
 @Suppress("ModifierParameter")
 @Composable
@@ -29,12 +30,10 @@ fun VideoViewContainer(
             .alpha(if (view.hidden) 0F else 1F)
             .onSizeChanged {
                 // testing position of flip button
-                println("asdasda ${it.width} ${it.height}")
+                Napier.i("onSizeChanged ${it.width} ${it.height}")
             }) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-
-
         ) {
             Box(
                 modifier = modifier

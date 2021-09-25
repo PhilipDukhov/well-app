@@ -14,6 +14,7 @@ import com.well.modules.flowHelper.mapIterable
 import com.well.modules.models.ChatMessageId
 import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMsg
+import io.github.aakira.napier.Napier
 import com.well.modules.utils.puerh.EffectHandler
 import com.well.sharedMobile.networking.NetworkManager
 import com.well.sharedMobile.networking.combineToNetworkConnectedState
@@ -104,7 +105,7 @@ class ChatListEffHandler(
             lastPresentMessageIdFlow
                 .combineToNetworkConnectedState(networkManager)
                 .collect { lastPresentMessageId ->
-                    println("WebSocketMsg.Front.SetChatMessagePresence $lastPresentMessageId")
+                    Napier.i("WebSocketMsg.Front.SetChatMessagePresence $lastPresentMessageId")
                     networkManager.send(
                         WebSocketMsg.Front.SetChatMessagePresence(
                             messagePresenceId = lastPresentMessageId

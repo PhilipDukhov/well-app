@@ -96,7 +96,6 @@ class NetworkManager(
                 } catch (t: Throwable) {
                     if (handleUnauthorized(t)) break
                     Napier.e("web socket connection error", t)
-                    println("web socket connection error $t")
                 } finally {
                     val wasConnected = _state.value == Connected
                     _state.value = Disconnected
@@ -125,7 +124,7 @@ class NetworkManager(
 
     private suspend fun send(msg: WebSocketMsg) {
         try {
-            println("send WebSocketMsg: $msg")
+            Napier.i("send WebSocketMsg: $msg")
             webSocketSession?.send(
                 Json.encodeToString(
                     WebSocketMsg.serializer(),

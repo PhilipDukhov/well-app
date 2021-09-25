@@ -9,8 +9,10 @@ import platform.Foundation.create
 import platform.posix.memcpy
 
 fun ByteArray.toNSData() : NSData = memScoped {
-    NSData.create(bytes = allocArrayOf(this@toNSData),
-        length = this@toNSData.size.toULong())
+    NSData.create(
+        bytes = allocArrayOf(this@toNSData),
+        length = size.toULong()
+    )
 }
 
 fun NSData.toByteArray() : ByteArray =

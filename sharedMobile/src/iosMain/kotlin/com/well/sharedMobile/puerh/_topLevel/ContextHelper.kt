@@ -113,7 +113,6 @@ internal actual class ContextHelper actual constructor(actual val appContext: Ap
                 session.presentationContextProvider = appContext.rootController as? ASWebAuthenticationPresentationContextProvidingProtocol
                 session.start()
                 continuation.invokeOnCancellation {
-                    println("continuation.invokeOnCancellation")
                     session.cancel()
                 }
             }

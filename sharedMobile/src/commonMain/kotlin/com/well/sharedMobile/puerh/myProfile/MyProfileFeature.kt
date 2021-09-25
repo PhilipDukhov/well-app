@@ -86,10 +86,6 @@ object MyProfileFeature {
         val editingStatus: EditingStatus = EditingStatus.Preview,
     ) {
         val maxRatingCharacters = 150
-
-        init {
-            println("State $uid $user $originalUser")
-        }
         val loaded = user != null
         internal val image = newImage ?: user?.profileImage()
         val groups = if (user != null) {
@@ -281,7 +277,6 @@ object MyProfileFeature {
                     return@eff Eff.Call(state.user!!)
                 }
                 is Msg.Message -> {
-                    println("reduce Msg.Message ${state.uid} $state")
                     return@eff Eff.Message(state.uid)
                 }
                 is Msg.OnLogout -> {

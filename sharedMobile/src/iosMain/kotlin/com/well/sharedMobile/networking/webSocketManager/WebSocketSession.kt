@@ -1,5 +1,6 @@
 package com.well.sharedMobile.networking.webSocketManager
 
+import io.github.aakira.napier.Napier
 import com.well.modules.utils.resumeWithException
 import com.well.modules.utils.toNSData
 import com.well.modules.utils.toThrowable
@@ -44,7 +45,7 @@ actual class WebSocketSession(
     ) {
         when {
             nsError != null -> {
-                println("channel.close(nsError.toThrowable()) $nsError ${nsError.localizedDescription}")
+                Napier.e("channel.close(nsError.toThrowable()) $nsError ${nsError.localizedDescription}")
                 channel.close(nsError.toThrowable())
             }
             message != null -> {
