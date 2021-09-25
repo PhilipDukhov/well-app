@@ -10,11 +10,11 @@ import com.well.androidApp.ui.composableScreens.more.MoreScreen
 import com.well.androidApp.ui.composableScreens.more.SupportScreen
 import com.well.androidApp.ui.composableScreens.myProfile.MyProfileScreen
 import com.well.androidApp.ui.composableScreens.userChat.UserChatScreen
+import com.well.androidApp.ui.composableScreens.welcome.WelcomeScreen
 import com.well.androidApp.ui.composableScreens.πExt.toColor
 import com.well.modules.models.Color
 import com.well.sharedMobile.puerh._topLevel.ScreenState
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.State.Tab
-import com.well.sharedMobile.puerh.welcome.WelcomeFeature
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature as Feature
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -101,10 +101,8 @@ private fun Tab.iconDrawable() =
 private fun ColumnScope.Screen(screenState: ScreenState, listener: (Feature.Msg) -> Unit) {
     when (screenState) {
         is ScreenState.Launch -> Unit
-        is ScreenState.Welcome -> {
-            listener(
-                Feature.Msg.WelcomeMsg(WelcomeFeature.Msg.Continue)
-            )
+        is ScreenState.Welcome -> WelcomeScreen(screenState.state) {
+            listener(Feature.Msg.WelcomeMsg(it))
         }
         is ScreenState.Login -> LoginScreen(screenState.state) {
             listener(Feature.Msg.LoginMsg(it))

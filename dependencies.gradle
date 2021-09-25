@@ -1,10 +1,12 @@
 def versions = [
         iosDeploymentTarget: "14.0",
+//        kotlin             : "1.5.21",
         kotlin             : "1.5.30",
-        compose            : "1.1.0-alpha03",
+//        compose            : "1.0.2",
+        compose            : "1.1.0-alpha04",
         androidActivity    : "1.3.1",
         accompanist        : "0.18.0",
-        kotlinSerialization: "1.2.2",
+        kotlinSerialization: "1.2.2", // 1.3.0
         coil               : "1.3.2",
         kotlinCoroutines   : "1.5.2-native-mt",
         ktor               : "1.6.3",
@@ -52,7 +54,10 @@ ext.Libs = [
                         constraintLayout     : "androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02",
                         coil                 : "io.coil-kt:coil-compose:$versions.coil",
                         accompanist          : [
-                                insets: "com.google.accompanist:accompanist-insets:$versions.accompanist",
+                                insets         : "com.google.accompanist:accompanist-insets:$versions.accompanist",
+                                pager          : "com.google.accompanist:accompanist-pager:$versions.accompanist",
+                                pagerIndicators: "com.google.accompanist:accompanist-pager-indicators:$versions.accompanist",
+
                         ],
                 ],
         ],

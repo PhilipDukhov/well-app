@@ -50,6 +50,7 @@ android {
         freeCompilerArgs += listOf(
             "-Xopt-in=androidx.compose.ui.ExperimentalComposeUiApi",
             "-Xopt-in=androidx.compose.foundation.ExperimentalFoundationApi",
+            "-Xopt-in=com.google.accompanist.pager.ExperimentalPagerApi",
             "-Xskip-prerelease-check",
         )
     }

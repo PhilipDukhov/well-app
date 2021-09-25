@@ -2,14 +2,17 @@ package com.well.androidApp.ui.composableScreens.login
 
 import com.well.androidApp.R
 import com.well.androidApp.ui.composableScreens.πCustomViews.Control
+import com.well.androidApp.ui.composableScreens.πCustomViews.GradientView
 import com.well.androidApp.ui.composableScreens.πCustomViews.InactiveOverlay
 import com.well.androidApp.ui.composableScreens.πExt.Image
 import com.well.sharedMobile.puerh.login.LoginFeature.Msg
 import com.well.sharedMobile.puerh.login.LoginFeature.State
 import com.well.sharedMobile.puerh.login.SocialNetwork
+import com.well.sharedMobile.utils.Gradient
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -24,10 +27,18 @@ import com.google.accompanist.insets.systemBarsPadding
 fun LoginScreen(
     state: State,
     listener: (Msg) -> Unit,
-) = Box(contentAlignment = Alignment.BottomCenter) {
+) = Box(
+    contentAlignment = Alignment.BottomCenter,
+    modifier = Modifier.fillMaxSize()
+) {
     Image(
         painterResource(R.drawable.login_background),
         contentScale = ContentScale.FillBounds,
+        modifier = Modifier.matchParentSize()
+    )
+    GradientView(
+        gradient = Gradient.Login,
+        modifier = Modifier.matchParentSize()
     )
     Row(
         horizontalArrangement = Arrangement.SpaceEvenly,
