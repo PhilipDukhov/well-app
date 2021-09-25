@@ -74,7 +74,7 @@ struct MyProfileScreen: View {
 
             case let group as UIGroup.Editing:
                 Text(group.title)
-                    .foregroundColorKMM(ColorConstants.HippieBlue)
+                    .foregroundColorKMM(ColorConstants.LightBlue)
                 ForEach(group.fields, id: \.self) { field in
                     EditingField(field as! UIEditingField<UIEditingFieldContent, MyProfileFeature.Msg>,
                         listener: listener)
@@ -106,7 +106,7 @@ struct MyProfileScreen: View {
                         .padding(.horizontal, 10)
                         .font(.body)
                         .backgroundColorKMM(
-                            ColorConstants.HippieBlue
+                            ColorConstants.LightBlue
                                 .withAlpha(alpha: 0.15)
                         )
                         .foregroundColor(Color.black)
@@ -116,7 +116,7 @@ struct MyProfileScreen: View {
             case let content as UIPreviewField.ContentTextAndIcon:
                 HStack {
                     Image(uiImage: content.icon.uiImage())
-                        .foregroundColorKMM(ColorConstants.HippieBlue)
+                        .foregroundColorKMM(ColorConstants.LightBlue)
                     Text(content.text)
                         .onTapGesture {
                             if content.isLink {
@@ -161,7 +161,7 @@ struct MyProfileScreen: View {
                         accountType.imageView()
                             .font(.system(size: 14, weight: .black))
                         Text(accountType.title)
-                    }.foregroundColorKMM(ColorConstants.HippieBlue)
+                    }.foregroundColorKMM(ColorConstants.LightBlue)
                 }
                 if let completeness = header.completeness {
                     Text("Profile \(completeness)% complete")

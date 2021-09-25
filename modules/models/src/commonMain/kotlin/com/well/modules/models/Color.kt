@@ -38,8 +38,6 @@ data class Color(
         val Atlantis = Color(0x63DA38)
         val DodgerBlue = Color(0x1BADF8)
         val Lavender = Color(0xCC73E1)
-        val HippieBlue = Color(0x6AA2B8)
-        val Silver = Color(0xC4C4C4)
 
         val LightBlue = Color(0x6AA2B8)
         val LightBlue15 = Color(0x6AA2B8, alpha = 0.15f)
@@ -51,7 +49,6 @@ data class Color(
         val BlackP = Color(0x01070E)
         val LightGray = Color(0xC4C4C4)
         val Pink = Color(0xF61F46)
-        val IncomingBubbleBackground = Color(0xE5E5EA)
 
         val Black = Color(0x000000)
         val White = Color(0xFFFFFF)

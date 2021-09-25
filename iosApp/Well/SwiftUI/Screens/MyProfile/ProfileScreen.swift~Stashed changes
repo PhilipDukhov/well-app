@@ -38,7 +38,7 @@ struct ProfileScreen: View {
                         Image(systemName: "plus")
                             .font(.system(size: 14, weight: .black))
                         Text("doctor")
-                    }.foregroundColorKMM(ColorConstants.HippieBlue)
+                    }.foregroundColorKMM(ColorConstants.LightBlue)
                     let completeness = state.user.completeness
                     Text("Profile \(completeness)% complete")
                         .foregroundColor(Color.gray)
@@ -76,7 +76,7 @@ struct ProfileScreen: View {
                         .padding(.vertical, 5)
                         .padding(.horizontal, 10)
                         .font(.body)
-                        .backgroundColorKMM(ColorConstants.HippieBlue.withAlpha(alpha: 0.15))
+                        .backgroundColorKMM(ColorConstants.LightBlue.withAlpha(alpha: 0.15))
                         .foregroundColor(Color.black)
                         .clipShape(MaxRoundedRectangle())
                 }
@@ -84,7 +84,7 @@ struct ProfileScreen: View {
             case let content as ProfileFeature.StateUIFieldContentTextAndIcon:
                 HStack {
                     Image(uiImage: content.icon.uiImage())
-                        .foregroundColorKMM(ColorConstants.HippieBlue)
+                        .foregroundColorKMM(ColorConstants.LightBlue)
                     Text(content.text)
                         .onTapGesture {
                             if content.isLink {
