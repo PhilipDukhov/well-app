@@ -14,9 +14,11 @@ import com.well.modules.db.users.UsersDatabase
 import com.well.modules.db.users.getByIdFlow
 import com.well.modules.db.users.insertOrReplace
 import com.well.modules.models.WebSocketMsg
+import com.well.modules.models.chat.ChatMessage
 import com.well.modules.utils.AppContext
 import com.well.modules.utils.dataStore.AuthInfo
 import com.well.modules.utils.dataStore.authInfo
+import com.well.modules.utils.dataStore.welcomeShowed
 import com.well.modules.utils.permissionsHandler.PermissionsHandler
 import com.well.modules.utils.platform.Platform
 import com.well.modules.utils.platform.isDebug
@@ -215,7 +217,6 @@ class FeatureProvider(
                 is Eff.TopScreenUpdated -> {
                     when (eff.screen) {
                         is ScreenState.MyProfile -> {
-                            println("ScreenState.MyProfile ${eff.screen.state.uid}")
                             if (eff.screen.state.user?.initialized != false) {
                                 topScreenHandlerCloseable =
                                     coroutineScope.launch {
@@ -232,14 +233,29 @@ class FeatureProvider(
                             }
                         }
                         is ScreenState.UserChat -> {
+                            val peerId = eff.screen.state.peerId
                             topScreenHandlerCloseable = feature.wrapWithEffectHandler(
                                 UserChatEffHandler(
                                     currentUid = sessionInfo!!.uid,
-                                    peerUid = eff.screen.state.peerId,
-                                    networkManager = networkManager,
-                                    usersDatabase = usersDatabase,
+                                    peerUid = peerId,
+                                    services = UserChatEffHandler.Services(
+                                        createChatMessage = {
+                                            networkManager.send(
+                                                WebSocketMsg.Front.CreateChatMessage(
+                                                    it
+                                                )
+                                            )
+                                        },
+                                        uploadMessagePicture = networkManager::uploadMessagePicture,
+                                        peerUserFlow = {
+                                            usersDatabase.usersQueries.getByIdFlow(
+                                                peerId
+                                            )
+                                        },
+                                        pickSystemImage = contextHelper::pickSystemImage,
+                                        cacheImage = contextHelper.appContext::cacheImage,
+                                    ),
                                     messagesDatabase = messagesDatabase,
-                                    contextHelper = contextHelper,
                                     coroutineScope = CoroutineScope(coroutineContext),
                                 ).adapt(
                                     effAdapter = { (it as? Eff.UserChatEff)?.eff },
@@ -272,9 +288,10 @@ class FeatureProvider(
         handler.freeze()
     }
 
-    internal fun createWebSocketMessageHandler(
+    internal fun webSocketMessageHandler(
+        msg: WebSocketMsg,
         listener: (Msg) -> Unit,
-    ): (WebSocketMsg) -> Unit = { msg ->
+    ) {
         when (msg) {
             is WebSocketMsg.Front -> Unit
             is WebSocketMsg.Call.EndCall -> {

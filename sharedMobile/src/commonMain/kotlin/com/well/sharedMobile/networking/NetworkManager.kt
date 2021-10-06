@@ -1,11 +1,8 @@
 package com.well.sharedMobile.networking
 
-import com.well.modules.atomic.AtomicMutableList
 import com.well.modules.atomic.AtomicRef
 import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
-import com.well.modules.atomic.addListenerAndMakeCloseable
-import com.well.modules.atomic.notifyAll
 import com.well.modules.models.FavoriteSetter
 import com.well.modules.models.RatingRequest
 import com.well.modules.models.Size
@@ -18,7 +15,6 @@ import com.well.sharedMobile.networking.NetworkManager.Status.Connected
 import com.well.sharedMobile.networking.NetworkManager.Status.Connecting
 import com.well.sharedMobile.networking.NetworkManager.Status.Disconnected
 import com.well.sharedMobile.networking.webSocketManager.WebSocketClient
-import com.well.sharedMobile.networking.webSocketManager.WebSocketMessageListener
 import com.well.sharedMobile.networking.webSocketManager.WebSocketSession
 import com.well.sharedMobile.networking.webSocketManager.ws
 import com.well.sharedMobile.puerh.call.resizedImage
@@ -31,11 +27,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -67,13 +65,15 @@ class NetworkManager(
     private val webSocketScope = CoroutineScope(Dispatchers.Default)
 
     private var webSocketSession by AtomicRef<WebSocketSession?>(null)
-    private val listeners = AtomicMutableList<WebSocketMessageListener>()
+
+    private val _webSocketMsgSharedFlow = MutableSharedFlow<WebSocketMsg>()
+    val webSocketMsgSharedFlow: Flow<WebSocketMsg> = _webSocketMsgSharedFlow
 
     private val _state = MutableStateFlow(Disconnected)
 
     val stateFlow = _state.asStateFlow()
     val isConnectedFlow = stateFlow.map { it == Connected }.distinctUntilChanged()
-    val onConnectedFlow = isConnectedFlow.filter { it }.map { Unit }
+    val onConnectedFlow = isConnectedFlow.filter { it }.map { }
 
     init {
         webSocketScope.launch {
@@ -85,7 +85,7 @@ class NetworkManager(
                         _state.value = Connected
                         for (string in incoming) {
                             Napier.i("websocket msg: $string")
-                            listeners.notifyAll(
+                            _webSocketMsgSharedFlow.emit(
                                 Json.decodeFromString(
                                     WebSocketMsg.serializer(),
                                     string
@@ -113,10 +113,6 @@ class NetworkManager(
             }
         }.apply(::addCloseableChild)
     }
-
-    fun addListener(listener: WebSocketMessageListener): Closeable =
-        listeners.addListenerAndMakeCloseable(listener)
-            .also(::addCloseableChild)
 
     suspend fun send(msg: WebSocketMsg.Front) = send(msg as WebSocketMsg)
 

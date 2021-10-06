@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -48,13 +49,13 @@ class ExpertsApiEffectHandler(
                         listener?.invoke(Msg.OnConnectionStatusChange(it))
                     }
                 }.asCloseable(),
-                addListener { webSocketMsg ->
-                    if (webSocketMsg is WebSocketMsg.Back.ListFilteredExperts) {
-                        coroutineScope.launch {
-                            filteredExpertsIdsFlow.emit(webSocketMsg.userIds)
+                coroutineScope.launch {
+                    webSocketMsgSharedFlow
+                        .filterIsInstance<WebSocketMsg.Back.ListFilteredExperts>()
+                        .collect {
+                            filteredExpertsIdsFlow.emit(it.userIds)
                         }
-                    }
-                },
+                }.asCloseable(),
                 coroutineScope.launch {
                     filteredExpertsUsersFlow
                         .combineToNetworkConnectedState(networkManager)

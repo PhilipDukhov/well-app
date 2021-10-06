@@ -7,11 +7,14 @@ import com.well.modules.db.chatMessages.toChatMessage
 import com.well.modules.db.users.UsersDatabase
 import com.well.modules.db.users.getByIdFlow
 import com.well.modules.flowHelper.mapIterable
+import com.well.modules.models.User
 import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.models.chat.ChatMessage
 import io.github.aakira.napier.Napier
 import com.well.modules.utils.puerh.EffectHandler
+import com.well.modules.utils.sharedImage.ImageContainer
+import com.well.modules.utils.sharedImage.LocalImage
 import com.well.sharedMobile.networking.NetworkManager
 import com.well.sharedMobile.puerh._topLevel.ContextHelper
 import com.well.sharedMobile.puerh.userChat.UserChatFeature.Eff
@@ -20,19 +23,25 @@ import com.well.sharedMobile.puerh.πModels.chatMessageWithStatus.toChatMessageW
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 internal class UserChatEffHandler(
     private val currentUid: UserId,
     private val peerUid: UserId,
-    private val networkManager: NetworkManager,
-    usersDatabase: UsersDatabase,
+    private val services: Services,
     private val messagesDatabase: ChatMessagesDatabase,
-    private val contextHelper: ContextHelper,
     coroutineScope: CoroutineScope,
 ) : EffectHandler<Eff, Msg>(coroutineScope) {
-    private val userFlow = usersDatabase.usersQueries.getByIdFlow(uid = peerUid)
+    data class Services(
+        val createChatMessage: suspend (ChatMessage) -> Unit,
+        val uploadMessagePicture: suspend (ImageContainer) -> String,
+        val pickSystemImage: suspend () -> LocalImage,
+        val cacheImage: (ImageContainer, String) -> Unit,
+        val peerUserFlow: () -> Flow<User>
+    )
+
     private val messagesFlow = messagesDatabase.chatMessagesQueries
         .chatList(firstId = currentUid, secondId = peerUid)
         .asFlow()
@@ -42,7 +51,7 @@ internal class UserChatEffHandler(
 
     init {
         coroutineScope.launch {
-            userFlow.collect {
+            services.peerUserFlow().collect {
                 listener?.invoke(Msg.UpdateUser(it))
             }
         }
@@ -62,7 +71,7 @@ internal class UserChatEffHandler(
             -> Unit
             Eff.ChooseImage -> {
                 coroutineScope.launch {
-                    listener?.invoke(Msg.SendImage(contextHelper.pickSystemImage()))
+                    listener?.invoke(Msg.SendImage(services.pickSystemImage()))
                 }
             }
             is Eff.MarkMessageRead -> {
@@ -94,18 +103,13 @@ internal class UserChatEffHandler(
                         ),
                     )
                 coroutineScope.launch {
-                    val photoUrl = networkManager.uploadMessagePicture(imageContainer)
-                    contextHelper.appContext.cacheImage(
-                        image = imageContainer,
-                        url = photoUrl,
-                    )
-                    networkManager.send(
-                        WebSocketMsg.Front.CreateChatMessage(
-                            message = newMessage.copy(
-                                content = ChatMessage.Content.Image(
-                                    photoUrl,
-                                    aspectRatio = aspectRatio
-                                )
+                    val photoUrl = services.uploadMessagePicture(imageContainer)
+                    services.cacheImage(imageContainer, photoUrl)
+                    services.createChatMessage(
+                        newMessage.copy(
+                            content = ChatMessage.Content.Image(
+                                photoUrl,
+                                aspectRatio = aspectRatio
                             )
                         )
                     )
@@ -120,7 +124,7 @@ internal class UserChatEffHandler(
                     )
                 Napier.i("Eff.SendMessage $newMessage")
                 coroutineScope.launch {
-                    networkManager.send(WebSocketMsg.Front.CreateChatMessage(message = newMessage))
+                    services.createChatMessage(newMessage)
                 }
             }
         }

@@ -24,6 +24,7 @@ import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
@@ -130,8 +131,8 @@ class CallEffectHandler(
             localVideoContext.freeze()
         }
         webRtcManagerListener.freeze()
-        addCloseableChild(webRtcManagerListener)
-        addCloseableChild(
+        listOf(
+            webRtcManagerListener,
             coroutineScope.launch {
                 networkManager.isConnectedFlow
                     .collect { shouldSend ->
@@ -144,14 +145,15 @@ class CallEffectHandler(
                                 }.asCloseable()
                             else null
                     }
-            }.asCloseable()
-        )
-        coroutineScope.launch {
-            addCloseableChild(
-                networkManager.addListener(::listenWebSocketMessage)
-            )
-        }
-        addCloseableChild(webRtcManager)
+            }.asCloseable(),
+            coroutineScope.launch {
+                networkManager.webSocketMsgSharedFlow
+                    .filterIsInstance<WebSocketMsg.Call>()
+                    .collect(::listenWebSocketMessage)
+
+            }.asCloseable(),
+            webRtcManager,
+        ).forEach(::addCloseableChild)
     }
 
     @Suppress("NAME_SHADOWING")
@@ -217,16 +219,18 @@ class CallEffectHandler(
 
     fun send(msg: WebSocketMsg.Call) = prepareSend(msg, NetworkManager::send)
 
-    private fun <M: WebSocketMsg> prepareSend(msg: M, perform: suspend NetworkManager.(M) -> Unit) =
-        msg.freeze()
-            .let {
-                coroutineScope.launch {
-                    networkManager.perform(msg)
-                }
+    private fun <M : WebSocketMsg> prepareSend(
+        msg: M,
+        perform: suspend NetworkManager.(M) -> Unit
+    ) = msg.freeze()
+        .let {
+            coroutineScope.launch {
+                networkManager.perform(msg)
             }
-            .also {
-                Napier.i("CallEffectHandler send ws $msg")
-            }
+        }
+        .also {
+            Napier.i("CallEffectHandler send ws $msg")
+        }
 
     private fun send(msg: RtcMsg) =
         runWebRtcManager {
@@ -285,13 +289,15 @@ class CallEffectHandler(
                 invokeCallMsg(Msg.UpdateRemoteDeviceState(msg.deviceState))
             }
             is RtcMsg.UpdateViewPoint -> {
-                invokeCallMsg(Msg.RemoteUpdateViewPoint(
-                    when(msg.viewPoint) {
-                        State.ViewPoint.Both -> State.ViewPoint.Both
-                        State.ViewPoint.Mine -> State.ViewPoint.Partner
-                        State.ViewPoint.Partner -> State.ViewPoint.Mine
-                    }
-                ))
+                invokeCallMsg(
+                    Msg.RemoteUpdateViewPoint(
+                        when (msg.viewPoint) {
+                            State.ViewPoint.Both -> State.ViewPoint.Both
+                            State.ViewPoint.Mine -> State.ViewPoint.Partner
+                            State.ViewPoint.Partner -> State.ViewPoint.Mine
+                        }
+                    )
+                )
             }
             is RtcMsg.UpdateCaptureDimensions -> {
                 invokeCallMsg(Msg.UpdateRemoteCaptureDimensions(msg.dimensions))
@@ -299,7 +305,7 @@ class CallEffectHandler(
         }
     }
 
-    private fun listenWebSocketMessage(msg: WebSocketMsg) = runWebRtcManager {
+    private fun listenWebSocketMessage(msg: WebSocketMsg.Call) = runWebRtcManager {
         when (msg) {
             is WebSocketMsg.Call.Offer -> {
                 invokeCallMsg(Msg.UpdateStatus(State.Status.Connecting))

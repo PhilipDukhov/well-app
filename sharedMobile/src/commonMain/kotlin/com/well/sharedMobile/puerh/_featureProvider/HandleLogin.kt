@@ -98,9 +98,15 @@ fun FeatureProvider.loggedIn(
             scope,
         ),
     )
-    (effectHandlers.map(feature::wrapWithEffectHandler) + listOf(
+    val webSocketListenerCloseable = coroutineScope.launch {
         networkManager
-            .addListener(createWebSocketMessageHandler(listener)),
+            .webSocketMsgSharedFlow
+            .collect {
+                webSocketMessageHandler(it, listener)
+            }
+    }.asCloseable()
+    (effectHandlers.map(feature::wrapWithEffectHandler) + listOf(
+        webSocketListenerCloseable,
         notifyUsersDBPresenceCloseable(),
         networkManager,
         scope.asCloseable(),
