@@ -70,3 +70,10 @@ inline fun <F, S, R> Pair<F, S>.letNamed(block: (F, S) -> R): R {
 
 fun <F, S> Collection<Pair<F, S>>.forEachNamed(block: (F, S) -> Unit) = forEach { it.letNamed(block) }
 
+fun Int.positiveRem(other: Int): Int {
+    var rem = rem(other)
+    if (rem < 0) {
+        rem += other
+    }
+    return rem
+}

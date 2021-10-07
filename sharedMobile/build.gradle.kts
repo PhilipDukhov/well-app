@@ -47,7 +47,9 @@ kotlin {
         }
     }
     cocoapods {
-        this.frameworkName = frameworkName
+        framework {
+            baseName = frameworkName
+        }
         summary = frameworkName
         homepage = "-"
         ios.deploymentTarget = project.version("iosDeploymentTarget")
@@ -80,7 +82,8 @@ kotlin {
                 "ktor.client.core",
                 "ktor.client.logging",
                 "sqldelight.coroutinesExtensions",
-                "napier",
+                "shared.napier",
+                "shared.klock",
             )
             dependencies {
                 iosExportModules.forEach {
@@ -103,8 +106,8 @@ kotlin {
         if (withAndroid) {
             val androidMain by getting {
                 libDependencies(
-                    "webrtc",
-                    "facebookLogin",
+                    "android.webrtc",
+                    "android.facebookLogin",
                     "google.playServicesAuth",
                     "android.material",
                     "android.activity",

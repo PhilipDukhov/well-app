@@ -2,6 +2,7 @@ package com.well.androidApp.ui.composableScreens.myProfile
 
 import com.well.androidApp.ui.composableScreens.πCustomViews.ControlItem
 import com.well.androidApp.ui.composableScreens.πCustomViews.NavigationBar
+import com.well.androidApp.ui.composableScreens.πCustomViews.clearFocusOnKeyboardDismiss
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
 import com.well.sharedMobile.puerh.πModels.UIEditingField
 import androidx.activity.compose.BackHandler
@@ -12,10 +13,8 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.focus.*
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 
 @Composable
@@ -94,12 +93,6 @@ private fun EditingTextField(
     onFinishEditing: (String) -> Unit,
 ) {
     var isFocused by remember { mutableStateOf(false) }
-    LocalSoftwareKeyboardController.current?.run {
-        if (isFocused)
-            show()
-        else
-            hide()
-    }
     var textState by remember { mutableStateOf(text) }
     val focusManager = LocalFocusManager.current
     val finishEditing = {
@@ -136,21 +129,21 @@ private fun EditingTextField(
         colors = TextFieldDefaults.textFieldColors(),
         modifier = Modifier
             .fillMaxWidth()
+            .clearFocusOnKeyboardDismiss()
             .onFocusChanged {
                 if (isFocused == it.isFocused) return@onFocusChanged
-                println("isFocused = ${it.isFocused}")
                 isFocused = it.isFocused
+                println("onFocusChanged $text $isFocused")
                 if (onClick != null) {
                     if (isFocused) {
                         onClick()
-                        isFocused = false
                     }
                 } else {
                     if (isFocused) {
                         onTextInputEditingHandler(finishEditing)
                     } else {
                         onTextInputEditingHandler(null)
-                        finishEditing()
+//                        finishEditing()
                     }
                 }
             }

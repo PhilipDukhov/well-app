@@ -1,5 +1,6 @@
 package com.well.androidApp.ui.composableScreens.πCustomViews
 
+import androidx.compose.foundation.clickable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,3 +54,6 @@ fun Modifier.gesturesDisabled(disabled: Boolean = true) =
             }
         }
     }
+
+fun Modifier.clickable(onClick: (() -> Unit)?): Modifier =
+    this.clickable(onClick = { onClick?.invoke() }, enabled = onClick != null)

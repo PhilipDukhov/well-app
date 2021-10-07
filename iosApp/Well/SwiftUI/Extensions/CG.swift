@@ -18,7 +18,7 @@ extension Int32 {
     }
 }
 
-extension KotlinFloat {
+extension NSNumber {
     func toCGFloat() -> CGFloat {
         CGFloat(self)
     }

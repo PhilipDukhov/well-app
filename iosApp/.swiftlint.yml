@@ -15,6 +15,7 @@ disabled_rules:
  - operator_whitespace
  - orphaned_doc_comment
  - comment_spacing
+ - trailing_closure
 opt_in_rules:
  - empty_count
  - empty_string
@@ -26,7 +27,6 @@ opt_in_rules:
  - toggle_bool
  - unneeded_parentheses_in_closure_argument
  - unused_import
- - trailing_closure
 identifier_name: 
   min_length:
     warning: 0

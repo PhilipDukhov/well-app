@@ -34,7 +34,7 @@ fun LimitedCharsTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .fixKeyboardFocusIssue()
+                .clearFocusOnKeyboardDismiss()
         )
         val count = valueState.value.count()
         Text(

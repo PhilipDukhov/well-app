@@ -8,7 +8,6 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-@kotlinx.serialization.ExperimentalSerializationApi
 @Serializer(forClass = DateSerializer::class)
 object DateSerializer : KSerializer<Date> {
     override val descriptor: SerialDescriptor =

@@ -41,7 +41,7 @@ struct TopLevelView: View {
                 }, set: { tab in
                     listener(TopLevelFeature.MsgSelectTab(tab: tab))
                 })) {
-                    ForEachEnumerated(tabsScreen.tabs) { i, tabScreen in
+                    ForEachIndexed(tabsScreen.tabs) { i, tabScreen in
                         VStack(spacing: 0) {
                             screenView(screen: tabScreen.screen)
                         }

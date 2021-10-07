@@ -15,6 +15,7 @@ libDependencies(
     "android.material",
     "android.appCompat",
     "android.activity",
+    "android.webrtc",
 
     "android.compose.*",
 
@@ -24,16 +25,13 @@ libDependencies(
     "kotlin.serializationJson",
     "kotlin.coroutines.core",
     "kotlin.reflect",
-    "webrtc",
 
-    //tmp
-    "ktor.client.core",
+    "shared.napier",
 
     ":modules:atomic",
     ":modules:models",
     ":modules:utils",
     ":sharedMobile",
-    "napier",
 )
 
 android {
@@ -47,10 +45,13 @@ android {
         compose = true
     }
     kotlinOptions {
-        freeCompilerArgs += listOf(
-            "-Xopt-in=androidx.compose.ui.ExperimentalComposeUiApi",
-            "-Xopt-in=androidx.compose.foundation.ExperimentalFoundationApi",
-            "-Xopt-in=com.google.accompanist.pager.ExperimentalPagerApi",
+        val optIns = listOf(
+            "androidx.compose.ui.ExperimentalComposeUiApi",
+            "androidx.compose.foundation.ExperimentalFoundationApi",
+            "com.google.accompanist.pager.ExperimentalPagerApi",
+            "androidx.compose.material.ExperimentalMaterialApi",
+        )
+        freeCompilerArgs += optIns.map { "-Xopt-in=$it" } + listOf(
             "-Xskip-prerelease-check",
         )
     }

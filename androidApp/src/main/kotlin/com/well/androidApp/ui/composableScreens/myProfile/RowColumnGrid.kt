@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -18,18 +19,19 @@ fun RowColumnGrid(
         modifier = modifier
     ) { measurables, constraints ->
         var currentRow = 0
-        var currentOrigin = Origin.Zero
+        var currentOrigin = IntOffset.Zero
         val spacingValue = spacing.toPx().toInt()
         val placeables = measurables.map { measurable ->
             val placeable = measurable.measure(constraints)
 
             if (currentOrigin.x > 0f && currentOrigin.x + placeable.width > constraints.maxWidth) {
                 currentRow += 1
-                currentOrigin = currentOrigin.copyNextRow(y = placeable.height + spacingValue)
+                currentOrigin =
+                    currentOrigin.copy(x = 0, y = currentOrigin.y + placeable.height + spacingValue)
             }
 
             placeable to currentOrigin.also {
-                currentOrigin = it.offset(x = placeable.width + spacingValue)
+                currentOrigin = it.copy(x = it.x + placeable.width + spacingValue)
             }
         }
 
@@ -41,21 +43,5 @@ fun RowColumnGrid(
                 placeable.place(origin.x, origin.y)
             }
         }
-    }
-}
-
-private data class Origin(
-    val x: Int,
-    val y: Int
-) {
-    fun offset(
-        x: Int = 0,
-        y: Int = 0,
-    ) = copy(x = this.x + x, y = this.y + y)
-
-    fun copyNextRow(y: Int) = copy(x = 0, y = this.y + y)
-
-    companion object {
-        val Zero = Origin(0, 0)
     }
 }

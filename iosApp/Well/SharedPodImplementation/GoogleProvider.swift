@@ -9,6 +9,8 @@
 import SharedMobile
 import GoogleSignIn
 
+
+
 final class GoogleProvider: CredentialProvider {
     private let appContext: AppContext
 
@@ -34,7 +36,7 @@ final class GoogleProvider: CredentialProvider {
             }
         }
     }
-    
+
     override func application(app: UIApplication, openURL: URL, options: [AnyHashable: Any] = [:]) -> Bool {
         GIDSignIn.sharedInstance.handle(openURL)
     }

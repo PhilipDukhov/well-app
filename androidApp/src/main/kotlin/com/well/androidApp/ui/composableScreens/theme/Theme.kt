@@ -5,6 +5,8 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import com.well.androidApp.ui.composableScreens.πExt.toColor
 import com.well.modules.models.Color
+import androidx.compose.foundation.gestures.LocalOverScrollConfiguration
+import androidx.compose.runtime.CompositionLocalProvider
 
 val colors = lightColors(
     primary = Color.Green.toColor(),
@@ -19,6 +21,10 @@ fun Theme(
     MaterialTheme(
         colors = colors,
         typography = Typography,
-        content = content
-    )
+    ) {
+        CompositionLocalProvider(
+            LocalOverScrollConfiguration provides null,
+            content = content
+        )
+    }
 }

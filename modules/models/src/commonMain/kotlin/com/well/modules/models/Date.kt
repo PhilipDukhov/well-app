@@ -2,6 +2,7 @@ package com.well.modules.models
 
 import kotlinx.serialization.Serializable
 import com.well.modules.models.serializers.DateSerializer
+import io.ktor.util.date.*
 
 @Serializable(with = DateSerializer::class)
 expect class Date {
@@ -24,3 +25,5 @@ fun Long.toTimeInterval() : Double =
 
 fun Double.toMillis() : Long =
     (this * 1000).toLong()
+
+fun Date.toGMTDate() = GMTDate(millis)

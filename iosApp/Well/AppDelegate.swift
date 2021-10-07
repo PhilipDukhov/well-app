@@ -1,7 +1,6 @@
 import UIKit
 import SharedMobile
 import SwiftUI
-import WebRTC
 
 @UIApplicationMain
 final class AppDelegate: UIResponder, UIApplicationDelegate {

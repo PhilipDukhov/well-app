@@ -11,6 +11,7 @@ import com.well.androidApp.ui.composableScreens.πCustomViews.controlMinSize
 import com.well.androidApp.ui.composableScreens.πExt.Image
 import com.well.androidApp.ui.composableScreens.πExt.heightPlusTopSystemBars
 import com.well.androidApp.ui.composableScreens.πExt.toColor
+import com.well.androidApp.ui.composableScreens.πExt.visibility
 import com.well.modules.models.Color
 import com.well.modules.models.User
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
@@ -46,7 +47,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.navigationBarsPadding
+import com.google.accompanist.insets.navigationBarsWithImePadding
 
 @Composable
 fun MyProfileScreen(
@@ -55,15 +56,19 @@ fun MyProfileScreen(
 ) {
     var modalContent by remember { mutableStateOf<(@Composable () -> Unit)?>(null) }
 
-    if (modalContent == null) {
-        Content(state, listener, showModalContent = {
-            modalContent = it
-        })
-    } else {
+    Box(Modifier.fillMaxSize()) {
+        Content(
+            state = state,
+            listener = listener,
+            showModalContent = {
+                modalContent = it
+            },
+            modifier = Modifier.visibility(visible = modalContent == null)
+        )
+        if (modalContent != null) {
             BackHandler {
-            modalContent = null
-        }
-        Box(Modifier.fillMaxSize()) {
+                modalContent = null
+            }
             modalContent?.invoke()
         }
     }
@@ -73,10 +78,11 @@ fun MyProfileScreen(
 private fun Content(
     state: State,
     listener: (Msg) -> Unit,
+    modifier: Modifier = Modifier,
     showModalContent: ((@Composable () -> Unit)?) -> Unit
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
     ) {
         var currentEditingFieldHandler by remember { mutableStateOf<(() -> Unit)?>(null) }
@@ -91,12 +97,11 @@ private fun Content(
             )
         }
         val paddingModifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
-        println("state.groups ${state.groups}")
         Box {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .navigationBarsPadding()
+                    .navigationBarsWithImePadding()
             ) {
                 state.groups.forEach { group ->
                     when (group) {

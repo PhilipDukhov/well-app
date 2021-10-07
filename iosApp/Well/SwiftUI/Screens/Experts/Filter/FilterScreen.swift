@@ -89,7 +89,7 @@ struct FilterScreen: View {
     }
 }
 
-fileprivate struct EditingField1<Msg: AnyObject>: View {
+private struct EditingField1<Msg: AnyObject>: View {
     let field: UIEditingField<UIEditingFieldContentList<AnyObject>, Msg>
     let listener: (Msg) -> Void
     @State
@@ -144,7 +144,7 @@ fileprivate struct EditingField1<Msg: AnyObject>: View {
     }
 }
 
-fileprivate struct FilterSelectionScreen: View {
+private struct FilterSelectionScreen: View {
     let title: String
     @State var selection: Set<KotlinInt>
     let variants: [String]
@@ -162,9 +162,7 @@ fileprivate struct FilterSelectionScreen: View {
                 guard multipleSelection else {
                     return nil
                 }
-                let allVariants = Set(Array(variants.indices).map {
-                    KotlinInt(integerLiteral: $0)
-                })
+                let allVariants = Set(Array(variants.indices).map(KotlinInt.init(integerLiteral:)))
                 let allVariantsSelected = selection == allVariants
                     return NavigationBarItem(text: allVariantsSelected ? "Deselect all" : "Select all") {
                     selection = allVariantsSelected ? Set() : allVariants

@@ -4,7 +4,7 @@ plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
     application
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("com.github.johnrengelman.shadow") version "7.1.0"
 }
 
 application {
@@ -40,7 +40,6 @@ kotlin {
                 "sqldelight.jdbcDriver",
                 "google.apiClient",
                 "google.httpClientApacheV2",
-                "logback",
                 "kotlin.serializationJson",
                 "kotlin.stdLib",
             )

@@ -18,7 +18,8 @@ kotlin {
                 "kotlin.coroutines.core",
                 "kotlin.serializationJson",
                 "kotlin.stdLib",
-                "napier",
+                "ktor.utils",
+                "shared.napier",
             )
         }
         if (withAndroid) {

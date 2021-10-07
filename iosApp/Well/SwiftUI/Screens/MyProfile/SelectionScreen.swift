@@ -17,7 +17,7 @@ struct SelectionScreen: View {
 
     var body: some View {
         List {
-            ForEachEnumerated(variants) { index, variant in
+            ForEachIndexed(variants) { index, variant in
                 let index = KotlinInt(integerLiteral: index)
                 let selected = selection.contains(index)
                 HStack {

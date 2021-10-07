@@ -17,7 +17,7 @@ struct AboutScreen: View {
             }
         )
         VStack {
-            ForEachEnumerated(state.teamMembers) { i, teamMember in
+            ForEachIndexed(state.teamMembers) { i, teamMember in
                 TeamMemberCell(user: teamMember) {
                     listener(AboutFeature.MsgOpenTwitter(teamMember: teamMember))
                 }

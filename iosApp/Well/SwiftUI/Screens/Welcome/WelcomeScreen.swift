@@ -31,7 +31,7 @@ struct WelcomeScreen: View {
             let size = CGSize(width: geometry.size.width,
                 height: max(geometry.size.width * 1084 / 929, geometry.size.height) + offset + cornerRadius)
             TabView(selection: $selection.animation()) {
-                ForEachEnumerated(state.descriptions) { i, _ in
+                ForEachIndexed(state.descriptions) { i, _ in
                     Image("welcome/\(i)")
                         .resizable()
                         .scaledToFill()
@@ -48,8 +48,9 @@ struct WelcomeScreen: View {
 
     var welcomeInfoView: some View {
         VStack(spacing: 0) {
-            Text("Welcome to WELL app")
-                .font(.largeTitle)
+            Text(state.title)
+                .style(.h4)
+                .foregroundColorKMM(ColorConstants.DarkBlue)
                 .padding(.top)
             AutoLayoutTextPageView(
                 Array(state.descriptions.enumerated()),
@@ -57,6 +58,7 @@ struct WelcomeScreen: View {
                 selection: $selection.animation()
             ) { text in
                 Text(text.element)
+                    .style(.body1)
                     .multilineTextAlignment(.center)
                     .padding()
             }.foregroundColor(.black)

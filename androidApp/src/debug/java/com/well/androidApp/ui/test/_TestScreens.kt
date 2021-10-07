@@ -1,11 +1,6 @@
 package com.well.androidApp.ui.test
 
-import com.well.androidApp.ui.test.TestScreen.Call
-import com.well.androidApp.ui.test.TestScreen.Local
-import com.well.androidApp.ui.test.TestScreen.MyProfile
-import com.well.androidApp.ui.test.TestScreen.Slider
-import com.well.androidApp.ui.test.TestScreen.UserChat
-import com.well.androidApp.ui.test.TestScreen.UserRating
+import com.well.androidApp.ui.test.TestScreen.*
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Suppress("RedundantNullableReturnType")
-val testScreen: TestScreen? = null
+val testScreen: TestScreen? = AvailabilityCalendar
 
 enum class TestScreen {
     Local,
@@ -37,12 +32,13 @@ enum class TestScreen {
     Slider,
     UserChat,
     UserRating,
+    AvailabilityCalendar,
 }
 
 @Composable
 fun TestComposeScreen(testScreen: TestScreen) {
     var opened by remember {
-        mutableStateOf(false)
+        mutableStateOf(true)
     }
     if (opened) {
         BackHandler {
@@ -55,6 +51,7 @@ fun TestComposeScreen(testScreen: TestScreen) {
             Local -> LocalTestScreen()
             UserChat -> UserChatTest()
             UserRating -> UserRatingTest()
+            AvailabilityCalendar -> AvailabilityCalendarTest()
         }
     } else {
         Box(

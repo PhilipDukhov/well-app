@@ -21,7 +21,7 @@ PODS:
   - FBSDKLoginKit/Login (11.1.0):
     - FBSDKCoreKit (~> 11.1.0)
     - FBSDKCoreKit_Basics (~> 11.1.0)
-  - GoogleSignIn (6.0.1):
+  - GoogleSignIn (6.0.2):
     - AppAuth (~> 1.4)
     - GTMAppAuth (~> 1.0)
     - GTMSessionFetcher/Core (~> 1.1)
@@ -71,15 +71,15 @@ SPEC CHECKSUMS:
   FBSDKCoreKit: 7ccb8b4bb2b5ee2ad94327b774dc23f03509675d
   FBSDKCoreKit_Basics: 8f978bce195845f609b0ec6b425949d0d24f525b
   FBSDKLoginKit: d65eb587a9eaa89295338fb0bb3b358bde0b7ae4
-  GoogleSignIn: 1b0c4ec33a6fe282f4fa35d8ac64263230ddaf36
+  GoogleSignIn: fd381840dbe7c1137aa6dc30849a5c3e070c034a
   GoogleWebRTC: b39a78c4f5cc6b0323415b9233db03a2faa7b0f0
   GTMAppAuth: ad5c2b70b9a8689e1a04033c9369c4915bfcbe89
   GTMSessionFetcher: 36689134877faeb055b27dfa4ccc9ceaa42e029e
   Introspect: 2be020f30f084ada52bb4387fff83fa52c5c400e
   R.swift: c533450b0f7dc494e0993f5f1a1db925d84c3006
   R.swift.Library: 0fc583cb55a99e28901299cc451614cad1161962
-  sharedMobile: e1da364830817557f75eaffd257e707d878cb09c
+  sharedMobile: 8d0123e34f310e8cc25e1a7c57ccad5ed81d2c38
 
 PODFILE CHECKSUM: 575fb585ab56323e4fee45c93c4560c07357f6b9
 
-COCOAPODS: 1.10.2
+COCOAPODS: 1.11.2

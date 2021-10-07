@@ -97,7 +97,7 @@ fun NamedDomainObjectCollection<KotlinSourceSet>.usePredefinedExperimentalAnnota
                     "io.ktor.util.InternalAPI",
                     "io.ktor.utils.io.core.ExperimentalIoApi",
                 )).forEach {
-            languageSettings.useExperimentalAnnotation(it)
+            languageSettings.optIn(it)
         }
     }
 }

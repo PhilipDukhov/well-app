@@ -11,21 +11,20 @@ struct ProjectTextEditor: View {
 
     var body: some View {
         ZStack(alignment: .topLeading) {
+            let showingPlaceholder = text.isEmpty && placeholder != nil
+            if showingPlaceholder {
+                TextEditor(text: .constant(placeholder!))
+                    .font(.body)
+                    .foregroundColorKMM(ColorConstants.LightGray)
+                    .disabled(true)
+            }
             TextEditor(text: $text)
                 .fillMaxWidth()
-                .padding(.vertical, 10)
-                .padding(.horizontal, 15)
-            if text.isEmpty, let placeholder = placeholder {
-                HStack {
-                    Text(placeholder)
-                        .allowsHitTesting(false)
-                        .foregroundColorKMM(ColorConstants.LightGray)
-                        .padding(.vertical, 18)
-                        .padding(.horizontal, 15 + 4)
-                    Spacer()
-                }.allowsHitTesting(false)
-            }
-        }.fillMaxWidth()
+                .opacity(showingPlaceholder ? 0.25 : 1)
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 15)
+        .fillMaxWidth()
             .frame(minHeight: 150)
             .overlay(
                 RoundedRectangle(cornerRadius: 14)

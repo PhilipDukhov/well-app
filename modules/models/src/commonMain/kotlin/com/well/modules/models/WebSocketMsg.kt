@@ -78,6 +78,7 @@ sealed class WebSocketMsg {
         ) : Back()
     }
 
+    @Serializable
     sealed class Call: WebSocketMsg() {
         @Serializable
         data class Offer(

@@ -15,7 +15,7 @@ struct ChatListScreen: View {
         )
         ScrollView {
             LazyVStack {
-                ForEachEnumerated(state.listItems) { _, listItem in
+                ForEachIndexed(state.listItems) { _, listItem in
                     Button {
                         listener(ChatListFeature.MsgSelectChat(userId: listItem.user.id))
                     } label: {
