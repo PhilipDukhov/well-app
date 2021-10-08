@@ -28,7 +28,6 @@ final class ImageLoader: ObservableObject {
     }
 
     func load() {
-        print("ImageLoader load")
         guard !isLoading else {
             return
         }
@@ -40,11 +39,9 @@ final class ImageLoader: ObservableObject {
             },
                 receiveCompletion: { [weak self] _ in
                     self?.onFinish()
-                    print("ImageLoader self?.onFinish()")
                 },
                 receiveCancel: { [weak self] in
                     self?.onFinish()
-                    print("ImageLoader receiveCancel")
                 })
             .subscribe(on: Self.imageProcessingQueue)
             .receive(on: DispatchQueue.main)
@@ -86,29 +83,31 @@ extension EnvironmentValues {
 
 private final class ImageLoadingFactory {
     private var processingRequests = [URL: AnyPublisher<UIImage?, Never>]()
-    private var imageCache = TemporaryImageCache()
+    private static let cache = URLCache(
+        memoryCapacity: 10_000_000,
+        diskCapacity: 1000_000_000,
+        directory: URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("ImageLoadingFactoryCache")
+    )
+    private static let session = URLSession(
+        configuration: {
+            let config = URLSessionConfiguration.default
+            config.urlCache = cache
+            return config
+        }()
+    )
 
     func image(at url: URL) -> AnyPublisher<UIImage?, Never> {
-        imageCache[url].map {
-            CurrentValueSubject($0).eraseToAnyPublisher()
-        }
-        ?? processingRequests[url]
+        processingRequests[url]
         ?? newRequest(url)
     }
 
     private func newRequest(_ url: URL) -> AnyPublisher<UIImage?, Never> {
-        print("newRequest(_ url: URL) \(url)")
-        let newPublisher = URLSession.shared.dataTaskPublisher(for: url)
+        let newPublisher = Self.session.dataTaskPublisher(for: url)
             .map {
                 UIImage(data: $0.data)
             }
             .replaceError(with: nil)
             .handleEvents(
-                receiveOutput: { [weak self] in
-                    $0.map {
-                        self?.cache($0, url)
-                    }
-                },
                 receiveCompletion: { [weak self] _ in
                     self?.onRequestFinish(url)
                 },
@@ -126,6 +125,16 @@ private final class ImageLoadingFactory {
     }
 
     func cache(_ image: UIImage, _ url: URL) {
-        imageCache[url] = image
+        Self.cache.storeCachedResponse(
+            CachedURLResponse(
+                response: HTTPURLResponse(
+                    url: url,
+                    statusCode: 200,
+                    httpVersion: nil,
+                    headerFields: nil
+                )!, data: image.pngData()!
+            ),
+            for: .init(url: url)
+        )
     }
 }

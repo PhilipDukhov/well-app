@@ -37,7 +37,6 @@ struct AsyncImage<Placeholder: View, ResImage: View>: View, Equatable {
 
     @ViewBuilder
     private var content: some View {
-        printUI("AsyncImage \(loader.image)")
         if let image = loader.image {
             self.image(image)
         } else {

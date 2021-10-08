@@ -48,7 +48,6 @@ struct SharedImage<Placeholder: View>: View {
                         }
                     },
                     image: {
-                        printUI("SharedImage buildImage")
                         buildImage(uiImage: $0)
                     }
                 )

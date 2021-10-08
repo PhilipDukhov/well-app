@@ -56,10 +56,12 @@ struct ProfileImage: View {
             ZStack {
                 Rectangle().foregroundColorKMM(ColorConstants.LightGray)
                     .aspectRatio(aspectRatio, contentMode: contentMode)
-                initials.map { initials in
-                    Text(initials)
-                        .font(.system(size: geometry.size.height > geometry.size.width ? geometry.size.width * 0.4 : geometry.size.height * 0.4))
-                        .foregroundColor(.white)
+                if image == nil {
+                    initials.map { initials in
+                        Text(initials)
+                            .font(.system(size: geometry.size.height > geometry.size.width ? geometry.size.width * 0.4 : geometry.size.height * 0.4))
+                            .foregroundColor(.white)
+                    }
                 }
             }
         }
