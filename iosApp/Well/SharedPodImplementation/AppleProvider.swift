@@ -48,10 +48,10 @@ extension AppleProvider: ASAuthorizationControllerDelegate {
             let password = passwordCredential.password
 
             // For the purpose of this demo app, show the password credential as an alert.
-            print(passwordCredential, username, password)
+            Napier.i(passwordCredential, username, password)
 
         default:
-            print("default", authorization.credential)
+            Napier.i("default", authorization.credential)
         }
     }
 
@@ -63,7 +63,7 @@ extension AppleProvider: ASAuthorizationControllerDelegate {
         if error.domain == ASAuthorizationErrorDomain && error.code == ASAuthorizationError.canceled.rawValue {
             completionHandler?(nil, KotlinCancellationException().toNSError())
         } else {
-            print(#function, error)
+            Napier.e(#function, error)
             completionHandler?(nil, error)
         }
     }

@@ -23,7 +23,7 @@ struct EditingField<Msg: AnyObject>: View {
     init(_ field: UIEditingField<UIEditingFieldContent, Msg>, listener: @escaping (Msg) -> Void) {
         self.field = field
         self.listener = listener
-        fieldContent = field.content as! UIEditingFieldContent
+        fieldContent = field.content
         switch fieldContent {
         case is UIEditingFieldContentList<AnyObject>:
             isTextField = false
@@ -137,7 +137,7 @@ struct EditingField<Msg: AnyObject>: View {
     }
 }
 
-fileprivate struct ProfileSelectionScreen: View {
+private struct ProfileSelectionScreen: View {
     let title: String
     @State var selection: Set<KotlinInt>
     let variants: [String]

@@ -129,7 +129,7 @@ private struct EditingField1<Msg: AnyObject>: View {
             variants: field.content.itemDescriptions,
             multipleSelection: field.content.multipleSelectionAvailable,
             onSelectionChanged: { newSelection in
-                print(newSelection, field.content.doCopy(selectionIndices: newSelection))
+                Napier.i(newSelection, field.content.doCopy(selectionIndices: newSelection))
                 listener(
                     field.updateMsg(
                         field.content.doCopy(selectionIndices: newSelection)

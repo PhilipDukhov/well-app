@@ -14,7 +14,7 @@ sqldelight {
 
 kotlin {
     androidWithAndroid()
-    ios()
+    iosWithSimulator()
     sourceSets {
         usePredefinedExperimentalAnnotations()
         val commonMain by getting {

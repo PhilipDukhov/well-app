@@ -30,10 +30,9 @@ struct ChatListCell: View {
                         Text("\(item.unreadCount)")
                             .style(.body2)
                             .foregroundColorKMM(ColorConstants.White)
+                            .padding(.horizontal, 5)
                             .background(
-                                GeometryReader { geometry in
-                                    TestShape().foregroundColorKMM(ColorConstants.Green)
-                                }
+                                HorizontalCapsule().foregroundColorKMM(ColorConstants.Green)
                             )
                     }
                 }
@@ -41,14 +40,5 @@ struct ChatListCell: View {
                 Divider()
             }.padding(.trailing)
         }.backgroundColorKMM(item.unreadCount > 0 ? ColorConstants.Green10 : ColorConstants.White)
-    }
-}
-
-struct TestShape: Shape {
-    func path(in rect: CGRect) -> SwiftUI.Path {
-        var path = SwiftUI.Path()
-        let rect = rect.insetBy(dx: (rect.width - rect.height) / 2, dy: 0)
-        path.addRoundedRect(in: rect, cornerSize: CGSize(size: min(rect.width, rect.height)))
-        return path
     }
 }

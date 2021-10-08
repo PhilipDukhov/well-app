@@ -147,7 +147,7 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
             )
         ) { error in
             if let error = error {
-                debugPrint(#function, error as Any)
+                Napier.w(#function, error as Any)
             }
         }
     }
@@ -162,6 +162,11 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
                 sdpMid: candidate.sdpMid
             )
         )
+//        ) { error in
+//            if let error = error {
+//                Napier.w(#function, error)
+//            }
+//        }
     }
 
     func acceptOffer(
@@ -174,7 +179,7 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
             )
         ) { [weak self] error in
             if let error = error {
-                print(#function, error)
+                Napier.w(#function, error)
                 return
             }
             guard let self = self else {
@@ -198,6 +203,7 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
 
     private var localVideoTrackSender: RTCRtpSender?
     func createOfferOrAnswer(
+//        create: (RTCMediaConstraints, @escaping RTCCreateSessionDescriptionCompletionHandler) -> Void,
         create: (RTCMediaConstraints, ((RTCSessionDescription?, Error?) -> Void)?) -> Void,
         completion: @escaping (String) -> Void
     ) {
@@ -211,13 +217,13 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
                     description
                 ) { error in
                     if let error = error {
-                        print(#function, "setLocalDescription", error)
+                        Napier.w(#function, "setLocalDescription", error)
                         return
                     }
                     completion(description.sdp)
                 }
             } else {
-                debugPrint(#function, error as Any)
+                Napier.e(#function, error as Any)
             }
         }
     }
@@ -317,11 +323,11 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
             do {
                 try self.rtcAudioSession.overrideOutputAudioPort(enabled ? .speaker : .none)
             } catch let error {
-                debugPrint("Couldn't force audio to speaker: \(error)")
+                Napier.w("Couldn't force audio to speaker: \(error)")
             }
             self.rtcAudioSession.unlockForConfiguration()
             
-            print(#function, enabled)
+            Napier.i(#function, enabled)
         }
     }
 }
@@ -331,7 +337,7 @@ extension WebRtcManager: RTCPeerConnectionDelegate {
         _ peerConnection: RTCPeerConnection,
         didChange stateChanged: RTCSignalingState
     ) {
-        debugPrint(#function + ": \(stateChanged.rawValue)")
+        Napier.i(#function, stateChanged.rawValue)
     }
 
     func peerConnection(
@@ -353,21 +359,21 @@ extension WebRtcManager: RTCPeerConnectionDelegate {
     func peerConnectionShouldNegotiate(
         _ peerConnection: RTCPeerConnection
     ) {
-        debugPrint(#function)
+        Napier.i(#function)
     }
 
     func peerConnection(
         _ peerConnection: RTCPeerConnection,
         didChange newState: RTCIceConnectionState
     ) {
-        debugPrint(#function + ":RTCIceConnectionState \(newState.rawValue)")
+        Napier.i(#function + ":RTCIceConnectionState \(newState.rawValue)")
     }
 
     func peerConnection(
         _ peerConnection: RTCPeerConnection,
         didChange newState: RTCIceGatheringState
     ) {
-        debugPrint(#function + ":RTCIceGatheringState \(newState.rawValue)")
+        Napier.i(#function + ":RTCIceGatheringState \(newState.rawValue)")
     }
 
     func peerConnection(
@@ -381,14 +387,14 @@ extension WebRtcManager: RTCPeerConnectionDelegate {
         _ peerConnection: RTCPeerConnection,
         didRemove candidates: [RTCIceCandidate]
     ) {
-        debugPrint("peerConnection did remove candidate(s)")
+        Napier.i("peerConnection did remove candidate(s)")
     }
 
     func peerConnection(
         _ peerConnection: RTCPeerConnection,
         didOpen dataChannel: RTCDataChannel
     ) {
-        debugPrint("peerConnection did open data channel")
+        Napier.i("peerConnection did open data channel")
         remoteDataChannel = dataChannel
         dataChannel.delegate = self
     }

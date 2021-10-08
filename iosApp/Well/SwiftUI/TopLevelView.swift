@@ -15,47 +15,51 @@ struct TopLevelView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            content
+            contentWrapper
                 .environment(\.defaultMinListRowHeight, 0)
                 .statusBar(style: .lightContent)
         }
     }
-    #if DEBUG
-        static let testing = false
-    #else
-        static let testing = false
-    #endif
+    
+    @ViewBuilder
+    var contentWrapper: some View {
+        #if DEBUG
+        if TestingScreen.testing {
+            TestingScreen()
+        } else {
+            content
+        }
+        #else
+        content
+        #endif
+    }
 
     @ViewBuilder
     var content: some View {
-        if Self.testing {
-            filterScreen()
-        } else {
-            switch state.currentScreen {
-            case let screen as TopLevelFeature.StateScreenSingle:
-                screenView(screen: screen.screen)
-
-            case let tabsScreen as TopLevelFeature.StateScreenTabs:
-                TabView(selection: Binding<TopLevelFeature.StateTab>(get: {
-                    state.selectedTab
-                }, set: { tab in
-                    listener(TopLevelFeature.MsgSelectTab(tab: tab))
-                })) {
-                    ForEachIndexed(tabsScreen.tabs) { i, tabScreen in
-                        VStack(spacing: 0) {
-                            screenView(screen: tabScreen.screen)
-                        }
-                            .tabItem {
-                                tabScreen.tab.icon()
-                                Text(tabScreen.tab.spacedName())
-                            }
-                            .tag(tabScreen.tab)
+        switch state.currentScreen {
+        case let screen as TopLevelFeature.StateScreenSingle:
+            screenView(screen: screen.screen)
+            
+        case let tabsScreen as TopLevelFeature.StateScreenTabs:
+            TabView(selection: Binding<TopLevelFeature.StateTab>(get: {
+                state.selectedTab
+            }, set: { tab in
+                listener(TopLevelFeature.MsgSelectTab(tab: tab))
+            })) {
+                ForEach(tabsScreen.tabs, id: \.tab) { tabScreen in
+                    VStack(spacing: 0) {
+                        screenView(screen: tabScreen.screen)
                     }
-                }.accentColor(SwiftUI.Color(hex: 0x1B3D6D))
-
-            default:
-                fatalError("state.currentScreen unexpected \(state.currentScreen)")
-            }
+                    .tabItem {
+                        tabScreen.tab.icon()
+                        Text(tabScreen.tab.spacedName())
+                    }
+                    .tag(tabScreen.tab)
+                }
+            }.accentColor(SwiftUI.Color(hex: 0x1B3D6D))
+            
+        default:
+            fatalError("state.currentScreen unexpected \(state.currentScreen)")
         }
     }
 
@@ -118,54 +122,6 @@ struct TopLevelView: View {
         default:
             EmptyView()
         }
-    }
-
-    @State var filterState = FilterFeature.State(filter: UsersFilter.Companion().default(searchString: ""))
-
-    @ViewBuilder
-    func filterScreen() -> some View {
-//        FilterScreen(state: filterState) { msg in
-//            filterState = FilterFeature().reducer(msg: msg, state: filterState).first!
-//        }
-    }
-
-//    @State var callState = CallFeature().testState(status: .ongoing)
-//    @State var profileState = MyProfileFeature().testState()
-
-//    @ViewBuilder
-//    func callScreen() -> some View {
-//        CallScreen(state: callState) {
-//            callState = CallFeature().reducer(msg: $0, state: callState).first!
-//        }
-//    }
-//    @ViewBuilder
-//    func profileScreen() -> some View {
-//        MyProfileScreen(state: profileState) {
-//            profileState = MyProfileFeature().reducer(msg: $0, state: profileState).first!
-//        }
-//    }
-}
-
-let timeCounter = TimeCounter()
-
-final class TimeCounter {
-    var times = [(Foundation.Date, TimeInterval)]()
-
-    func count<R>(block: () -> R) -> (R, TimeInterval) {
-        let date = Foundation.Date()
-        let result = block()
-        let timeInterval = -date.timeIntervalSinceNow
-        times.append((date, timeInterval))
-        return (result, timeInterval)
-    }
-
-    var lastSecondCounted: TimeInterval {
-        times = times.filter {
-            $0.0.timeIntervalSinceNow < 1
-        }
-        return times.map {
-            $0.1
-        }.reduce(0, +) / (times[0].0.timeIntervalSince(times.last!.0))
     }
 }
 

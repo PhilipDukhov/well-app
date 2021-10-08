@@ -32,7 +32,7 @@ class SyncFeature<Msg : Any, Model : Any, Eff : Any>(
     override fun accept(msg: Msg) {
         launch(coroutineContext) {
             reducerMutex.lock()
-            if (!NonCancellable.isActive) return@launch
+            if (!isActive) return@launch
             val (newState, commands) = reducer(msg, currentState)
             currentState = newState
             reducerMutex.unlock()

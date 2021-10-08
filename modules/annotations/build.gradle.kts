@@ -8,5 +8,5 @@ plugins {
 kotlin {
     androidWithAndroid()
     jvm()
-    ios()
+    iosWithSimulator()
 }

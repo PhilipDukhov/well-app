@@ -26,31 +26,6 @@ object CallFeature {
     private fun Pair<State, Set<Eff>>.reduceInitialState(): Pair<State, Set<Eff>> =
         first to (second + Eff.SyncLocalDeviceState(first.localDeviceState))
 
-    private val testDate = Date()
-    fun testState(status: State.Status) =
-        callingStateAndEffects(
-            User(
-                id = 1,
-                initialized = true,
-                fullName = "12",
-                profileImageUrl = "https://i.imgur.com/StXm8nf.jpg",
-                type = User.Type.Doctor,
-                ratingInfo = User.RatingInfo(
-                    count = 0,
-                    average = 0.0,
-                ),
-                lastEdited = 0.0,
-            )
-        ).first.run {
-            copy(
-                status = status,
-                callStartedDateInfo = State.CallStartedDateInfo(testDate),
-                localDeviceState = localDeviceState.copy(cameraEnabled = false),
-                localCaptureDimensions = Size(1080, 1920),
-                remoteCaptureDimensions = Size(1080, 1920),
-            )
-        }
-
     data class State(
         val incomingCall: WebSocketMsg.Back.IncomingCall? = null,
         val user: User,

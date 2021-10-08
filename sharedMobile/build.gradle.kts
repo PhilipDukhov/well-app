@@ -39,7 +39,7 @@ buildkonfig {
 kotlin {
     androidWithAndroid()
     val frameworkName = project.name.capitalize()
-    ios() {
+    iosWithSimulator {
         binaries {
             framework(frameworkName) {
                 freeCompilerArgs += listOf("-Xobjc-generics")
@@ -63,6 +63,7 @@ kotlin {
             iosExportModules.forEach {
                 export(it)
             }
+            export(libAt("shared.napier"))
         }
     }
     sourceSets {

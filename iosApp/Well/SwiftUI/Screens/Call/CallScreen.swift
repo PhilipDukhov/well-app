@@ -41,7 +41,6 @@ struct CallScreen: View {
                 }
                 GeometryReader { geometry in
                     ZStack(alignment: .leading) {
-                        // swiftlint:disable:next trailing_closure
                         DrawingContent(
                             state: state.drawingState,
                             enabled: state.controlSet == .drawing,

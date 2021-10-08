@@ -32,7 +32,7 @@ struct WelcomeScreen: View {
                 height: max(geometry.size.width * 1084 / 929, geometry.size.height) + offset + cornerRadius)
             TabView(selection: $selection.animation()) {
                 ForEachIndexed(state.descriptions) { i, _ in
-                    Image("welcome/\(i)")
+                    Image("welcome/welcome_\(i)")
                         .resizable()
                         .scaledToFill()
                         .frame(size: size)

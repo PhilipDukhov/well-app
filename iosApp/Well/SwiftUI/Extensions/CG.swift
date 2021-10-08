@@ -20,7 +20,7 @@ extension Int32 {
 
 extension NSNumber {
     func toCGFloat() -> CGFloat {
-        CGFloat(self)
+        CGFloat(truncating: self)
     }
 }
 

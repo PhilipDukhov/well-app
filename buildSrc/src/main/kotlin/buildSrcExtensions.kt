@@ -3,7 +3,9 @@ import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
 import org.gradle.kotlin.dsl.add
+import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 private fun Project.mapAt(
     path: String,
@@ -102,17 +104,6 @@ fun NamedDomainObjectCollection<KotlinSourceSet>.usePredefinedExperimentalAnnota
     }
 }
 
-fun NamedDomainObjectCollection<KotlinSourceSet>.iosMainsBuild(
-    targetNames: List<String>,
-    build: KotlinSourceSet.() -> Unit
-) {
-    targetNames.forEach {
-        named(it + "Main") {
-            build(this)
-        }
-    }
-}
-
 fun Project.libDependencies(vararg libs: String) =
     customDependencies(libs.asList())
         .forEach {
@@ -170,3 +161,8 @@ private fun Project.customDependencies(libs: List<String>): List<Dependency> =
                 result + Dependency.Implementation(libAt(dep))
         }
     }
+
+fun KotlinTargetContainerWithNativeShortcuts.iosWithSimulator(config: KotlinNativeTarget.() -> Unit = {}) {
+    ios(configure = config)
+//    iosSimulatorArm64(configure = config)
+}

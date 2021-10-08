@@ -4,11 +4,12 @@
 //
 
 import SwiftUI
+import SharedMobile
 
 struct WidthSlider: View {
     let value: Float
     let range: ClosedRange<Float>
-    let color: Color
+    let color: SwiftUI.Color
     let valueChanged: (Float) -> Void
 
     @State private var dragging = false
@@ -19,7 +20,7 @@ struct WidthSlider: View {
 
     init(value: Float,
          range: ClosedRange<Float>,
-         color: Color,
+         color: SwiftUI.Color,
          valueChanged: @escaping (Float) -> Void
     ) {
         self.value = value
@@ -75,7 +76,7 @@ struct WidthSlider: View {
                                 )
                             }
                             .onEnded { _ in
-                                print("DragGesture ended")
+                                Napier.i("DragGesture ended")
                                 dragging = false
                             }
                     )
@@ -108,7 +109,7 @@ private struct Quadrangle: Shape {
         }
     }
 
-    func path(in rect: CGRect) -> Path {
+    func path(in rect: CGRect) -> SwiftUI.Path {
         var path = Path()
         path.move(to: CGPoint(x: rect.midX - bottomWidth / 2, y: rect.maxY))
         path.addLine(to: CGPoint(x: rect.midX + bottomWidth / 2, y: rect.maxY))

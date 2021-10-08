@@ -9,7 +9,7 @@ plugins {
 }
 
 kotlin {
-    ios()
+    iosWithSimulator()
     androidWithAndroid()
     jvm()
     sourceSets {

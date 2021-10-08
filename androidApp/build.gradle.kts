@@ -16,17 +16,16 @@ libDependencies(
     "android.appCompat",
     "android.activity",
     "android.webrtc",
-
     "android.compose.*",
 
     "firebase.analytics",
+    "ktor.utils",
+    "shared.napier",
 
     "kotlin.coroutines.playServices",
     "kotlin.serializationJson",
     "kotlin.coroutines.core",
     "kotlin.reflect",
-
-    "shared.napier",
 
     ":modules:atomic",
     ":modules:models",

@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+import SharedMobile
 
 extension View {
     @inline(__always)
@@ -11,22 +12,22 @@ extension View {
         opacity(visible ? 1 : 0)
             .zIndex(visible ? 1 : 0)
     }
-
+    
     @inline(__always)
     func fillMaxSize() -> some View {
         frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-
+    
     @inline(__always)
     func fillMaxWidth() -> some View {
         frame(maxWidth: .infinity)
     }
-
+    
     @inline(__always)
     func fillMaxHeight() -> some View {
         frame(maxHeight: .infinity)
     }
-
+    
     @inline(__always)
     func frame(
         size: CGFloat,
@@ -38,7 +39,7 @@ extension View {
             alignment: alignment
         )
     }
-
+    
     @inline(__always)
     func frame(
         size: CGSize,
@@ -50,7 +51,7 @@ extension View {
             alignment: alignment
         )
     }
-
+    
     @inline(__always)
     func frameInfinitable(
         size: CGSize,
@@ -64,7 +65,7 @@ extension View {
             alignment: alignment
         )
     }
-
+    
     @inline(__always)
     func frame(
         minSize: CGFloat,
@@ -76,21 +77,20 @@ extension View {
             alignment: alignment
         )
     }
-
+    
     @inline(__always)
     func doBlock(block: () -> Void) -> some View {
         block()
         return EmptyView()
     }
-
+    
     @inline(__always)
     func printUI(_ vars: Any...) -> some View {
-        #if DEBUG
-            print(vars.map {
-                    "\($0)"
-                }
-                .joined(separator: " "))
-        #endif
+#if DEBUG
+        Napier.i(vars.map {
+            "\($0)"
+        }.joined(separator: " "))
+#endif
         return EmptyView()
     }
 }

@@ -8,7 +8,8 @@ target 'Well' do
 
   pod 'sharedMobile', :path => '../sharedMobile'
   pod 'GoogleWebRTC'
-  
+#  pod "WebRTC-lib"
+
   pod 'GoogleSignIn'
   pod 'FBSDKLoginKit'
   pod 'FBSDKCoreKit'

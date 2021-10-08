@@ -9,8 +9,6 @@
 import SharedMobile
 import GoogleSignIn
 
-
-
 final class GoogleProvider: CredentialProvider {
     private let appContext: AppContext
 

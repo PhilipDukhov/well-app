@@ -27,4 +27,6 @@ data class ChatMessageWithStatus(
     }
 
     val date = DateFormatter.formatChatMessage(Date(message.creation))
+
+    companion object
 }

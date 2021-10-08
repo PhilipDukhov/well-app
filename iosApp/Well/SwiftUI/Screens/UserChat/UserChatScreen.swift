@@ -32,7 +32,6 @@ struct UserChatScreen: View {
             )
         )
         ChatsList(messages: state.messages) { message in
-            print("send MsgMarkMessageRead \(message)")
             listener(UserChatFeature.MsgMarkMessageRead(message: message))
         }
         Spacer(minLength: 0)
@@ -125,9 +124,8 @@ private struct ChatsList: View {
                         }
                     }
                         .onChange(of: scrollToFirstNeeded) { scrollToFirstNeeded in
-                            if let id = firstId,
-                               scrollToFirstNeeded {
-                                print(".onChange(of: scrollToFirstNeeded)")
+                            if let id = firstId, scrollToFirstNeeded {
+                                Napier.i(".onChange(of: scrollToFirstNeeded)")
                                 withAnimation {
                                     scrollView.scrollTo(id)
                                 }
@@ -138,7 +136,7 @@ private struct ChatsList: View {
                             let scrollToBottomButtonVisible = firstId != nil && !visibleMessages.contains(firstId!)
                             if self.scrollToBottomButtonVisible != scrollToBottomButtonVisible {
                                 withAnimation {
-                                    print("self.scrollToBottomButtonVisible = scrollToBottomButtonVisible \(self.scrollToBottomButtonVisible) \(scrollToBottomButtonVisible)")
+                                    Napier.i("self.scrollToBottomButtonVisible = scrollToBottomButtonVisible \(self.scrollToBottomButtonVisible) \(scrollToBottomButtonVisible)")
                                     self.scrollToBottomButtonVisible = scrollToBottomButtonVisible
                                 }
                             }

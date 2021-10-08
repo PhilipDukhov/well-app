@@ -15,40 +15,6 @@ import com.well.sharedMobile.puerh.πModels.NavigationBarModel
 import com.well.sharedMobile.utils.currentTimeZoneIdentifier
 
 object MyProfileFeature {
-    fun testState() = initialState(
-        true,
-        User(
-            id = 1,
-            initialized = true,
-            lastEdited = 0.0,
-            fullName = "12",
-            profileImageUrl = "https://i.imgur.com/StXm8nf.jpg",
-            type = User.Type.Doctor,
-            phoneNumber = "+380686042511",
-            timeZoneIdentifier = "America/Los_Angeles",
-            credentials = User.Credentials.MD,
-            academicRank = User.AcademicRank.AssistantProfessor,
-            languages = setOf(User.Language.English, User.Language.Russian),
-            bio = "LA, CaliforniaLA, CaliforniaLA, CaliforniaLA, CaliforniaLA, California",
-            education = "LA, CaliforniaLA, California",
-            professionalMemberships = "CaliforniaLA, California",
-            publications = "CaliforniaLA, California",
-            twitter = "CaliforniaLA, California",
-            doximity = "CaliforniaLA, California",
-            skills = setOf(
-                User.Skill.BPH,
-                User.Skill.RoboticCystectomy,
-                User.Skill.RoboticUrinaryReconstructionSurgery,
-                User.Skill.RoboticRenalSurgery,
-                User.Skill.PercutaneousNephrolithotomy
-            ),
-            ratingInfo = User.RatingInfo(
-                count = 0,
-                average = 0.0,
-            ),
-        ),
-    ).copy(editingStatus = EditingStatus.Editing)
-
     fun initialState(
         isCurrent: Boolean,
         uid: UserId,

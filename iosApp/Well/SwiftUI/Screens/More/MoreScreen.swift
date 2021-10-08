@@ -14,7 +14,7 @@ struct MoreScreen: View {
             title: "More"
         )
         VStack {
-            ForEachIndexed(state.items) { i, item in
+            ForEachIndexed(state.items) { _, item in
                 Button(action: {
                     listener(MoreFeature.MsgSelectItem(item: item))
                 }) {

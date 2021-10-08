@@ -64,6 +64,7 @@ data class User(
         Expert,
     }
 
+    @Suppress("unused")
     @Serializable
     enum class AcademicRank {
         Professor,
@@ -75,7 +76,7 @@ data class User(
         ;
     }
 
-    @Suppress("SpellCheckingInspection")
+    @Suppress("SpellCheckingInspection", "unused")
     @Serializable
     enum class Skill {
         Endoscopy,
@@ -99,6 +100,7 @@ data class User(
         BPH,
     }
 
+    @Suppress("unused")
     @Serializable
     enum class Language {
         English,
@@ -117,5 +119,6 @@ data class User(
         val currentUserRating: Rating? = null,
     )
 
-    val initials = fullName.split(" ").mapNotNull { it.firstOrNull()?.uppercaseChar() }.joinToString(separator = "")
+    val initials = fullName.split(" ").mapNotNull { it.firstOrNull()?.uppercaseChar() }
+        .joinToString(separator = "")
 }
