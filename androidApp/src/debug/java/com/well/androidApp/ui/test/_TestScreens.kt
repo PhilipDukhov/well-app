@@ -1,6 +1,8 @@
 package com.well.androidApp.ui.test
 
+import com.well.androidApp.ui.composableScreens.welcome.WelcomeScreen
 import com.well.androidApp.ui.test.TestScreen.*
+import com.well.sharedMobile.puerh.welcome.WelcomeFeature
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +28,7 @@ import androidx.compose.ui.unit.dp
 val testScreen: TestScreen? = AvailabilityCalendar
 
 enum class TestScreen {
+    Welcome,
     Local,
     Call,
     MyProfile,
@@ -45,6 +48,7 @@ fun TestComposeScreen(testScreen: TestScreen) {
             opened = false
         }
         when (testScreen) {
+            Welcome -> WelcomeScreen(WelcomeFeature.State()) {}
             Call -> CallTest()
             MyProfile -> MyProfileTest()
             Slider -> SliderTest()

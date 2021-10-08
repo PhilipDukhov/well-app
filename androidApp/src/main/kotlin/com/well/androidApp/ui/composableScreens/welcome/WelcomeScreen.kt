@@ -9,6 +9,8 @@ import com.well.androidApp.ui.composableScreens.πExt.toColor
 import com.well.modules.models.Color
 import com.well.sharedMobile.puerh.welcome.WelcomeFeature.Msg
 import com.well.sharedMobile.puerh.welcome.WelcomeFeature.State
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.background
@@ -42,6 +44,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Size
@@ -139,11 +142,13 @@ fun WelcomeScreen(
             style = MaterialTheme.typography.h4,
             color = Color.DarkBlue.toColor(),
         )
-        val pagerState = rememberPagerState(pageCount = state.descriptions.count())
-        LaunchedEffect(pagerState.currentPage, pagerState.currentPageOffset) {
-            val page = pagerState.currentPage + pagerState.currentPageOffset
-            val divideAndRemainder =
-                BigDecimal.valueOf(page.toDouble()).divideAndRemainder(BigDecimal.ONE)
+        val pagerState = rememberPagerState()
+        val pagePart = remember(pagerState.currentPage, pagerState.currentPageOffset) {
+            pagerState.currentPage + pagerState.currentPageOffset
+        }
+        LaunchedEffect(pagePart) {
+            val divideAndRemainder = BigDecimal.valueOf(pagePart.toDouble())
+                .divideAndRemainder(BigDecimal.ONE)
 
             lazyRowState.scrollToItem(
                 divideAndRemainder[0].toInt().coerceIn(0, state.descriptions.count() - 1),
@@ -171,6 +176,7 @@ fun WelcomeScreen(
                 }
             }
             HorizontalPager(
+                count = state.descriptions.count(),
                 state = pagerState,
                 modifier = Modifier
                     .matchParentSize()
@@ -205,12 +211,19 @@ fun WelcomeScreen(
         ) {
             Text("Next")
         }
+        Spacer(Modifier.height(16.dp))
+        val visible = remember(pagePart, pagerState.pageCount) {
+            pagePart.roundToInt() + 1 < pagerState.pageCount
+        }
+        val alpha: Float by animateFloatAsState(if (visible) 1f else 0f)
         ActionButton(
             onClick = { listener(Msg.Continue) },
             style = ActionButtonStyle.White,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+                .alpha(alpha)
         ) {
             Text("skip all")
         }
+        Spacer(Modifier.height(16.dp))
     }
 }
