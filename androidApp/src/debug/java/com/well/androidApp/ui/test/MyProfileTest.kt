@@ -6,9 +6,10 @@ import androidx.compose.runtime.remember
 import com.well.androidApp.ui.composableScreens.myProfile.MyProfileScreen
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature
 import com.well.sharedMobile.testData.testState
+import androidx.compose.foundation.layout.ColumnScope
 
 @Composable
-internal fun MyProfileTest() {
+internal fun ColumnScope.MyProfileTest() {
     val state = remember {
         mutableStateOf(
             MyProfileFeature.testState()
@@ -17,7 +18,6 @@ internal fun MyProfileTest() {
     MyProfileScreen(
         state = state.value,
         listener = {
-            println("msg $it")
             state.value = MyProfileFeature.reducer(it, state.value).first
         })
 }

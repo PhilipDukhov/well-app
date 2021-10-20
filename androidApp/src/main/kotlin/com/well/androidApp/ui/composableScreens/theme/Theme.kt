@@ -11,7 +11,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 val colors = lightColors(
     primary = Color.Green.toColor(),
     onPrimary = Color.Black.toColor(),
-    onSecondary = Color.White.toColor()
+    onSecondary = Color.White.toColor(),
 )
 
 @Composable

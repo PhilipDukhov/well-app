@@ -126,7 +126,6 @@ private fun EditingTextField(
         keyboardActions = KeyboardActions(
             onDone = { finishEditing() }
         ),
-        colors = TextFieldDefaults.textFieldColors(),
         modifier = Modifier
             .fillMaxWidth()
             .clearFocusOnKeyboardDismiss()

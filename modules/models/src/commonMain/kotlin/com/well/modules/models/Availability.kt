@@ -1,61 +1,68 @@
-@file:UseSerializers(WeekDayAsIntSerializer::class)
+@file:UseSerializers(LocalTimeAsStringSerializer::class)
 
 package com.well.modules.models
 
-import com.well.modules.models.serializers.WeekDayAsIntSerializer
-import io.ktor.util.date.*
+import com.well.modules.models.serializers.LocalTimeAsStringSerializer
+import com.well.modules.models.date.dateTime.LocalTime
+import com.well.modules.models.date.dateTime.atTime
+import com.well.modules.models.date.dateTime.plus
+import com.well.modules.models.date.dateTime.toLocalDate
+import com.well.modules.models.date.dateTime.toLocalTime
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
+import kotlin.time.Duration
 
-@Serializable
-sealed class Repeat {
-    companion object {
-        fun Repeat(weekDays: Set<WeekDay>): Repeat =
-            when (weekDays) {
-                WeekDay.workdays -> Workdays
-                WeekDay.weekends -> Weekends
-                else -> WeekDays(weekDays)
-            }
-    }
-
-    @Serializable
-    object None : Repeat()
-
-    @Serializable
-    object Weekly : Repeat()
-
-    @Serializable
-    object Workdays : Repeat()
-
-    @Serializable
-    object Weekends : Repeat()
-
-    @Serializable
-    data class WeekDays(
-        val weekDays: Set<WeekDay>,
-    ) : Repeat()
+enum class Repeat {
+    None,
+    Weekly,
+    Workdays,
+    Weekends,
+    ;
 }
-
-val WeekDay.weekend: Boolean
-    get() = when (this) {
-        WeekDay.SATURDAY, WeekDay.SUNDAY -> true
-        else -> false
-    }
-
-val WeekDay.workday: Boolean
-    get() = !weekend
-
-val WeekDay.Companion.workdays: Set<WeekDay>
-    get() = WeekDay.values().filter { it.workday }.toSet()
-
-val WeekDay.Companion.weekends: Set<WeekDay>
-    get() = WeekDay.values().filter { it.weekend }.toSet()
 
 typealias AvailabilityId = Int
 
+@Serializable
 data class Availability(
     val id: AvailabilityId,
-    val startTime: GMTDate,
-    val endTime: GMTDate,
+    val startInstant: Instant,
+    val durationMinutes: Int,
     val repeat: Repeat,
-)
+) {
+    constructor(
+        id: AvailabilityId,
+        startDay: LocalDate,
+        startTime: LocalTime,
+        durationMinutes: Int,
+        repeat: Repeat,
+    ) : this(
+        id,
+        startDay.atTime(startTime).toInstant(TimeZone.currentSystemDefault()),
+        durationMinutes,
+        repeat
+    )
+
+    fun copy(startTime: LocalTime) = copy(
+        startInstant = startDay.atTime(startTime).toInstant(TimeZone.currentSystemDefault())
+    )
+
+    fun copy(startDay: LocalDate) = copy(
+        startInstant = startDay.atTime(startTime).toInstant(TimeZone.currentSystemDefault())
+    )
+
+    val startDay = startInstant.toLocalDate(TimeZone.currentSystemDefault())
+    val startTime = startInstant.toLocalTime(TimeZone.currentSystemDefault())
+    val endTime = startTime.plus(Duration.minutes(durationMinutes))
+
+    val startTimeValid get() = startInstant >= Clock.System.now()
+    val endTimeValid get() = durationMinutes > 0
+
+    val intervalString: String
+        get() = "$startTime-$endTime"
+}
+

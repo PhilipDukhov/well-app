@@ -13,11 +13,10 @@ kotlin {
     androidWithAndroid()
     jvm()
     sourceSets {
-        all {
-            languageSettings.optIn("kotlinx.serialization.ExperimentalSerializationApi")
-        }
+        usePredefinedExperimentalAnnotations("kotlinx.serialization.ExperimentalSerializationApi")
         val commonMain by getting {
             libDependencies(
+                "shared.datetime",
                 "kotlin.serializationJson",
                 "ktor.client.core",
                 "ktor.client.serialization",
@@ -30,8 +29,20 @@ kotlin {
         }
         if (withAndroid) {
             val androidMain by getting {
-                dependsOn(jvmMain)
+                kotlin.srcDir("src/jvmMain/kotlin")
             }
         }
+    }
+}
+
+if (withAndroid) {
+    android {
+        compileOptions {
+            isCoreLibraryDesugaringEnabled = true
+        }
+    }
+
+    dependencies {
+        coreLibraryDesugaring()
     }
 }

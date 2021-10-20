@@ -1,7 +1,7 @@
-package com.well.modules.models
+package com.well.modules.models.date
 
-import kotlinx.serialization.Serializable
 import com.well.modules.models.serializers.DateSerializer
+import kotlinx.serialization.Serializable
 
 @Serializable(with = DateSerializer::class)
 actual data class Date(val date: java.util.Date) {

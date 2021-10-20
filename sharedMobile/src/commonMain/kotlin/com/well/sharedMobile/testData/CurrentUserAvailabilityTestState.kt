@@ -2,54 +2,56 @@ package com.well.sharedMobile.testData
 
 import com.well.modules.models.Availability
 import com.well.modules.models.Repeat
-import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.CurrentUserAvailabilityFeature
-import io.ktor.util.date.*
+import com.well.modules.models.date.dateTime.daysShift
+import com.well.modules.models.date.dateTime.time
+import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration
 
 private data class TestState(
     val daysOffset: Int,
     val repeat: Repeat,
     val startTime: Int,
-    val endTime: Int
+    val hoursDuration: Int
 ) {
-    fun availability(i: Int, time: GMTDate) =
-        (time + Duration.days(daysOffset)).copy(hours = startTime).let { startTime ->
+    fun availability(i: Int) =
+        Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).let { now ->
             Availability(
                 id = i,
-                startTime = startTime,
-                endTime = startTime.copy(hours = endTime),
+                startDay = now.date.daysShift(i),
+                startTime = now.time,
+                durationMinutes = Duration.hours(hoursDuration).inWholeMinutes.toInt(),
                 repeat = repeat,
             )
         }
-
 }
 
-// CurrentUserAvailabilityFeature unused for easy readability
+// CurrentUserAvailabilitiesListFeature unused for easy readability
 @Suppress("unused")
-fun CurrentUserAvailabilityFeature.testState() =
-    GMTDate().let { today ->
-        CurrentUserAvailabilityFeature.State(
-            availabilities = listOf(
-                TestState(
-                    daysOffset = 0,
-                    repeat = Repeat.Weekly,
-                    startTime = 12,
-                    endTime = 13
-                ),
-                TestState(
-                    daysOffset = 2,
-                    repeat = Repeat.Weekends,
-                    startTime = 10,
-                    endTime = 11
-                ),
-                TestState(
-                    daysOffset = 3,
-                    repeat = Repeat.None,
-                    startTime = 9,
-                    endTime = 12
-                ),
-            ).mapIndexed { i, state ->
-                state.availability(i, today)
-            }
-        )
-    }
+fun CurrentUserAvailabilitiesListFeature.testState() =
+    CurrentUserAvailabilitiesListFeature.State(
+        availabilities = listOf(
+            TestState(
+                daysOffset = 0,
+                repeat = Repeat.Weekly,
+                startTime = 12,
+                hoursDuration = 1
+            ),
+            TestState(
+                daysOffset = 2,
+                repeat = Repeat.Weekends,
+                startTime = 10,
+                hoursDuration = 1
+            ),
+            TestState(
+                daysOffset = 3,
+                repeat = Repeat.None,
+                startTime = 9,
+                hoursDuration = 3
+            ),
+        ).mapIndexed { i, state ->
+            state.availability(i)
+        }
+    )

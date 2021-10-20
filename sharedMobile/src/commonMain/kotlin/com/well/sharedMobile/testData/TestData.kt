@@ -1,7 +1,7 @@
 package com.well.sharedMobile.testData
 
 import com.well.modules.atomic.AtomicMutableList
-import com.well.modules.models.Date
+import com.well.modules.models.date.Date
 import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
 import com.well.sharedMobile.puerh.πModels.chatMessageWithStatus.ChatMessageWithStatus

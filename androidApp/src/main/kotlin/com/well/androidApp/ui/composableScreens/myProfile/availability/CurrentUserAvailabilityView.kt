@@ -1,57 +1,46 @@
-package com.well.androidApp.ui.composableScreens.myProfile
+package com.well.androidApp.ui.composableScreens.myProfile.availability
 
+import com.well.androidApp.ui.composableScreens.theme.body1Light
 import com.well.androidApp.ui.composableScreens.πCustomViews.AutoSizeText
-import com.well.androidApp.ui.composableScreens.πCustomViews.Control
 import com.well.androidApp.ui.composableScreens.πCustomViews.GradientView
 import com.well.androidApp.ui.composableScreens.πCustomViews.clickable
 import com.well.androidApp.ui.composableScreens.πCustomViews.swipeableLeftRight
 import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
 import com.well.androidApp.ui.composableScreens.πExt.toColor
+import com.well.modules.models.Availability
 import com.well.modules.models.Color
-import com.well.modules.utils.date.hoursAndMinutes
-import com.well.modules.utils.date.intervalString
-import com.well.modules.utils.date.localizedDayAndShortMonth
-import com.well.modules.utils.date.localizedName
-import com.well.modules.utils.date.localizedShortName
-import com.well.modules.utils.date.localizedVeryShortSymbol
-import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.CurrentUserAvailabilityFeature
-import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.CurrentUserAvailabilityFeature.Msg
-import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.CurrentUserAvailabilityFeature.State
-import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.yearAndDay
-import com.well.sharedMobile.testData.testState
+import com.well.modules.models.date.dateTime.localizedDayAndShortMonth
+import com.well.modules.models.date.dateTime.localizedName
+import com.well.modules.models.date.dateTime.localizedVeryShortSymbol
+import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature.Msg
+import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature.State
+import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature.Strings
 import com.well.sharedMobile.utils.Gradient
+import android.widget.CalendarView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
@@ -59,17 +48,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.rememberSwipeableState
-import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -79,19 +63,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.ktor.util.date.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.composed
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntSize
-import io.github.aakira.napier.Napier
-import kotlinx.coroutines.launch
+import com.google.accompanist.insets.navigationBarsPadding
+import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import kotlinx.datetime.LocalDate
+
+private sealed class PresentingDialog {
+    data class Create(val date: LocalDate) : PresentingDialog()
+    data class Update(val availability: Availability) : PresentingDialog()
+}
 
 @Composable
 fun CurrentUserAvailabilityView(
@@ -102,48 +82,136 @@ fun CurrentUserAvailabilityView(
         modifier = Modifier
             .padding(horizontal = 15.dp)
     ) {
-        var selectedItem by rememberSaveable(state.monthOffset) {
-            mutableStateOf<State.CalendarItem?>(null)
+        var selectedDate by rememberSaveable(state.monthOffset) {
+            mutableStateOf<LocalDate?>(null)
+        }
+        val selectedItem = remember(state.days, selectedDate) {
+            state.days.firstNotNullOfOrNull { weekDays ->
+                weekDays.firstOrNull { it.date == selectedDate }
+            }
+        }
+        val (presentingDialog, setPresentingDialog) = rememberSaveable {
+            mutableStateOf<PresentingDialog?>(null)
         }
         ProvideTextStyle(
             value = TextStyle(fontSize = 15.sp, fontWeight = FontWeight.Bold)
         ) {
             CalendarView(
                 state = state,
-                selectedItem = selectedItem,
-                onSelectItem = {
-                    selectedItem = if (selectedItem == it) null else it
+                selectedDate = selectedDate,
+                onSelectDate = {
+                    selectedDate = if (selectedDate == it) null else it
                 },
                 onSwipeLeft = {
-                    listener(Msg.PrevMonth)
+                    listener(Msg.NextMonth)
                 },
                 onSwipeRight = {
-                    listener(Msg.NextMonth)
+                    listener(Msg.PrevMonth)
                 },
             )
         }
-        Spacer(Modifier.height(10.dp))
-        LazyVerticalGrid(
-            cells = GridCells.Fixed(3),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier
-        ) {
-            items(selectedItem?.availabilities ?: state.allAvailabilities) { availability ->
-                AvailabilityCell {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        if (selectedItem == null) {
-                            Text(availability.startTime.localizedDayAndShortMonth)
+        Availabilities(
+            selectedItem = selectedItem,
+            allAvailabilities = state.monthAvailabilities,
+            onSelect = {
+                setPresentingDialog(PresentingDialog.Update(it))
+            },
+            onCreate = {
+                setPresentingDialog(PresentingDialog.Create(it.date))
+            },
+        )
+        if (presentingDialog != null) {
+            MaterialDialog(
+                dialogState = rememberMaterialDialogState(initialValue = true),
+                onCloseRequest = {
+                    setPresentingDialog(null)
+                },
+                buttons = {
+                    positiveButton(Strings.add)
+                    negativeButton(Strings.cancel, onClick = {
+                        setPresentingDialog(null)
+                    })
+                    if (presentingDialog is PresentingDialog.Update) {
+                        negativeButton(
+                            Strings.delete,
+                            textStyle = MaterialTheme.typography.button.copy(color = Color.RadicalRed.toColor()),
+                            onClick = {
+                            setPresentingDialog(null)
+                            listener(Msg.Delete(presentingDialog.availability.id))
+                        })
+                    }
+                }
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 16.dp)
+                ) {
+                    ProvideTextStyle(value = MaterialTheme.typography.body1Light) {
+                        when (presentingDialog) {
+                            is PresentingDialog.Create -> {
+                                Text(
+                                    Strings.newAvailability,
+                                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                                )
+                                CreateAvailability(presentingDialog.date) { availability ->
+                                    setPresentingDialog(null)
+                                    listener(Msg.Add(availability))
+                                }
+                            }
+                            is PresentingDialog.Update -> {
+                                Text(
+                                    Strings.updateAvailability,
+                                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                                )
+                                UpdateAvailability(presentingDialog.availability) { availability ->
+                                    setPresentingDialog(null)
+                                    listener(Msg.Update(availability))
+                                }
+                            }
                         }
-                        AutoSizeText(availability.intervalString)
                     }
                 }
             }
-            selectedItem?.let {
+        }
+    }
+}
+
+@Composable
+private fun Availabilities(
+    selectedItem: State.CalendarItem?,
+    allAvailabilities: List<Availability>,
+    onSelect: (Availability) -> Unit,
+    onCreate: (State.CalendarItem) -> Unit,
+) {
+    LazyVerticalGrid(
+        cells = GridCells.Fixed(3),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        contentPadding = PaddingValues(vertical = 10.dp),
+        modifier = Modifier.navigationBarsPadding()
+    ) {
+        items(selectedItem?.availabilities ?: allAvailabilities) { availability ->
+            AvailabilityCell(
+                onClick = {
+                    onSelect(availability)
+                }
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    if (selectedItem == null) {
+                        Text(availability.startDay.localizedDayAndShortMonth)
+                    }
+                    AutoSizeText(availability.intervalString)
+                }
+            }
+        }
+        selectedItem?.let { selectedItem ->
+            if (selectedItem.canCreateAvailability) {
                 item {
                     AvailabilityCell(
                         onClick = {
-
+                            onCreate(selectedItem)
                         }
                     ) {
                         Icon(Icons.Default.Add, contentDescription = null)
@@ -157,8 +225,8 @@ fun CurrentUserAvailabilityView(
 @Composable
 private fun CalendarView(
     state: State,
-    selectedItem: State.CalendarItem?,
-    onSelectItem: (State.CalendarItem) -> Unit,
+    selectedDate: LocalDate?,
+    onSelectDate: (LocalDate) -> Unit,
     onSwipeLeft: () -> Unit,
     onSwipeRight: () -> Unit,
 ) {
@@ -170,14 +238,14 @@ private fun CalendarView(
             )
     ) {
         item(key = "month_title_${state.month}") {
-            TitleView(state, onLeft = onSwipeLeft, onRight = onSwipeRight)
+            TitleView(state, onLeft = onSwipeRight, onRight = onSwipeLeft)
         }
         item(key = "week_days") {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                state.allDaysOfWeek.forEach {
+                State.allDaysOfWeek.forEach {
                     Text(
                         it.localizedVeryShortSymbol,
                         color = Color.LightBlue.toColor(),
@@ -198,8 +266,8 @@ private fun CalendarView(
                     .padding(vertical = 3.dp)
             ) {
                 weekDays.forEach { day ->
-                    DayView(day, selectedItem?.date) {
-                        onSelectItem(day)
+                    DayView(day, selectedDate) {
+                        onSelectDate(day.date)
                     }
                 }
             }
@@ -259,10 +327,10 @@ private fun TitleView(
 @Composable
 private fun RowScope.DayView(
     day: State.CalendarItem,
-    selectedDate: GMTDate?,
+    selectedDate: LocalDate?,
     onSelect: () -> Unit
 ) {
-    val selected = day.date.yearAndDay == selectedDate?.yearAndDay
+    val selected = day.date == selectedDate
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -300,7 +368,7 @@ private fun RowScope.DayView(
                         gradient = Gradient.Main,
                         modifier = Modifier
                             .matchParentSize()
-                            .alpha(if (selectedDate?.yearAndDay == day.date.yearAndDay) 1f else 0.5f)
+                            .alpha(if (selectedDate == day.date) 1f else 0.5f)
                     )
                 }
                 selected -> {
@@ -318,14 +386,14 @@ private fun RowScope.DayView(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Spacer(Modifier.weight(1f, fill = false))
+                Spacer(Modifier.weight(1f))
                 Text(
                     day.date.dayOfMonth.toString(),
                     color = textColor,
                 )
                 Box(
                     contentAlignment = Alignment.TopCenter,
-                    modifier = Modifier.weight(1f, fill = false)
+                    modifier = Modifier.weight(1f)
                 ) {
                     if (day.availabilities.isNotEmpty()) {
                         Box(
@@ -339,5 +407,3 @@ private fun RowScope.DayView(
         }
     }
 }
-
-val map = mutableMapOf<Int, IntSize>()

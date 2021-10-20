@@ -1,6 +1,6 @@
 package com.well.sharedMobile.puerh.myProfile
 
-import com.well.modules.models.Date
+import com.well.modules.models.date.Date
 import com.well.modules.models.User
 import com.well.modules.models.formatters.DateFormatter
 import com.well.modules.models.formatters.format

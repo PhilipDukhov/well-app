@@ -1,8 +1,12 @@
-package com.well.modules.models
+package com.well.modules.models.date
 
 import com.well.modules.models.serializers.DateSerializer
 import kotlinx.serialization.Serializable
-import platform.Foundation.*
+import platform.Foundation.NSDate
+import platform.Foundation.NSDateFormatter
+import platform.Foundation.dateWithTimeIntervalSince1970
+import platform.Foundation.timeIntervalSince1970
+import platform.Foundation.timeIntervalSinceNow
 
 @Serializable(with = DateSerializer::class)
 actual data class Date(val date: NSDate) {

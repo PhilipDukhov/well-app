@@ -1,6 +1,6 @@
 package com.well.sharedMobile.puerh.πModels.chatMessageWithStatus
 
-import com.well.modules.models.Date
+import com.well.modules.models.date.Date
 import com.well.modules.models.chat.ChatMessage
 import com.well.modules.models.formatters.DateFormatter
 import com.well.modules.models.formatters.formatChatMessage

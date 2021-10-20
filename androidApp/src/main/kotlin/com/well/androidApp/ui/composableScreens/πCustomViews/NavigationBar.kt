@@ -3,7 +3,11 @@ package com.well.androidApp.ui.composableScreens.πCustomViews
 import com.well.sharedMobile.puerh.πModels.NavigationBarModel
 import com.well.sharedMobile.utils.Gradient
 import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,6 +17,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
@@ -20,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.google.accompanist.insets.statusBarsPadding
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun NavigationBar(
     modifier: Modifier = Modifier,
@@ -27,82 +33,62 @@ fun NavigationBar(
     leftItem: ControlItem? = null,
     rightItem: ControlItem? = null,
     contentHeight: Dp = controlMinSize,
+    extraContent: @Composable () -> Unit = {},
 ) {
     Box(modifier = modifier) {
         GradientView(
             gradient = Gradient.Main,
             modifier = Modifier.matchParentSize(),
         )
-        ConstraintLayout(
-            modifier = Modifier
-                .statusBarsPadding()
-                .height(contentHeight)
-                .padding(10.dp)
-                .fillMaxWidth()
-        ) {
-            val (titleRef, leftItemRef, rightItemRef) = createRefs()
-            ProvideTextStyle(
-                value = MaterialTheme.typography.subtitle1
+        Column {
+            ConstraintLayout(
+                modifier = Modifier
+                    .statusBarsPadding()
+                    .height(contentHeight)
+                    .padding(10.dp)
+                    .fillMaxWidth()
             ) {
-                title?.let { title ->
-                    Control(
-                        title,
+                val (titleRef, leftItemRef, rightItemRef) = createRefs()
+                ProvideTextStyle(
+                    value = MaterialTheme.typography.subtitle1
+                ) {
+                    AnimatedOptionalContent(
+                        targetState = title,
                         modifier = Modifier
                             .constrainAs(titleRef) {
                                 centerTo(parent)
                             }
-                    )
+                    ) {
+                        Control(it)
+                    }
                 }
-            }
-            ProvideTextStyle(
-                value = MaterialTheme.typography.body1
-            ) {
-                leftItem?.let {
-                    Control(
-                        it,
+                ProvideTextStyle(
+                    value = MaterialTheme.typography.body1
+                ) {
+                    AnimatedOptionalContent(
+                        targetState = leftItem,
                         modifier = Modifier
                             .constrainAs(leftItemRef) {
                                 centerVerticallyTo(parent)
                                 start.linkTo(parent.start)
                             }
-                    )
-                }
-                rightItem?.let {
-                    Control(
-                        it,
+                    ) {
+                        Control(it)
+                    }
+                    AnimatedOptionalContent(
+                        targetState = rightItem,
                         modifier = Modifier
                             .constrainAs(rightItemRef) {
                                 centerVerticallyTo(parent)
                                 end.linkTo(parent.end)
                             }
-                    )
+                    ) {
+                        Control(it)
+                    }
                 }
             }
+            extraContent()
         }
-//        BoxWithConstraints(
-//            modifier = Modifier
-//                .padding(10.dp)
-//                .statusBarsPadding()
-//                .fillMaxWidth()
-//                .height(controlMinSize)
-//        ) {
-//            title?.let { title ->
-//                Control(
-//                    title,
-//                    modifier = Modifier.align(Alignment.Center)
-//                )
-//            }
-//            ProvideTextStyle(
-//                value = MaterialTheme.typography.body1
-//            ) {
-//                leftItem?.let {
-//                    Control(it, modifier = Modifier.align(Alignment.CenterStart))
-//                }
-//                rightItem?.let {
-//                    Control(it, modifier = Modifier.align(Alignment.CenterEnd))
-//                }
-//            }
-//        }
     }
 }
 
@@ -112,11 +98,13 @@ fun <Msg> ModeledNavigationBar(
     listener: (Msg) -> Unit,
     modifier: Modifier = Modifier,
     rightItemBeforeAction: (() -> Unit)? = null,
+    extraContent: @Composable () -> Unit = {},
 ) {
     NavigationBar(
         title = model.title.toTitleControlItem(),
         leftItem = model.leftItem?.toControlItem(listener),
         rightItem = model.rightItem?.toControlItem(listener, rightItemBeforeAction),
+        extraContent = extraContent,
         modifier = modifier,
     )
 }
@@ -145,17 +133,19 @@ fun String.toNavigationTitleText() =
         color = Color.White,
     )
 
-private fun String.toTitleControlItem() = ControlItem(view = { toNavigationTitleText() })
+@Composable
+private fun String.toTitleControlItem() = ControlItem(view = remember(this) { { toNavigationTitleText() } })
 
+@Composable
 fun <Msg> NavigationBarModel.Item<Msg>.toControlItem(
     listener: (Msg) -> Unit,
     beforeAction: (() -> Unit)? = null
 ) =
     if ((content as? NavigationBarModel.Item.Content.Icon)?.icon != NavigationBarModel.Item.Content.Icon.Icon.Back) {
         ControlItem(
-            enabled,
-            { beforeAction?.invoke(); msg?.let { listener(it) } },
-            { ItemContentView(content) },
+            enabled = enabled,
+            handler = remember(msg, beforeAction) { { beforeAction?.invoke(); msg?.let { listener(it) } } },
+            view = remember(content) { { ItemContentView(content) } },
         )
     } else null
 

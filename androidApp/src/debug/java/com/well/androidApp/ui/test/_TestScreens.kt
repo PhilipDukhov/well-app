@@ -23,9 +23,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.insets.systemBarsPadding
 
 @Suppress("RedundantNullableReturnType")
-val testScreen: TestScreen? = AvailabilityCalendar
+val testScreen: TestScreen? = MyProfile
 
 enum class TestScreen {
     Welcome,
@@ -47,15 +48,17 @@ fun TestComposeScreen(testScreen: TestScreen) {
         BackHandler {
             opened = false
         }
-        when (testScreen) {
-            Welcome -> WelcomeScreen(WelcomeFeature.State()) {}
-            Call -> CallTest()
-            MyProfile -> MyProfileTest()
-            Slider -> SliderTest()
-            Local -> LocalTestScreen()
-            UserChat -> UserChatTest()
-            UserRating -> UserRatingTest()
-            AvailabilityCalendar -> AvailabilityCalendarTest()
+        Column {
+            when (testScreen) {
+                Welcome -> WelcomeScreen(WelcomeFeature.State()) {}
+                Call -> CallTest()
+                MyProfile -> MyProfileTest()
+                Slider -> SliderTest()
+                Local -> LocalTestScreen()
+                UserChat -> UserChatTest()
+                UserRating -> UserRatingTest()
+                AvailabilityCalendar -> AvailabilityCalendarTest()
+            }
         }
     } else {
         Box(

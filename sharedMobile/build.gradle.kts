@@ -84,7 +84,7 @@ kotlin {
                 "ktor.client.logging",
                 "sqldelight.coroutinesExtensions",
                 "shared.napier",
-                "shared.klock",
+                "shared.datetime",
             )
             dependencies {
                 iosExportModules.forEach {

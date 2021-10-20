@@ -79,7 +79,7 @@ subprojects {
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
         kotlinOptions.freeCompilerArgs += listOf(
-            "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI",
+            "-Xopt-in=io.ktor.util.KtorExperimentalAPI",
             "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
             "-Xopt-in=kotlinx.serialization.ExperimentalSerializationApi",
         )

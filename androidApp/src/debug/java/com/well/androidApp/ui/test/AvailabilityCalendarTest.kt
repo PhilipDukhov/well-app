@@ -1,7 +1,7 @@
 package com.well.androidApp.ui.test
 
-import com.well.androidApp.ui.composableScreens.myProfile.CurrentUserAvailabilityView
-import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.CurrentUserAvailabilityFeature
+import com.well.androidApp.ui.composableScreens.myProfile.availability.CurrentUserAvailabilityView
+import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature
 import com.well.sharedMobile.testData.testState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
@@ -14,7 +14,7 @@ import com.google.accompanist.insets.systemBarsPadding
 fun AvailabilityCalendarTest() {
     val state = remember {
         mutableStateOf(
-            CurrentUserAvailabilityFeature.testState()
+            CurrentUserAvailabilitiesListFeature.testState()
         )
     }
     Box(
@@ -23,7 +23,7 @@ fun AvailabilityCalendarTest() {
         CurrentUserAvailabilityView(
             state = state.value,
             listener = {
-                state.value = CurrentUserAvailabilityFeature.reducer(it, state.value).first
+                state.value = CurrentUserAvailabilitiesListFeature.reducer(it, state.value).first
             }
         )
     }

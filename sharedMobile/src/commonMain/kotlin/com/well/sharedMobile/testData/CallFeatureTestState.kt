@@ -1,6 +1,6 @@
 package com.well.sharedMobile.testData
 
-import com.well.modules.models.Date
+import com.well.modules.models.date.Date
 import com.well.modules.models.Size
 import com.well.modules.models.User
 import com.well.sharedMobile.puerh.call.CallFeature

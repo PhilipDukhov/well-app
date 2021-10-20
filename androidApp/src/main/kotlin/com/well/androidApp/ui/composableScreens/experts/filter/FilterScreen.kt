@@ -1,6 +1,5 @@
 package com.well.androidApp.ui.composableScreens.experts.filter
 
-import com.well.androidApp.ui.composableScreens.myProfile.RowColumnGrid
 import com.well.androidApp.ui.composableScreens.theme.body1Light
 import com.well.androidApp.ui.composableScreens.πCustomViews.ActionButton
 import com.well.androidApp.ui.composableScreens.πCustomViews.ActionButtonStyle
@@ -43,9 +42,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.flowlayout.FlowRow
 
 private typealias EditingField = UIEditingField<UIEditingField.Content.List<*>, Msg.Update>
 
@@ -236,21 +235,23 @@ fun <Item> SelectableRowColumnGrid(
     modifier: Modifier = Modifier,
     spacing: Dp = 9.dp,
 ) {
-    RowColumnGrid(
-        modifier = modifier, spacing = spacing, content = {
-            items.forEachIndexed { index, item ->
-                Control(
-                    onClick = {
-                        if (selectedIndex != index) {
-                            selectIndex(index)
-                        }
-                    }, content = {
-                        itemBuilder(item, index == selectedIndex)
+    FlowRow(
+        modifier = modifier,
+        mainAxisSpacing = spacing,
+        crossAxisSpacing = spacing,
+    ) {
+        items.forEachIndexed { index, item ->
+            Control(
+                onClick = {
+                    if (selectedIndex != index) {
+                        selectIndex(index)
                     }
-                )
-            }
+                }, content = {
+                    itemBuilder(item, index == selectedIndex)
+                }
+            )
         }
-    )
+    }
 }
 
 @SuppressLint("ComposableModifierFactory")

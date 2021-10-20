@@ -1,6 +1,7 @@
 import org.codehaus.groovy.runtime.GStringImpl
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
 import org.gradle.kotlin.dsl.add
 import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts
@@ -166,3 +167,6 @@ fun KotlinTargetContainerWithNativeShortcuts.iosWithSimulator(config: KotlinNati
     ios(configure = config)
 //    iosSimulatorArm64(configure = config)
 }
+
+fun DependencyHandlerScope.coreLibraryDesugaring() =
+    add("coreLibraryDesugaring", "com.android.tools:desugar_jdk_libs:1.1.5")

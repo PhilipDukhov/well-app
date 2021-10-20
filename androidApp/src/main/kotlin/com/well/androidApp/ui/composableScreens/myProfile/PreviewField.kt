@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.flowlayout.FlowRow
 
 @Composable
 fun <Msg> PreviewField(
@@ -57,8 +58,9 @@ fun <Msg> PreviewField(
                 }
             }
             is UIPreviewField.Content.List -> {
-                RowColumnGrid(
-                    modifier = Modifier
+                FlowRow(
+                    mainAxisSpacing = 7.dp,
+                    crossAxisSpacing = 7.dp,
                 ) {
                     content.list.forEach {
                         Surface(

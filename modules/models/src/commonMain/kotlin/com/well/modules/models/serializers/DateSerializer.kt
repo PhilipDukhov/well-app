@@ -1,6 +1,6 @@
 package com.well.modules.models.serializers
 
-import com.well.modules.models.Date
+import com.well.modules.models.date.Date
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor

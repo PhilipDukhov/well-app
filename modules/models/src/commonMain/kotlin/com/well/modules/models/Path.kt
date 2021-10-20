@@ -1,5 +1,6 @@
 package com.well.modules.models
 
+import com.well.modules.models.date.Date
 import kotlinx.serialization.Serializable
 
 @Serializable

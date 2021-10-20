@@ -1,6 +1,6 @@
 package com.well.modules.models.formatters
 
-import com.well.modules.models.Date
+import com.well.modules.models.date.Date
 
 class DateFormatter {
     companion object

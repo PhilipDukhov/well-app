@@ -1,6 +1,6 @@
 package com.well.modules.models.formatters
 
-import com.well.modules.models.Date
+import com.well.modules.models.date.Date
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*

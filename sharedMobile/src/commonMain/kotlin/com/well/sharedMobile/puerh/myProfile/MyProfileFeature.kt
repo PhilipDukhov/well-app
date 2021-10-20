@@ -5,16 +5,28 @@ import com.well.modules.models.Rating
 import com.well.modules.models.RatingRequest
 import com.well.modules.models.User
 import com.well.modules.models.UserId
+import com.well.modules.models.spacedUppercaseName
 import com.well.modules.utils.UrlUtil
 import com.well.modules.utils.sharedImage.ImageContainer
 import com.well.modules.utils.sharedImage.profileImage
 import com.well.modules.utils.toSetOf
 import com.well.modules.utils.withEmptySet
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.State.EditingStatus
+import com.well.sharedMobile.puerh.πModels.GlobalStringsBase
 import com.well.sharedMobile.puerh.πModels.NavigationBarModel
 import com.well.sharedMobile.utils.currentTimeZoneIdentifier
+import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature as AvailabilitiesListFeature
+import io.github.aakira.napier.Napier
 
 object MyProfileFeature {
+    enum class Tabs {
+        ProfileInformation,
+        Availability,
+        ;
+
+        val title get() = spacedUppercaseName()
+    }
+
     fun initialState(
         isCurrent: Boolean,
         uid: UserId,
@@ -40,6 +52,7 @@ object MyProfileFeature {
             originalUser = it,
             user = it,
             editingStatus = if (!isCurrent || user.initialized) EditingStatus.Preview else EditingStatus.Editing,
+            availabilityState = if (isCurrent && user.initialized) AvailabilitiesListFeature.State() else null,
         )
     }
 
@@ -50,6 +63,7 @@ object MyProfileFeature {
         val user: User? = null,
         internal val newImage: ImageContainer? = null,
         val editingStatus: EditingStatus = EditingStatus.Preview,
+        val availabilityState: AvailabilitiesListFeature.State? = null,
     ) {
         val maxRatingCharacters = 150
         val loaded = user != null
@@ -144,6 +158,7 @@ object MyProfileFeature {
         data class UserUploadFinished(val throwable: Throwable?) : Msg()
         data class Rate(val rating: Rating) : Msg()
         object OnLogout : Msg()
+        data class AvailabilityMsg(val msg: AvailabilitiesListFeature.Msg) : Msg()
     }
 
     sealed class Eff {
@@ -165,6 +180,7 @@ object MyProfileFeature {
         object Logout : Eff()
         object BecomeExpert : Eff()
         data class SetUserFavorite(val setter: FavoriteSetter) : Eff()
+        data class AvailabilityEff(val msg: AvailabilitiesListFeature.Eff) : Eff()
     }
 
     fun reducer(
@@ -265,6 +281,16 @@ object MyProfileFeature {
                             rating = msg.rating,
                         )
                     )
+                }
+                is Msg.AvailabilityMsg -> {
+                    if (state.availabilityState == null) {
+                        Napier.wtf("AvailabilityMsg ${msg.msg} unexpected: $state")
+                        return@state state
+                    }
+                    val (availabilityState, effs) = AvailabilitiesListFeature.reducer(msg.msg, state.availabilityState)
+                    return@reducer state.copy(
+                        availabilityState = availabilityState
+                    ) to effs.mapTo(mutableSetOf(), Eff::AvailabilityEff)
                 }
             }
         })

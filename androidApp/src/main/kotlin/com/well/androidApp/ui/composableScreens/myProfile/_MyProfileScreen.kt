@@ -1,6 +1,7 @@
 package com.well.androidApp.ui.composableScreens.myProfile
 
 import com.well.androidApp.R
+import com.well.androidApp.ui.composableScreens.myProfile.availability.CurrentUserAvailabilityView
 import com.well.androidApp.ui.composableScreens.πCustomViews.Control
 import com.well.androidApp.ui.composableScreens.πCustomViews.InactiveOverlay
 import com.well.androidApp.ui.composableScreens.πCustomViews.ModeledNavigationBar
@@ -16,12 +17,14 @@ import com.well.modules.models.Color
 import com.well.modules.models.User
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.State
+import com.well.sharedMobile.puerh.myProfile.MyProfileFeature as Feature
 import com.well.sharedMobile.puerh.myProfile.UIGroup
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -35,11 +38,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,11 +54,79 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.navigationBarsWithImePadding
+import io.github.aakira.napier.Napier
 
+@Suppress("unused")
 @Composable
-fun MyProfileScreen(
+fun ColumnScope.MyProfileScreen(
     state: State,
     listener: (Msg) -> Unit,
+) {
+    val (rightItemBeforeAction, setRightItemBeforeAction) = remember {
+        mutableStateOf<(() -> Unit)?>(
+            null
+        )
+    }
+    val availabilityState = state.availabilityState
+    var selectedTab by rememberSaveable {
+        mutableStateOf(
+            availabilityState?.let {
+                Feature.Tabs.ProfileInformation
+            }
+        )
+    }
+    state.navigationBarModel?.let {
+        ModeledNavigationBar(
+            it.copy(
+                rightItem = when (selectedTab) {
+                    null, Feature.Tabs.ProfileInformation -> it.rightItem
+                    else -> null
+                }
+            ),
+            listener,
+            rightItemBeforeAction = rightItemBeforeAction,
+            extraContent = {
+                if (selectedTab != null && state.editingStatus == State.EditingStatus.Preview) {
+                    Napier.d("selectedTab $selectedTab")
+                    TabRow(
+                        selectedTabIndex = Feature.Tabs.values().indexOf(selectedTab!!),
+                        backgroundColor = Color.Transparent.toColor(),
+                        contentColor = Color.White.toColor(),
+                    ) {
+                        Feature.Tabs.values().forEach { tab ->
+                            Tab(
+                                text = { Text(tab.title) },
+                                selected = selectedTab == tab,
+                                onClick = { selectedTab = tab }
+                            )
+                        }
+                    }
+                    Divider()
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+    }
+    when (selectedTab) {
+        null, Feature.Tabs.ProfileInformation -> {
+            ProfileInformation(state, listener, setRightItemBeforeAction)
+        }
+        Feature.Tabs.Availability -> {
+            availabilityState?.let {
+                CurrentUserAvailabilityView(state = availabilityState) {
+                    listener(Msg.AvailabilityMsg(it))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProfileInformation(
+    state: State,
+    listener: (Msg) -> Unit,
+    setRightItemBeforeAction: ((() -> Unit)?) -> Unit,
 ) {
     var modalContent by remember { mutableStateOf<(@Composable () -> Unit)?>(null) }
 
@@ -60,6 +134,7 @@ fun MyProfileScreen(
         Content(
             state = state,
             listener = listener,
+            setRightItemBeforeAction = setRightItemBeforeAction,
             showModalContent = {
                 modalContent = it
             },
@@ -79,23 +154,13 @@ private fun Content(
     state: State,
     listener: (Msg) -> Unit,
     modifier: Modifier = Modifier,
-    showModalContent: ((@Composable () -> Unit)?) -> Unit
+    showModalContent: ((@Composable () -> Unit)?) -> Unit,
+    setRightItemBeforeAction: ((() -> Unit)?) -> Unit,
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
     ) {
-        var currentEditingFieldHandler by remember { mutableStateOf<(() -> Unit)?>(null) }
-        state.navigationBarModel?.let {
-            ModeledNavigationBar(
-                it,
-                listener,
-                rightItemBeforeAction = currentEditingFieldHandler,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightPlusTopSystemBars(controlMinSize)
-            )
-        }
         val paddingModifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
         Box {
             LazyColumn(
@@ -115,9 +180,7 @@ private fun Content(
                                 EditingField(
                                     field,
                                     listener,
-                                    onTextInputEditingHandler = { finishEditingHandler ->
-                                        currentEditingFieldHandler = finishEditingHandler
-                                    },
+                                    onTextInputEditingHandler = setRightItemBeforeAction,
                                     showModalContent = showModalContent,
                                     modifier = paddingModifier,
                                 )

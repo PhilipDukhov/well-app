@@ -9,6 +9,7 @@ plugins {
 
 dependencies {
     implementation(platform(libAt("firebase.bom")))
+    coreLibraryDesugaring()
 }
 
 libDependencies(
@@ -21,6 +22,7 @@ libDependencies(
     "firebase.analytics",
     "ktor.utils",
     "shared.napier",
+    "shared.datetime",
 
     "kotlin.coroutines.playServices",
     "kotlin.serializationJson",
@@ -40,7 +42,6 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
     buildFeatures {
-        viewBinding = true
         compose = true
     }
     kotlinOptions {
@@ -53,6 +54,9 @@ android {
         freeCompilerArgs += optIns.map { "-Xopt-in=$it" } + listOf(
             "-Xskip-prerelease-check",
         )
+    }
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = project.version("compose")

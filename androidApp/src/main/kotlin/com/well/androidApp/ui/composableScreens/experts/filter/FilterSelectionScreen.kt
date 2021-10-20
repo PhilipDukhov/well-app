@@ -12,7 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
 @Composable
-fun ColumnScope.FilterSelectionScreen(
+fun FilterSelectionScreen(
     title: String,
     initialSelection: Set<Int>,
     variants: List<String>,
