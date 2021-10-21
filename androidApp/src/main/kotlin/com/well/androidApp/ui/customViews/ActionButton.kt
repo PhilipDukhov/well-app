@@ -27,6 +27,27 @@ enum class ActionButtonStyle {
 }
 
 @Composable
+fun<T> ActionButton(
+    state: T?,
+    onClick: (T) -> Unit,
+    modifier: Modifier = Modifier,
+    style: ActionButtonStyle = OnWhite,
+    label: @Composable () -> Unit,
+) {
+    ActionButton(
+        onClick = {
+            if (state != null) {
+                onClick(state)
+            }
+        },
+        enabled = state != null,
+        style = style,
+        label = label,
+        modifier = modifier,
+    )
+}
+
+@Composable
 fun ActionButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -35,14 +56,15 @@ fun ActionButton(
     label: @Composable () -> Unit,
 ) {
     val alpha = if (enabled) 1f else 0.4f
+    val contentColor = when (style) {
+        White -> Color.MediumBlue
+        OnWhite -> Color.White
+    }.toColor()
     ProvideTextStyle(
-        value = MaterialTheme.typography.subtitle1
+        value = MaterialTheme.typography.subtitle1.copy(color = contentColor)
     ) {
         CompositionLocalProvider(
-            LocalContentColor provides when (style) {
-                White -> Color.MediumBlue
-                OnWhite -> Color.White
-            }.toColor()
+            LocalContentColor provides contentColor
         ) {
             Control(
                 onClick = onClick,

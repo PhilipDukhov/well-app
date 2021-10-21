@@ -30,6 +30,8 @@ data class Color(
 
     @Suppress("MemberVisibilityCanBePrivate")
     companion object {
+        val inactiveAlpha = 0.38f
+
         val MineShaft = Color(0x272727)
         val AzureRadiance = Color(0x037AFF)
         val RadicalRed = Color(0xFF2968)
@@ -54,7 +56,8 @@ data class Color(
         val White = Color(0xFFFFFF)
         val Transparent = Color(0x000000, 0F)
 
-        val InactiveOverlay = Black.withAlpha(0.4F)
+        val InactiveOverlay = Black.withAlpha(inactiveAlpha)
+
 
         val drawingColors = listOf(
             RadicalRed,

@@ -43,7 +43,10 @@ fun BoxScope.InactiveOverlay(showActivityIndicator: Boolean = true, content: @Co
             .matchParentSize()
             .backgroundKMM(Color.InactiveOverlay)
     ) {
-        content()
+        ProvideTextStyle(
+            MaterialTheme.typography.subtitle1.copy(color = Color.White.toColor()),
+            content = content
+        )
         if (showActivityIndicator) {
             CircularProgressIndicator(
                 color = Color.White.toColor(),

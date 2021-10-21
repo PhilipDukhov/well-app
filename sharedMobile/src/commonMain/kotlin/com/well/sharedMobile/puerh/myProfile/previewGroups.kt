@@ -7,6 +7,16 @@ import com.well.modules.models.formatters.format
 import com.well.modules.models.spacedUppercaseName
 
 internal fun User.previewGroups(isCurrent: Boolean) = listOfNotNull(
+    if (!isCurrent) {
+        UIGroup.Preview(
+            UIPreviewField(
+                content = UIPreviewField.Content.Button(
+                    Strings.requestConsultation,
+                    MyProfileFeature.Msg.RequestConsultation
+                ),
+            )
+        )
+    } else null,
     UIGroup.Preview(
         if (!isCurrent) null else
             credentials?.name?.let {
@@ -100,7 +110,10 @@ internal fun User.previewGroups(isCurrent: Boolean) = listOfNotNull(
     UIGroup.Preview(
         if (isCurrent && type == User.Type.Doctor) {
             UIPreviewField(
-                content = UIPreviewField.Content.Button(Strings.becomeExpert, MyProfileFeature.Msg.BecomeExpert),
+                content = UIPreviewField.Content.Button(
+                    Strings.becomeExpert,
+                    MyProfileFeature.Msg.BecomeExpert
+                ),
             )
         } else null
     ),

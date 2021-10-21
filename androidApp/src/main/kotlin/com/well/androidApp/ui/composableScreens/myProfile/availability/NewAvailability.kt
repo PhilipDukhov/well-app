@@ -7,7 +7,6 @@ import com.well.modules.models.Availability
 import com.well.modules.models.Color
 import com.well.modules.models.Repeat
 import com.well.modules.models.date.dateTime.LocalTime
-import com.well.modules.models.date.dateTime.toJavaLocalTime
 import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.CreateAvailabilityFeature.Msg
 import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.CreateAvailabilityFeature.Strings
 import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.CreateAvailabilityFeature as Feature
@@ -22,16 +21,12 @@ import androidx.compose.material.Divider
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextDecoration
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.MaterialDialogButtons
@@ -40,7 +35,6 @@ import com.vanpra.composematerialdialogs.listItemsSingleChoice
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun MaterialDialogScope.CreateAvailability(startDay: LocalDate, created: (Availability) -> Unit) {
@@ -106,9 +100,7 @@ private fun TimerPickerRow(
     valid: Boolean = true,
     update: (LocalTime) -> Unit,
 ) {
-    val context = LocalContext.current
-    var resetDialogFlag by remember { mutableStateOf(false) }
-    val timePickerDialog = remember(initial, resetDialogFlag) {
+    val timePickerDialog = rememberAndroidDialog(initial) { context ->
         TimePickerDialog(
             context,
             { _, hourOfDay, minute ->
@@ -119,13 +111,6 @@ private fun TimerPickerRow(
             true
         )
     }
-    if (timePickerDialog.isShowing) {
-        DisposableEffect(Unit) {
-            onDispose {
-                resetDialogFlag = !resetDialogFlag
-            }
-        }
-    }
     Cell(
         onClick = {
             timePickerDialog.show()
@@ -133,7 +118,7 @@ private fun TimerPickerRow(
     ) {
         Text(title)
         Text(
-            remember(initial) { initial.toJavaLocalTime().format(DateTimeFormatter.ISO_TIME) },
+            remember(initial) { initial.toString() },
             style = LocalTextStyle.current.copy(
                 textDecoration = if (valid) TextDecoration.None else TextDecoration.LineThrough
             )

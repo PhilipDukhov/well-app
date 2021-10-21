@@ -7,6 +7,7 @@ import com.well.modules.models.date.dateTime.daysShift
 import com.well.modules.models.date.dateTime.firstDayOfWeek
 import com.well.modules.models.date.dateTime.monthOffset
 import com.well.modules.models.date.dateTime.toLocalDate
+import com.well.modules.models.date.dateTime.today
 import com.well.modules.models.date.dateTime.weekend
 import com.well.modules.models.date.dateTime.workday
 import com.well.modules.utils.toSetOf
@@ -49,10 +50,7 @@ object CurrentUserAvailabilitiesListFeature {
         val monthAvailabilities: List<Availability>
 
         init {
-            val currentMoment: Instant = Clock.System.now()
-            val timeZone = TimeZone.currentSystemDefault()
-            val today: LocalDate = currentMoment.toLocalDate(timeZone)
-
+            val today = LocalDate.today()
             val currentMonthFirstDay = today
                 .monthOffset(dayOfMonth = 1, monthOffset = monthOffset)
             month = currentMonthFirstDay.month
@@ -71,35 +69,10 @@ object CurrentUserAvailabilitiesListFeature {
                 days += (0 until weekDaysCount)
                     .map { loopDay.daysShift(it) }
                     .map { day ->
-                        val availabilities = if (day < today)
-                            listOf()
-                        else
-                            availabilities
-                                .filter { availability ->
-                                    if (day < availability.startDay) {
-                                        return@filter false
-                                    }
-                                    if (day == availability.startDay) {
-                                        return@filter true
-                                    }
-                                    when (availability.repeat) {
-                                        Repeat.None -> {
-                                            false
-                                        }
-                                        Repeat.Weekends -> {
-                                            day.dayOfWeek.weekend
-                                        }
-                                        Repeat.Workdays -> {
-                                            day.dayOfWeek.workday
-                                        }
-                                        Repeat.Weekly -> {
-                                            availability.startDay.dayOfWeek == day.dayOfWeek
-                                        }
-                                    }
-                                }
-                                .map {
-                                    it.copy(startDay = day)
-                                }
+                        val availabilities = AvailabilitiesConverter.mapDayAvailabilities(
+                            day = day,
+                            availabilities = availabilities,
+                        )
                         monthAvailabilities.addAll(availabilities)
                         CalendarItem(
                             date = day,

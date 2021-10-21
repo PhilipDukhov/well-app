@@ -26,6 +26,7 @@ data class User(
     val publications: String? = null,
     val twitter: String? = null,
     val doximity: String? = null,
+    val hasAvailableAvailabilities: Boolean = false,
 ) {
     val completeness: Int
         get() = listOf(

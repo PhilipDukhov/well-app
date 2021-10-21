@@ -1,11 +1,19 @@
 package com.well.sharedMobile.testData
 
 import com.well.modules.atomic.AtomicMutableList
+import com.well.modules.models.Availability
+import com.well.modules.models.Repeat
 import com.well.modules.models.date.Date
 import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
+import com.well.modules.models.date.dateTime.daysShift
+import com.well.modules.models.date.dateTime.time
 import com.well.sharedMobile.puerh.πModels.chatMessageWithStatus.ChatMessageWithStatus
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlin.random.Random
+import kotlin.time.Duration
 
 val User.Companion.testUser
     get() = User(
@@ -37,6 +45,7 @@ val User.Companion.testUser
             count = 0,
             average = 0.0,
         ),
+        hasAvailableAvailabilities = true
     )
 
 private val testMessages = AtomicMutableList<ChatMessage>()
@@ -72,4 +81,47 @@ fun ChatMessageWithStatus.Companion.getTestMessagesWithStatus(count: Int): List<
                     values[message.id % values.count()]
                 }
         )
+    }
+
+
+private data class TestAvailabilitiesState(
+    val daysOffset: Int,
+    val repeat: Repeat,
+    val startTime: Int,
+    val hoursDuration: Int
+) {
+    fun availability(i: Int) =
+        Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).let { now ->
+            Availability(
+                id = i,
+                startDay = now.date.daysShift(i),
+                startTime = now.time,
+                durationMinutes = Duration.hours(hoursDuration).inWholeMinutes.toInt(),
+                repeat = repeat,
+            )
+        }
+}
+
+val Availability.Companion.testValues
+    get() = listOf(
+        TestAvailabilitiesState(
+            daysOffset = 0,
+            repeat = Repeat.Weekly,
+            startTime = 12,
+            hoursDuration = 1
+        ),
+        TestAvailabilitiesState(
+            daysOffset = 2,
+            repeat = Repeat.Weekends,
+            startTime = 10,
+            hoursDuration = 1
+        ),
+        TestAvailabilitiesState(
+            daysOffset = 3,
+            repeat = Repeat.None,
+            startTime = 9,
+            hoursDuration = 3
+        ),
+    ).mapIndexed { i, state ->
+        state.availability(i)
     }

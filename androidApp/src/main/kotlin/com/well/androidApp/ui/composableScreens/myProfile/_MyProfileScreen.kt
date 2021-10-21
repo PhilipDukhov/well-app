@@ -2,6 +2,7 @@ package com.well.androidApp.ui.composableScreens.myProfile
 
 import com.well.androidApp.R
 import com.well.androidApp.ui.composableScreens.myProfile.availability.CurrentUserAvailabilityView
+import com.well.androidApp.ui.composableScreens.myProfile.availability.RequestConsultationBottomSheet
 import com.well.androidApp.ui.customViews.Control
 import com.well.androidApp.ui.customViews.InactiveOverlay
 import com.well.androidApp.ui.customViews.ModeledNavigationBar
@@ -119,6 +120,14 @@ fun ColumnScope.MyProfileScreen(
                 }
             }
         }
+    }
+    if (state.requestConsultationState != null) {
+        RequestConsultationBottomSheet(
+            state = state.requestConsultationState!!,
+            listener = {
+                listener(Msg.RequestConsultationMsg(it))
+            }
+        )
     }
 }
 

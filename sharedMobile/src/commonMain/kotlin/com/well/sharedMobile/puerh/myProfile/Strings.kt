@@ -6,6 +6,7 @@ import com.well.sharedMobile.puerh.πModels.GlobalStringsBase
 internal object Strings: GlobalStringsBase() {
     const val logout = "Logout"
     const val becomeExpert = "Become an expert"
+    const val requestConsultation = "Request consultation "
     const val about = "About"
     const val fullName = "Full name"
     const val credentials = "Credentials"

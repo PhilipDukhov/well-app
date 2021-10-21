@@ -12,6 +12,7 @@ import com.well.modules.utils.sharedImage.profileImage
 import com.well.modules.utils.toSetOf
 import com.well.modules.utils.withEmptySet
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.State.EditingStatus
+import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.RequestConsultationFeature
 import com.well.sharedMobile.puerh.πModels.GlobalStringsBase
 import com.well.sharedMobile.puerh.πModels.NavigationBarModel
 import com.well.sharedMobile.utils.currentTimeZoneIdentifier
@@ -64,6 +65,7 @@ object MyProfileFeature {
         internal val newImage: ImageContainer? = null,
         val editingStatus: EditingStatus = EditingStatus.Preview,
         val availabilityState: AvailabilitiesListFeature.State? = null,
+        val requestConsultationState: RequestConsultationFeature.State? = null,
     ) {
         val maxRatingCharacters = 150
         val loaded = user != null
@@ -159,6 +161,9 @@ object MyProfileFeature {
         data class Rate(val rating: Rating) : Msg()
         object OnLogout : Msg()
         data class AvailabilityMsg(val msg: AvailabilitiesListFeature.Msg) : Msg()
+        object RequestConsultation : Msg()
+        object CloseConsultationRequest : Msg()
+        data class RequestConsultationMsg(val msg: RequestConsultationFeature.Msg) : Msg()
     }
 
     sealed class Eff {
@@ -180,7 +185,9 @@ object MyProfileFeature {
         object Logout : Eff()
         object BecomeExpert : Eff()
         data class SetUserFavorite(val setter: FavoriteSetter) : Eff()
-        data class AvailabilityEff(val msg: AvailabilitiesListFeature.Eff) : Eff()
+        data class AvailabilityEff(val eff: AvailabilitiesListFeature.Eff) : Eff()
+        data class RequestConsultationEff(val eff: RequestConsultationFeature.Eff) : Eff()
+        object CloseConsultationRequest : Eff()
     }
 
     fun reducer(
@@ -287,12 +294,43 @@ object MyProfileFeature {
                         Napier.wtf("AvailabilityMsg ${msg.msg} unexpected: $state")
                         return@state state
                     }
-                    val (availabilityState, effs) = AvailabilitiesListFeature.reducer(msg.msg, state.availabilityState)
+                    val (childState, effs) = AvailabilitiesListFeature.reducer(msg.msg, state.availabilityState)
                     return@reducer state.copy(
-                        availabilityState = availabilityState
+                        availabilityState = childState
                     ) to effs.mapTo(mutableSetOf(), Eff::AvailabilityEff)
+                }
+                Msg.RequestConsultation -> {
+                    if (state.isCurrent || state.user?.initialized != true) {
+                        Napier.wtf("$msg unexpected: $state")
+                        return@state state
+                    }
+                    return@reducer state.reduceConsultation(
+                        RequestConsultationFeature.initial()
+                    )
+                }
+                is Msg.RequestConsultationMsg -> {
+                    if (state.requestConsultationState == null) {
+                        Napier.wtf("RequestConsultationMsg ${msg.msg} unexpected: $state")
+                        return@state state
+                    }
+                    return@reducer state.reduceConsultation(
+                        RequestConsultationFeature.reducer(
+                            msg = msg.msg,
+                            state = state.requestConsultationState,
+                        )
+                    )
+                }
+                Msg.CloseConsultationRequest -> {
+                    return@reducer state.copy(requestConsultationState = null) toSetOf Eff.CloseConsultationRequest
                 }
             }
         })
     }.withEmptySet()
+
+    private fun State.reduceConsultation(
+        reducerResult: Pair<RequestConsultationFeature.State, Set<RequestConsultationFeature.Eff>>,
+    ) = copy(
+        requestConsultationState = reducerResult.first
+    ) to reducerResult.second.mapTo(mutableSetOf(), Eff::RequestConsultationEff)
 }
+
