@@ -1,10 +1,10 @@
-package com.well.androidApp.ui.composableScreens.πCustomViews
+package com.well.androidApp.ui.customViews
 
-import com.well.androidApp.ui.composableScreens.πCustomViews.ActionButtonStyle.OnWhite
-import com.well.androidApp.ui.composableScreens.πCustomViews.ActionButtonStyle.White
-import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
-import com.well.androidApp.ui.composableScreens.πExt.thenOrNull
-import com.well.androidApp.ui.composableScreens.πExt.toColor
+import com.well.androidApp.ui.customViews.ActionButtonStyle.OnWhite
+import com.well.androidApp.ui.customViews.ActionButtonStyle.White
+import com.well.androidApp.ui.ext.backgroundKMM
+import com.well.androidApp.ui.ext.thenOrNull
+import com.well.androidApp.ui.ext.toColor
 import com.well.modules.models.Color
 import com.well.sharedMobile.utils.Gradient
 import androidx.compose.foundation.layout.fillMaxWidth

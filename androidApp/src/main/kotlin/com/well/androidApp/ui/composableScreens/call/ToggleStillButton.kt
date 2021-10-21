@@ -15,9 +15,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
-import com.well.androidApp.ui.composableScreens.πExt.borderKMM
-import com.well.androidApp.ui.composableScreens.πExt.toColor
+import com.well.androidApp.ui.ext.backgroundKMM
+import com.well.androidApp.ui.ext.borderKMM
+import com.well.androidApp.ui.ext.toColor
 import com.well.modules.models.Color
 
 @Composable

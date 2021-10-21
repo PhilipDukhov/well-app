@@ -1,7 +1,8 @@
 package com.well.androidApp.ui.composableScreens.myProfile.availability
 
-import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
-import com.well.androidApp.ui.composableScreens.πExt.featureListener
+import com.well.androidApp.ui.customViews.rememberAndroidDialog
+import com.well.androidApp.ui.ext.backgroundKMM
+import com.well.androidApp.ui.ext.featureListener
 import com.well.modules.models.Availability
 import com.well.modules.models.Color
 import com.well.modules.models.Repeat

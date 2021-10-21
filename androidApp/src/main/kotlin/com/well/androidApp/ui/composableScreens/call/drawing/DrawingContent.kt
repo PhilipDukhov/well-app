@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.onSizeChanged
-import com.well.androidApp.ui.composableScreens.πExt.toColor
+import com.well.androidApp.ui.ext.toColor
 import com.well.modules.models.Path
 import com.well.modules.models.Point
 import com.well.modules.models.Size

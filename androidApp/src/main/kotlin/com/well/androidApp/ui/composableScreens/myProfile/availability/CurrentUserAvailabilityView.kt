@@ -1,12 +1,12 @@
 package com.well.androidApp.ui.composableScreens.myProfile.availability
 
-import com.well.androidApp.ui.composableScreens.theme.body1Light
-import com.well.androidApp.ui.composableScreens.πCustomViews.AutoSizeText
-import com.well.androidApp.ui.composableScreens.πCustomViews.GradientView
-import com.well.androidApp.ui.composableScreens.πCustomViews.clickable
-import com.well.androidApp.ui.composableScreens.πCustomViews.swipeableLeftRight
-import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
-import com.well.androidApp.ui.composableScreens.πExt.toColor
+import com.well.androidApp.ui.customViews.AutoSizeText
+import com.well.androidApp.ui.customViews.GradientView
+import com.well.androidApp.ui.customViews.clickable
+import com.well.androidApp.ui.customViews.swipeableLeftRight
+import com.well.androidApp.ui.ext.backgroundKMM
+import com.well.androidApp.ui.ext.toColor
+import com.well.androidApp.ui.theme.body1Light
 import com.well.modules.models.Availability
 import com.well.modules.models.Color
 import com.well.modules.models.date.dateTime.localizedDayAndShortMonth
@@ -16,7 +16,6 @@ import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.CurrentUser
 import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature.State
 import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature.Strings
 import com.well.sharedMobile.utils.Gradient
-import android.widget.CalendarView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

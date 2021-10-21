@@ -1,9 +1,9 @@
-package com.well.androidApp.ui.composableScreens.theme
+package com.well.androidApp.ui.theme
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
-import com.well.androidApp.ui.composableScreens.πExt.toColor
+import com.well.androidApp.ui.ext.toColor
 import com.well.modules.models.Color
 import androidx.compose.foundation.gestures.LocalOverScrollConfiguration
 import androidx.compose.runtime.CompositionLocalProvider

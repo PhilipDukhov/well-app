@@ -1,11 +1,11 @@
 package com.well.androidApp.ui.composableScreens.userChat
 
-import com.well.androidApp.ui.composableScreens.theme.body2Light
-import com.well.androidApp.ui.composableScreens.πCustomViews.LoadingCoilImage
-import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
-import com.well.androidApp.ui.composableScreens.πExt.thenOrNull
-import com.well.androidApp.ui.composableScreens.πExt.toColor
-import com.well.androidApp.ui.composableScreens.πExt.widthDp
+import com.well.androidApp.ui.theme.body2Light
+import com.well.androidApp.ui.customViews.LoadingCoilImage
+import com.well.androidApp.ui.ext.backgroundKMM
+import com.well.androidApp.ui.ext.thenOrNull
+import com.well.androidApp.ui.ext.toColor
+import com.well.androidApp.ui.ext.widthDp
 import com.well.modules.models.Color
 import com.well.modules.models.chat.ChatMessage
 import com.well.sharedMobile.puerh.πModels.chatMessageWithStatus.ChatMessageWithStatus

@@ -1,4 +1,4 @@
-package com.well.androidApp.ui.composableScreens.πCustomViews
+package com.well.androidApp.ui.customViews
 
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.LaunchedEffect

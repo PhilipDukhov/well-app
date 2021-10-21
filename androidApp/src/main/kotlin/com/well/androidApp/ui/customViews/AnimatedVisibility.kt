@@ -1,4 +1,4 @@
-package com.well.androidApp.ui.composableScreens.πCustomViews
+package com.well.androidApp.ui.customViews
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentScope

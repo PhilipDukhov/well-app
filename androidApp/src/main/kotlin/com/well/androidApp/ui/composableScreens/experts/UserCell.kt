@@ -1,11 +1,11 @@
 package com.well.androidApp.ui.composableScreens.experts
 
 import com.well.androidApp.R
-import com.well.androidApp.ui.composableScreens.theme.captionLight
-import com.well.androidApp.ui.composableScreens.πCustomViews.ProfileImage
-import com.well.androidApp.ui.composableScreens.πCustomViews.RatingInfoView
-import com.well.androidApp.ui.composableScreens.πCustomViews.ToggleFavoriteButton
-import com.well.androidApp.ui.composableScreens.πExt.toColor
+import com.well.androidApp.ui.theme.captionLight
+import com.well.androidApp.ui.customViews.ProfileImage
+import com.well.androidApp.ui.customViews.RatingInfoView
+import com.well.androidApp.ui.customViews.ToggleFavoriteButton
+import com.well.androidApp.ui.ext.toColor
 import com.well.modules.models.Color
 import com.well.modules.models.User
 import com.well.sharedMobile.utils.countryCodes.countryName

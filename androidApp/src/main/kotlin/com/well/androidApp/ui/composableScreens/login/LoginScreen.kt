@@ -1,10 +1,10 @@
 package com.well.androidApp.ui.composableScreens.login
 
 import com.well.androidApp.R
-import com.well.androidApp.ui.composableScreens.πCustomViews.Control
-import com.well.androidApp.ui.composableScreens.πCustomViews.GradientView
-import com.well.androidApp.ui.composableScreens.πCustomViews.InactiveOverlay
-import com.well.androidApp.ui.composableScreens.πExt.Image
+import com.well.androidApp.ui.customViews.Control
+import com.well.androidApp.ui.customViews.GradientView
+import com.well.androidApp.ui.customViews.InactiveOverlay
+import com.well.androidApp.ui.ext.Image
 import com.well.sharedMobile.puerh.login.LoginFeature.Msg
 import com.well.sharedMobile.puerh.login.LoginFeature.State
 import com.well.sharedMobile.puerh.login.SocialNetwork

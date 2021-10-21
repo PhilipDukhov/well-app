@@ -1,8 +1,8 @@
-package com.well.androidApp.ui.composableScreens.πCustomViews
+package com.well.androidApp.ui.customViews
 
 import com.well.androidApp.R
-import com.well.androidApp.ui.composableScreens.theme.captionLight
-import com.well.androidApp.ui.composableScreens.πExt.toColor
+import com.well.androidApp.ui.theme.captionLight
+import com.well.androidApp.ui.ext.toColor
 import com.well.modules.models.Color
 import com.well.modules.models.User
 import androidx.compose.foundation.layout.ColumnScope

@@ -1,7 +1,7 @@
 package com.well.androidApp.ui
 
 import com.well.androidApp.call.webRtc.WebRtcManager
-import com.well.androidApp.ui.composableScreens.theme.Theme
+import com.well.androidApp.ui.theme.Theme
 import com.well.modules.utils.AppContext
 import com.well.sharedMobile.puerh._featureProvider.FeatureProvider
 import com.well.sharedMobile.puerh._topLevel.TopLevelFeature

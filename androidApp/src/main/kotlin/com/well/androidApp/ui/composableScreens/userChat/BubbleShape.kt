@@ -1,6 +1,6 @@
 package com.well.androidApp.ui.composableScreens.userChat
 
-import com.well.androidApp.ui.composableScreens.πExt.toPx
+import com.well.androidApp.ui.ext.toPx
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.RoundRect

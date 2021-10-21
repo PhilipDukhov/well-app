@@ -1,9 +1,9 @@
 package com.well.androidApp.ui.composableScreens.chatList
 
-import com.well.androidApp.ui.composableScreens.theme.captionLight
-import com.well.androidApp.ui.composableScreens.πCustomViews.ProfileImage
-import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
-import com.well.androidApp.ui.composableScreens.πExt.toColor
+import com.well.androidApp.ui.theme.captionLight
+import com.well.androidApp.ui.customViews.ProfileImage
+import com.well.androidApp.ui.ext.backgroundKMM
+import com.well.androidApp.ui.ext.toColor
 import com.well.modules.models.Color
 import com.well.sharedMobile.puerh.chatList.ChatListFeature
 import androidx.compose.foundation.background

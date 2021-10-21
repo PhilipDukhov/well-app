@@ -1,7 +1,7 @@
 package com.well.androidApp.ui.composableScreens.call.drawing
 
-import com.well.androidApp.ui.composableScreens.πExt.Image
-import com.well.androidApp.ui.composableScreens.πExt.toColor
+import com.well.androidApp.ui.ext.Image
+import com.well.androidApp.ui.ext.toColor
 import com.well.modules.models.Size
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.State

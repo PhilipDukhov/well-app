@@ -1,8 +1,8 @@
 package com.well.androidApp.ui.composableScreens.myProfile
 
-import com.well.androidApp.ui.composableScreens.πCustomViews.ControlItem
-import com.well.androidApp.ui.composableScreens.πCustomViews.NavigationBar
-import com.well.androidApp.ui.composableScreens.πCustomViews.clearFocusOnKeyboardDismiss
+import com.well.androidApp.ui.customViews.ControlItem
+import com.well.androidApp.ui.customViews.NavigationBar
+import com.well.androidApp.ui.customViews.clearFocusOnKeyboardDismiss
 import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
 import com.well.sharedMobile.puerh.πModels.UIEditingField
 import androidx.activity.compose.BackHandler

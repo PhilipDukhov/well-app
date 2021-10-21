@@ -1,11 +1,11 @@
 package com.well.androidApp.ui.composableScreens.welcome
 
-import com.well.androidApp.ui.composableScreens.πCustomViews.ActionButton
-import com.well.androidApp.ui.composableScreens.πCustomViews.ActionButtonStyle
-import com.well.androidApp.ui.composableScreens.πCustomViews.gesturesDisabled
-import com.well.androidApp.ui.composableScreens.πExt.aspectRatio
-import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
-import com.well.androidApp.ui.composableScreens.πExt.toColor
+import com.well.androidApp.ui.customViews.ActionButton
+import com.well.androidApp.ui.customViews.ActionButtonStyle
+import com.well.androidApp.ui.customViews.gesturesDisabled
+import com.well.androidApp.ui.ext.aspectRatio
+import com.well.androidApp.ui.ext.backgroundKMM
+import com.well.androidApp.ui.ext.toColor
 import com.well.modules.models.Color
 import com.well.sharedMobile.puerh.welcome.WelcomeFeature.Msg
 import com.well.sharedMobile.puerh.welcome.WelcomeFeature.State

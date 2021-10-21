@@ -1,6 +1,6 @@
-package com.well.androidApp.ui.composableScreens.πCustomViews
+package com.well.androidApp.ui.customViews
 
-import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
+import com.well.androidApp.ui.ext.backgroundKMM
 import com.well.modules.models.Color
 import com.well.modules.models.User
 import com.well.modules.utils.sharedImage.SharedImage

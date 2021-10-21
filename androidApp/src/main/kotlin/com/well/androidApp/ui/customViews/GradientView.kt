@@ -1,4 +1,4 @@
-package com.well.androidApp.ui.composableScreens.πCustomViews
+package com.well.androidApp.ui.customViews
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -7,9 +7,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
-import com.well.androidApp.ui.composableScreens.πExt.denormalize
-import com.well.androidApp.ui.composableScreens.πExt.toColor
-import com.well.androidApp.ui.composableScreens.πExt.toOffset
+import com.well.androidApp.ui.ext.denormalize
+import com.well.androidApp.ui.ext.toColor
+import com.well.androidApp.ui.ext.toOffset
 import com.well.sharedMobile.utils.Gradient
 
 @Suppress("CHANGING_ARGUMENTS_EXECUTION_ORDER_FOR_NAMED_VARARGS")

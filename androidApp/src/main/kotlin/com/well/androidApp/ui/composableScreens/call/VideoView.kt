@@ -8,16 +8,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.well.androidApp.call.webRtc.TextureViewRenderer
 import com.well.sharedMobile.puerh.call.VideoViewContext
+import io.github.aakira.napier.Napier
 
 @Composable
 fun VideoView(
-    context: VideoViewContext,
+    videoContext: VideoViewContext,
     modifier: Modifier,
 ) {
-    val composableContext = LocalContext.current
+    val context = LocalContext.current
     val customView = remember {
-        TextureViewRenderer(composableContext).apply {
-            init(context.eglBase.eglBaseContext, null)
+        TextureViewRenderer(context).apply {
+            init(videoContext.eglBase.eglBaseContext, null)
             setEnableHardwareScaler(true)
 //            setMirror(false)
         }
@@ -28,13 +29,15 @@ fun VideoView(
         modifier = modifier
     ) {
         try {
-            context.videoTrack.addSink(it)
-        } catch (t: Throwable) { }
+            videoContext.videoTrack.addSink(it)
+        } catch (t: Throwable) {
+            Napier.e("VideoView addSink failed", throwable = t)
+        }
     }
-    DisposableEffect(context.videoTrack.id()) {
+    DisposableEffect(videoContext.videoTrack.id()) {
         onDispose {
             try {
-                context.videoTrack.removeSink(customView)
+                videoContext.videoTrack.removeSink(customView)
             } catch (t: Throwable) { }
         }
     }

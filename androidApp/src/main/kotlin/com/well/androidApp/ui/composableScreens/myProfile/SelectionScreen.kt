@@ -1,9 +1,9 @@
 package com.well.androidApp.ui.composableScreens.myProfile
 
 import com.well.androidApp.R
-import com.well.androidApp.ui.composableScreens.πExt.Image
-import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
-import com.well.androidApp.ui.composableScreens.πExt.toColor
+import com.well.androidApp.ui.ext.Image
+import com.well.androidApp.ui.ext.backgroundKMM
+import com.well.androidApp.ui.ext.toColor
 import com.well.modules.models.Color
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

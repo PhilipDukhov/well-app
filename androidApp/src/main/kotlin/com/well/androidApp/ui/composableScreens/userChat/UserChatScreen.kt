@@ -1,11 +1,11 @@
 package com.well.androidApp.ui.composableScreens.userChat
 
 import com.well.androidApp.R
-import com.well.androidApp.ui.composableScreens.πCustomViews.Control
-import com.well.androidApp.ui.composableScreens.πCustomViews.ControlItem
-import com.well.androidApp.ui.composableScreens.πCustomViews.NavigationBar
-import com.well.androidApp.ui.composableScreens.πCustomViews.ProfileImage
-import com.well.androidApp.ui.composableScreens.πExt.toColor
+import com.well.androidApp.ui.customViews.Control
+import com.well.androidApp.ui.customViews.ControlItem
+import com.well.androidApp.ui.customViews.NavigationBar
+import com.well.androidApp.ui.customViews.ProfileImage
+import com.well.androidApp.ui.ext.toColor
 import com.well.modules.models.Color
 import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage

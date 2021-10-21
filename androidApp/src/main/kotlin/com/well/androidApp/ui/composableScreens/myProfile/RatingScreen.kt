@@ -1,12 +1,12 @@
 package com.well.androidApp.ui.composableScreens.myProfile
 
-import com.well.androidApp.ui.composableScreens.πCustomViews.ActionButton
-import com.well.androidApp.ui.composableScreens.πCustomViews.Control
-import com.well.androidApp.ui.composableScreens.πCustomViews.LimitedCharsTextField
-import com.well.androidApp.ui.composableScreens.πCustomViews.NavigationBar
-import com.well.androidApp.ui.composableScreens.πCustomViews.ProfileImage
-import com.well.androidApp.ui.composableScreens.πExt.toColor
-import com.well.androidApp.ui.composableScreens.πExt.widthDp
+import com.well.androidApp.ui.customViews.ActionButton
+import com.well.androidApp.ui.customViews.Control
+import com.well.androidApp.ui.customViews.LimitedCharsTextField
+import com.well.androidApp.ui.customViews.NavigationBar
+import com.well.androidApp.ui.customViews.ProfileImage
+import com.well.androidApp.ui.ext.toColor
+import com.well.androidApp.ui.ext.widthDp
 import com.well.modules.models.Color
 import com.well.modules.models.Rating
 import com.well.modules.models.User

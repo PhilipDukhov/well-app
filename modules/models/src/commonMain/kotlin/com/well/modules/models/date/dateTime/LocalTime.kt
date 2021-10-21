@@ -4,7 +4,6 @@ import com.well.modules.models.serializers.LocalTimeAsStringSerializer
 import kotlinx.datetime.*
 import kotlinx.serialization.Serializable
 
-
 @Serializable(with = LocalTimeAsStringSerializer::class)
 expect class LocalTime(
     hour: Int,
@@ -15,7 +14,6 @@ expect class LocalTime(
 
     override operator fun compareTo(other: LocalTime): Int
     override fun toString(): String
-
 
     companion object {
 

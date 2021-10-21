@@ -1,6 +1,6 @@
-package com.well.androidApp.ui.composableScreens.πCustomViews
+package com.well.androidApp.ui.customViews
 
-import com.well.androidApp.ui.composableScreens.πExt.Image
+import com.well.androidApp.ui.ext.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth

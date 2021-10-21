@@ -1,9 +1,9 @@
 package com.well.androidApp.ui.composableScreens.myProfile
 
 import com.well.androidApp.R
-import com.well.androidApp.ui.composableScreens.πCustomViews.ActionButton
-import com.well.androidApp.ui.composableScreens.πExt.Image
-import com.well.androidApp.ui.composableScreens.πExt.toColor
+import com.well.androidApp.ui.customViews.ActionButton
+import com.well.androidApp.ui.ext.Image
+import com.well.androidApp.ui.ext.toColor
 import com.well.modules.models.Color
 import com.well.sharedMobile.puerh.myProfile.UIPreviewField
 import androidx.compose.foundation.layout.Column

@@ -11,8 +11,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.well.androidApp.R
-import com.well.androidApp.ui.composableScreens.πExt.Image
-import com.well.androidApp.ui.composableScreens.πExt.backgroundKMM
+import com.well.androidApp.ui.ext.Image
+import com.well.androidApp.ui.ext.backgroundKMM
 import com.well.modules.models.Color
 import com.well.sharedMobile.utils.ViewConstants.CallScreen.CallButtonRadius
 

@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.well.androidApp.R
-import com.well.androidApp.ui.composableScreens.πCustomViews.Control
+import com.well.androidApp.ui.customViews.Control
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg
 import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.State
 import com.google.accompanist.insets.statusBarsPadding
