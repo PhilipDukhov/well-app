@@ -4,8 +4,8 @@ import com.well.androidApp.ui.customViews.Control
 import com.well.androidApp.ui.customViews.NavigationBar
 import com.well.androidApp.ui.ext.toColor
 import com.well.modules.models.Color
-import com.well.sharedMobile.puerh.more.MoreFeature.Msg
-import com.well.sharedMobile.puerh.more.MoreFeature.State
+import com.well.modules.features.more.MoreFeature.Msg
+import com.well.modules.features.more.MoreFeature.State
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row

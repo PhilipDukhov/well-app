@@ -9,9 +9,9 @@ import com.well.androidApp.ui.ext.toColor
 import com.well.modules.models.Color
 import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
-import com.well.sharedMobile.puerh.userChat.UserChatFeature.Msg
-import com.well.sharedMobile.puerh.userChat.UserChatFeature.State
-import com.well.sharedMobile.puerh.πModels.chatMessageWithStatus.ChatMessageWithStatus
+import com.well.modules.features.userChat.UserChatFeature.Msg
+import com.well.modules.features.userChat.UserChatFeature.State
+import com.well.modules.viewHelpers.chatMessageWithStatus.ChatMessageWithStatus
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

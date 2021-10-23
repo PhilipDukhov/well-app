@@ -14,7 +14,7 @@ import com.well.androidApp.R
 import com.well.androidApp.ui.ext.Image
 import com.well.androidApp.ui.ext.backgroundKMM
 import com.well.modules.models.Color
-import com.well.sharedMobile.utils.ViewConstants.CallScreen.CallButtonRadius
+import com.well.modules.viewHelpers.ViewConstants.CallScreen.CallButtonRadius
 
 @Composable
 fun CallUpButton(

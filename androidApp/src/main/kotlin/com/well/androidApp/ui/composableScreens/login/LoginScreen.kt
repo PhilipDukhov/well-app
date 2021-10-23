@@ -5,10 +5,10 @@ import com.well.androidApp.ui.customViews.Control
 import com.well.androidApp.ui.customViews.GradientView
 import com.well.androidApp.ui.customViews.InactiveOverlay
 import com.well.androidApp.ui.ext.Image
-import com.well.sharedMobile.puerh.login.LoginFeature.Msg
-import com.well.sharedMobile.puerh.login.LoginFeature.State
-import com.well.sharedMobile.puerh.login.SocialNetwork
-import com.well.sharedMobile.utils.Gradient
+import com.well.modules.features.login.LoginFeature.Msg
+import com.well.modules.features.login.LoginFeature.State
+import com.well.modules.features.login.SocialNetwork
+import com.well.modules.viewHelpers.Gradient
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row

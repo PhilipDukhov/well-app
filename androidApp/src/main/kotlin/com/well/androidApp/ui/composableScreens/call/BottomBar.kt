@@ -23,12 +23,12 @@ import com.well.androidApp.R
 import com.well.androidApp.ui.ext.Size
 import com.well.androidApp.ui.ext.heightPlusBottomSystemBars
 import com.well.androidApp.ui.ext.toPx
-import com.well.sharedMobile.utils.ViewConstants.CallScreen.BottomBar.CallButtonOffset
-import com.well.sharedMobile.utils.ViewConstants.CallScreen.BottomBar.CallButtonPadding
-import com.well.sharedMobile.utils.ViewConstants.CallScreen.BottomBar.Height
-import com.well.sharedMobile.utils.ViewConstants.CallScreen.CallButtonRadius
-import com.well.sharedMobile.puerh.call.CallFeature.Msg
-import com.well.sharedMobile.puerh.call.CallFeature.State
+import com.well.modules.viewHelpers.ViewConstants.CallScreen.BottomBar.CallButtonOffset
+import com.well.modules.viewHelpers.ViewConstants.CallScreen.BottomBar.CallButtonPadding
+import com.well.modules.viewHelpers.ViewConstants.CallScreen.BottomBar.Height
+import com.well.modules.viewHelpers.ViewConstants.CallScreen.CallButtonRadius
+import com.well.modules.features.call.CallFeature.Msg
+import com.well.modules.features.call.CallFeature.State
 
 @Composable
 fun BottomBar(

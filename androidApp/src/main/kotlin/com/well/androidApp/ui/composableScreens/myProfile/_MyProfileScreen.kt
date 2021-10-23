@@ -16,10 +16,10 @@ import com.well.androidApp.ui.ext.toColor
 import com.well.androidApp.ui.ext.visibility
 import com.well.modules.models.Color
 import com.well.modules.models.User
-import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.Msg
-import com.well.sharedMobile.puerh.myProfile.MyProfileFeature.State
-import com.well.sharedMobile.puerh.myProfile.MyProfileFeature as Feature
-import com.well.sharedMobile.puerh.myProfile.UIGroup
+import com.well.modules.features.myProfile.MyProfileFeature.Msg
+import com.well.modules.features.myProfile.MyProfileFeature.State
+import com.well.modules.features.myProfile.MyProfileFeature as Feature
+import com.well.modules.features.myProfile.UIGroup
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

@@ -2,7 +2,7 @@ package com.well.androidApp.ui.test
 
 import com.well.androidApp.ui.composableScreens.welcome.WelcomeScreen
 import com.well.androidApp.ui.test.TestScreen.*
-import com.well.sharedMobile.puerh.welcome.WelcomeFeature
+import com.well.modules.features.welcome.WelcomeFeature
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.well.androidApp.ui.composableScreens.call.CallScreen
-import com.well.sharedMobile.puerh.call.CallFeature
-import com.well.sharedMobile.testData.testState
+import com.well.modules.features.call.CallFeature
+import com.well.sharedMobileTest.testState
 
 @Composable
 internal fun CallTest() {

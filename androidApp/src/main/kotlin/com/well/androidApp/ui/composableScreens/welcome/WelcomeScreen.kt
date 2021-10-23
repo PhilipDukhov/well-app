@@ -7,8 +7,8 @@ import com.well.androidApp.ui.ext.aspectRatio
 import com.well.androidApp.ui.ext.backgroundKMM
 import com.well.androidApp.ui.ext.toColor
 import com.well.modules.models.Color
-import com.well.sharedMobile.puerh.welcome.WelcomeFeature.Msg
-import com.well.sharedMobile.puerh.welcome.WelcomeFeature.State
+import com.well.modules.features.welcome.WelcomeFeature.Msg
+import com.well.modules.features.welcome.WelcomeFeature.State
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image

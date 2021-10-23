@@ -1,8 +1,8 @@
 package com.well.androidApp.ui.test
 
 import com.well.androidApp.ui.composableScreens.myProfile.availability.CurrentUserAvailabilityView
-import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature
-import com.well.sharedMobile.testData.testState
+import com.well.modules.features.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature
+import com.well.sharedMobileTest.testState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf

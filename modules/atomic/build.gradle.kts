@@ -8,6 +8,7 @@ plugins {
 kotlin {
     androidWithAndroid()
     iosWithSimulator()
+    jvm()
     sourceSets {
         usePredefinedExperimentalAnnotations()
         val commonMain by getting {

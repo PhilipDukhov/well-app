@@ -6,10 +6,10 @@ import com.well.modules.atomic.CloseableContainer
 import com.well.modules.models.Size
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.utils.getSystemService
-import com.well.sharedMobile.puerh.call.VideoViewContext
-import com.well.sharedMobile.puerh.call.webRtc.LocalDeviceState
-import com.well.sharedMobile.puerh.call.webRtc.WebRtcManagerI
-import com.well.sharedMobile.puerh.call.webRtc.WebRtcManagerI.Listener.DataChannelState
+import com.well.modules.features.call.VideoViewContext
+import com.well.modules.features.call.webRtc.LocalDeviceState
+import com.well.modules.features.call.webRtc.WebRtcManagerI
+import com.well.modules.features.call.webRtc.WebRtcManagerI.Listener.DataChannelState
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest

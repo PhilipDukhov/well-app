@@ -2,8 +2,8 @@ package com.well.androidApp.ui.test
 
 import com.well.androidApp.ui.composableScreens.userChat.UserChatScreen
 import com.well.modules.models.chat.ChatMessage
-import com.well.sharedMobile.puerh.userChat.UserChatFeature
-import com.well.sharedMobile.puerh.πModels.chatMessageWithStatus.ChatMessageWithStatus
+import com.well.modules.features.userChat.UserChatFeature
+import com.well.modules.viewHelpers.chatMessageWithStatus.ChatMessageWithStatus
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf

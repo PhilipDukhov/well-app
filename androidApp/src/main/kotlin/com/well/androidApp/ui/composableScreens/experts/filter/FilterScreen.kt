@@ -12,9 +12,9 @@ import com.well.androidApp.ui.ext.borderKMM
 import com.well.androidApp.ui.ext.toColor
 import com.well.modules.models.Color
 import com.well.modules.models.UsersFilter
-import com.well.sharedMobile.puerh.experts.filter.FilterFeature.Msg
-import com.well.sharedMobile.puerh.experts.filter.FilterFeature.State
-import com.well.sharedMobile.puerh.πModels.UIEditingField
+import com.well.modules.features.experts.filter.FilterFeature.Msg
+import com.well.modules.features.experts.filter.FilterFeature.State
+import com.well.modules.viewHelpers.UIEditingField
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

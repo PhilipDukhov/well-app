@@ -1,7 +1,7 @@
 package com.well.androidApp.ui.customViews
 
-import com.well.sharedMobile.puerh.πModels.NavigationBarModel
-import com.well.sharedMobile.utils.Gradient
+import com.well.modules.utils.NavigationBarModel
+import com.well.modules.viewHelpers.Gradient
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.google.accompanist.insets.statusBarsPadding
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun NavigationBar(
     modifier: Modifier = Modifier,

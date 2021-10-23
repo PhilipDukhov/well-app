@@ -2,8 +2,8 @@ package com.well.androidApp.ui.composableScreens.chatList
 
 import com.well.androidApp.ui.customViews.Control
 import com.well.androidApp.ui.customViews.NavigationBar
-import com.well.sharedMobile.puerh.chatList.ChatListFeature.Msg
-import com.well.sharedMobile.puerh.chatList.ChatListFeature.State
+import com.well.modules.features.chatList.ChatListFeature.Msg
+import com.well.modules.features.chatList.ChatListFeature.State
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable

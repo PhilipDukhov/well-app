@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.well.androidApp.call.webRtc.TextureViewRenderer
-import com.well.sharedMobile.puerh.call.VideoViewContext
+import com.well.modules.features.call.VideoViewContext
 import io.github.aakira.napier.Napier
 
 @Composable

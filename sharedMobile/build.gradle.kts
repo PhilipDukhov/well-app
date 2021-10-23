@@ -57,6 +57,7 @@ kotlin {
     val iosExportModules = listOf(
         ":modules:models",
         ":modules:utils",
+        ":modules:flowHelper",
     ).map { project(it) }
     targets.withType<KotlinNativeTarget> {
         binaries.withType<Framework> {
@@ -77,6 +78,17 @@ kotlin {
                 ":modules:db:chatMessagesDb",
                 ":modules:db:usersDb",
                 ":modules:flowHelper",
+                ":modules:networking",
+                ":modules:viewHelpers",
+                ":modules:features:call",
+                ":modules:features:login",
+                ":modules:features:chatList",
+                ":modules:features:experts",
+                ":modules:features:more",
+                ":modules:features:myProfile",
+                ":modules:features:userChat",
+                ":modules:features:welcome",
+
                 "kotlin.serializationJson",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",
@@ -98,16 +110,9 @@ kotlin {
             }
             kotlin.srcDir(generatedKotlinSources)
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
-            }
-        }
         if (withAndroid) {
             val androidMain by getting {
                 libDependencies(
-                    "android.webrtc",
                     "android.facebookLogin",
                     "google.playServicesAuth",
                     "android.material",
@@ -116,14 +121,6 @@ kotlin {
                     "ktor.client.engine.cio",
                     "kotlin.coroutines.playServices",
                 )
-            }
-            val androidTest by getting {
-                libDependencies(
-                    "tests.junit",
-                )
-                dependencies {
-                    implementation(kotlin("test-junit"))
-                }
             }
         }
         val iosMain by getting {

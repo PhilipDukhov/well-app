@@ -19,8 +19,8 @@ import androidx.compose.ui.unit.dp
 import com.well.androidApp.ui.ext.backgroundKMM
 import com.well.androidApp.ui.ext.borderKMM
 import com.well.modules.models.Color
-import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg
-import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.State
+import com.well.modules.features.call.drawing.DrawingFeature.Msg
+import com.well.modules.features.call.drawing.DrawingFeature.State
 import com.google.accompanist.insets.navigationBarsPadding
 
 @Composable

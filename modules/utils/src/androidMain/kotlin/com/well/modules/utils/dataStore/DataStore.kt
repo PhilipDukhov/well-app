@@ -34,4 +34,3 @@ actual class DataStore actual constructor(appContext: AppContext) {
 
     private val android.content.Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 }
-

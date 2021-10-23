@@ -8,7 +8,7 @@ import com.well.androidApp.ui.ext.toColor
 import com.well.androidApp.ui.ext.widthDp
 import com.well.modules.models.Color
 import com.well.modules.models.chat.ChatMessage
-import com.well.sharedMobile.puerh.πModels.chatMessageWithStatus.ChatMessageWithStatus
+import com.well.modules.viewHelpers.chatMessageWithStatus.ChatMessageWithStatus
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

@@ -4,7 +4,7 @@ import com.well.androidApp.R
 import com.well.androidApp.ui.customViews.Control
 import com.well.androidApp.ui.ext.Image
 import io.github.aakira.napier.Napier
-import com.well.sharedMobile.puerh.call.CallFeature
+import com.well.modules.features.call.CallFeature
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

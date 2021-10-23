@@ -2,7 +2,7 @@ package com.well.androidApp.ui.test
 
 import com.well.androidApp.ui.composableScreens.myProfile.RatingScreen
 import com.well.modules.models.User
-import com.well.sharedMobile.testData.testUser
+import com.well.sharedMobileTest.testUser
 import androidx.compose.runtime.Composable
 
 @Composable

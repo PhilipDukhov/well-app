@@ -5,7 +5,7 @@ import androidx.compose.runtime.*
 import com.well.androidApp.ui.ext.TextKMM
 import com.well.androidApp.ui.helpers.NextSecondNotifier
 import com.well.modules.models.Color
-import com.well.sharedMobile.puerh.call.CallFeature
+import com.well.modules.features.call.CallFeature
 
 @Composable
 fun SecondsPassedText(

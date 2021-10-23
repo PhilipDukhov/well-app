@@ -5,7 +5,7 @@ import com.well.androidApp.ui.customViews.ProfileImage
 import com.well.androidApp.ui.ext.backgroundKMM
 import com.well.androidApp.ui.ext.toColor
 import com.well.modules.models.Color
-import com.well.sharedMobile.puerh.chatList.ChatListFeature
+import com.well.modules.features.chatList.ChatListFeature
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

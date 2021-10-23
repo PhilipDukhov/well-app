@@ -6,8 +6,8 @@ import com.well.androidApp.ui.customViews.ControlItem
 import com.well.androidApp.ui.customViews.NavigationBar
 import com.well.androidApp.ui.ext.toColor
 import com.well.modules.models.Color
-import com.well.sharedMobile.puerh.experts.ExpertsFeature
-import com.well.sharedMobile.puerh.experts.ExpertsFeature.Msg
+import com.well.modules.features.experts.ExpertsFeature
+import com.well.modules.features.experts.ExpertsFeature.Msg
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn

@@ -17,6 +17,7 @@ libDependencies(
     "android.appCompat",
     "android.activity",
     "android.webrtc",
+    "android.dataStore",
     "android.compose.*",
 
     "firebase.analytics",

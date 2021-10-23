@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.Brush
 import com.well.androidApp.ui.ext.denormalize
 import com.well.androidApp.ui.ext.toColor
 import com.well.androidApp.ui.ext.toOffset
-import com.well.sharedMobile.utils.Gradient
+import com.well.modules.viewHelpers.Gradient
 
 @Suppress("CHANGING_ARGUMENTS_EXECUTION_ORDER_FOR_NAMED_VARARGS")
 @Composable

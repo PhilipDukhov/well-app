@@ -9,12 +9,12 @@ import com.well.androidApp.ui.ext.Image
 import com.well.androidApp.ui.ext.visibility
 import com.well.androidApp.ui.ext.widthDp
 import com.well.modules.models.User
-import com.well.sharedMobile.puerh.call.CallFeature.Msg
-import com.well.sharedMobile.puerh.call.CallFeature.State
-import com.well.sharedMobile.puerh.call.CallFeature.State.Status
-import com.well.sharedMobile.utils.ViewConstants.CallScreen.BottomBar.CallButtonOffset
-import com.well.sharedMobile.utils.ViewConstants.CallScreen.CallButtonRadius
-import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg as DrawingMsg
+import com.well.modules.features.call.CallFeature.Msg
+import com.well.modules.features.call.CallFeature.State
+import com.well.modules.features.call.CallFeature.State.Status
+import com.well.modules.viewHelpers.ViewConstants.CallScreen.BottomBar.CallButtonOffset
+import com.well.modules.viewHelpers.ViewConstants.CallScreen.CallButtonRadius
+import com.well.modules.features.call.drawing.DrawingFeature.Msg as DrawingMsg
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer

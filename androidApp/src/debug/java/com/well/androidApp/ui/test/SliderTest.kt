@@ -11,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.well.androidApp.ui.composableScreens.call.drawing.WidthSlider
-import com.well.sharedMobile.puerh.call.drawing.DrawingFeature
+import com.well.modules.features.call.drawing.DrawingFeature
 
 @Composable
 fun SliderTest() {

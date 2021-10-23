@@ -9,7 +9,6 @@
 import SharedMobile
 import SwiftUI
 
-
 #if DEBUG
 extension View {
     @inline(__always)

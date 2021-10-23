@@ -40,7 +40,6 @@ import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.statusBarsPadding
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun RatingScreen(
     user: User,

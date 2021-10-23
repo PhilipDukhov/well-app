@@ -10,9 +10,9 @@ import com.well.androidApp.ui.ext.toColor
 import com.well.modules.models.Availability
 import com.well.modules.models.Color
 import com.well.modules.models.date.dateTime.localizedDayAndShortMonth
-import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.RequestConsultationFeature.Msg
-import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.RequestConsultationFeature.State
-import com.well.sharedMobile.puerh.myProfile.currentUserAvailability.RequestConsultationFeature as Feature
+import com.well.modules.features.myProfile.currentUserAvailability.RequestConsultationFeature.Msg
+import com.well.modules.features.myProfile.currentUserAvailability.RequestConsultationFeature.State
+import com.well.modules.features.myProfile.currentUserAvailability.RequestConsultationFeature as Feature
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope

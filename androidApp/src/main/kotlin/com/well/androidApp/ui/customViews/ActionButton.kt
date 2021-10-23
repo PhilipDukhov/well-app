@@ -6,7 +6,7 @@ import com.well.androidApp.ui.ext.backgroundKMM
 import com.well.androidApp.ui.ext.thenOrNull
 import com.well.androidApp.ui.ext.toColor
 import com.well.modules.models.Color
-import com.well.sharedMobile.utils.Gradient
+import com.well.modules.viewHelpers.Gradient
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
