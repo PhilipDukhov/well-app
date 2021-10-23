@@ -13,10 +13,9 @@ kotlin {
         usePredefinedExperimentalAnnotations()
         val commonMain by getting {
             libDependencies(
-                ":modules:models",
                 ":modules:atomic",
+                ":modules:models",
                 ":modules:utils",
-
                 "kotlin.coroutines.core",
                 "kotlin.serializationJson",
                 "kotlin.stdLib",

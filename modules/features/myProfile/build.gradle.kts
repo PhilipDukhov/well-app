@@ -13,8 +13,11 @@ kotlin {
         usePredefinedExperimentalAnnotations()
         val commonMain by getting {
             libDependencies(
-//                "kotlin.coroutines.core",
+                ":modules:models",
+                ":modules:utils",
+                ":modules:viewHelpers",
                 "kotlin.stdLib",
+                "shared.datetime",
                 "shared.napier",
             )
         }

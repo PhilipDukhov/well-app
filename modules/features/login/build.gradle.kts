@@ -13,8 +13,13 @@ kotlin {
         usePredefinedExperimentalAnnotations()
         val commonMain by getting {
             libDependencies(
-//                "kotlin.coroutines.core",
+                ":modules:atomic",
+                ":modules:models",
+                ":modules:networking",
+                ":modules:utils",
+                "kotlin.coroutines.core",
                 "kotlin.stdLib",
+                "ktor.client.core",
                 "shared.napier",
             )
         }
@@ -26,7 +31,7 @@ kotlin {
         }
         val iosMain by getting {
             libDependencies(
-//                "kotlin.coroutines.core-strictly",
+                "kotlin.coroutines.core-strictly",
             )
         }
     }

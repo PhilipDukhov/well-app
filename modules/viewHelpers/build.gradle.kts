@@ -13,8 +13,15 @@ kotlin {
         usePredefinedExperimentalAnnotations()
         val commonMain by getting {
             libDependencies(
-//                "kotlin.coroutines.core",
+                ":modules:db:chatMessagesDb",
+                ":modules:flowHelper",
+                ":modules:models",
+                ":modules:utils",
+                "kotlin.coroutines.core",
+                "kotlin.serializationJson",
                 "kotlin.stdLib",
+                "shared.napier",
+                "sqldelight.coroutinesExtensions",
             )
         }
         if (withAndroid) {
@@ -25,7 +32,7 @@ kotlin {
         }
         val iosMain by getting {
             libDependencies(
-//                "kotlin.coroutines.core-strictly",
+                "kotlin.coroutines.core-strictly",
             )
         }
     }
