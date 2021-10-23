@@ -35,12 +35,7 @@
 		96351CB235DE05363561861E /* AppleProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96351D2E86F38ED05C0FAA14 /* AppleProvider.swift */; };
 		D51625792504BD9C009E103B /* neris_semi_bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = D51625762504BD9C009E103B /* neris_semi_bold.otf */; };
 		D516257A2504BD9C009E103B /* neris_thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = D51625772504BD9C009E103B /* neris_thin.otf */; };
-		D5680313263831A500CFE16B /* Property.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5BC2524BFE000A94FCC /* Property.swift */; };
-		D5680314263831A500CFE16B /* Future.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5B92524BFB900A94FCC /* Future.swift */; };
-		D5680315263831A500CFE16B /* Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5762524938400A94FCC /* Action.swift */; };
 		D5680316263831A500CFE16B /* HasApply.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD57825249E1900A94FCC /* HasApply.swift */; };
-		D5680317263831A500CFE16B /* Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5C8252584FE00A94FCC /* Cancellable.swift */; };
-		D5680318263831A500CFE16B /* EnumDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD5C52525845500A94FCC /* EnumDictionary.swift */; };
 		D5680319263831A500CFE16B /* Bundle+displayName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD57E2524B0AB00A94FCC /* Bundle+displayName.swift */; };
 		D568031A263831A500CFE16B /* NSError+description.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD57C2524B06900A94FCC /* NSError+description.swift */; };
 		D568031D263831DB00CFE16B /* EdgeInsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963513DDB06C22E5A9391A01 /* EdgeInsets.swift */; };
@@ -173,14 +168,9 @@
 		D568034F26384A2500CFE16B /* WelcomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeScreen.swift; sourceTree = "<group>"; };
 		D5916FBB2598ABA900B549FF /* TopLevelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopLevelView.swift; sourceTree = "<group>"; };
 		D5916FC12598BE4F00B549FF /* WebRtcManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRtcManager.swift; sourceTree = "<group>"; };
-		D5BFD5762524938400A94FCC /* Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Action.swift; sourceTree = "<group>"; };
 		D5BFD57825249E1900A94FCC /* HasApply.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HasApply.swift; sourceTree = "<group>"; };
 		D5BFD57C2524B06900A94FCC /* NSError+description.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSError+description.swift"; sourceTree = "<group>"; };
 		D5BFD57E2524B0AB00A94FCC /* Bundle+displayName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+displayName.swift"; sourceTree = "<group>"; };
-		D5BFD5B92524BFB900A94FCC /* Future.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Future.swift; sourceTree = "<group>"; };
-		D5BFD5BC2524BFE000A94FCC /* Property.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Property.swift; sourceTree = "<group>"; };
-		D5BFD5C52525845500A94FCC /* EnumDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnumDictionary.swift; sourceTree = "<group>"; };
-		D5BFD5C8252584FE00A94FCC /* Cancellable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cancellable.swift; sourceTree = "<group>"; };
 		D5E6AF9025CEB18700AA0538 /* DrawingContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawingContent.swift; sourceTree = "<group>"; };
 		D5ECE30225231ECB00207638 /* Well.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Well.entitlements; sourceTree = "<group>"; };
 		D5F0A09B2578AC4D002A55DB /* ExpertsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpertsScreen.swift; sourceTree = "<group>"; };
@@ -357,6 +347,7 @@
 		96351C95875B02D536023D63 /* SharedMobile */ = {
 			isa = PBXGroup;
 			children = (
+				4A6ABABA270F45B900D8621E /* Napier.swift */,
 				96351CD0B22C50D7CAD4A377 /* ServerModels.swift */,
 				96351127BC8BE95E698F3507 /* Kotlin.swift */,
 				963511698F818E07DF430267 /* ImageSharing.swift */,
@@ -508,15 +499,9 @@
 		D5BFD57A2524AA7400A94FCC /* General */ = {
 			isa = PBXGroup;
 			children = (
-				D5BFD5762524938400A94FCC /* Action.swift */,
 				D5BFD57825249E1900A94FCC /* HasApply.swift */,
-				D5BFD5B92524BFB900A94FCC /* Future.swift */,
-				D5BFD5BC2524BFE000A94FCC /* Property.swift */,
-				D5BFD5C8252584FE00A94FCC /* Cancellable.swift */,
-				D5BFD5C52525845500A94FCC /* EnumDictionary.swift */,
 				D5BFD57C2524B06900A94FCC /* NSError+description.swift */,
 				D5BFD57E2524B0AB00A94FCC /* Bundle+displayName.swift */,
-				4A6ABABA270F45B900D8621E /* Napier.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -708,10 +693,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				D568033C2638322500CFE16B /* CallBottomBar.swift in Sources */,
-				D5680317263831A500CFE16B /* Cancellable.swift in Sources */,
 				D568032F2638320300CFE16B /* ColorPicker.swift in Sources */,
 				D568031A263831A500CFE16B /* NSError+description.swift in Sources */,
-				D5680318263831A500CFE16B /* EnumDictionary.swift in Sources */,
 				D568034C2638327600CFE16B /* TopLevelView.swift in Sources */,
 				D56803442638322500CFE16B /* WidthSlider.swift in Sources */,
 				4A6ABABF270F544D00D8621E /* HorizontalCapsule.swift in Sources */,
@@ -734,7 +717,6 @@
 				D568033A2638320F00CFE16B /* GoogleProvider.swift in Sources */,
 				D568031E263831DB00CFE16B /* ServerModels.swift in Sources */,
 				D56803362638320400CFE16B /* ActivityIndicatorView.swift in Sources */,
-				D5680314263831A500CFE16B /* Future.swift in Sources */,
 				D568032D2638320300CFE16B /* InactiveOverlay.swift in Sources */,
 				D56803432638322500CFE16B /* CallScreen.swift in Sources */,
 				D568032C2638320300CFE16B /* ViewContainer.swift in Sources */,
@@ -747,8 +729,6 @@
 				D5680322263831DB00CFE16B /* Kotlin.swift in Sources */,
 				D56803312638320400CFE16B /* AsyncImage.swift in Sources */,
 				D5680316263831A500CFE16B /* HasApply.swift in Sources */,
-				D5680315263831A500CFE16B /* Action.swift in Sources */,
-				D5680313263831A500CFE16B /* Property.swift in Sources */,
 				D568032A2638320300CFE16B /* Control.swift in Sources */,
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
 				D56803462638322500CFE16B /* CallButton.swift in Sources */,
