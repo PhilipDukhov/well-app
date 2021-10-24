@@ -4,6 +4,7 @@ import com.well.modules.models.Availability
 import com.well.modules.models.AvailabilityId
 import com.well.modules.models.date.dateTime.daysShift
 import com.well.modules.models.date.dateTime.firstDayOfWeek
+import com.well.modules.models.date.dateTime.localizedName
 import com.well.modules.models.date.dateTime.monthOffset
 import com.well.modules.models.date.dateTime.today
 import com.well.modules.utils.toSetOf
@@ -38,18 +39,19 @@ object CurrentUserAvailabilitiesListFeature {
         )
 
         val month: Month
-        val year: Int?
-        val days: List<List<CalendarItem>>
+        val weeks: List<List<CalendarItem>>
         val monthAvailabilities: List<Availability>
+        val calendarTitle: String
 
         init {
             val today = LocalDate.today()
             val currentMonthFirstDay = today
                 .monthOffset(dayOfMonth = 1, monthOffset = monthOffset)
             month = currentMonthFirstDay.month
-            year = currentMonthFirstDay.year.let { year ->
+            val year = currentMonthFirstDay.year.let { year ->
                 if (year != today.year) year else null
             }
+            calendarTitle = month.localizedName + (year?.let { ", $it" } ?: "")
             val nextMonth = currentMonthFirstDay.monthOffset(dayOfMonth = 1, monthOffset = 1).month
             val days = mutableListOf<List<CalendarItem>>()
             val firstDayOfWeek = firstDayOfWeek
@@ -77,7 +79,7 @@ object CurrentUserAvailabilitiesListFeature {
                     }
                 loopDay = loopDay.plus(DateTimeUnit.DayBased(weekDaysCount))
             }
-            this.days = days.toList()
+            this.weeks = days.toList()
             this.monthAvailabilities = monthAvailabilities
         }
     }

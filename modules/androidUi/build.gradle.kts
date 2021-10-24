@@ -3,12 +3,17 @@ plugins {
     kotlin("android")
 }
 
+dependencies {
+    coreLibraryDesugaring()
+}
+
 libDependencies(
     "android.material",
     "android.appCompat",
     "android.activity",
     "android.compose.*",
     "android.webrtc",
+    "android.dataStore",
 
     "ktor.utils",
     "shared.napier",
@@ -46,17 +51,7 @@ android {
         compose = true
     }
     kotlinOptions {
-        val optIns = listOf(
-            "androidx.compose.ui.ExperimentalComposeUiApi",
-            "androidx.compose.foundation.ExperimentalFoundationApi",
-            "com.google.accompanist.pager.ExperimentalPagerApi",
-            "androidx.compose.material.ExperimentalMaterialApi",
-            "androidx.compose.animation.ExperimentalAnimationApi",
-            "coil.annotation.ExperimentalCoilApi",
-        )
-        freeCompilerArgs += optIns.map { "-Xopt-in=$it" } + listOf(
-            "-Xskip-prerelease-check",
-        )
+        freeCompilerArgs = freeCompilerArgs + composeOptIns.map { "-Xopt-in=$it" }
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
@@ -64,4 +59,11 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = project.version("compose")
     }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs = freeCompilerArgs + composeOptIns.map { "-Xopt-in=$it" }
+    }
+    println("wtf $this ${kotlinOptions.freeCompilerArgs}")
 }

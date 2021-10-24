@@ -16,6 +16,7 @@ libDependencies(
     "android.appCompat",
     "android.activity",
     "android.compose.*",
+    "android.dataStore",
     "shared.napier",
 
     "kotlin.coroutines.core",
@@ -43,16 +44,7 @@ android {
         compose = true
     }
     kotlinOptions {
-        val optIns = listOf(
-            "androidx.compose.ui.ExperimentalComposeUiApi",
-            "androidx.compose.foundation.ExperimentalFoundationApi",
-            "com.google.accompanist.pager.ExperimentalPagerApi",
-            "androidx.compose.material.ExperimentalMaterialApi",
-            "androidx.compose.animation.ExperimentalAnimationApi",
-        )
-        freeCompilerArgs += optIns.map { "-Xopt-in=$it" } + listOf(
-            "-Xskip-prerelease-check",
-        )
+        freeCompilerArgs += composeOptIns.map { "-Xopt-in=$it" }
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true

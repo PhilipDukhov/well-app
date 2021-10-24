@@ -5,6 +5,7 @@ import com.well.modules.androidUi.customViews.GradientView
 import com.well.modules.androidUi.customViews.clickable
 import com.well.modules.androidUi.customViews.swipeableLeftRight
 import com.well.modules.androidUi.ext.backgroundKMM
+import com.well.modules.androidUi.ext.thenOrNull
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.androidUi.theme.body1Light
 import com.well.modules.features.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature.Msg
@@ -22,6 +23,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -31,6 +33,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyVerticalGrid
@@ -48,6 +51,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,9 +61,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.insets.navigationBarsPadding
@@ -84,8 +91,8 @@ fun CurrentUserAvailabilityView(
         var selectedDate by rememberSaveable(state.monthOffset) {
             mutableStateOf<LocalDate?>(null)
         }
-        val selectedItem = remember(state.days, selectedDate) {
-            state.days.firstNotNullOfOrNull { weekDays ->
+        val selectedItem = remember(state.weeks, selectedDate) {
+            state.weeks.firstNotNullOfOrNull { weekDays ->
                 weekDays.firstOrNull { it.date == selectedDate }
             }
         }
@@ -101,15 +108,15 @@ fun CurrentUserAvailabilityView(
                 onSelectDate = {
                     selectedDate = if (selectedDate == it) null else it
                 },
-                onSwipeLeft = {
+                showNextMonth = {
                     listener(Msg.NextMonth)
                 },
-                onSwipeRight = {
+                showPrevMonth = {
                     listener(Msg.PrevMonth)
                 },
             )
         }
-        Availabilities(
+        AvailabilitiesList(
             selectedItem = selectedItem,
             allAvailabilities = state.monthAvailabilities,
             onSelect = {
@@ -135,9 +142,9 @@ fun CurrentUserAvailabilityView(
                             Strings.delete,
                             textStyle = MaterialTheme.typography.button.copy(color = Color.RadicalRed.toColor()),
                             onClick = {
-                            setPresentingDialog(null)
-                            listener(Msg.Delete(presentingDialog.availability.id))
-                        })
+                                setPresentingDialog(null)
+                                listener(Msg.Delete(presentingDialog.availability.id))
+                            })
                     }
                 }
             ) {
@@ -178,66 +185,22 @@ fun CurrentUserAvailabilityView(
 }
 
 @Composable
-private fun Availabilities(
-    selectedItem: State.CalendarItem?,
-    allAvailabilities: List<Availability>,
-    onSelect: (Availability) -> Unit,
-    onCreate: (State.CalendarItem) -> Unit,
-) {
-    LazyVerticalGrid(
-        cells = GridCells.Fixed(3),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        contentPadding = PaddingValues(vertical = 10.dp),
-        modifier = Modifier.navigationBarsPadding()
-    ) {
-        items(selectedItem?.availabilities ?: allAvailabilities) { availability ->
-            AvailabilityCell(
-                onClick = {
-                    onSelect(availability)
-                }
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    if (selectedItem == null) {
-                        Text(availability.startDay.localizedDayAndShortMonth)
-                    }
-                    AutoSizeText(availability.intervalString)
-                }
-            }
-        }
-        selectedItem?.let { selectedItem ->
-            if (selectedItem.canCreateAvailability) {
-                item {
-                    AvailabilityCell(
-                        onClick = {
-                            onCreate(selectedItem)
-                        }
-                    ) {
-                        Icon(Icons.Default.Add, contentDescription = null)
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
 private fun CalendarView(
     state: State,
     selectedDate: LocalDate?,
     onSelectDate: (LocalDate) -> Unit,
-    onSwipeLeft: () -> Unit,
-    onSwipeRight: () -> Unit,
+    showNextMonth: () -> Unit,
+    showPrevMonth: () -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
             .swipeableLeftRight(
-                onLeft = onSwipeLeft,
-                onRight = onSwipeRight
+                onLeft = showNextMonth,
+                onRight = showPrevMonth
             )
     ) {
         item(key = "month_title_${state.month}") {
-            TitleView(state, onLeft = onSwipeRight, onRight = onSwipeLeft)
+            CalendarTitleView(state, onLeft = showPrevMonth, onRight = showNextMonth)
         }
         item(key = "week_days") {
             Row(
@@ -255,16 +218,16 @@ private fun CalendarView(
             }
         }
         itemsIndexed(
-            state.days,
+            state.weeks,
             key = { i, _ -> "week_${state.month}_${i}" }
-        ) { _, weekDays ->
+        ) { _, week ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 3.dp)
             ) {
-                weekDays.forEach { day ->
+                week.forEach { day ->
                     DayView(day, selectedDate) {
                         onSelectDate(day.date)
                     }
@@ -275,9 +238,82 @@ private fun CalendarView(
 }
 
 @Composable
+private fun AvailabilitiesList(
+    selectedItem: State.CalendarItem?,
+    allAvailabilities: List<Availability>,
+    onSelect: (Availability) -> Unit,
+    onCreate: (State.CalendarItem) -> Unit,
+) {
+    val cellsCount = 3
+    val padding = 10.dp
+    CalculateAspectRatio(
+        cellsCount = cellsCount,
+        padding = padding,
+    ) { aspectRatio ->
+        LazyVerticalGrid(
+            cells = GridCells.Fixed(cellsCount),
+            verticalArrangement = Arrangement.spacedBy(padding),
+            horizontalArrangement = Arrangement.spacedBy(padding),
+            contentPadding = PaddingValues(vertical = padding),
+            modifier = Modifier.navigationBarsPadding()
+        ) {
+            items(selectedItem?.availabilities ?: allAvailabilities) { availability ->
+                AvailabilityCell(
+                    firstRowText = selectedItem?.let { null }
+                        ?: availability.startDay.localizedDayAndShortMonth,
+                    secondRowText = availability.intervalString,
+                    onClick = {
+                        onSelect(availability)
+                    },
+                    aspectRatio = aspectRatio,
+                )
+            }
+            selectedItem?.let { selectedItem ->
+                if (selectedItem.canCreateAvailability) {
+                    item {
+                        AvailabilityCell(
+                            onClick = {
+                                onCreate(selectedItem)
+                            },
+                            aspectRatio = aspectRatio,
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = null)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun AvailabilityCell(
-    onClick: (() -> Unit)? = null,
-    content: @Composable BoxScope.() -> Unit
+    firstRowText: String?,
+    secondRowText: String,
+    aspectRatio: Float?,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+) {
+    AvailabilityCell(
+        onClick = onClick,
+        aspectRatio = aspectRatio,
+        modifier = modifier,
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            firstRowText?.let {
+                AutoSizeText(it)
+            }
+            AutoSizeText(secondRowText)
+        }
+    }
+}
+
+@Composable
+private fun AvailabilityCell(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    aspectRatio: Float?,
+    content: @Composable BoxScope.() -> Unit,
 ) {
     val shape = RoundedCornerShape(14.dp)
     Box(
@@ -291,8 +327,8 @@ private fun AvailabilityCell(
             }
         },
         contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .aspectRatio(1.89f)
+        modifier = modifier
+            .thenOrNull(aspectRatio?.let(Modifier::aspectRatio))
             .clip(shape)
             .clickable(onClick = onClick)
             .backgroundKMM(Color.LightBlue15, shape = shape)
@@ -301,7 +337,7 @@ private fun AvailabilityCell(
 }
 
 @Composable
-private fun TitleView(
+private fun CalendarTitleView(
     state: State,
     onLeft: () -> Unit,
     onRight: () -> Unit,
@@ -312,7 +348,7 @@ private fun TitleView(
             Icon(Icons.Default.ArrowBack, contentDescription = "")
         }
         Text(
-            state.month.localizedName + (state.year?.let { ", $it" } ?: ""),
+            state.calendarTitle,
             style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.Light),
         )
         IconButton(onClick = onRight) {
@@ -321,7 +357,6 @@ private fun TitleView(
         Spacer(Modifier.weight(1f))
     }
 }
-
 
 @Composable
 private fun RowScope.DayView(
@@ -367,7 +402,7 @@ private fun RowScope.DayView(
                         gradient = Gradient.Main,
                         modifier = Modifier
                             .matchParentSize()
-                            .alpha(if (selectedDate == day.date) 1f else 0.5f)
+                            .alpha(if (selected) 1f else 0.5f)
                     )
                 }
                 selected -> {
@@ -403,6 +438,33 @@ private fun RowScope.DayView(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun CalculateAspectRatio(
+    @Suppress("SameParameterValue")
+    cellsCount: Int,
+    padding: Dp,
+    content: @Composable (Float) -> Unit
+) {
+    BoxWithConstraints {
+        val (aspectRatio, setAspectRatio) = remember { mutableStateOf<Float?>(null) }
+        if (aspectRatio == null) {
+            AvailabilityCell(
+                firstRowText = "",
+                secondRowText = "",
+                aspectRatio = null,
+                modifier = Modifier
+                    .drawWithContent { }
+                    .width((maxWidth - padding * (cellsCount - 1)) / cellsCount)
+                    .onSizeChanged {
+                        setAspectRatio(it.width.toFloat() / it.height)
+                    }
+            )
+        } else {
+            content(aspectRatio)
         }
     }
 }

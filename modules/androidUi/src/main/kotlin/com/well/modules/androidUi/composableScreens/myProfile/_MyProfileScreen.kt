@@ -70,7 +70,7 @@ fun ColumnScope.MyProfileScreen(
         )
     }
     val availabilityState = state.availabilityState
-    var selectedTab by rememberSaveable {
+    var selectedTab by rememberSaveable(availabilityState != null) {
         mutableStateOf(
             availabilityState?.let {
                 Feature.Tabs.ProfileInformation
@@ -89,7 +89,6 @@ fun ColumnScope.MyProfileScreen(
             rightItemBeforeAction = rightItemBeforeAction,
             extraContent = {
                 if (selectedTab != null && state.editingStatus == State.EditingStatus.Preview) {
-                    Napier.d("selectedTab $selectedTab")
                     TabRow(
                         selectedTabIndex = Feature.Tabs.values().indexOf(selectedTab!!),
                         backgroundColor = Color.Transparent.toColor(),
@@ -97,9 +96,14 @@ fun ColumnScope.MyProfileScreen(
                     ) {
                         Feature.Tabs.values().forEach { tab ->
                             Tab(
-                                text = { Text(tab.title) },
+                                text = {
+                                    Text(
+                                        tab.title,
+                                        style = MaterialTheme.typography.body2,
+                                    )
+                                },
                                 selected = selectedTab == tab,
-                                onClick = { selectedTab = tab }
+                                onClick = { selectedTab = tab },
                             )
                         }
                     }

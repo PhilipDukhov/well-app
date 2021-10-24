@@ -2,86 +2,42 @@
 
 package com.well.androidAppTest
 
-import androidx.compose.foundation.layout.ColumnScope
+import com.well.modules.androidUi.customViews.rememberPreference
+import com.well.modules.androidUi.composableScreens.myProfile.MyProfileScreen
+import com.well.sharedMobileTest.MyProfileTestModel
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Switch
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import com.google.accompanist.insets.navigationBarsPadding
 
 @Composable
-internal fun ColumnScope.MyProfileTest() {
-//    val viewModel = viewModel<TestViewModel>(factory = object : ViewModelProvider.Factory {
-//        override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-//            TestViewModel() as T
-//    })
-//    MyProfileScreen(
-//        state = viewModel.state,
-//        listener = viewModel::listener
-//    )
-}
+internal fun MyProfileTest() {
+    var isCurrent by rememberPreference(booleanPreferencesKey("MyProfileTest_isCurrent"), false)
+    val viewModel = remember(isCurrent) {
+        MyProfileTestModel(isCurrent)
+    }
+    Box {
+        Column {
+            MyProfileScreen(
+                state = viewModel.state.collectAsState().value,
+                listener = viewModel::listener
+            )
+        }
 
-//private class TestViewModel : ViewModel() {
-//    var state by mutableStateOf(Feature.testState(false))
-//        private set
-//
-//    fun listener(msg: Msg) {
-//        val (newState, effs) = Feature.reducer(msg, state)
-//        state = newState
-//        println("$msg ${newState.requestConsultationState}")
-//        effHandler(effs)
-//    }
-//
-//    private fun effHandler(effs: Set<Eff>) {
-//        effs.forEach { eff ->
-//            when (eff) {
-//                is Eff.RequestConsultationEff -> {
-//                    consultationJobs += viewModelScope.launch {
-//                        requestConsultationEffHandler(eff.eff)
-//                    }
-//                }
-//                is Eff.CloseConsultationRequest -> consultationJobs.forEach { it.cancel() }
-//                else -> Unit
-//            }
-//        }
-//    }
-//
-//    private val consultationJobs = mutableListOf<Job>()
-//
-//    private var bookingCounter = 0
-//
-//    private suspend fun requestConsultationEffHandler(eff: RequestConsultationFeature.Eff) {
-//        when (eff) {
-//            is RequestConsultationFeature.Eff.Close -> {
-//                delay(eff.timeoutMillis)
-//                listener(Msg.CloseConsultationRequest)
-//            }
-//            is RequestConsultationFeature.Eff.Book -> {
-//                delay(3000)
-//                if (bookingCounter % 2 == 0) {
-//                    listener(
-//                        Msg.RequestConsultationMsg(
-//                            RequestConsultationFeature.Msg.BookingFailed(
-//                                reason = "some error",
-//                                newAvailabilities = null
-//                            )
-//                        )
-//                    )
-//                } else {
-//                    listener(Msg.RequestConsultationMsg(RequestConsultationFeature.Msg.Booked))
-//                }
-//                bookingCounter += 1
-//            }
-//            RequestConsultationFeature.Eff.Update -> {
-//                delay(500)
-//                listener(
-//                    Msg.RequestConsultationMsg(
-//                        RequestConsultationFeature.Msg.UpdateAvailabilities(
-//                            Availability.testValues
-//                        )
-//                    )
-//                )
-//            }
-//            is RequestConsultationFeature.Eff.ClearFailedState -> {
-//                delay(eff.timeoutMillis)
-//                listener(Msg.RequestConsultationMsg(RequestConsultationFeature.Msg.ClearFailedState))
-//            }
-//        }
-//    }
-//}
+        Switch(
+            checked = isCurrent,
+            onCheckedChange = { isCurrent = !isCurrent },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .navigationBarsPadding()
+        )
+    }
+}

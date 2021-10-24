@@ -4,6 +4,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
 import org.gradle.kotlin.dsl.add
+import org.gradle.kotlin.dsl.dependencies
 import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
@@ -180,3 +181,23 @@ fun KotlinTargetContainerWithNativeShortcuts.iosWithSimulator(config: KotlinNati
 
 fun DependencyHandlerScope.coreLibraryDesugaring() =
     add("coreLibraryDesugaring", "com.android.tools:desugar_jdk_libs:1.1.5")
+
+val composeOptIns = listOf(
+    "androidx.compose.ui.ExperimentalComposeUiApi",
+    "androidx.compose.foundation.ExperimentalFoundationApi",
+    "com.google.accompanist.pager.ExperimentalPagerApi",
+    "androidx.compose.material.ExperimentalMaterialApi",
+    "androidx.compose.animation.ExperimentalAnimationApi",
+    "coil.annotation.ExperimentalCoilApi",
+)
+
+//fun Project.enableDesugaring() {
+//    dependencies {
+//        coreLibraryDesugaring()
+//    }
+//    android {
+//        compileOptions {
+//            isCoreLibraryDesugaringEnabled = true
+//        }
+//    }
+//}
