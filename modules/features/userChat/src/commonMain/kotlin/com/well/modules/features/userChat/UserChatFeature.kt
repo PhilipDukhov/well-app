@@ -10,7 +10,7 @@ import com.well.modules.viewHelpers.chatMessageWithStatus.ChatMessageWithStatus
 
 object UserChatFeature {
     data class State(
-        internal val peerId: UserId,
+        val peerId: UserId,
         val user: User? = null,
         val backToUser: Boolean,
         val messages: List<ChatMessageWithStatus> = listOf(),

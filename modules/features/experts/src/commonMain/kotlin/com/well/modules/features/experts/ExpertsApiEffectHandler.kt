@@ -3,14 +3,14 @@ package com.well.modules.features.experts
 import com.well.modules.atomic.asCloseable
 import com.well.modules.db.users.UsersDatabase
 import com.well.modules.db.users.toUser
+import com.well.modules.features.experts.ExpertsFeature.Eff
+import com.well.modules.features.experts.ExpertsFeature.Msg
 import com.well.modules.models.UserId
 import com.well.modules.models.UsersFilter
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.utils.puerh.EffectHandler
 import com.well.modules.networking.NetworkManager
 import com.well.modules.networking.combineToNetworkConnectedState
-import com.well.sharedMobile.puerh.experts.ExpertsFeature.Eff
-import com.well.sharedMobile.puerh.experts.ExpertsFeature.Msg
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.CoroutineScope
@@ -67,7 +67,7 @@ class ExpertsApiEffectHandler(
                     filterFlow
                         .combineToNetworkConnectedState(networkManager)
                         .collect {
-                            networkManager.send(WebSocketMsg.Front.SetExpertsFilter(it))
+                            networkManager.sendFront(WebSocketMsg.Front.SetExpertsFilter(it))
                         }
                 }.asCloseable(),
             ).forEach(::addCloseableChild)

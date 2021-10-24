@@ -21,6 +21,7 @@ kotlin {
                 "kotlin.serializationJson",
                 "kotlin.stdLib",
                 "ktor.client.core",
+                "ktor.client.logging",
                 "ktor.utils",
                 "shared.napier",
             )

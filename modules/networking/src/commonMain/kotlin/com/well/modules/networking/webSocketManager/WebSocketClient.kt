@@ -1,6 +1,7 @@
 package com.well.modules.networking.webSocketManager
 
-import com.well.modules.networking.createBaseServerClient
+import com.well.modules.utils.createBaseServerClient
+import io.github.aakira.napier.LogLevel
 import io.ktor.client.*
 import io.ktor.client.features.*
 import io.ktor.client.features.logging.*
@@ -28,7 +29,7 @@ internal class WebSocketClient(val config: Config) {
             }
             install(WebSockets)
             install(Logging) {
-                level = LogLevel.ALL
+                level = io.ktor.client.features.logging.LogLevel.ALL
             }
         }
     }

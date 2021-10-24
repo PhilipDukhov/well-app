@@ -4,15 +4,11 @@ import com.well.modules.models.FavoriteSetter
 import com.well.modules.models.User
 import com.well.modules.models.UsersFilter
 import com.well.modules.utils.map
-import com.well.modules.utils.platform.Platform
-import com.well.modules.utils.platform.isDebug
 import com.well.modules.networking.NetworkManager
 import com.well.modules.networking.NetworkManager.Status.Disconnected
 import com.well.modules.utils.toSetOf
 import com.well.modules.utils.withEmptySet
 import com.well.modules.networking.NetworkManager.Status.Connected
-import com.well.modules.features.call.CallFeature
-import com.well.modules.features.call.drawing.DrawingFeature
 import com.well.modules.features.experts.filter.FilterFeature
 
 object ExpertsFeature {

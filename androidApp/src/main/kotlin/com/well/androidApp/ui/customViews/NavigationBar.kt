@@ -1,13 +1,10 @@
 package com.well.androidApp.ui.customViews
 
-import com.well.modules.utils.NavigationBarModel
+import com.well.modules.viewHelpers.NavigationBarModel
 import com.well.modules.viewHelpers.Gradient
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding

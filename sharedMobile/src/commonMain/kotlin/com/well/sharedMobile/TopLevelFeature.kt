@@ -19,7 +19,7 @@ import com.well.modules.features.more.support.SupportFeature
 import com.well.modules.features.myProfile.MyProfileFeature
 import com.well.modules.features.userChat.UserChatFeature
 import com.well.modules.features.welcome.WelcomeFeature
-import com.well.sharedMobile.puerh._topLevel.ScreenState
+import com.well.modules.viewHelpers.Alert
 
 // remove build/tmp/kapt3 after updating features to refresh cache
 @ScreenStates(
@@ -46,7 +46,7 @@ object TopLevelFeature {
         selectedScreenPosition = ScreenPosition(Tab.Login, 0),
     )
 
-    fun initialEffects(): Set<Eff> = setOf(
+    internal fun initialEffects(): Set<Eff> = setOf(
         Eff.Initial,
     )
 
@@ -152,7 +152,7 @@ object TopLevelFeature {
         object Pop : Msg()
     }
 
-    sealed class Eff {
+    internal sealed class Eff {
         data class ShowAlert(val alert: Alert) : Eff()
         object SystemBack : Eff()
         object Initial : Eff()
@@ -170,7 +170,7 @@ object TopLevelFeature {
         data class SupportEff(val eff: SupportFeature.Eff) : Eff()
     }
 
-    fun reducer(
+    internal fun reducer(
         msg: Msg,
         state: State,
     ): ReducerResult = run state@{

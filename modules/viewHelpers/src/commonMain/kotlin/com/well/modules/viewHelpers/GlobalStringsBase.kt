@@ -1,7 +1,5 @@
 package com.well.modules.viewHelpers
 
-internal object Strings : GlobalStringsBase()
-
 open class GlobalStringsBase {
     val add = "Add"
     val cancel = "Cancel"

@@ -18,6 +18,7 @@ import com.well.modules.networking.webSocketManager.WebSocketClient
 import com.well.modules.networking.webSocketManager.WebSocketSession
 import com.well.modules.networking.webSocketManager.ws
 import com.well.modules.features.call.resizedImage
+import com.well.modules.utils.Constants
 import io.github.aakira.napier.Napier
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
@@ -33,7 +34,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -114,9 +114,9 @@ class NetworkManager(
         }.apply(::addCloseableChild)
     }
 
-    suspend fun send(msg: WebSocketMsg.Front) = send(msg as WebSocketMsg)
+    suspend fun sendFront(msg: WebSocketMsg.Front) = send(msg as WebSocketMsg)
 
-    suspend fun send(msg: WebSocketMsg.Call) = send(msg as WebSocketMsg)
+    suspend fun sendCall(msg: WebSocketMsg.Call) = send(msg as WebSocketMsg)
 
     private suspend fun send(msg: WebSocketMsg) {
         try {

@@ -22,6 +22,7 @@ kotlin {
                 ":modules:models",
                 ":modules:db:helperDb",
                 ":modules:utils",
+                ":modules:flowHelper",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",
                 "sqldelight.coroutinesExtensions",

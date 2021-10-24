@@ -13,28 +13,6 @@ import com.well.modules.db.mobile.DatabaseManager
 import com.well.modules.db.users.UsersDatabase
 import com.well.modules.db.users.getByIdFlow
 import com.well.modules.db.users.insertOrReplace
-import com.well.modules.models.WebSocketMsg
-import com.well.modules.models.chat.ChatMessage
-import com.well.modules.utils.AppContext
-import com.well.modules.utils.dataStore.AuthInfo
-import com.well.modules.utils.dataStore.authInfo
-import com.well.modules.utils.dataStore.welcomeShowed
-import com.well.modules.utils.permissionsHandler.PermissionsHandler
-import com.well.modules.utils.platform.Platform
-import com.well.modules.utils.platform.isDebug
-import com.well.modules.utils.puerh.ExecutorEffectHandler
-import com.well.modules.utils.puerh.ExecutorEffectsInterpreter
-import com.well.modules.utils.puerh.SyncFeature
-import com.well.modules.utils.puerh.adapt
-import com.well.modules.utils.puerh.wrapWithEffectHandler
-import com.well.modules.networking.NetworkManager
-import com.well.sharedMobile.Alert
-import com.well.sharedMobile.ContextHelper
-import com.well.sharedMobile.ScreenState
-import com.well.sharedMobile.TopLevelFeature
-import com.well.sharedMobile.TopLevelFeature.Eff
-import com.well.sharedMobile.TopLevelFeature.Msg
-import com.well.sharedMobile.WebAuthenticator
 import com.well.modules.features.call.webRtc.WebRtcManagerI
 import com.well.modules.features.experts.ExpertsFeature
 import com.well.modules.features.login.LoginFeature
@@ -49,6 +27,28 @@ import com.well.modules.features.myProfile.MyProfileFeature
 import com.well.modules.features.userChat.UserChatEffHandler
 import com.well.modules.features.userChat.UserChatFeature
 import com.well.modules.features.welcome.WelcomeFeature
+import com.well.modules.models.WebSocketMsg
+import com.well.modules.networking.NetworkManager
+import com.well.modules.utils.AppContext
+import com.well.modules.utils.dataStore.AuthInfo
+import com.well.modules.utils.dataStore.authInfo
+import com.well.modules.utils.dataStore.welcomeShowed
+import com.well.modules.utils.permissionsHandler.PermissionsHandler
+import com.well.modules.utils.platform.Platform
+import com.well.modules.utils.platform.isDebug
+import com.well.modules.utils.puerh.ExecutorEffectHandler
+import com.well.modules.utils.puerh.ExecutorEffectsInterpreter
+import com.well.modules.utils.puerh.Feature
+import com.well.modules.utils.puerh.SyncFeature
+import com.well.modules.utils.puerh.adapt
+import com.well.modules.utils.puerh.wrapWithEffectHandler
+import com.well.modules.viewHelpers.Alert
+import com.well.modules.viewHelpers.ContextHelper
+import com.well.modules.viewHelpers.WebAuthenticator
+import com.well.sharedMobile.ScreenState
+import com.well.sharedMobile.TopLevelFeature
+import com.well.sharedMobile.TopLevelFeature.Eff
+import com.well.sharedMobile.TopLevelFeature.Msg
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -56,14 +56,18 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class FeatureProvider(
-    val appContext: AppContext,
-    internal val webRtcManagerGenerator: (List<String>, WebRtcManagerI.Listener) -> WebRtcManagerI,
+internal class FeatureProviderImpl(
+    private val appContext: AppContext,
+    val webRtcManagerGenerator: (List<String>, WebRtcManagerI.Listener) -> WebRtcManagerI,
     providerGenerator: (SocialNetwork, AppContext, WebAuthenticator) -> CredentialProvider,
+): Feature<Msg, TopLevelFeature.State, Eff> by SyncFeature(
+    TopLevelFeature.initialState(),
+    TopLevelFeature.initialEffects(),
+    TopLevelFeature::reducer,
+    Dispatchers.Default
 ) {
-    internal val coroutineContext = Dispatchers.Default
-    internal var sessionInfo by AtomicCloseableRef<SessionInfo>()
-    internal val socialNetworkService = SocialNetworkService { network ->
+    var sessionInfo by AtomicCloseableRef<SessionInfo>()
+    val socialNetworkService = SocialNetworkService { network ->
         when (network) {
             SocialNetwork.Twitter -> {
                 OAuthCredentialProvider("twitter", contextHelper)
@@ -71,18 +75,18 @@ class FeatureProvider(
             else -> providerGenerator(network, appContext, contextHelper)
         }
     }
-    internal val platform = Platform(appContext)
-    internal val permissionsHandler = PermissionsHandler(appContext.permissionsHandlerContext)
-    internal val coroutineScope = CoroutineScope(coroutineContext)
-    internal val contextHelper = ContextHelper(appContext)
-    internal var networkManager by AtomicCloseableLateInitRef<NetworkManager>()
-    internal val nonInitializedAuthInfo = AtomicLateInitRef<AuthInfo>()
-    internal val callCloseableContainer = CloseableContainer()
+    val platform = Platform(appContext)
+    val permissionsHandler = PermissionsHandler(appContext.permissionsHandlerContext)
+    val coroutineScope = CoroutineScope(coroutineContext)
+    val contextHelper = ContextHelper(appContext)
+    var networkManager by AtomicCloseableLateInitRef<NetworkManager>()
+    val nonInitializedAuthInfo = AtomicLateInitRef<AuthInfo>()
+    val callCloseableContainer = CloseableContainer()
     private var topScreenHandlerCloseable by AtomicCloseableRef<Closeable>()
-    internal val databaseManager = DatabaseManager(appContext)
-    internal val usersDatabase: UsersDatabase
+    val databaseManager = DatabaseManager(appContext)
+    val usersDatabase: UsersDatabase
         get() = databaseManager.usersDatabase
-    internal val messagesDatabase: ChatMessagesDatabase
+    val messagesDatabase: ChatMessagesDatabase
         get() = databaseManager.messagesDatabase
 
     private val effectInterpreter: ExecutorEffectsInterpreter<Eff, Msg> =
@@ -165,9 +169,9 @@ class FeatureProvider(
                         is AboutFeature.Eff.OpenLink -> {
                             contextHelper.openUrl(eff.eff.link)
                         }
-                        is AboutFeature.Eff.Push -> {
-                            error("${eff.eff} should be handler in screen state")
-                        }
+//                        is AboutFeature.Eff.Push -> {
+//                            error("${eff.eff} should be handler in screen state")
+//                        }
                     }
                 }
                 is Eff.MoreEff -> {
@@ -234,13 +238,13 @@ class FeatureProvider(
                         }
                         is ScreenState.UserChat -> {
                             val peerId = eff.screen.state.peerId
-                            topScreenHandlerCloseable = feature.wrapWithEffectHandler(
+                            topScreenHandlerCloseable = wrapWithEffectHandler(
                                 UserChatEffHandler(
                                     currentUid = sessionInfo!!.uid,
                                     peerUid = peerId,
                                     services = UserChatEffHandler.Services(
                                         createChatMessage = {
-                                            networkManager.send(
+                                            networkManager.sendFront(
                                                 WebSocketMsg.Front.CreateChatMessage(
                                                     it
                                                 )
@@ -269,26 +273,19 @@ class FeatureProvider(
             }
         }
 
-    val feature = SyncFeature(
-        TopLevelFeature.initialState(),
-        TopLevelFeature.initialEffects(),
-        TopLevelFeature::reducer,
-        coroutineContext
-    )
-
     init {
         // preventing iOS InvalidMutabilityException
         val handler = ExecutorEffectHandler(
             effectInterpreter,
             coroutineScope,
         )
-        feature.wrapWithEffectHandler(
+        wrapWithEffectHandler(
             handler
         )
         handler.freeze()
     }
 
-    internal fun webSocketMessageHandler(
+    fun webSocketMessageHandler(
         msg: WebSocketMsg,
         listener: (Msg) -> Unit,
     ) {

@@ -1,5 +1,6 @@
 package com.well.modules.db.users
 
+import com.well.modules.flowHelper.mapIterable
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import com.well.modules.models.User
@@ -49,6 +50,12 @@ fun UsersQueries.getByIdFlow(uid: UserId) =
         .mapToOneOrNull()
         .filterNotNull()
         .map(Users::toUser)
+
+fun UsersQueries.getByIdsFlow(uids: List<UserId>) =
+    getByIds(uids)
+        .asFlow()
+        .mapToList()
+        .mapIterable(Users::toUser)
 
 fun Users.toUser() = User(
     id = id,

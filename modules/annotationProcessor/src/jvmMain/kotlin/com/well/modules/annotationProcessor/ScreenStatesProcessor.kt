@@ -328,6 +328,7 @@ class FeatureInfo(
     val featureMsgClassName = featureClassName.nestedClass("Msg")
     val featureEffClassName = featureClassName.nestedClass("Eff")
     val screenClassName = containerInfo.screenStateClassName.nestedClass(featureShortName)
+    val featureScreenState = processingEnv.elementUtils.getTypeElement("$featurePackage.ScreenState")
 
     fun featureClass() =
         TypeSpec
@@ -408,16 +409,34 @@ class FeatureInfo(
                             it to pushEff.screen
                         }.firstOrNull()
                             ?.%3T { pushEff, screen ->
-                                return newState.copyPush(screen = screen) to
-                                        effs.toMutableSet().apply {
-                                            remove(pushEff)
-                                            add(%1T.TopScreenUpdated(screen))
-                                        }
-                            }
+                                val mappedScreen = when (screen) {
                         """.trimIndent(),
                         containerInfo.containerFeatureEffClassName,
                         featurePushEff,
                         containerInfo.letNamedClassName,
+                    )
+                    featureScreenState.enclosedElements
+                        .filter { it.kind != ElementKind.CONSTRUCTOR }
+                        .forEach { screenState ->
+                        addStatement(
+                            """
+                            is $screenState -> { 
+                                ScreenState.${screenState.simpleName}(screen.state)
+                            }
+                            """.trimIndent()
+                        )
+                    }
+                    addStatement(
+                        """
+                                }
+                                return newState.copyPush(screen = mappedScreen) to
+                                        effs.toMutableSet().apply {
+                                            remove(pushEff)
+                                            add(%1T.TopScreenUpdated(mappedScreen))
+                                        }
+                            }
+                        """.trimIndent(),
+                        containerInfo.containerFeatureEffClassName
                     )
                 }
             }

@@ -4,23 +4,27 @@ import com.well.modules.atomic.CloseableFuture
 import com.well.modules.atomic.freeze
 import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
-import com.well.modules.viewHelpers.permissionsHandler.PermissionsHandler
-import com.well.modules.viewHelpers.permissionsHandler.requestPermissions
-import com.well.modules.viewHelpers.puerh.addEffectHandler
-import com.well.sharedMobile.Alert
-import com.well.sharedMobile.SuspendAction
+import com.well.modules.utils.permissionsHandler.PermissionsHandler
+import com.well.modules.utils.permissionsHandler.requestPermissions
+import com.well.modules.utils.puerh.addEffectHandler
+import com.well.modules.viewHelpers.Alert
+import com.well.modules.viewHelpers.SuspendAction
 import com.well.sharedMobile.TopLevelFeature
-import com.well.sharedMobile.pickSystemImageSafe
-import com.well.sharedMobile.showSheetThreadSafe
+import com.well.modules.viewHelpers.pickSystemImageSafe
+import com.well.modules.viewHelpers.showSheetThreadSafe
 import com.well.modules.features.call.CallEffectHandler
 import com.well.modules.features.call.CallFeature
 import com.well.modules.features.call.drawing.DrawingFeature
-import com.well.modules.viewHelpers.puerh.adapt
+import com.well.modules.utils.puerh.FeatureProvider
+import com.well.modules.utils.puerh.adapt
+import com.well.modules.utils.sharedImage.ImageContainer
 import com.well.sharedMobile.TopLevelFeature.Msg as TopLevelMsg
 import com.well.modules.features.call.CallFeature.Msg as CallMsg
 import com.well.modules.features.call.drawing.DrawingFeature.Msg as DrawingMsg
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.launch
 
-internal suspend fun FeatureProvider.handleCallEff(
+internal suspend fun FeatureProviderImpl.handleCallEff(
     eff: CallFeature.Eff,
     listener: (TopLevelMsg) -> Unit,
 ) {
@@ -37,7 +41,7 @@ internal suspend fun FeatureProvider.handleCallEff(
             )
         }
         is CallFeature.Eff.End -> {
-            networkManager.send(
+            networkManager.sendCall(
                 WebSocketMsg.Call.EndCall(WebSocketMsg.Call.EndCall.Reason.Decline)
             )
             endCall(listener)
@@ -54,7 +58,12 @@ internal suspend fun FeatureProvider.handleCallEff(
             contextHelper.showSheetThreadSafe(
                 coroutineScope,
                 SuspendAction("Draw on image") {
-                    pickSystemImage(listener)
+                    val image = contextHelper.pickSystemImageSafe()
+                    if (image != null) {
+                        listener.invokeDrawingMsg(
+                            DrawingMsg.LocalUpdateImage(image.toImageContainer())
+                        )
+                    }
                 },
                 SuspendAction("Draw on your own camera") {
                     startDrawing(
@@ -68,83 +77,71 @@ internal suspend fun FeatureProvider.handleCallEff(
                 },
             )
         }
-        is CallFeature.Eff.DrawingEff -> {
-            when (eff.eff) {
-                is DrawingFeature.Eff.NotifyViewSizeUpdate,
-                is DrawingFeature.Eff.UploadImage,
-                is DrawingFeature.Eff.UploadPaths,
-                is DrawingFeature.Eff.NotifyClear,
-                is DrawingFeature.Eff.ClearImage,
-                -> Unit
-                is DrawingFeature.Eff.RequestImageUpdate -> {
-                    handleRequestImageUpdate(eff.eff, listener)
-                }
-            }
-        }
+        is CallFeature.Eff.DrawingEff -> Unit
     }
 }
 
-private fun FeatureProvider.createWebRtcManagerHandler(
+private fun FeatureProviderImpl.createWebRtcManagerHandler(
     initiateEffect: CallFeature.Eff? = null,
 ) = CloseableFuture(coroutineScope) {
-    feature
-        .addEffectHandler(
-            CallEffectHandler(
-                networkManager,
-                webRtcManagerGenerator,
-                coroutineScope,
-            )
-                .apply {
-                    initiateEffect?.let { handleEffect(TopLevelFeature.Eff.CallEff(it)) }
-                }
+    addEffectHandler(
+        CallEffectHandler(
+            CallEffectHandler.Services(
+                isConnectedFlow = networkManager.isConnectedFlow,
+                callWebSocketMsgFlow = networkManager.webSocketMsgSharedFlow.filterIsInstance(),
+                sendCallWebSocketMsg = networkManager::sendCall,
+                sendFrontWebSocketMsg = networkManager::sendFront,
+                requestImageUpdate = { eff, updateImage ->
+                    coroutineScope.launch {
+                        handleRequestImageUpdate(eff, updateImage)
+                    }
+                },
+            ),
+            webRtcManagerGenerator,
+            coroutineScope,
+        ).apply {
+            initiateEffect?.let { handleEffect(it) }
+        }.adapt(
+            effAdapter = { (it as? TopLevelFeature.Eff.CallEff)?.eff },
+            msgAdapter = { TopLevelMsg.CallMsg(it) }
         )
+    )
 }
 
-private suspend fun FeatureProvider.handleRequestImageUpdate(
+private suspend fun FeatureProviderImpl.handleRequestImageUpdate(
     eff: DrawingFeature.Eff.RequestImageUpdate,
-    listener: (TopLevelMsg) -> Unit,
+    updateImage: (ImageContainer?) -> Unit,
 ) {
     if (eff.alreadyHasImage) {
         contextHelper.showSheetThreadSafe(
             coroutineScope,
             SuspendAction("Replace image") {
-                pickSystemImage(listener)
+                contextHelper.pickSystemImageSafe()?.let { updateImage(it.toImageContainer()) }
             },
             SuspendAction("Clear image") {
-                listener.invokeDrawingMsg(
-                    DrawingMsg.LocalUpdateImage(null)
-                )
+                updateImage(null)
             },
         )
     } else {
-        pickSystemImage(listener)
+        contextHelper.pickSystemImageSafe()?.let { updateImage(it.toImageContainer()) }
     }
 }
 
-private suspend fun FeatureProvider.pickSystemImage(listener: (TopLevelMsg) -> Unit) {
-    val image = contextHelper.pickSystemImageSafe()
-    if (image != null) {
-        listener.invokeDrawingMsg(
-            DrawingMsg.LocalUpdateImage(image.toImageContainer())
-        )
-    }
-}
-
-internal suspend fun FeatureProvider.handleCall(
+internal suspend fun FeatureProviderImpl.handleCall(
     user: User,
     listener: (TopLevelMsg) -> Unit,
 ) = handleCallPermissions()?.also {
     listener(TopLevelMsg.ShowAlert(it.first.alert))
 } ?: listener(TopLevelMsg.StartCall(user))
 
-internal fun FeatureProvider.endCall(
+internal fun FeatureProviderImpl.endCall(
     listener: (TopLevelMsg) -> Unit,
 ) {
     listener.invoke(TopLevelMsg.EndCall)
     callCloseableContainer.close()
 }
 
-internal suspend fun FeatureProvider.handleCallPermissions() =
+internal suspend fun FeatureProviderImpl.handleCallPermissions() =
     permissionsHandler
         .requestPermissions(
             PermissionsHandler.Type.Camera,

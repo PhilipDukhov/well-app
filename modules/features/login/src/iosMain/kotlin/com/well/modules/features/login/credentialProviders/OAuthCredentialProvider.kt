@@ -1,10 +1,10 @@
 package com.well.modules.features.login.credentialProviders
 
-import com.well.sharedMobile.ContextHelper
+import com.well.modules.viewHelpers.ContextHelper
 import platform.Foundation.NSURL
 import platform.UIKit.UIApplication
 
-internal actual class OAuthCredentialProvider actual constructor(
+actual class OAuthCredentialProvider actual constructor(
     name: String,
     contextHelper: ContextHelper,
 ) : CredentialProvider(contextHelper.appContext) {

@@ -1,9 +1,9 @@
 package com.well.modules.features.login.credentialProviders
 
 import com.well.modules.atomic.AtomicRef
-import com.well.modules.networking.Constants
-import com.well.modules.networking.createBaseServerClient
-import com.well.sharedMobile.ContextHelper
+import com.well.modules.utils.Constants
+import com.well.modules.utils.createBaseServerClient
+import com.well.modules.viewHelpers.ContextHelper
 import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.http.*

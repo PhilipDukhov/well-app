@@ -18,6 +18,7 @@ kotlin {
                 "kotlin.coroutines.core",
                 "kotlin.serializationJson",
                 "kotlin.stdLib",
+                "ktor.client.core",
                 "ktor.utils",
                 "shared.napier",
             )

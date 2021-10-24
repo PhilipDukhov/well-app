@@ -4,7 +4,6 @@ import com.well.modules.models.Availability
 import com.well.modules.models.AvailabilityId
 import com.well.modules.models.date.dateTime.daysShift
 import com.well.modules.models.date.dateTime.firstDayOfWeek
-import com.well.modules.models.date.dateTime.localizedName
 import com.well.modules.models.date.dateTime.monthOffset
 import com.well.modules.models.date.dateTime.today
 import com.well.modules.utils.toSetOf

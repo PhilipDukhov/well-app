@@ -1,18 +1,18 @@
 package com.well.modules.features.login
 
-import com.well.modules.networking.createBaseServerClient
 import com.well.modules.features.login.credentialProviders.AuthCredential
 import com.well.modules.features.login.credentialProviders.AuthCredential.*
 import com.well.modules.features.login.credentialProviders.CredentialProvider
 import com.well.modules.atomic.AtomicMutableMap
 import com.well.modules.models.AuthResponse
+import com.well.modules.utils.createBaseServerClient
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.invoke
 
-internal class SocialNetworkService(private val providerGenerator: (SocialNetwork) -> CredentialProvider) {
-    internal val credentialProviders = AtomicMutableMap<SocialNetwork, CredentialProvider>()
+class SocialNetworkService(private val providerGenerator: (SocialNetwork) -> CredentialProvider) {
+    val credentialProviders = AtomicMutableMap<SocialNetwork, CredentialProvider>()
     private val client = createBaseServerClient()
 
     suspend fun login(

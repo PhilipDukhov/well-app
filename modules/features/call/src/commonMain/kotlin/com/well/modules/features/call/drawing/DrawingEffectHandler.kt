@@ -1,26 +1,27 @@
-package com.well.sharedMobile.puerh.call.drawing
+package com.well.modules.features.call.drawing
 
 import com.well.modules.atomic.AtomicRef
 import com.well.modules.models.Path
 import com.well.modules.utils.sharedImage.asImageContainer
-import com.well.sharedMobile.puerh.call.CallFeature
-import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Eff
-import com.well.sharedMobile.puerh.call.drawing.DrawingFeature.Msg
-import com.well.sharedMobile.puerh.call.resizedImage
-import com.well.sharedMobile.puerh._topLevel.TopLevelFeature.Msg as TopLevelMsg
-import com.well.sharedMobile.puerh.call.webRtc.RtcMsg.ImageSharingContainer.Msg as RtcMsg
+import com.well.modules.features.call.CallFeature
+import com.well.modules.features.call.drawing.DrawingFeature.Eff
+import com.well.modules.features.call.drawing.DrawingFeature.Msg
+import com.well.modules.features.call.resizedImage
+import com.well.modules.features.call.webRtc.RtcMsg.ImageSharingContainer.Msg as RtcMsg
 import io.github.aakira.napier.Napier
 
-class DrawingEffectHandler(
+internal class DrawingEffectHandler(
     val webRtcSendListener: (RtcMsg) -> Unit,
+    val onRequestImageUpdate: (Eff.RequestImageUpdate) -> Unit
 ) {
     private var waitingForPathConfirmation by AtomicRef(false)
     private var pendingPaths by AtomicRef<List<Path>?>()
 
     fun handleEffect(eff: Eff) {
         when (eff) {
-            is Eff.RequestImageUpdate,
-            -> Unit
+            is Eff.RequestImageUpdate -> {
+                onRequestImageUpdate(eff)
+            }
             is Eff.NotifyViewSizeUpdate -> {
                 webRtcSendListener(
                     RtcMsg.UpdateImageContainerSize(
@@ -63,8 +64,8 @@ class DrawingEffectHandler(
         }
     }
 
-    fun handleDataChannelMessage(msg: RtcMsg): TopLevelMsg? =
-        TopLevelMsg.CallMsg(CallFeature.Msg.DrawingMsg(when (msg) {
+    fun handleDataChannelMessage(msg: RtcMsg): CallFeature.Msg? =
+        CallFeature.Msg.DrawingMsg(when (msg) {
             is RtcMsg.UpdateImage -> {
                 Msg.RemoteUpdateImage(msg.imageData?.asImageContainer())
             }
@@ -88,7 +89,7 @@ class DrawingEffectHandler(
             is RtcMsg.NotifyClear -> {
                 Msg.RemoteClear(msg.saveHistory, msg.date)
             }
-        })).also {
+        }).also {
             Napier.i("ImageSharingEffectHandler handleDataChannelMessage $msg $it")
         }
 }

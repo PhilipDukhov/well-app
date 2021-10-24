@@ -1,6 +1,7 @@
 package com.well.sharedMobile.featureProvider
 
 import com.well.modules.atomic.asCloseable
+import com.well.modules.db.users.getByIdsFlow
 import com.well.modules.db.users.insertOrReplace
 import com.well.modules.db.users.usersPresenceFlow
 import com.well.modules.models.AuthResponse
@@ -12,21 +13,22 @@ import com.well.modules.utils.puerh.adapt
 import com.well.modules.utils.puerh.wrapWithEffectHandler
 import com.well.modules.networking.NetworkManager
 import com.well.modules.networking.combineToNetworkConnectedState
-import com.well.sharedMobile.Alert
-import com.well.sharedMobile.ScreenState
+import com.well.modules.viewHelpers.Alert
 import com.well.sharedMobile.TopLevelFeature
 import com.well.modules.features.chatList.ChatListEffHandler
 import com.well.modules.features.experts.ExpertsApiEffectHandler
 import com.well.modules.features.login.LoginFeature
 import com.well.modules.features.login.SocialNetwork
 import com.well.modules.features.myProfile.MyProfileFeature
+import com.well.modules.utils.puerh.EffectHandler
+import com.well.sharedMobile.ScreenState
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-suspend fun FeatureProvider.socialNetworkLogin(
+internal suspend fun FeatureProviderImpl.socialNetworkLogin(
     socialNetwork: SocialNetwork,
     listener: (TopLevelFeature.Msg) -> Unit,
 ) {
@@ -41,7 +43,7 @@ suspend fun FeatureProvider.socialNetworkLogin(
     }
 }
 
-fun FeatureProvider.gotAuthResponse(
+internal fun FeatureProviderImpl.gotAuthResponse(
     authResponse: AuthResponse,
     listener: (TopLevelFeature.Msg) -> Unit,
 ) {
@@ -69,7 +71,7 @@ fun FeatureProvider.gotAuthResponse(
     }
 }
 
-fun FeatureProvider.loggedIn(
+internal fun FeatureProviderImpl.loggedIn(
     authInfo: AuthInfo,
     user: User? = null,
     listener: (TopLevelFeature.Msg) -> Unit,
@@ -81,7 +83,7 @@ fun FeatureProvider.loggedIn(
         logOut(listener)
     })
     val scope = CoroutineScope(coroutineContext)
-    val effectHandlers = listOf(
+    val effectHandlers = listOf<EffectHandler<TopLevelFeature.Eff, TopLevelFeature.Msg>>(
         ExpertsApiEffectHandler(
             networkManager,
             usersDatabase,
@@ -92,10 +94,19 @@ fun FeatureProvider.loggedIn(
         ),
         ChatListEffHandler(
             authInfo.id,
-            networkManager,
-            usersDatabase,
+            ChatListEffHandler.Services(
+                openUserChat = {
+                    listener(TopLevelFeature.Msg.OpenUserChat(it))
+                },
+                onConnectedFlow = networkManager.onConnectedFlow,
+                sendFrontWebSocketMsg = networkManager::sendFront,
+                getUsersByIds = usersDatabase.usersQueries::getByIdsFlow
+            ),
             messagesDatabase,
             scope,
+        ).adapt(
+            effAdapter = { (it as? TopLevelFeature.Eff.ChatListEff)?.eff },
+            msgAdapter = { TopLevelFeature.Msg.ChatListMsg(it) }
         ),
     )
     val webSocketListenerCloseable = coroutineScope.launch {
@@ -105,7 +116,7 @@ fun FeatureProvider.loggedIn(
                 webSocketMessageHandler(it, listener)
             }
     }.asCloseable()
-    (effectHandlers.map(feature::wrapWithEffectHandler) + listOf(
+    (effectHandlers.map(::wrapWithEffectHandler) + listOf(
         webSocketListenerCloseable,
         notifyUsersDBPresenceCloseable(),
         networkManager,
@@ -115,7 +126,7 @@ fun FeatureProvider.loggedIn(
     listener.invoke(TopLevelFeature.Msg.LoggedIn(authInfo.id))
 }
 
-fun FeatureProvider.logOut(listener: (TopLevelFeature.Msg) -> Unit) {
+internal fun FeatureProviderImpl.logOut(listener: (TopLevelFeature.Msg) -> Unit) {
     sessionInfo = null
     platform.dataStore.authInfo = null
     databaseManager.clear()
@@ -124,12 +135,12 @@ fun FeatureProvider.logOut(listener: (TopLevelFeature.Msg) -> Unit) {
 
 private fun AuthResponse.toAuthInfo() = AuthInfo(token = token, id = user.id)
 
-private fun FeatureProvider.notifyUsersDBPresenceCloseable() =
+private fun FeatureProviderImpl.notifyUsersDBPresenceCloseable() =
     coroutineScope.launch {
         usersDatabase.usersQueries.usersPresenceFlow()
             .combineToNetworkConnectedState(networkManager)
             .map { usersPresence ->
                 WebSocketMsg.Front.SetUsersPresence(usersPresence)
             }
-            .collect(networkManager::send)
+            .collect(networkManager::sendFront)
     }.asCloseable()

@@ -13,6 +13,7 @@ kotlin {
         usePredefinedExperimentalAnnotations()
         val commonMain by getting {
             libDependencies(
+                ":modules:atomic",
                 ":modules:db:chatMessagesDb",
                 ":modules:db:usersDb",
                 ":modules:flowHelper",

@@ -9,6 +9,7 @@ import com.well.modules.features.call.CallFeature.Eff
 import com.well.modules.features.call.CallFeature.Msg
 import com.well.modules.features.call.CallFeature.State
 import com.well.modules.features.call.drawing.DrawingEffectHandler
+import com.well.modules.features.call.drawing.DrawingFeature
 import com.well.modules.features.call.webRtc.RtcMsg
 import com.well.modules.features.call.webRtc.WebRtcManagerI
 import com.well.modules.features.call.webRtc.WebRtcManagerI.Listener.DataChannelState
@@ -16,6 +17,8 @@ import com.well.modules.models.Size
 import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.utils.puerh.EffectHandler
+import com.well.modules.utils.sharedImage.ImageContainer
+import com.well.modules.utils.sharedImage.LocalImage
 import com.well.modules.features.call.webRtc.RtcMsg.ImageSharingContainer.Msg.UpdateImage as ImgSharingUpdateImage
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
@@ -25,18 +28,34 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
-
 class CallEffectHandler(
-    private val networkManager: NetworkManager,
+    private val services: Services,
     webRtcManagerGenerator: (List<String>, WebRtcManagerI.Listener) -> WebRtcManagerI,
     coroutineScope: CoroutineScope,
-) : EffectHandler<TopLevelEff, TopLevelMsg>(coroutineScope) {
+) : EffectHandler<Eff, Msg>(coroutineScope) {
+    data class Services(
+        val isConnectedFlow: Flow<Boolean>,
+        val callWebSocketMsgFlow: Flow<WebSocketMsg.Call>,
+        val sendCallWebSocketMsg: suspend (WebSocketMsg.Call) -> Unit,
+        val sendFrontWebSocketMsg: suspend (WebSocketMsg.Front) -> Unit,
+        val requestImageUpdate: (DrawingFeature.Eff.RequestImageUpdate, (ImageContainer?) -> Unit) -> Unit,
+    )
+
     private val candidates = MutableSharedFlow<WebSocketMsg.Call.Candidate>(replay = Int.MAX_VALUE)
     private val candidatesSendCloseable = AtomicCloseableRef<Closeable>()
     private val webRtcManager: WebRtcManagerI
-    private val imageSharingEffectHandler = DrawingEffectHandler {
-        send(RtcMsg.ImageSharingContainer(it))
-    }
+    private val imageSharingEffectHandler = DrawingEffectHandler(
+        webRtcSendListener = {
+            send(RtcMsg.ImageSharingContainer(it))
+        },
+        onRequestImageUpdate = {
+            services.requestImageUpdate(it) {
+                listener?.invoke(
+                    Msg.DrawingMsg(DrawingFeature.Msg.LocalUpdateImage(it))
+                )
+            }
+        }
+    )
     private val dataChannelChunkManager = DataChannelChunkManager()
 
     enum class RawDataMsgId {
@@ -59,10 +78,6 @@ class CallEffectHandler(
         }
     }
 
-    fun invokeCallMsg(msg: Msg) {
-        listener?.invoke(TopLevelMsg.CallMsg(msg))
-    }
-
     init {
         val webRtcManagerListener = object : WebRtcManagerI.Listener, Closeable {
             lateinit var handlerRef: CallEffectHandler
@@ -76,12 +91,12 @@ class CallEffectHandler(
             }
 
             override fun updateCaptureDimensions(dimensions: Size) {
-                invokeCallMsg(Msg.UpdateLocalCaptureDimensions(dimensions))
+                listener?.invoke(Msg.UpdateLocalCaptureDimensions(dimensions))
             }
 
             override fun updateRemoveVideoContext(viewContext: VideoViewContext?) {
                 viewContext?.let {
-                    handler?.invokeCallMsg(
+                    handler?.listener?.invoke(
                         Msg.UpdateRemoteVideoContext(viewContext)
                     )
                 }
@@ -102,7 +117,7 @@ class CallEffectHandler(
             }
 
             override fun dataChannelStateChanged(state: DataChannelState) {
-                handler?.invokeCallMsg(
+                handler?.listener?.invoke(
                     if (state == DataChannelState.Open) {
                         Msg.DataConnectionEstablished
                     } else {
@@ -132,73 +147,64 @@ class CallEffectHandler(
         listOf(
             webRtcManagerListener,
             coroutineScope.launch {
-                networkManager.isConnectedFlow
+                services.isConnectedFlow
                     .collect { shouldSend ->
                         candidatesSendCloseable.value =
                             if (shouldSend)
                                 runWebRtcManager {
                                     candidates.collect {
-                                        networkManager.send(it)
+                                        services.sendCallWebSocketMsg(it)
                                     }
                                 }.asCloseable()
                             else null
                     }
             }.asCloseable(),
             coroutineScope.launch {
-                networkManager.webSocketMsgSharedFlow
-                    .filterIsInstance<WebSocketMsg.Call>()
+                services.callWebSocketMsgFlow
                     .collect(::listenWebSocketMessage)
-
             }.asCloseable(),
             webRtcManager,
         ).forEach(::addCloseableChild)
     }
 
     @Suppress("NAME_SHADOWING")
-    override fun handleEffect(eff: TopLevelEff) {
+    override fun handleEffect(eff: Eff) {
         when (eff) {
-            is TopLevelEff.CallEff -> {
-                @Suppress("MoveVariableDeclarationIntoWhen")
-                val eff = eff.eff
-                when (eff) {
-                    Eff.SystemBack,
-                    -> Unit
-                    is Eff.Initiate ->
-                        initiateCall(eff.userId)
-                    is Eff.Accept -> {
-                        runWebRtcManager {
-                            sendOffer()
-                        }
-                    }
-                    Eff.End -> {
-                        close()
-                    }
-                    Eff.ChooseViewPoint -> Unit
-                    is Eff.SyncLocalDeviceState -> {
-                        webRtcManager.syncDeviceState(eff.localDeviceState)
-                    }
-                    is Eff.NotifyLocalCaptureDimensionsChanged -> {
-                        send(RtcMsg.UpdateCaptureDimensions(eff.dimensions))
-                    }
-                    is Eff.NotifyDeviceStateChanged -> {
-                        send(RtcMsg.UpdateDeviceState(eff.deviceState))
-                    }
-                    is Eff.NotifyUpdateViewPoint -> {
-                        send(RtcMsg.UpdateViewPoint(eff.viewPoint))
-                    }
-                    is Eff.DrawingEff -> {
-                        imageSharingEffectHandler.handleEffect(eff.eff)
-                    }
+            Eff.SystemBack,
+            -> Unit
+            is Eff.Initiate ->
+                initiateCall(eff.userId)
+            is Eff.Accept -> {
+                runWebRtcManager {
+                    sendOffer()
                 }
             }
-            else -> Unit
+            Eff.End -> {
+                close()
+            }
+            Eff.ChooseViewPoint -> Unit
+            is Eff.SyncLocalDeviceState -> {
+                webRtcManager.syncDeviceState(eff.localDeviceState)
+            }
+            is Eff.NotifyLocalCaptureDimensionsChanged -> {
+                send(RtcMsg.UpdateCaptureDimensions(eff.dimensions))
+            }
+            is Eff.NotifyDeviceStateChanged -> {
+                send(RtcMsg.UpdateDeviceState(eff.deviceState))
+            }
+            is Eff.NotifyUpdateViewPoint -> {
+                send(RtcMsg.UpdateViewPoint(eff.viewPoint))
+            }
+            is Eff.DrawingEff -> {
+                imageSharingEffectHandler.handleEffect(eff.eff)
+            }
         }
     }
 
-    override fun setListener(listener: suspend (TopLevelMsg) -> Unit) {
+    override fun setListener(listener: suspend (Msg) -> Unit) {
         super.setListener(listener)
         runWebRtcManager {
-            invokeCallMsg(
+            listener.invoke(
                 Msg.UpdateLocalVideoContext(
                     localVideoContext
                 )
@@ -213,17 +219,17 @@ class CallEffectHandler(
             )
         )
 
-    fun send(msg: WebSocketMsg.Front) = prepareSend(msg, NetworkManager::send)
+    private fun send(msg: WebSocketMsg.Front) = prepareSend(msg, services.sendFrontWebSocketMsg)
 
-    fun send(msg: WebSocketMsg.Call) = prepareSend(msg, NetworkManager::send)
+    private fun send(msg: WebSocketMsg.Call) = prepareSend(msg, services.sendCallWebSocketMsg)
 
     private fun <M : WebSocketMsg> prepareSend(
         msg: M,
-        perform: suspend NetworkManager.(M) -> Unit
+        perform: suspend (M) -> Unit
     ) = msg.freeze()
         .let {
             coroutineScope.launch {
-                networkManager.perform(msg)
+                perform(msg)
             }
         }
         .also {
@@ -284,10 +290,10 @@ class CallEffectHandler(
                     }
             }
             is RtcMsg.UpdateDeviceState -> {
-                invokeCallMsg(Msg.UpdateRemoteDeviceState(msg.deviceState))
+                listener?.invoke(Msg.UpdateRemoteDeviceState(msg.deviceState))
             }
             is RtcMsg.UpdateViewPoint -> {
-                invokeCallMsg(
+                listener?.invoke(
                     Msg.RemoteUpdateViewPoint(
                         when (msg.viewPoint) {
                             State.ViewPoint.Both -> State.ViewPoint.Both
@@ -298,7 +304,7 @@ class CallEffectHandler(
                 )
             }
             is RtcMsg.UpdateCaptureDimensions -> {
-                invokeCallMsg(Msg.UpdateRemoteCaptureDimensions(msg.dimensions))
+                listener?.invoke(Msg.UpdateRemoteCaptureDimensions(msg.dimensions))
             }
         }
     }
@@ -306,7 +312,7 @@ class CallEffectHandler(
     private fun listenWebSocketMessage(msg: WebSocketMsg.Call) = runWebRtcManager {
         when (msg) {
             is WebSocketMsg.Call.Offer -> {
-                invokeCallMsg(Msg.UpdateStatus(State.Status.Connecting))
+                listener?.invoke(Msg.UpdateStatus(State.Status.Connecting))
                 acceptOffer(msg.sessionDescriptor)
             }
             is WebSocketMsg.Call.Answer -> {

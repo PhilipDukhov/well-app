@@ -4,30 +4,25 @@ import com.well.modules.db.chatMessages.ChatMessages
 import com.well.modules.db.chatMessages.ChatMessagesDatabase
 import com.well.modules.db.chatMessages.insertTmpMessage
 import com.well.modules.db.chatMessages.toChatMessage
-import com.well.modules.db.users.UsersDatabase
-import com.well.modules.db.users.getByIdFlow
+import com.well.modules.features.userChat.UserChatFeature.Eff
+import com.well.modules.features.userChat.UserChatFeature.Msg
 import com.well.modules.flowHelper.mapIterable
 import com.well.modules.models.User
 import com.well.modules.models.UserId
-import com.well.modules.models.WebSocketMsg
 import com.well.modules.models.chat.ChatMessage
-import io.github.aakira.napier.Napier
 import com.well.modules.utils.puerh.EffectHandler
 import com.well.modules.utils.sharedImage.ImageContainer
 import com.well.modules.utils.sharedImage.LocalImage
-import com.well.modules.networking.NetworkManager
-import com.well.sharedMobile.ContextHelper
-import com.well.modules.features.userChat.UserChatFeature.Eff
-import com.well.modules.features.userChat.UserChatFeature.Msg
 import com.well.modules.viewHelpers.chatMessageWithStatus.toChatMessageWithStatusFlow
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-internal class UserChatEffHandler(
+class UserChatEffHandler(
     private val currentUid: UserId,
     private val peerUid: UserId,
     private val services: Services,

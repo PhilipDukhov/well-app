@@ -1,9 +1,9 @@
 package com.well.modules.viewHelpers
 
 import com.well.modules.models.spacedUppercaseName
-import import com.well.modules.utils.countryCodes.countryCodesList
-import import com.well.modules.utils.countryCodes.emojiFlagForCountryCode
-import import com.well.modules.utils.countryCodes.nameForCountryCode
+import com.well.modules.utils.countryCodes.countryCodesList
+import com.well.modules.utils.countryCodes.emojiFlagForCountryCode
+import com.well.modules.utils.countryCodes.nameForCountryCode
 
 data class UIEditingField<Content, Msg>  constructor(
     val placeholder: String,
@@ -11,7 +11,7 @@ data class UIEditingField<Content, Msg>  constructor(
     val updateMsg: (Content) -> Msg,
 ) where Content : UIEditingField.Content {
     companion object {
-        internal inline fun <reified T : Enum<T>, Msg> createSingleSelectionList(
+        inline fun <reified T : Enum<T>, Msg> createSingleSelectionList(
             placeholder: String,
             singleSelection: T?,
             crossinline updateValue: (T?) -> Msg,
@@ -42,18 +42,18 @@ data class UIEditingField<Content, Msg>  constructor(
         open fun valid(): Boolean = true
 
         companion object {
-            internal fun textNullable(
+            fun textNullable(
                 textNullable: String?,
             ) = Text(text = textNullable ?: "", nullable = true)
 
-            internal fun textNonNullable(
+            fun textNonNullable(
                 textNonNullable: String,
             ) = Text(text = textNonNullable, nullable = false)
 
-            internal fun Email(emailNullable: String?) = Content.Email(emailNullable ?: "")
+            fun Email(emailNullable: String?) = Content.Email(emailNullable ?: "")
         }
 
-        data class Text internal constructor(
+        data class Text constructor(
             val text: String,
             val nullable: Boolean = true,
         ) : Content() {
@@ -66,7 +66,7 @@ data class UIEditingField<Content, Msg>  constructor(
             fun doCopy(text: String) = copy(text = text)
         }
 
-        data class Email internal constructor(val email: String) : Content() {
+        data class Email constructor(val email: String) : Content() {
             override fun toString(): String = email
 
             override fun valid(): Boolean =
@@ -91,7 +91,7 @@ data class UIEditingField<Content, Msg>  constructor(
         ) : Content() {
             val itemDescriptions: kotlin.collections.List<String>
             val selectionIndices: Set<Int>
-            internal val itemsList: kotlin.collections.List<Item>
+            val itemsList: kotlin.collections.List<Item>
 
             fun doCopy(selectionIndices: Set<Int>) = copy(selectedItems = itemsList.slice(selectionIndices).toSet())
 
@@ -104,7 +104,7 @@ data class UIEditingField<Content, Msg>  constructor(
                 selectionIndices = selectedItems.map { itemsList.indexOf(it) }.toSet()
             }
 
-            internal constructor(
+            constructor(
                 singleSelection: Item?,
                 items: Set<Item>,
                 descriptor: (Item) -> String,
@@ -122,7 +122,7 @@ data class UIEditingField<Content, Msg>  constructor(
                     .joinToString(", ") { descriptor(it) }
 
             companion object {
-                internal fun countryCodesList(selectedCountryCode: String?) =
+                fun countryCodesList(selectedCountryCode: String?) =
                     List(
                         singleSelection = selectedCountryCode,
                         items = countryCodesList(),
@@ -130,7 +130,7 @@ data class UIEditingField<Content, Msg>  constructor(
                         sortBy = { code, _ -> nameForCountryCode(code) },
                     )
 
-                internal fun createSingleStingSelection(
+                fun createSingleStingSelection(
                     singleSelection: String?,
                     items: Set<String>,
                 ) = List(
@@ -139,7 +139,7 @@ data class UIEditingField<Content, Msg>  constructor(
                     descriptor = { it },
                 )
 
-                internal inline fun <reified T : Enum<T>> createSingleSelection(
+                inline fun <reified T : Enum<T>> createSingleSelection(
                     singleSelection: T?,
                 ) = List(
                     singleSelection = singleSelection,

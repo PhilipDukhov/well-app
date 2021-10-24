@@ -1,4 +1,4 @@
-package com.well.sharedMobile
+package com.well.modules.viewHelpers
 
 import com.well.modules.utils.platform.Platform
 import com.well.modules.utils.platform.isDebug

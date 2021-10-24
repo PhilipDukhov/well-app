@@ -1,7 +1,6 @@
 package com.well.modules.features.more
 
 import com.well.modules.utils.toSetOf
-import com.well.sharedMobile.ScreenState
 import com.well.modules.features.more.about.AboutFeature
 import com.well.modules.features.more.support.SupportFeature
 

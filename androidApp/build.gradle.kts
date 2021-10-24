@@ -31,8 +31,21 @@ libDependencies(
     "kotlin.reflect",
 
     ":modules:atomic",
-    ":modules:models",
-    ":modules:utils",
+    ":modules:annotations",
+    ":modules:db:mobileDb",
+    ":modules:db:chatMessagesDb",
+    ":modules:db:usersDb",
+    ":modules:flowHelper",
+    ":modules:networking",
+    ":modules:viewHelpers",
+    ":modules:features:call",
+    ":modules:features:login",
+    ":modules:features:chatList",
+    ":modules:features:experts",
+    ":modules:features:more",
+    ":modules:features:myProfile",
+    ":modules:features:userChat",
+    ":modules:features:welcome",
     ":sharedMobile",
 )
 
@@ -51,6 +64,7 @@ android {
             "androidx.compose.foundation.ExperimentalFoundationApi",
             "com.google.accompanist.pager.ExperimentalPagerApi",
             "androidx.compose.material.ExperimentalMaterialApi",
+            "androidx.compose.animation.ExperimentalAnimationApi",
         )
         freeCompilerArgs += optIns.map { "-Xopt-in=$it" } + listOf(
             "-Xskip-prerelease-check",

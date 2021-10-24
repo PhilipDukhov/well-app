@@ -1,15 +1,15 @@
 package com.well.modules.features.login.credentialProviders
 
+import com.well.modules.viewHelpers.ContextHelper
 import android.app.Activity.RESULT_CANCELED
 import android.content.Intent
-import com.well.sharedMobile.ContextHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-internal actual class OAuthCredentialProvider actual constructor(
+actual class OAuthCredentialProvider actual constructor(
     name: String,
     contextHelper: ContextHelper,
 ) : CredentialProvider(contextHelper.appContext) {

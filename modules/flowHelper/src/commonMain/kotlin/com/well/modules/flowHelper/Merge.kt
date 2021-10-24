@@ -2,6 +2,7 @@ package com.well.modules.flowHelper
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -21,3 +22,8 @@ fun <T, C: Collection<T>> Flow<C>.filterNotEmpty(): Flow<C> = flow flow@{
         }
     }
 }
+
+fun <T> Flow<T>.combineToUnit(flow: Flow<Unit>): Flow<T> =
+    combine(flow) { value, _ ->
+        value
+    }

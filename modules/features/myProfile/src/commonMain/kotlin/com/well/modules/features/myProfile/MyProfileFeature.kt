@@ -1,21 +1,20 @@
 package com.well.modules.features.myProfile
 
+import com.well.modules.features.myProfile.MyProfileFeature.State.EditingStatus
+import com.well.modules.features.myProfile.currentUserAvailability.RequestConsultationFeature
 import com.well.modules.models.FavoriteSetter
 import com.well.modules.models.Rating
 import com.well.modules.models.RatingRequest
 import com.well.modules.models.User
 import com.well.modules.models.UserId
 import com.well.modules.models.spacedUppercaseName
+import com.well.modules.utils.UrlUtil
+import com.well.modules.utils.currentTimeZoneIdentifier
 import com.well.modules.utils.sharedImage.ImageContainer
 import com.well.modules.utils.sharedImage.profileImage
 import com.well.modules.utils.toSetOf
 import com.well.modules.utils.withEmptySet
-import com.well.modules.features.myProfile.MyProfileFeature.State.EditingStatus
-import com.well.modules.features.myProfile.currentUserAvailability.RequestConsultationFeature
-import com.well.modules.utils.UrlUtil
-import com.well.modules.viewHelpers.GlobalStringsBase
-import com.well.modules.utils.NavigationBarModel
-import com.well.modules.utils.currentTimeZoneIdentifier
+import com.well.modules.viewHelpers.NavigationBarModel
 import com.well.modules.features.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature as AvailabilitiesListFeature
 import io.github.aakira.napier.Napier
 
@@ -59,7 +58,7 @@ object MyProfileFeature {
 
     data class State internal constructor(
         val isCurrent: Boolean,
-        internal val uid: UserId,
+        val uid: UserId,
         internal val originalUser: User? = null,
         val user: User? = null,
         internal val newImage: ImageContainer? = null,

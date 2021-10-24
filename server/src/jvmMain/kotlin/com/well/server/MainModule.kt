@@ -1,6 +1,6 @@
 package com.well.server
 
-import com.well.modules.models.Constants
+import com.well.modules.utils.Constants
 import com.well.server.routing.auth.AppleOauthResponse
 import com.well.server.routing.auth.appleLoginPrincipal
 import com.well.server.routing.auth.build

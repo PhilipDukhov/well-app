@@ -1,8 +1,8 @@
 package com.well.modules.features.login.credentialProviders
 
-import com.well.sharedMobile.ContextHelper
+import com.well.modules.viewHelpers.ContextHelper
 
-internal expect class OAuthCredentialProvider(
+expect class OAuthCredentialProvider(
     name: String,
     contextHelper: ContextHelper,
 ) : CredentialProvider

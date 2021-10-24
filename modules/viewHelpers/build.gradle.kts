@@ -17,6 +17,7 @@ kotlin {
                 ":modules:flowHelper",
                 ":modules:models",
                 ":modules:utils",
+                ":modules:atomic",
                 "kotlin.coroutines.core",
                 "kotlin.serializationJson",
                 "kotlin.stdLib",
@@ -27,6 +28,9 @@ kotlin {
         if (withAndroid) {
             val androidMain by getting {
                 libDependencies(
+                    "android.material",
+                    "android.activity",
+                    "android.browser",
                 )
             }
         }

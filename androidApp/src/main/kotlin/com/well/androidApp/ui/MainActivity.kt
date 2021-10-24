@@ -2,16 +2,15 @@ package com.well.androidApp.ui
 
 import com.well.androidApp.call.webRtc.WebRtcManager
 import com.well.androidApp.ui.theme.Theme
-import com.well.modules.utils.AppContext
-import com.well.sharedMobile.featureProvider.FeatureProvider
-import com.well.sharedMobile.TopLevelFeature
 import com.well.modules.features.login.SocialNetwork
 import com.well.modules.features.login.credentialProviders.AppleOAuthProvider
 import com.well.modules.features.login.credentialProviders.FacebookProvider
 import com.well.modules.features.login.credentialProviders.GoogleProvider
-import com.well.modules.features.login.handleActivityResult
-import com.well.modules.features.login.handleOnNewIntent
+import com.well.modules.utils.AppContext
+import com.well.sharedMobile.TopLevelFeature
 import com.well.modules.utils.napier.NapierProxy
+import com.well.sharedMobile.featureProvider.createFeatureProvider
+import com.well.sharedMobile.handleActivityResult
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
@@ -19,13 +18,14 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.google.accompanist.insets.ProvideWindowInsets
+import com.well.sharedMobile.handleOnNewIntent
 
 class MainActivity : AppCompatActivity() {
     init {
         NapierProxy.initializeLogging()
     }
 
-    private val featureProvider = FeatureProvider(
+    private val featureProvider = createFeatureProvider(
         AppContext(this),
         webRtcManagerGenerator = { iceServers, listener ->
             WebRtcManager(
@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
     init {
         onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                featureProvider.feature.accept(TopLevelFeature.Msg.Back)
+                featureProvider.accept(TopLevelFeature.Msg.Back)
             }
         })
     }
@@ -60,12 +60,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        featureProvider.feature
+        featureProvider
             .listenState {
                 setContent {
                     Theme {
                         ProvideWindowInsets {
-                            TopLevelScreen(it, featureProvider.feature::accept)
+                            TopLevelScreen(it, featureProvider::accept)
                         }
                     }
                 }

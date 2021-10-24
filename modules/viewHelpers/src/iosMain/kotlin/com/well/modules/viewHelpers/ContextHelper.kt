@@ -1,17 +1,17 @@
-package com.well.sharedMobile
+package com.well.modules.viewHelpers
 
 import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.freeze
 import com.well.modules.utils.AppContext
+import com.well.modules.utils.Constants
 import com.well.modules.utils.mapNotNull
 import com.well.modules.utils.resumeWithException
 import com.well.modules.utils.sharedImage.LocalImage
-import com.well.modules.networking.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.invoke
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import platform.AuthenticationServices.ASWebAuthenticationPresentationContextProvidingProtocol
 import platform.AuthenticationServices.ASWebAuthenticationSession
 import platform.AuthenticationServices.ASWebAuthenticationSessionErrorCodeCanceledLogin
@@ -33,7 +33,8 @@ import platform.UIKit.UIViewController
 import platform.darwin.NSObject
 import kotlin.coroutines.resume
 
-internal actual class ContextHelper actual constructor(actual val appContext: AppContext): WebAuthenticator {
+actual class ContextHelper actual constructor(actual val appContext: AppContext) :
+    WebAuthenticator {
     actual fun showAlert(alert: Alert) {
         presentViewController(
             UIAlertController.alertControllerWithTitle(
@@ -110,7 +111,8 @@ internal actual class ContextHelper actual constructor(actual val appContext: Ap
                         }
                     }
                 )
-                session.presentationContextProvider = appContext.rootController as? ASWebAuthenticationPresentationContextProvidingProtocol
+                session.presentationContextProvider =
+                    appContext.rootController as? ASWebAuthenticationPresentationContextProvidingProtocol
                 session.start()
                 continuation.invokeOnCancellation {
                     session.cancel()
@@ -147,7 +149,7 @@ internal actual class ContextHelper actual constructor(actual val appContext: Ap
     }
 
     actual suspend fun pickSystemImage(): LocalImage =
-        Dispatchers.Main {
+        withContext(Dispatchers.Main) {
             suspendCancellableCoroutine { continuation ->
                 val imagePicker = UIImagePickerController()
                 @Suppress("NOTHING_TO_OVERRIDE")
@@ -159,7 +161,8 @@ internal actual class ContextHelper actual constructor(actual val appContext: Ap
                         picker: UIImagePickerController,
                         didFinishPickingMediaWithInfo: Map<Any?, *>
                     ) {
-                        val url = didFinishPickingMediaWithInfo[UIImagePickerControllerImageURL] as NSURL
+                        val url =
+                            didFinishPickingMediaWithInfo[UIImagePickerControllerImageURL] as NSURL
                         picker.dismissViewControllerAnimated(true) {}
                         continuation.resume(LocalImage(url.path!!))
                     }

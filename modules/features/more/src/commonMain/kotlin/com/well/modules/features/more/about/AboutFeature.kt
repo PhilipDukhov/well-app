@@ -2,7 +2,6 @@ package com.well.modules.features.more.about
 
 import com.well.modules.utils.toSetOf
 import com.well.modules.utils.withEmptySet
-import com.well.sharedMobile.ScreenState
 import com.well.modules.utils.sharedImage.SharedImage
 import com.well.modules.utils.sharedImage.UrlImage
 
@@ -61,7 +60,7 @@ object AboutFeature {
 
     sealed class Eff {
         data class OpenLink(val link: String) : Eff()
-        data class Push(val screen: ScreenState) : Eff()
+//        data class Push(val screen: ScreenState) : Eff()
         object Back : Eff()
     }
 

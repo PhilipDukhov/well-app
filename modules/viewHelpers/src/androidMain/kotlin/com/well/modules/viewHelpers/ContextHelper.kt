@@ -1,4 +1,4 @@
-package com.well.sharedMobile
+package com.well.modules.viewHelpers
 
 import com.well.modules.atomic.Closeable
 import com.well.modules.utils.AppContext
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-internal actual class ContextHelper actual constructor(actual val appContext: AppContext): WebAuthenticator {
+actual class ContextHelper actual constructor(actual val appContext: AppContext): WebAuthenticator {
     actual fun showAlert(alert: Alert) =
         AlertDialog.Builder(appContext.androidContext)
             .setTitle(alert.title)

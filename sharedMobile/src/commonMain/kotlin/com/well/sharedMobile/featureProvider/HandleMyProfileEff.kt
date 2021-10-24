@@ -1,9 +1,9 @@
 package com.well.sharedMobile.featureProvider
 
-import com.well.sharedMobile.Alert
-import com.well.sharedMobile.SuspendAction
-import com.well.sharedMobile.pickSystemImageSafe
-import com.well.sharedMobile.showSheetThreadSafe
+import com.well.modules.viewHelpers.Alert
+import com.well.modules.viewHelpers.SuspendAction
+import com.well.modules.viewHelpers.pickSystemImageSafe
+import com.well.modules.viewHelpers.showSheetThreadSafe
 import com.well.modules.features.experts.ExpertsFeature
 import com.well.modules.features.myProfile.MyProfileFeature.Eff
 import com.well.modules.features.myProfile.MyProfileFeature.Msg
@@ -12,7 +12,7 @@ import io.github.aakira.napier.Napier
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
-internal suspend fun FeatureProvider.handleMyProfileEff(
+internal suspend fun FeatureProviderImpl.handleMyProfileEff(
     eff: Eff,
     listener: (TopLevelMsg) -> Unit
 ) {
@@ -39,9 +39,15 @@ internal suspend fun FeatureProvider.handleMyProfileEff(
         }
         is Eff.UploadUser -> {
             networkManager.apply {
-                var user = eff.user
-                if (eff.newProfileImage != null) {
-                    user = user.copy(profileImageUrl = uploadProfilePicture(user.id, eff.newProfileImage))
+                val user = eff.user.let { user ->
+                    eff.newProfileImage?.let { newProfileImage ->
+                        user.copy(
+                            profileImageUrl = uploadProfilePicture(
+                                user.id,
+                                newProfileImage
+                            )
+                        )
+                    } ?: user
                 }
                 listener.invokeMyProfileMsg(
                     Msg.UserUploadFinished(
@@ -89,13 +95,16 @@ internal suspend fun FeatureProvider.handleMyProfileEff(
                 listener(TopLevelMsg.ExpertsMsg(ExpertsFeature.Msg.Reload))
             }
         }
+        is Eff.AvailabilityEff -> TODO()
+        is Eff.CloseConsultationRequest -> TODO()
+        is Eff.RequestConsultationEff -> TODO()
     }
 }
 
 private fun ((TopLevelMsg) -> Unit).invokeMyProfileMsg(msg: Msg) =
     invoke(TopLevelMsg.MyProfileMsg(msg))
 
-private suspend fun FeatureProvider.pickSystemImage(listener: (TopLevelMsg) -> Unit) {
+private suspend fun FeatureProviderImpl.pickSystemImage(listener: (TopLevelMsg) -> Unit) {
     val image = contextHelper.pickSystemImageSafe()
     if (image != null) {
         listener.invokeMyProfileMsg(Msg.UpdateImage(image.toImageContainer()))

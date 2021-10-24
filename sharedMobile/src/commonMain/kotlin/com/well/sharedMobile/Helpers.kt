@@ -6,7 +6,7 @@ import com.well.sharedMobile.TopLevelFeature.State
 import com.well.sharedMobile.TopLevelFeature.State.ScreenPosition
 import com.well.sharedMobile.TopLevelFeature.State.Tab
 
-typealias ReducerResult = Pair<State, Set<Eff>>
+internal typealias ReducerResult = Pair<State, Set<Eff>>
 
 internal inline fun <reified R : ScreenState> Map<Tab, List<ScreenState>>.screenAndPositionOfTopOrNull(
     state: State,

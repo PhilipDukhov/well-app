@@ -1,8 +1,8 @@
 package com.well.modules.features.login.credentialProviders
 
 import com.well.modules.utils.AppContext
-import com.well.modules.networking.Constants
-import com.well.sharedMobile.WebAuthenticator
+import com.well.modules.utils.Constants
+import com.well.modules.viewHelpers.WebAuthenticator
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
