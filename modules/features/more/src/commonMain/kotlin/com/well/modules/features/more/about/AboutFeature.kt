@@ -60,7 +60,7 @@ object AboutFeature {
 
     sealed class Eff {
         data class OpenLink(val link: String) : Eff()
-//        data class Push(val screen: ScreenState) : Eff()
+//        data class Push(val screen: MoreScreenState) : Eff()
         object Back : Eff()
     }
 
@@ -81,7 +81,7 @@ object AboutFeature {
                     return@eff Eff.OpenLink("https://twitter.com/${msg.teamMember.twitter}")
                 }
 //                Msg.OpenSponsors -> {
-//                    return@eff Eff.Push(ScreenState.Sp)
+//                    return@eff Eff.Push(MoreScreenState.Sp)
 //                }
                 Msg.OpenPrivacyPolicy -> {
                     return@state state.copy(termsOpened = true)

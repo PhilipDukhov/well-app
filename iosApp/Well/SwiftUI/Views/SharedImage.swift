@@ -39,6 +39,7 @@ struct SharedImage<Placeholder: View>: View {
         if let image = image {
             switch image {
             case let image as UrlImage where image.url.toURL() != nil:
+                Napier.printUI("AsyncImage")
                 AsyncImage(
                     url: image.url.toURL()!,
                     placeholder: {

@@ -61,7 +61,7 @@ private fun ExpertsScreenContent(
     showFilterScreen: () -> Unit,
 ) {
     NavigationBar(
-        title = state.connectionStatus.stringRepresentation,
+        title = state.connectionStatusDescription,
         leftItem = ControlItem(
             view = {
                 Row {

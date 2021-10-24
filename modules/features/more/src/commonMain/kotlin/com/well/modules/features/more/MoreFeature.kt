@@ -20,7 +20,7 @@ object MoreFeature {
     }
 
     sealed class Eff {
-        data class Push(val screen: ScreenState) : Eff()
+        data class Push(val screen: MoreScreenState) : Eff()
     }
 
     @Suppress("UNREACHABLE_CODE")
@@ -31,8 +31,8 @@ object MoreFeature {
         is Msg.SelectItem -> {
             Eff.Push(
                 when (msg.item) {
-                    State.Item.Support -> ScreenState.Support(SupportFeature.State())
-                    State.Item.About -> ScreenState.About(AboutFeature.State())
+                    State.Item.Support -> MoreScreenState.Support(SupportFeature.State())
+                    State.Item.About -> MoreScreenState.About(AboutFeature.State())
                 }
             )
         }

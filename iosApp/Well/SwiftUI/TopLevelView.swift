@@ -15,23 +15,10 @@ struct TopLevelView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            contentWrapper
+            content
                 .environment(\.defaultMinListRowHeight, 0)
                 .statusBar(style: .lightContent)
         }
-    }
-    
-    @ViewBuilder
-    var contentWrapper: some View {
-        #if DEBUG
-        if TestingScreen.testing {
-            TestingScreen()
-        } else {
-            content
-        }
-        #else
-        content
-        #endif
     }
 
     @ViewBuilder

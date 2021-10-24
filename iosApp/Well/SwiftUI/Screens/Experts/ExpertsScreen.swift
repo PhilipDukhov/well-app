@@ -22,7 +22,7 @@ struct ExpertsScreen: View {
 
     var body: some View {
         NavigationBar(
-            title: state.connectionStatus.stringRepresentation,
+            title: state.connectionStatusDescription,
             leftItem: NavigationBarItem(
                 view: HStack {
                     Image(systemName: "line.horizontal.3.decrease.circle")

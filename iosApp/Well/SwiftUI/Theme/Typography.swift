@@ -6,18 +6,18 @@
 import SwiftUI
 
 struct TextStyle: Equatable {
-    let fontWeight: Font.Weight
     let fontSize: CGFloat
+    let fontWeight: Font.Weight
 
-    static let h4 = Self(fontWeight: .bold, fontSize: 30)
-    static let subtitle1 = Self(fontWeight: .regular, fontSize: 21)
-    static let subtitle2 = Self(fontWeight: .bold, fontSize: 17)
-    static let body1 = Self(fontWeight: .regular, fontSize: 18)
-    static let body1Light = Self(fontWeight: .regular, fontSize: 18)
-    static let body2 = Self(fontWeight: .regular, fontSize: 16)
-    static let body2Light = Self(fontWeight: .light, fontSize: 16)
-    static let caption = Self(fontWeight: .regular, fontSize: 13)
-    static let captionLight = Self(fontWeight: .light, fontSize: 13)
+    static let h4 = Self(fontSize: 30, fontWeight: .bold)
+    static let subtitle1 = Self(fontSize: 21, fontWeight: .regular)
+    static let subtitle2 = Self(fontSize: 17, fontWeight: .bold)
+    static let body1 = Self(fontSize: 18, fontWeight: .regular)
+    static let body1Light = Self(fontSize: 18, fontWeight: .regular)
+    static let body2 = Self(fontSize: 16, fontWeight: .regular)
+    static let body2Light = Self(fontSize: 16, fontWeight: .light)
+    static let caption = Self(fontSize: 13, fontWeight: .regular)
+    static let captionLight = Self(fontSize: 13, fontWeight: .light)
 
     var uiFont: UIFont {
         .systemFont(ofSize: fontSize, weight: fontWeight.toUIFontWeight())
@@ -25,6 +25,10 @@ struct TextStyle: Equatable {
 
     var font: Font {
         .system(size: fontSize, weight: fontWeight)
+    }
+
+    func copy(fontSize: CGFloat? = nil, fontWeight: Font.Weight? = nil) -> Self {
+        .init(fontSize: fontSize ?? self.fontSize, fontWeight: fontWeight ?? self.fontWeight)
     }
 }
 

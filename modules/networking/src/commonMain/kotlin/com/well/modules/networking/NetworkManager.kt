@@ -57,9 +57,6 @@ class NetworkManager(
         Connecting,
         Connected,
         ;
-
-        val stringRepresentation: String
-            get() = name
     }
 
     private val webSocketScope = CoroutineScope(Dispatchers.Default)

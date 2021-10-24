@@ -11,55 +11,81 @@ import SwiftUI
 import SharedMobile
 
 struct TestingScreen: View {
-    static let testing = true
+    private enum Screen {
+        case profile
+        case availabilityCalendar
+        case call
+        case filter
+        
+        case other
+    }
+    
+    private static let screen: Screen? = .availabilityCalendar
+    static let testing = screen != nil
+    
 //    let messages = ChatMessageWithStatus.companion.getTestMessagesWithStatus(count: 100)
     
     var body: some View {
-        EmptyView()
-//        ScrollView {
-//            LazyVStack {
-//                ForEachIndexed(messages) { i, message in
-//                    ChatListCell(
-//                        item: .init(
-//                            user: User.companion.testUser,
-//                            lastMessage: message,
-//                            unreadCount: Int32(i - 1) * Int32(i - 1)
+//        switch Self.screen {
+//        case .none:
+            EmptyView()
+//
+//        case .availabilityCalendar:
+//            ReducerView(
+//                CurrentUserAvailabilitiesListFeature().testState(),
+//                reducer: CurrentUserAvailabilitiesListFeature().reducer,
+//                view: CurrentUserAvailabilityView.init
+//            )
+//        case .profile:
+//            ProfileTestView()
+//
+//        case .call:
+//            ReducerView(
+//                CallFeature().testState(status: .ongoing),
+//                reducer: CallFeature().reducer,
+//                view: CallScreen.init
+//            )
+//        case .filter:
+//            ReducerView(
+//                FilterFeature.State(filter: UsersFilter.Companion().default(searchString: "")),
+//                reducer: FilterFeature().reducer
+//            ) {
+//                FilterScreen(state: $0, listener: $1) {
+//                }
+//            }
+//
+//        case .other:
+//            ScrollView {
+//                LazyVStack {
+//                    ForEachIndexed(messages) { i, message in
+//                        ChatListCell(
+//                            item: .init(
+//                                user: User.companion.testUser,
+//                                lastMessage: message,
+//                                unreadCount: Int32(i - 1) * Int32(i - 1)
+//                            )
 //                        )
-//                    )
+//                    }
 //                }
 //            }
 //        }
     }
 }
-//
-//struct FilterTestView: View {
-//    @State var state = FilterFeature.State(filter: UsersFilter.Companion().default(searchString: ""))
-//    
-//    var body: some View {
-//        FilterScreen(state: state) { msg in
-//            state = FilterFeature().reducer(msg: msg, state: state).first!
-//        } hide: {}
-//    }
-//}
-//
-//struct CallTestView: View {
-//    @State var state = CallFeature().testState(status: .ongoing)
-//    
-//    var body: some View {
-//        CallScreen(state: state) {
-//            state = CallFeature().reducer(msg: $0, state: state).first!
-//        }
-//    }
-//}
-//
-//struct ProfileTestView: View {
-//    @State var state = MyProfileFeature().testState()
-//    
-//    var body: some View {
-//        MyProfileScreen(state: state) {
-//            state = MyProfileFeature().reducer(msg: $0, state: state).first!
-//        }
-//    }
-//}
 
+//struct ProfileTestView: View {
+//    @AppStorage("ProfileTestView_isCurrent") var isCurrent = false
+//
+//    var body: some View {
+//        ZStack(alignment: .bottomTrailing) {
+//            VStack {
+//                ViewModelView(
+//                    MyProfileTestModel(isCurrent: isCurrent),
+//                    view: MyProfileScreen.init
+//                )
+//                    .id(isCurrent)
+//            }
+//            Toggle(isOn: $isCurrent, label: {})
+//        }
+//    }
+//}
 #endif

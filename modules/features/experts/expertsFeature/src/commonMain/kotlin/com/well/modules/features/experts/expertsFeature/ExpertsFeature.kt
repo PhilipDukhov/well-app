@@ -19,12 +19,13 @@ object ExpertsFeature {
 
     data class State(
         val users: List<User>,
-        val connectionStatus: NetworkManager.Status,
+        internal val connectionStatus: NetworkManager.Status,
         val currentUser: User? = null,
         val filterState: FilterFeature.State = FilterFeature.State(filter = UsersFilter()),
         val updatingFilter: Boolean = false,
     ) {
         val updating = connectionStatus != Connected || updatingFilter
+        val connectionStatusDescription = connectionStatus.name
     }
 
     sealed class Msg {

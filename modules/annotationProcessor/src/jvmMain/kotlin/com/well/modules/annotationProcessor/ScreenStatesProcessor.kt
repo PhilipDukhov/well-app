@@ -328,7 +328,7 @@ class FeatureInfo(
     val featureMsgClassName = featureClassName.nestedClass("Msg")
     val featureEffClassName = featureClassName.nestedClass("Eff")
     val screenClassName = containerInfo.screenStateClassName.nestedClass(featureShortName)
-    val featureScreenState = processingEnv.elementUtils.getTypeElement("$featurePackage.ScreenState")
+    val featureScreenState = processingEnv.elementUtils.getTypeElement("$featurePackage.${featureShortName}ScreenState")
 
     fun featureClass() =
         TypeSpec

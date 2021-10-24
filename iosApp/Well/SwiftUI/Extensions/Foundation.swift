@@ -25,3 +25,21 @@ extension Collection {
         !isEmpty
     }
 }
+
+extension Sequence {
+    @inlinable public func firstNotNullOfOrNull<R>(of transform: (Self.Element) throws -> R?) rethrows -> R? {
+        for element in self {
+            let result = try transform(element)
+            if let result = result {
+                return result
+            }
+        }
+        return nil
+    }
+}
+
+extension CustomStringConvertible {
+    func toString() -> String {
+        String(describing: self)
+    }
+}
