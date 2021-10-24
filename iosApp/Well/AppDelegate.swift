@@ -19,7 +19,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         NapierProxy().initializeLogging()
-        featureProvider = FeatureProvider(
+        featureProvider = CreateFeatureProviderKt.createFeatureProvider(
             appContext: .init(
                 rootController: rootViewController,
                 application: application,
@@ -65,11 +65,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func startListening() {
-        featureProvider.feature.listenState { [self] state in
+        featureProvider.listenState { [self] state in
             rootViewController.updateWrapperView(
                 TopLevelView(
-                    state: state,
-                    listener: featureProvider.feature.accept
+                    state: state as! TopLevelFeature.State,
+                    listener: featureProvider.accept
                 )
             )
         }
@@ -80,7 +80,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         open url: URL,
         options: [UIApplication.OpenURLOptionsKey: Any] = [:]
     ) -> Bool {
-        featureProvider.application(app: app, openURL: url, options: options)
+        SocialNetworkServiceExtKt.application(featureProvider, app: app, openURL: url, options: options)
     }
 }
 

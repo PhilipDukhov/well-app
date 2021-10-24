@@ -66,6 +66,7 @@ actual class ContextHelper actual constructor(actual val appContext: AppContext)
                 )
                 intent
             }
+            @Suppress("DEPRECATION")
             appContext.androidContext.startActivityForResult(intent, requestCode)
         }
     }

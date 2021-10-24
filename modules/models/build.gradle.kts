@@ -16,7 +16,7 @@ kotlin {
         usePredefinedExperimentalAnnotations("kotlinx.serialization.ExperimentalSerializationApi")
         val commonMain by getting {
             libDependencies(
-                "shared.datetime",
+                "kotlin.datetime",
                 "kotlin.serializationJson",
                 "ktor.client.core",
                 "ktor.client.serialization",

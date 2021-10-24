@@ -34,6 +34,7 @@ class GoogleProvider(private val appContext: AppContext) : CredentialProvider(ap
         googleSignInClient.signOut().await()
         return suspendCancellableCoroutine {
             continuation = it
+            @Suppress("DEPRECATION")
             appContext.androidContext.startActivityForResult(
                 googleSignInClient.signInIntent,
                 authRequestCode

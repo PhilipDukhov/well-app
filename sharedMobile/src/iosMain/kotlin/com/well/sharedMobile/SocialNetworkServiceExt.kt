@@ -7,8 +7,7 @@ import platform.Foundation.NSURL
 import platform.UIKit.UIApplication
 
 @Suppress("unused")
-
-fun FeatureProvider<TopLevelFeature.Msg, TopLevelFeature.State>.handleActivityResult(
+fun FeatureProvider<TopLevelFeature.Msg, TopLevelFeature.State>.application(
     app: UIApplication,
     openURL: NSURL,
     options: Map<Any?, *>

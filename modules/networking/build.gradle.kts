@@ -14,7 +14,6 @@ kotlin {
         val commonMain by getting {
             libDependencies(
                 ":modules:atomic",
-                ":modules:features:call",
                 ":modules:models",
                 ":modules:utils",
                 "kotlin.coroutines.core",

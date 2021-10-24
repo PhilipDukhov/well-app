@@ -33,7 +33,6 @@ kotlin {
             libDependencies(
                 ":modules:atomic",
                 ":modules:models",
-                ":modules:networking",
                 ":modules:utils",
                 ":modules:viewHelpers",
                 "kotlin.coroutines.core",

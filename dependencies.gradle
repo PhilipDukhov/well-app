@@ -39,6 +39,7 @@ ext.Libs = [
                         playServices: "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$versions.kotlinCoroutines",
                 ],
                 serializationJson: "org.jetbrains.kotlinx:kotlinx-serialization-json:$versions.kotlinSerialization",
+                datetime: "org.jetbrains.kotlinx:kotlinx-datetime:0.3.0",
         ],
         android   : [
                 appCompat    : "androidx.appcompat:appcompat:1.3.1",
@@ -130,7 +131,6 @@ ext.Libs = [
         ],
         shared    : [
                 napier: "io.github.aakira:napier:2.1.0",
-                datetime: "org.jetbrains.kotlinx:kotlinx-datetime:0.3.0",
         ],
         tests     : [
                 junit: "junit:junit:4.13.2",

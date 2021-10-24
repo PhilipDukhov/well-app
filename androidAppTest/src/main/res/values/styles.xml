@@ -1,0 +1,20 @@
+<resources>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+
+    <!--Translucent facebook progress bar-->
+    <style name="Translucent" parent="Translucent.Base" />
+
+    <style name="InvisibleProgress">
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="Translucent.Base" parent="android:Theme.Translucent.NoTitleBar">
+        <item name="android:progressBarStyle">@style/InvisibleProgress</item>
+    </style>
+</resources>

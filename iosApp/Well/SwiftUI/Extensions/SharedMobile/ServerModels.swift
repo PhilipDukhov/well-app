@@ -62,4 +62,4 @@ extension View {
 }
 
 // swiftlint:disable:next identifier_name
-let ColorConstants = SharedMobile.Color.Companion()
+let ColorConstants = SharedMobile.Color.companion

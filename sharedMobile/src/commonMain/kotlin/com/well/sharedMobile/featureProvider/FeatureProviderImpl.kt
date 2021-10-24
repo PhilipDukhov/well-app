@@ -13,8 +13,8 @@ import com.well.modules.db.mobile.DatabaseManager
 import com.well.modules.db.users.UsersDatabase
 import com.well.modules.db.users.getByIdFlow
 import com.well.modules.db.users.insertOrReplace
-import com.well.modules.features.call.webRtc.WebRtcManagerI
-import com.well.modules.features.experts.ExpertsFeature
+import com.well.modules.features.call.callFeature.webRtc.WebRtcManagerI
+import com.well.modules.features.experts.expertsFeature.ExpertsFeature
 import com.well.modules.features.login.LoginFeature
 import com.well.modules.features.login.SocialNetwork
 import com.well.modules.features.login.SocialNetworkService
@@ -24,8 +24,8 @@ import com.well.modules.features.more.MoreFeature
 import com.well.modules.features.more.about.AboutFeature
 import com.well.modules.features.more.support.SupportFeature
 import com.well.modules.features.myProfile.MyProfileFeature
-import com.well.modules.features.userChat.UserChatEffHandler
-import com.well.modules.features.userChat.UserChatFeature
+import com.well.modules.features.userChat.userChatHandlers.UserChatEffHandler
+import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.features.welcome.WelcomeFeature
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.networking.NetworkManager

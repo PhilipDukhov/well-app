@@ -15,8 +15,8 @@ import com.well.modules.networking.NetworkManager
 import com.well.modules.networking.combineToNetworkConnectedState
 import com.well.modules.viewHelpers.Alert
 import com.well.sharedMobile.TopLevelFeature
-import com.well.modules.features.chatList.ChatListEffHandler
-import com.well.modules.features.experts.ExpertsApiEffectHandler
+import com.well.modules.features.chatList.chatListHandlers.ChatListEffHandler
+import com.well.modules.features.experts.expertsHandlers.ExpertsApiEffectHandler
 import com.well.modules.features.login.LoginFeature
 import com.well.modules.features.login.SocialNetwork
 import com.well.modules.features.myProfile.MyProfileFeature

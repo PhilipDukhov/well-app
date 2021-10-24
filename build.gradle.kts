@@ -17,6 +17,7 @@ buildscript {
     apply(from = "dependencies.gradle")
     val libs: List<String> = project.libsAt("build")
     dependencies {
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31")
         libs.forEach { classpath(it) }
     }
 }
@@ -79,7 +80,6 @@ subprojects {
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
         kotlinOptions.freeCompilerArgs += listOf(
-            "-Xopt-in=io.ktor.util.KtorExperimentalAPI",
             "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
             "-Xopt-in=kotlinx.serialization.ExperimentalSerializationApi",
         )

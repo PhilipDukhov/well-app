@@ -12,15 +12,14 @@ import com.well.modules.viewHelpers.SuspendAction
 import com.well.sharedMobile.TopLevelFeature
 import com.well.modules.viewHelpers.pickSystemImageSafe
 import com.well.modules.viewHelpers.showSheetThreadSafe
-import com.well.modules.features.call.CallEffectHandler
-import com.well.modules.features.call.CallFeature
-import com.well.modules.features.call.drawing.DrawingFeature
-import com.well.modules.utils.puerh.FeatureProvider
+import com.well.modules.features.call.callHandlers.CallEffectHandler
+import com.well.modules.features.call.callFeature.CallFeature
+import com.well.modules.features.call.callFeature.drawing.DrawingFeature
 import com.well.modules.utils.puerh.adapt
 import com.well.modules.utils.sharedImage.ImageContainer
 import com.well.sharedMobile.TopLevelFeature.Msg as TopLevelMsg
-import com.well.modules.features.call.CallFeature.Msg as CallMsg
-import com.well.modules.features.call.drawing.DrawingFeature.Msg as DrawingMsg
+import com.well.modules.features.call.callFeature.CallFeature.Msg as CallMsg
+import com.well.modules.features.call.callFeature.drawing.DrawingFeature.Msg as DrawingMsg
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 

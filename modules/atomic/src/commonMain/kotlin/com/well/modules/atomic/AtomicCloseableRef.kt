@@ -2,6 +2,7 @@ package com.well.modules.atomic
 
 import kotlin.reflect.KProperty
 
+@Suppress("NOTHING_TO_INLINE")
 class AtomicCloseableRef<T: Closeable>(value: T? = null) {
     private var ref by AtomicRef(value)
 

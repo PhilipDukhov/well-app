@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
-    id("kotlinx-serialization")
     if (withAndroid) {
         id("com.android.library")
     }
@@ -21,7 +20,7 @@ kapt {
 
 kotlin {
     androidWithAndroid()
-    val frameworkName = project.name.capitalize()
+    val frameworkName = "SharedMobile"
     iosWithSimulator {
         binaries {
             framework(frameworkName) {
@@ -37,11 +36,21 @@ kotlin {
         homepage = "-"
         ios.deploymentTarget = project.version("iosDeploymentTarget")
     }
-    val iosExportModules = listOf(
+    val iosExportModulesNames = listOf(
+        ":modules:features:login",
+        ":modules:features:more",
+        ":modules:features:welcome",
+        ":modules:features:myProfile",
+        ":modules:features:call:callFeature",
+        ":modules:features:chatList:chatListFeature",
+        ":modules:features:experts:expertsFeature",
+        ":modules:features:userChat:userChatFeature",
         ":modules:models",
         ":modules:utils",
         ":modules:flowHelper",
-    ).map { project(it) }
+        ":modules:viewHelpers",
+    )
+    val iosExportModules = iosExportModulesNames.map { project(it) }
     targets.withType<KotlinNativeTarget> {
         binaries.withType<Framework> {
             iosExportModules.forEach {
@@ -54,6 +63,7 @@ kotlin {
         usePredefinedExperimentalAnnotations()
 
         val commonMain by getting {
+            libDependencies(iosExportModulesNames)
             libDependencies(
                 ":modules:atomic",
                 ":modules:annotations",
@@ -61,16 +71,12 @@ kotlin {
                 ":modules:db:chatMessagesDb",
                 ":modules:db:usersDb",
                 ":modules:flowHelper",
-                ":modules:networking",
                 ":modules:viewHelpers",
-                ":modules:features:call",
-                ":modules:features:login",
-                ":modules:features:chatList",
-                ":modules:features:experts",
-                ":modules:features:more",
-                ":modules:features:myProfile",
-                ":modules:features:userChat",
-                ":modules:features:welcome",
+                ":modules:networking",
+                ":modules:features:call:callHandlers",
+                ":modules:features:chatList:chatListHandlers",
+                ":modules:features:experts:expertsHandlers",
+                ":modules:features:userChat:userChatHandlers",
 
                 "kotlin.serializationJson",
                 "kotlin.coroutines.core",
@@ -79,13 +85,8 @@ kotlin {
                 "ktor.client.logging",
                 "sqldelight.coroutinesExtensions",
                 "shared.napier",
-                "shared.datetime",
+                "kotlin.datetime",
             )
-            dependencies {
-                iosExportModules.forEach {
-                    api(it)
-                }
-            }
 
             // Workaround for lack of Kapt support in multiplatform project:
             if (withAndroid) {
@@ -105,6 +106,11 @@ kotlin {
                 "ktor.client.engine.ios",
                 "kotlin.coroutines.core-strictly",
             )
+            dependencies {
+                iosExportModules.forEach {
+                    api(it)
+                }
+            }
         }
     }
 }

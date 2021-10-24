@@ -1,6 +1,6 @@
 package com.well.sharedMobile.featureProvider
 
-import com.well.modules.features.call.webRtc.WebRtcManagerI
+import com.well.modules.features.call.callFeature.webRtc.WebRtcManagerI
 import com.well.modules.features.login.SocialNetwork
 import com.well.modules.features.login.credentialProviders.CredentialProvider
 import com.well.modules.utils.AppContext

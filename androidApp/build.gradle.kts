@@ -13,39 +13,26 @@ dependencies {
 }
 
 libDependencies(
-    "android.material",
     "android.appCompat",
     "android.activity",
     "android.webrtc",
-    "android.dataStore",
-    "android.compose.*",
+    "android.compose.activity",
+    "android.compose.accompanist.insets",
 
     "firebase.analytics",
-    "ktor.utils",
     "shared.napier",
-    "shared.datetime",
 
     "kotlin.coroutines.playServices",
     "kotlin.serializationJson",
     "kotlin.coroutines.core",
     "kotlin.reflect",
 
-    ":modules:atomic",
-    ":modules:annotations",
-    ":modules:db:mobileDb",
-    ":modules:db:chatMessagesDb",
-    ":modules:db:usersDb",
-    ":modules:flowHelper",
-    ":modules:networking",
-    ":modules:viewHelpers",
-    ":modules:features:call",
     ":modules:features:login",
-    ":modules:features:chatList",
-    ":modules:features:experts",
-    ":modules:features:more",
-    ":modules:features:myProfile",
-    ":modules:features:userChat",
-    ":modules:features:welcome",
+    ":modules:features:call:callFeature",
+    ":modules:utils",
+    ":modules:viewHelpers",
+    ":modules:androidUi",
+    ":modules:androidWebrtc",
     ":sharedMobile",
 )
 

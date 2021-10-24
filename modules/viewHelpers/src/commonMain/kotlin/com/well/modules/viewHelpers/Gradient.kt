@@ -11,6 +11,11 @@ data class Gradient internal constructor(
     val endPoint: Point,
 ) {
     companion object {
+        val Welcome = linearVertical(
+            Stop(color = Color(colorRGB = 0x000000, alpha = 0.35f), location = 0f),
+            Stop(color = Color(colorRGB = 0x0B121B, alpha = 0.53f), location = 1f),
+        )
+        
         val Login = linearVertical(
             Stop(color = Color(colorRGB = 0x000000, alpha = 0.26f), location = 0f),
             Stop(color = Color(colorRGB = 0x000000, alpha = 0.058f), location = 0.0729f),

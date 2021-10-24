@@ -19,7 +19,7 @@ struct LoginScreen: View {
                 Spacer()
                 HStack(spacing: 0) {
                     Spacer()
-                    ForEach(SocialNetwork.Companion().allCases, id: \.self) { socialNetwork in
+                    ForEach(SocialNetwork.companion.allCases, id: \.self) { socialNetwork in
                         Image(uiImage: socialNetwork.image)
                             .onTapGesture {
                                 listener(LoginFeature.MsgOnSocialNetworkSelected(socialNetwork: socialNetwork))

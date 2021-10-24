@@ -13,6 +13,7 @@ actual fun currentCountryCode(appContext: AppContext): String? =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 locales[0]
             } else {
+                @Suppress("DEPRECATION")
                 locale
             }
         }?.country?.ifEmpty { null }

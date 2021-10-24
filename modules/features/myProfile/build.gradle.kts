@@ -17,7 +17,7 @@ kotlin {
                 ":modules:utils",
                 ":modules:viewHelpers",
                 "kotlin.stdLib",
-                "shared.datetime",
+                "kotlin.datetime",
                 "shared.napier",
             )
         }

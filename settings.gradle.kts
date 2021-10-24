@@ -6,7 +6,7 @@ val withAndroid = System.getProperty("withAndroid")!!.toBoolean()
 include(
     ":server",
     ":sharedMobile",
-//    ":sharedMobileTest",
+    ":sharedMobileTest",
     ":modules:annotations",
     ":modules:annotationProcessor",
     ":modules:models",
@@ -20,17 +20,24 @@ include(
     ":modules:flowHelper",
     ":modules:networking",
     ":modules:viewHelpers",
-    ":modules:features:call",
-    ":modules:features:login",
-    ":modules:features:chatList",
-    ":modules:features:experts",
-    ":modules:features:more",
-    ":modules:features:myProfile",
-    ":modules:features:userChat",
+
     ":modules:features:welcome",
+    ":modules:features:more",
+    ":modules:features:login",
+    ":modules:features:myProfile",
+    ":modules:features:call:callFeature",
+    ":modules:features:call:callHandlers",
+    ":modules:features:chatList:chatListFeature",
+    ":modules:features:chatList:chatListHandlers",
+    ":modules:features:experts:expertsFeature",
+    ":modules:features:experts:expertsHandlers",
+    ":modules:features:userChat:userChatFeature",
+    ":modules:features:userChat:userChatHandlers",
 )
 if (withAndroid) {
     include("androidApp")
+    include("androidAppTest")
+    include(":modules:androidUi")
 }
 
 pluginManagement {
@@ -50,3 +57,4 @@ pluginManagement {
         }
     }
 }
+include(":modules:androidWebrtc")

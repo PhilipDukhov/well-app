@@ -75,7 +75,17 @@ fun KotlinSourceSet.libDependencies(libs: List<String>) =
                             }
                         }
                         is Dependency.Module -> {
-                            implementation(project(it.name))
+                            when (val name = it.name) {
+                                ":modules:atomic",
+                                ":modules:viewHelpers",
+                                ":modules:models",
+                                -> {
+                                    api(project(name))
+                                }
+                                else -> {
+                                    implementation(project(name))
+                                }
+                            }
                         }
                         is Dependency.Test -> {
                             implementation(it.dependencyNotation)

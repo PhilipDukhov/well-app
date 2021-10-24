@@ -17,8 +17,8 @@ import com.well.modules.networking.NetworkManager.Status.Disconnected
 import com.well.modules.networking.webSocketManager.WebSocketClient
 import com.well.modules.networking.webSocketManager.WebSocketSession
 import com.well.modules.networking.webSocketManager.ws
-import com.well.modules.features.call.resizedImage
 import com.well.modules.utils.Constants
+import com.well.modules.utils.sharedImage.resizedImage
 import io.github.aakira.napier.Napier
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*

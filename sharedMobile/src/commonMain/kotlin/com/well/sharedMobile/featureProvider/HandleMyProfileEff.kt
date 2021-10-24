@@ -4,7 +4,7 @@ import com.well.modules.viewHelpers.Alert
 import com.well.modules.viewHelpers.SuspendAction
 import com.well.modules.viewHelpers.pickSystemImageSafe
 import com.well.modules.viewHelpers.showSheetThreadSafe
-import com.well.modules.features.experts.ExpertsFeature
+import com.well.modules.features.experts.expertsFeature.ExpertsFeature
 import com.well.modules.features.myProfile.MyProfileFeature.Eff
 import com.well.modules.features.myProfile.MyProfileFeature.Msg
 import com.well.sharedMobile.TopLevelFeature.Msg as TopLevelMsg

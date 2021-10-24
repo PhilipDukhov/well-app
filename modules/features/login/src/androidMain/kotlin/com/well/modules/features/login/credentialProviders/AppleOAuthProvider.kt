@@ -51,7 +51,7 @@ class AppleOAuthProvider(
         val url = intent?.data?.toString() ?: return false
         Constants.oauthCallbackPath("apple").let { oauthCallbackPath ->
             return when {
-                url.startsWith(oauthCallbackPath) -> {
+                 url.startsWith(oauthCallbackPath) -> {
                     TODO(
                         url.substring(
                             oauthCallbackPath.length
