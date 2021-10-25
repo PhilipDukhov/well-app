@@ -10,6 +10,7 @@ kotlin {
     androidWithAndroid()
     iosWithSimulator()
     sourceSets {
+        optIns(optIns = setOf(OptIn.Coroutines))
         val commonMain by getting {
             libDependencies(
                 ":modules:features:chatList:chatListFeature",

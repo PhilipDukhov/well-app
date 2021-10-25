@@ -6,12 +6,13 @@ import com.well.modules.db.users.UsersDatabase
 import com.well.modules.db.users.toUser
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature.Eff
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature.Msg
+import com.well.modules.features.experts.expertsFeature.ExpertsFeature.State
 import com.well.modules.models.UserId
 import com.well.modules.models.UsersFilter
 import com.well.modules.models.WebSocketMsg
-import com.well.modules.puerhBase.EffectHandler
 import com.well.modules.networking.NetworkManager
 import com.well.modules.networking.combineToNetworkConnectedState
+import com.well.modules.puerhBase.EffectHandler
 import com.well.modules.utils.flowUtils.mapIterable
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
@@ -22,7 +23,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class ExpertsApiEffectHandler(
@@ -41,12 +41,19 @@ class ExpertsApiEffectHandler(
                 .mapToList()
                 .mapIterable(Users::toUser)
         }
+
     init {
         networkManager.apply {
             listOf(
                 coroutineScope.launch {
                     stateFlow.collect {
-                        listener?.invoke(Msg.OnConnectionStatusChange(it))
+                        listener?.invoke(Msg.OnConnectionStatusChange(
+                            when (it) {
+                                NetworkManager.Status.Disconnected -> State.ConnectionStatus.Disconnected
+                                NetworkManager.Status.Connecting -> State.ConnectionStatus.Connecting
+                                NetworkManager.Status.Connected -> State.ConnectionStatus.Connected
+                            }
+                        ))
                     }
                 }.asCloseable(),
                 coroutineScope.launch {
@@ -60,8 +67,8 @@ class ExpertsApiEffectHandler(
                     filteredExpertsUsersFlow
                         .combineToNetworkConnectedState(networkManager)
                         .collect {
-                        listener?.invoke(Msg.OnUsersUpdated(it))
-                    }
+                            listener?.invoke(Msg.OnUsersUpdated(it))
+                        }
                 }.asCloseable(),
                 coroutineScope.launch {
                     filterFlow

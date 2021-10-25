@@ -8,7 +8,7 @@ plugins {
 
 kotlin {
     androidWithAndroid()
-    iosWithSimulator()
+    iosWithSimulator(includeSimulator = true)
     sourceSets {
         val commonMain by getting {
             libDependencies(

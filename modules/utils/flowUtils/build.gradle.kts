@@ -12,7 +12,7 @@ kotlin {
     iosWithSimulator()
     jvm()
     sourceSets {
-        optIns()
+        optIns(optIns = setOf(OptIn.Coroutines))
         val commonMain by getting {
             libDependencies(
                 ":modules:atomic",

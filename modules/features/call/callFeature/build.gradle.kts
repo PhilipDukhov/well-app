@@ -8,7 +8,7 @@ plugins {
 
 kotlin {
     androidWithAndroid()
-    iosWithSimulator()
+    iosWithSimulator(includeSimulator = true)
     sourceSets {
         optIns()
         val commonMain by getting {

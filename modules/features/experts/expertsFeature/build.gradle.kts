@@ -8,14 +8,14 @@ plugins {
 
 kotlin {
     androidWithAndroid()
-    iosWithSimulator()
+    iosWithSimulator(includeSimulator = true)
     sourceSets {
         val commonMain by getting {
             libDependencies(
                 ":modules:atomic",
                 ":modules:models",
-                ":modules:networking",
                 ":modules:puerhBase",
+                ":modules:utils:viewUtils",
                 ":modules:utils:kotlinUtils",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",

@@ -191,9 +191,11 @@ private fun Project.customDependencies(libs: List<String>): List<Dependency> =
         }
     }
 
-fun KotlinTargetContainerWithNativeShortcuts.iosWithSimulator(config: KotlinNativeTarget.() -> Unit = {}) {
+fun KotlinTargetContainerWithNativeShortcuts.iosWithSimulator(includeSimulator: Boolean = false, config: KotlinNativeTarget.() -> Unit = {}) {
     ios(configure = config)
-//    iosSimulatorArm64(configure = config)
+//    if (includeSimulator) {
+//        iosSimulatorArm64(configure = config)
+//    }
 }
 
 fun DependencyHandlerScope.coreLibraryDesugaring() =

@@ -1,15 +1,14 @@
 package com.well.modules.features.experts.expertsFeature
 
+import com.well.modules.features.experts.expertsFeature.ExpertsFeature.State.ConnectionStatus.Connected
+import com.well.modules.features.experts.expertsFeature.ExpertsFeature.State.ConnectionStatus.Disconnected
+import com.well.modules.features.experts.expertsFeature.filter.FilterFeature
 import com.well.modules.models.FavoriteSetter
 import com.well.modules.models.User
 import com.well.modules.models.UsersFilter
-import com.well.modules.utils.kotlinUtils.map
-import com.well.modules.networking.NetworkManager
-import com.well.modules.networking.NetworkManager.Status.Disconnected
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
-import com.well.modules.networking.NetworkManager.Status.Connected
-import com.well.modules.features.experts.expertsFeature.filter.FilterFeature
+import com.well.modules.utils.kotlinUtils.map
 
 object ExpertsFeature {
     fun initialState(): State = State(
@@ -19,17 +18,24 @@ object ExpertsFeature {
 
     data class State(
         val users: List<User>,
-        internal val connectionStatus: NetworkManager.Status,
+        internal val connectionStatus: ConnectionStatus,
         val currentUser: User? = null,
         val filterState: FilterFeature.State = FilterFeature.State(filter = UsersFilter()),
         val updatingFilter: Boolean = false,
     ) {
         val updating = connectionStatus != Connected || updatingFilter
         val connectionStatusDescription = connectionStatus.name
+
+        enum class ConnectionStatus {
+            Disconnected,
+            Connecting,
+            Connected,
+            ;
+        }
     }
 
     sealed class Msg {
-        data class OnConnectionStatusChange(val connectionStatus: NetworkManager.Status) : Msg()
+        data class OnConnectionStatusChange(val connectionStatus: State.ConnectionStatus) : Msg()
         data class OnUsersUpdated(val users: List<User>) : Msg()
         data class OnUserSelected(val user: User) : Msg()
         data class OnUserFavorite(val user: User) : Msg()
