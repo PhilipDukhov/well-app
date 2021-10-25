@@ -4,25 +4,25 @@ import com.well.modules.atomic.AtomicRef
 import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
 import com.well.modules.models.FavoriteSetter
+import com.well.modules.models.NetworkConstants
 import com.well.modules.models.RatingRequest
-import com.well.modules.models.Size
 import com.well.modules.models.User
 import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMsg
-import com.well.modules.utils.sharedImage.ImageContainer
-import com.well.modules.utils.tryF
 import com.well.modules.networking.NetworkManager.Status.Connected
 import com.well.modules.networking.NetworkManager.Status.Connecting
 import com.well.modules.networking.NetworkManager.Status.Disconnected
 import com.well.modules.networking.webSocketManager.WebSocketClient
 import com.well.modules.networking.webSocketManager.WebSocketSession
 import com.well.modules.networking.webSocketManager.ws
-import com.well.modules.utils.Constants
-import com.well.modules.utils.sharedImage.resizedImage
+import com.well.modules.utils.kotlinUtils.tryF
+import com.well.modules.utils.viewUtils.platform.Platform
+import com.well.modules.utils.viewUtils.platform.isDebug
 import io.github.aakira.napier.Napier
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
+import io.ktor.util.*
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,12 +44,14 @@ class NetworkManager(
     private val unauthorizedHandler: () -> Unit,
 ) : CloseableContainer() {
     private val client = WebSocketClient(
-        WebSocketClient.Config(
-            host = Constants.host,
-            port = Constants.port,
-            webSocketProtocol = Constants.webSocketProtocol,
-            bearerToken = token,
-        )
+        NetworkConstants.current(Platform.isDebug).let { constants ->
+            WebSocketClient.Config(
+                host = constants.host,
+                port = constants.port,
+                webSocketProtocol = constants.webSocketProtocol,
+                bearerToken = token,
+            )
+        }
     )
 
     enum class Status {
@@ -131,43 +133,36 @@ class NetworkManager(
 
     suspend fun uploadProfilePicture(
         userId: UserId,
-        image: ImageContainer
+        data: ByteArray,
     ) = tryCheckAuth {
         client.client.post<String>("/user/uploadProfilePicture") {
-            body = image.toMultiPartFormDataContent(userId.toString())
+            body = data.toMultiPartFormDataContent(userId.toString())
         }
     }
 
     suspend fun uploadMessagePicture(
-        image: ImageContainer
+        data: ByteArray
     ) = tryCheckAuth {
         client.client.post<String>("uploadMessageMedia") {
-            body = image.toMultiPartFormDataContent()
+            body = data.toMultiPartFormDataContent()
         }
     }
 
-    private fun ImageContainer.toMultiPartFormDataContent(key: String? = null) =
+    private fun ByteArray.toMultiPartFormDataContent(key: String? = null) =
         MultiPartFormDataContent(
             formData {
-                var data: ByteArray
-                var quality = 1f
-                do {
-                    data = resizedImage(Size(2000))
-                        .asByteArray(quality)
-                    quality -= 0.2f
-                    Napier.i("quality $quality ${data.count()}")
-                } while (data.count() > 250_000 && quality >= 0)
                 appendInput(
                     key ?: "key",
                     Headers.build {
+                        @OptIn(InternalAPI::class)
                         append(
                             HttpHeaders.ContentDisposition,
                             "filename=uploadUserProfile.jpg"
                         )
                     },
-                    data.size.toLong()
+                    size.toLong()
                 ) {
-                    buildPacket { writeFully(data) }
+                    buildPacket { writeFully(this@toMultiPartFormDataContent) }
                 }
             }
         )

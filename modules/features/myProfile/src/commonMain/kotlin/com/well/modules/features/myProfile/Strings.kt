@@ -1,7 +1,7 @@
 package com.well.modules.features.myProfile
 
 import com.well.modules.models.User
-import com.well.modules.viewHelpers.GlobalStringsBase
+import com.well.modules.utils.viewUtils.GlobalStringsBase
 
 internal object Strings: GlobalStringsBase() {
     const val logout = "Logout"

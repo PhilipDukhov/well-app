@@ -10,12 +10,14 @@ kotlin {
     androidWithAndroid()
     iosWithSimulator()
     sourceSets {
-        usePredefinedExperimentalAnnotations()
+        optIns()
         val commonMain by getting {
             libDependencies(
                 ":modules:atomic",
                 ":modules:models",
-                ":modules:utils",
+                ":modules:puerhBase",
+                ":modules:utils:viewUtils",
+                ":modules:utils:kotlinUtils",
                 "kotlin.coroutines.core",
                 "kotlin.serializationJson",
                 "kotlin.stdLib",

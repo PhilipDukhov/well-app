@@ -1,8 +1,8 @@
 package com.well.modules.features.myProfile
 
 import com.well.modules.models.User
-import com.well.modules.viewHelpers.UIEditingField
-import com.well.modules.utils.sharedImage.SharedImage
+import com.well.modules.utils.viewUtils.UIEditingField
+import com.well.modules.utils.viewUtils.sharedImage.SharedImage
 
 sealed class UIGroup {
     companion object {

@@ -12,11 +12,11 @@ import com.well.modules.models.Size
 import com.well.modules.models.User
 import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMsg
-import com.well.modules.utils.nativeFormat
-import com.well.modules.utils.plus
-import com.well.modules.utils.toFilterNotNull
-import com.well.modules.utils.toSetOf
-import com.well.modules.utils.withEmptySet
+import com.well.modules.puerhBase.plus
+import com.well.modules.utils.viewUtils.nativeFormat
+import com.well.modules.utils.kotlinUtils.toFilterNotNull
+import com.well.modules.puerhBase.toSetOf
+import com.well.modules.puerhBase.withEmptySet
 
 object CallFeature {
     fun callingStateAndEffects(user: User) =
@@ -112,8 +112,6 @@ object CallFeature {
             Drawing,
             ;
         }
-
-//        fun testIncStatus() = copy(status = status.nextEnumValue())
     }
 
     sealed class Msg {
@@ -153,7 +151,7 @@ object CallFeature {
 
     fun reducer(
         msg: Msg,
-        state: State
+        state: State,
     ): Pair<State, Set<Eff>> = when (msg) {
         is Msg.Accept -> state.incomingCall?.let { incomingCall ->
             state.copy(status = Connecting) to setOf(Eff.Accept(incomingCall))
@@ -230,7 +228,7 @@ object CallFeature {
         }
     }
 
-    private fun State.reduceInitializeDrawing() = when {
+    private fun State.reduceInitializeDrawing(): Pair<State, Set<Eff>> = when {
         viewPoint != State.ViewPoint.Both -> {
             copy(
                 controlSetSaved = State.ControlSet.Drawing
@@ -250,7 +248,7 @@ object CallFeature {
         }
     }
 
-    private fun State.reduceRemoteUpdateViewPoint(viewPoint: State.ViewPoint) =
+    private fun State.reduceRemoteUpdateViewPoint(viewPoint: State.ViewPoint): Pair<State, Set<Eff>> =
         copy(
             viewPoint = viewPoint,
             controlSetSaved = if (viewPoint == State.ViewPoint.Both)
@@ -260,7 +258,7 @@ object CallFeature {
             drawingState = drawingStateCopyViewPoint(viewPoint),
         ).reduceUpdateLocalDeviceState(forceMineBackCamera = true)
 
-    private fun State.reduceLocalUpdateViewPoint(viewPoint: State.ViewPoint) =
+    private fun State.reduceLocalUpdateViewPoint(viewPoint: State.ViewPoint) : Pair<State, Set<Eff>> =
         copy(
             viewPoint = viewPoint,
             controlSetSaved = if (viewPoint == State.ViewPoint.Both)
@@ -294,7 +292,7 @@ object CallFeature {
         )
 
     private fun State.reduceCopyDeviceState(
-        modifier: LocalDeviceState.() -> LocalDeviceState
+        modifier: LocalDeviceState.() -> LocalDeviceState,
     ) = reduceUpdateLocalDeviceState(modifier(localDeviceState))
 
     private fun State.reduceUpdateLocalDeviceState(

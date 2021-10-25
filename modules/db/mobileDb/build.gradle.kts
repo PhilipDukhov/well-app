@@ -9,7 +9,6 @@ kotlin {
     androidWithAndroid()
     iosWithSimulator()
     sourceSets {
-        usePredefinedExperimentalAnnotations()
         val commonMain by getting {
             libDependencies(
                 ":modules:models",
@@ -17,7 +16,7 @@ kotlin {
                 ":modules:db:chatMessagesDb",
                 ":modules:db:helperDb",
                 ":modules:atomic",
-                ":modules:utils",
+                ":modules:utils:viewUtils",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",
                 "sqldelight.coroutinesExtensions",

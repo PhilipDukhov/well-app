@@ -1,8 +1,7 @@
 package com.well.sharedMobile
 
-import com.well.modules.utils.puerh.FeatureProvider
+import com.well.modules.puerhBase.FeatureProvider
 import com.well.sharedMobile.featureProvider.FeatureProviderImpl
-import kotlinx.coroutines.Dispatchers
 import platform.Foundation.NSURL
 import platform.UIKit.UIApplication
 

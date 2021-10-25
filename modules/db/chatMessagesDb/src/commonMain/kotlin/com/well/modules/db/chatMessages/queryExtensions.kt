@@ -1,6 +1,6 @@
 package com.well.modules.db.chatMessages
 
-import com.well.modules.flowHelper.mapIterable
+import com.well.modules.utils.flowUtils.mapIterable
 import com.well.modules.models.ChatMessageId
 import com.well.modules.models.UserId
 import com.well.modules.models.chat.ChatMessage
@@ -61,6 +61,16 @@ fun ChatMessagesQueries.messagePresenceFlow(): Flow<ChatMessageId> =
     newestChatMessageId()
         .asFlow()
         .mapToOneOrDefault(-1)
+
+fun ChatMessagesDatabase.chatMessageWithStatusFlow(
+    currentUid: ChatMessageId,
+    peerUid: ChatMessageId,
+) = chatMessagesQueries
+    .chatList(firstId = currentUid, secondId = peerUid)
+    .asFlow()
+    .mapToList()
+    .mapIterable(ChatMessages::toChatMessage)
+    .toChatMessageWithStatusFlow(currentUid = currentUid, messagesDatabase = this)
 
 fun ChatMessages.toChatMessage() = ChatMessage(
     id = id,

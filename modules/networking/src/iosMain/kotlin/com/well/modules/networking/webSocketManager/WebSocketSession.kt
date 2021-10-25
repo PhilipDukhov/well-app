@@ -1,9 +1,9 @@
 package com.well.modules.networking.webSocketManager
 
 import io.github.aakira.napier.Napier
-import com.well.modules.utils.resumeWithException
-import com.well.modules.utils.toNSData
-import com.well.modules.utils.toThrowable
+import com.well.modules.utils.viewUtils.resumeWithException
+import com.well.modules.utils.viewUtils.toNSData
+import com.well.modules.utils.viewUtils.toThrowable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel

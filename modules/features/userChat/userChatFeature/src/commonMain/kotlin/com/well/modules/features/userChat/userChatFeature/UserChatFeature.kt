@@ -3,10 +3,10 @@ package com.well.modules.features.userChat.userChatFeature
 import com.well.modules.models.User
 import com.well.modules.models.UserId
 import com.well.modules.models.chat.ChatMessage
-import com.well.modules.utils.sharedImage.LocalImage
-import com.well.modules.utils.toSetOf
-import com.well.modules.utils.withEmptySet
-import com.well.modules.viewHelpers.chatMessageWithStatus.ChatMessageWithStatus
+import com.well.modules.utils.viewUtils.sharedImage.LocalImage
+import com.well.modules.puerhBase.toSetOf
+import com.well.modules.puerhBase.withEmptySet
+import com.well.modules.utils.viewUtils.chatMessageWithStatus.ChatMessageWithStatus
 
 object UserChatFeature {
     data class State(

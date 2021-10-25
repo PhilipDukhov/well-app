@@ -27,34 +27,10 @@ kotlin {
         homepage = "-"
         ios.deploymentTarget = project.version("iosDeploymentTarget")
     }
-    val iosExportModulesNames = listOf(
-        ":modules:features:login",
-        ":modules:features:more",
-        ":modules:features:welcome",
-        ":modules:features:myProfile",
-        ":modules:features:call:callFeature",
-        ":modules:features:chatList:chatListFeature",
-        ":modules:features:experts:expertsFeature",
-        ":modules:features:userChat:userChatFeature",
-        ":modules:models",
-        ":modules:utils",
-        ":modules:flowHelper",
-        ":modules:viewHelpers",
-    )
-    val iosExportModules = iosExportModulesNames.map { project(it) }
-    targets.withType<KotlinNativeTarget> {
-        binaries.withType<Framework> {
-            iosExportModules.forEach {
-                export(it)
-            }
-            export(libAt("shared.napier"))
-        }
-    }
+    exportIosModules(project)
     sourceSets {
-        usePredefinedExperimentalAnnotations()
-
+        optIns()
         val commonMain by getting {
-            libDependencies(iosExportModulesNames)
             libDependencies(
                 ":modules:atomic",
                 ":modules:models",
@@ -75,11 +51,6 @@ kotlin {
             libDependencies(
                 "kotlin.coroutines.core-strictly",
             )
-            dependencies {
-                iosExportModules.forEach {
-                    api(it)
-                }
-            }
         }
     }
 }

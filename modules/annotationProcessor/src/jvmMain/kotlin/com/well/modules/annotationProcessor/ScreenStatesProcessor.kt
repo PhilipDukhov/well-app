@@ -95,8 +95,8 @@ class ContainerInfo(
         FeatureInfo(it, this, processingEnv)
     }
     val napierClassName = ClassName("io.github.aakira.napier", "Napier")
-    val withEmptySetClassName = ClassName("com.well.modules.utils", "withEmptySet")
-    val letNamedClassName = ClassName("com.well.modules.utils", "letNamed")
+    val withEmptySetClassName = ClassName("com.well.modules.puerhBase", "withEmptySet")
+    val letNamedClassName = ClassName("com.well.modules.utils.kotlinUtils", "letNamed")
 
     val ScreenStates.safeFeatures: List<TypeMirror>
         get() {

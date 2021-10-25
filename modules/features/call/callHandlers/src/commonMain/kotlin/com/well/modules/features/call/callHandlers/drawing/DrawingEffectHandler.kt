@@ -2,11 +2,11 @@ package com.well.modules.features.call.callHandlers.drawing
 
 import com.well.modules.atomic.AtomicRef
 import com.well.modules.models.Path
-import com.well.modules.utils.sharedImage.asImageContainer
+import com.well.modules.utils.viewUtils.sharedImage.asImageContainer
 import com.well.modules.features.call.callFeature.CallFeature
 import com.well.modules.features.call.callFeature.drawing.DrawingFeature.Eff
 import com.well.modules.features.call.callFeature.drawing.DrawingFeature.Msg
-import com.well.modules.utils.sharedImage.resizedImage
+import com.well.modules.utils.viewUtils.sharedImage.resizedImage
 import com.well.modules.features.call.callFeature.webRtc.RtcMsg.ImageSharingContainer.Msg as RtcMsg
 import io.github.aakira.napier.Napier
 

@@ -17,12 +17,14 @@ kotlin {
     iosWithSimulator()
     jvm()
     sourceSets {
-        usePredefinedExperimentalAnnotations()
+        optIns(optIns = setOf(OptIn.Coroutines))
         val commonMain by getting {
             libDependencies(
                 ":modules:models",
-                ":modules:flowHelper",
+                ":modules:networking",
+                ":modules:utils:flowUtils",
                 ":modules:db:helperDb",
+                "shared.napier",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",
                 "sqldelight.coroutinesExtensions",

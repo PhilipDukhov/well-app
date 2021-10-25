@@ -4,7 +4,7 @@ import com.well.modules.androidUi.customViews.ControlItem
 import com.well.modules.androidUi.customViews.NavigationBar
 import com.well.modules.androidUi.customViews.clearFocusOnKeyboardDismiss
 import com.well.modules.features.myProfile.MyProfileFeature.Msg
-import com.well.modules.viewHelpers.UIEditingField
+import com.well.modules.utils.viewUtils.UIEditingField
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions

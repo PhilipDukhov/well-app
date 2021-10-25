@@ -1,6 +1,6 @@
 package com.well.sharedMobile
 
-import com.well.modules.utils.puerh.FeatureProvider
+import com.well.modules.puerhBase.FeatureProvider
 import android.content.Intent
 import com.well.sharedMobile.featureProvider.FeatureProviderImpl
 

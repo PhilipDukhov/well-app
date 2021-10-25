@@ -8,8 +8,8 @@ import com.well.modules.androidUi.customViews.ToggleFavoriteButton
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.models.Color
 import com.well.modules.models.User
-import com.well.modules.utils.countryCodes.countryName
-import com.well.modules.utils.countryCodes.localizedDescription
+import com.well.modules.utils.viewUtils.countryCodes.countryName
+import com.well.modules.utils.viewUtils.countryCodes.localizedDescription
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

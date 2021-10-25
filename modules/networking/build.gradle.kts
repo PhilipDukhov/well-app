@@ -9,13 +9,16 @@ plugins {
 kotlin {
     androidWithAndroid()
     iosWithSimulator()
+    jvm()
     sourceSets {
-        usePredefinedExperimentalAnnotations()
+        optIns()
         val commonMain by getting {
             libDependencies(
                 ":modules:atomic",
                 ":modules:models",
-                ":modules:utils",
+                ":modules:utils:viewUtils",
+                ":modules:utils:ktorUtils",
+                ":modules:utils:kotlinUtils",
                 "kotlin.coroutines.core",
                 "kotlin.serializationJson",
                 "kotlin.stdLib",

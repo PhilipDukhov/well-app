@@ -1,12 +1,13 @@
 package com.well.sharedMobile.featureProvider
 
-import com.well.modules.viewHelpers.Alert
-import com.well.modules.viewHelpers.SuspendAction
-import com.well.modules.viewHelpers.pickSystemImageSafe
-import com.well.modules.viewHelpers.showSheetThreadSafe
+import com.well.modules.utils.viewUtils.Alert
+import com.well.modules.utils.viewUtils.SuspendAction
+import com.well.modules.utils.viewUtils.pickSystemImageSafe
+import com.well.modules.utils.viewUtils.showSheetThreadSafe
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature
 import com.well.modules.features.myProfile.MyProfileFeature.Eff
 import com.well.modules.features.myProfile.MyProfileFeature.Msg
+import com.well.modules.utils.viewUtils.sharedImage.asByteArrayOptimizedForNetwork
 import com.well.sharedMobile.TopLevelFeature.Msg as TopLevelMsg
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.MainScope
@@ -44,7 +45,7 @@ internal suspend fun FeatureProviderImpl.handleMyProfileEff(
                         user.copy(
                             profileImageUrl = uploadProfilePicture(
                                 user.id,
-                                newProfileImage
+                                newProfileImage.asByteArrayOptimizedForNetwork()
                             )
                         )
                     } ?: user

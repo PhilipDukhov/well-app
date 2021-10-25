@@ -17,8 +17,8 @@ import com.well.modules.features.call.callFeature.webRtc.WebRtcManagerI.Listener
 import com.well.modules.models.Size
 import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMsg
-import com.well.modules.utils.puerh.EffectHandler
-import com.well.modules.utils.sharedImage.ImageContainer
+import com.well.modules.puerhBase.EffectHandler
+import com.well.modules.utils.viewUtils.sharedImage.ImageContainer
 import com.well.modules.features.call.callFeature.webRtc.RtcMsg.ImageSharingContainer.Msg.UpdateImage as ImgSharingUpdateImage
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope

@@ -18,13 +18,13 @@ kotlin {
         withJava()
     }
     sourceSets {
-        usePredefinedExperimentalAnnotations("KtorExperimentalLocationsAPI", "FlowPreview")
-        val jvmMain by getting {
+                val jvmMain by getting {
             libDependencies(
                 ":modules:db:helperDb",
                 ":modules:db:chatMessagesDb",
                 ":modules:db:serverDb",
-                ":modules:flowHelper",
+                ":modules:utils:flowUtils",
+                ":modules:utils:ktorUtils",
                 ":modules:models",
                 "server.*",
                 "ktor.server.*",

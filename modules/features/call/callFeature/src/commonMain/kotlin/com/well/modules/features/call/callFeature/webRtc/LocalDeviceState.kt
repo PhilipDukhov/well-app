@@ -1,8 +1,8 @@
 package com.well.modules.features.call.callFeature.webRtc
 
 import com.well.modules.features.call.callFeature.CallFeature
-import com.well.modules.utils.platform.Platform
-import com.well.modules.utils.platform.isDebug
+import com.well.modules.utils.viewUtils.platform.Platform
+import com.well.modules.utils.viewUtils.platform.isDebug
 
 data class LocalDeviceState(
     val micEnabled: Boolean,

@@ -1,7 +1,7 @@
 package com.well.modules.androidUi.customViews
 
-import com.well.modules.viewHelpers.NavigationBarModel
-import com.well.modules.viewHelpers.Gradient
+import com.well.modules.utils.viewUtils.NavigationBarModel
+import com.well.modules.utils.viewUtils.Gradient
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

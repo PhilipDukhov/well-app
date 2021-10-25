@@ -14,7 +14,7 @@ import com.well.modules.models.Color
 import com.well.modules.models.UsersFilter
 import com.well.modules.features.experts.expertsFeature.filter.FilterFeature.Msg
 import com.well.modules.features.experts.expertsFeature.filter.FilterFeature.State
-import com.well.modules.viewHelpers.UIEditingField
+import com.well.modules.utils.viewUtils.UIEditingField
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

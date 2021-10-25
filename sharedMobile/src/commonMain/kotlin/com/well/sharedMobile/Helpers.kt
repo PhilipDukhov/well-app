@@ -1,6 +1,6 @@
 package com.well.sharedMobile
 
-import com.well.modules.utils.toSetOf
+import com.well.modules.puerhBase.toSetOf
 import com.well.sharedMobile.TopLevelFeature.Eff
 import com.well.sharedMobile.TopLevelFeature.State
 import com.well.sharedMobile.TopLevelFeature.State.ScreenPosition

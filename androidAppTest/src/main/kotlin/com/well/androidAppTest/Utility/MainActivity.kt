@@ -2,7 +2,7 @@ package com.well.androidAppTest.Utility
 
 import com.well.androidAppTest.TestComposeScreen
 import com.well.modules.androidUi.theme.Theme
-import com.well.modules.utils.napier.NapierProxy
+import com.well.modules.utils.viewUtils.napier.NapierProxy
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity

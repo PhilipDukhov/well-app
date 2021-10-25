@@ -1,7 +1,7 @@
 package com.well.modules.db.mobile
 
-import com.well.modules.utils.platform.Platform
-import com.well.modules.utils.platform.isDebug
+import com.well.modules.utils.viewUtils.platform.Platform
+import com.well.modules.utils.viewUtils.platform.isDebug
 import com.squareup.sqldelight.db.SqlDriver
 
 internal class DatabaseContainer<T> (

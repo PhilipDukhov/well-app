@@ -4,7 +4,7 @@ import com.well.modules.models.date.Date
 import com.well.modules.models.User
 import com.well.modules.models.formatters.DateFormatter
 import com.well.modules.models.formatters.format
-import com.well.modules.models.spacedUppercaseName
+import com.well.modules.utils.kotlinUtils.spacedUppercaseName
 
 internal fun User.previewGroups(isCurrent: Boolean) = listOfNotNull(
     if (!isCurrent) {

@@ -13,12 +13,10 @@ sqldelight {
 kotlin {
     jvm()
     sourceSets {
-        usePredefinedExperimentalAnnotations("KtorExperimentalLocationsAPI", "FlowPreview")
         val commonMain by getting {
             libDependencies(
                 ":modules:models",
                 ":modules:db:helperDb",
-                ":modules:flowHelper",
             )
         }
     }

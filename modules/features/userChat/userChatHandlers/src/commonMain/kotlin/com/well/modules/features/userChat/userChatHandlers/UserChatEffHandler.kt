@@ -1,21 +1,16 @@
 package com.well.modules.features.userChat.userChatHandlers
 
-import com.well.modules.db.chatMessages.ChatMessages
 import com.well.modules.db.chatMessages.ChatMessagesDatabase
+import com.well.modules.db.chatMessages.chatMessageWithStatusFlow
 import com.well.modules.db.chatMessages.insertTmpMessage
-import com.well.modules.db.chatMessages.toChatMessage
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature.Eff
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature.Msg
-import com.well.modules.flowHelper.mapIterable
 import com.well.modules.models.User
 import com.well.modules.models.UserId
 import com.well.modules.models.chat.ChatMessage
-import com.well.modules.utils.puerh.EffectHandler
-import com.well.modules.utils.sharedImage.ImageContainer
-import com.well.modules.utils.sharedImage.LocalImage
-import com.well.modules.viewHelpers.chatMessageWithStatus.toChatMessageWithStatusFlow
-import com.squareup.sqldelight.runtime.coroutines.asFlow
-import com.squareup.sqldelight.runtime.coroutines.mapToList
+import com.well.modules.puerhBase.EffectHandler
+import com.well.modules.utils.viewUtils.sharedImage.ImageContainer
+import com.well.modules.utils.viewUtils.sharedImage.LocalImage
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -34,15 +29,13 @@ class UserChatEffHandler(
         val uploadMessagePicture: suspend (ImageContainer) -> String,
         val pickSystemImage: suspend () -> LocalImage,
         val cacheImage: (ImageContainer, String) -> Unit,
-        val peerUserFlow: () -> Flow<User>
+        val peerUserFlow: () -> Flow<User>,
     )
 
-    private val messagesFlow = messagesDatabase.chatMessagesQueries
-        .chatList(firstId = currentUid, secondId = peerUid)
-        .asFlow()
-        .mapToList()
-        .mapIterable(ChatMessages::toChatMessage)
-        .toChatMessageWithStatusFlow(currentUid = currentUid, messagesDatabase = messagesDatabase)
+    private val messagesFlow = messagesDatabase.chatMessageWithStatusFlow(
+        currentUid = currentUid,
+        peerUid = peerUid,
+    )
 
     init {
         coroutineScope.launch {
@@ -79,7 +72,9 @@ class UserChatEffHandler(
                                 peerId = message.peerId,
                             ).executeAsOneOrNull()
                             if (currentLast == null || currentLast.messageId < message.id) {
-                                insert(fromId = message.fromId, peerId = message.peerId, messageId = message.id)
+                                insert(fromId = message.fromId,
+                                    peerId = message.peerId,
+                                    messageId = message.id)
                                 Napier.i("insert lastReadMessagesQueries $message")
                             }
                         }

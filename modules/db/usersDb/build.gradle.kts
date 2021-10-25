@@ -16,13 +16,11 @@ kotlin {
     androidWithAndroid()
     iosWithSimulator()
     sourceSets {
-        usePredefinedExperimentalAnnotations()
         val commonMain by getting {
             libDependencies(
                 ":modules:models",
                 ":modules:db:helperDb",
-                ":modules:utils",
-                ":modules:flowHelper",
+                ":modules:utils:flowUtils",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",
                 "sqldelight.coroutinesExtensions",

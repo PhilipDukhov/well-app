@@ -15,11 +15,11 @@ import com.well.modules.db.users.getByIdFlow
 import com.well.modules.db.users.insertOrReplace
 import com.well.modules.features.call.callFeature.webRtc.WebRtcManagerI
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature
-import com.well.modules.features.login.LoginFeature
-import com.well.modules.features.login.SocialNetwork
-import com.well.modules.features.login.SocialNetworkService
-import com.well.modules.features.login.credentialProviders.CredentialProvider
-import com.well.modules.features.login.credentialProviders.OAuthCredentialProvider
+import com.well.modules.features.login.loginFeature.LoginFeature
+import com.well.modules.features.login.loginFeature.SocialNetwork
+import com.well.modules.features.login.loginHandlers.SocialNetworkService
+import com.well.modules.features.login.loginHandlers.credentialProviders.CredentialProvider
+import com.well.modules.features.login.loginHandlers.credentialProviders.OAuthCredentialProvider
 import com.well.modules.features.more.MoreFeature
 import com.well.modules.features.more.about.AboutFeature
 import com.well.modules.features.more.support.SupportFeature
@@ -29,22 +29,23 @@ import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.features.welcome.WelcomeFeature
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.networking.NetworkManager
-import com.well.modules.utils.AppContext
-import com.well.modules.utils.dataStore.AuthInfo
-import com.well.modules.utils.dataStore.authInfo
-import com.well.modules.utils.dataStore.welcomeShowed
-import com.well.modules.utils.permissionsHandler.PermissionsHandler
-import com.well.modules.utils.platform.Platform
-import com.well.modules.utils.platform.isDebug
-import com.well.modules.utils.puerh.ExecutorEffectHandler
-import com.well.modules.utils.puerh.ExecutorEffectsInterpreter
-import com.well.modules.utils.puerh.Feature
-import com.well.modules.utils.puerh.SyncFeature
-import com.well.modules.utils.puerh.adapt
-import com.well.modules.utils.puerh.wrapWithEffectHandler
-import com.well.modules.viewHelpers.Alert
-import com.well.modules.viewHelpers.ContextHelper
-import com.well.modules.viewHelpers.WebAuthenticator
+import com.well.modules.utils.viewUtils.AppContext
+import com.well.modules.utils.viewUtils.dataStore.AuthInfo
+import com.well.modules.utils.viewUtils.dataStore.authInfo
+import com.well.modules.utils.viewUtils.dataStore.welcomeShowed
+import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler
+import com.well.modules.utils.viewUtils.platform.Platform
+import com.well.modules.utils.viewUtils.platform.isDebug
+import com.well.modules.puerhBase.ExecutorEffectHandler
+import com.well.modules.puerhBase.ExecutorEffectsInterpreter
+import com.well.modules.puerhBase.Feature
+import com.well.modules.puerhBase.SyncFeature
+import com.well.modules.puerhBase.adapt
+import com.well.modules.puerhBase.wrapWithEffectHandler
+import com.well.modules.utils.viewUtils.Alert
+import com.well.modules.utils.viewUtils.ContextHelper
+import com.well.modules.utils.viewUtils.WebAuthenticator
+import com.well.modules.utils.viewUtils.sharedImage.asByteArrayOptimizedForNetwork
 import com.well.sharedMobile.ScreenState
 import com.well.sharedMobile.TopLevelFeature
 import com.well.sharedMobile.TopLevelFeature.Eff
@@ -250,7 +251,9 @@ internal class FeatureProviderImpl(
                                                 )
                                             )
                                         },
-                                        uploadMessagePicture = networkManager::uploadMessagePicture,
+                                        uploadMessagePicture = {
+                                            networkManager.uploadMessagePicture(it.asByteArrayOptimizedForNetwork())
+                                        },
                                         peerUserFlow = {
                                             usersDatabase.usersQueries.getByIdFlow(
                                                 peerId

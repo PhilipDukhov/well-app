@@ -10,13 +10,13 @@ kotlin {
     androidWithAndroid()
     iosWithSimulator()
     sourceSets {
-        usePredefinedExperimentalAnnotations()
         val commonMain by getting {
             libDependencies(
                 ":modules:features:call:callFeature",
                 ":modules:atomic",
                 ":modules:models",
-                ":modules:utils",
+                ":modules:utils:viewUtils",
+                ":modules:utils:kotlinUtils",
                 "kotlin.coroutines.core",
                 "kotlin.serializationJson",
                 "kotlin.stdLib",

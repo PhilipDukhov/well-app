@@ -3,22 +3,16 @@ package com.well.modules.features.call.callFeature.drawing
 import com.well.modules.models.*
 import com.well.modules.models.date.Date
 import com.well.modules.models.date.compareTo
-import com.well.modules.utils.sharedImage.ImageContainer
-import com.well.modules.utils.map
-import com.well.modules.utils.platform.Platform
-import com.well.modules.utils.platform.nativeScale
-import com.well.modules.utils.toSetOf
-import com.well.modules.utils.withEmptySet
+import com.well.modules.utils.viewUtils.sharedImage.ImageContainer
+import com.well.modules.utils.viewUtils.platform.Platform
+import com.well.modules.utils.viewUtils.platform.nativeScale
+import com.well.modules.puerhBase.toSetOf
+import com.well.modules.puerhBase.withEmptySet
+import com.well.modules.utils.kotlinUtils.map
 import kotlin.time.Duration
 import kotlin.time.measureTimedValue
 
 object DrawingFeature {
-    fun testState(imageContainer: ImageContainer?) =
-        State()
-            .copy(
-                image = imageContainer,
-            )
-
     data class State(
         val localImageContainerSize: Size? = null,
         val remoteImageContainerSize: Size? = null,
@@ -171,20 +165,6 @@ object DrawingFeature {
             val date: Date
         ) : Eff()
     }
-
-    fun reducerMeasuring(
-        msg: Msg,
-        state: State
-    ): Pair<State, Set<Eff>> =
-        state.copy(lastReduceDurations = listOf()).let {
-            measureTimedValue {
-                reducer(msg, it)
-            }.run {
-                value.map(
-                    { it.copy(lastReduceDurations = it.lastReduceDurations + duration) },
-                    { it })
-            }
-        }
 
     fun reducer(
         msg: Msg,

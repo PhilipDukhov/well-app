@@ -2,8 +2,8 @@ package com.well.modules.features.myProfile
 
 import com.well.modules.models.User
 import com.well.modules.features.myProfile.MyProfileFeature.Msg
-import com.well.modules.viewHelpers.UIEditingField
-import com.well.modules.utils.timeZonesIdentifiersList
+import com.well.modules.utils.viewUtils.UIEditingField
+import com.well.modules.utils.viewUtils.timeZonesIdentifiersList
 
 internal fun User.editingGroups() = listOf(
     UIGroup.Editing(

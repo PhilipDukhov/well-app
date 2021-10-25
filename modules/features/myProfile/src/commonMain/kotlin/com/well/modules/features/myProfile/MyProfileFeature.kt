@@ -7,14 +7,14 @@ import com.well.modules.models.Rating
 import com.well.modules.models.RatingRequest
 import com.well.modules.models.User
 import com.well.modules.models.UserId
-import com.well.modules.models.spacedUppercaseName
-import com.well.modules.utils.UrlUtil
-import com.well.modules.utils.currentTimeZoneIdentifier
-import com.well.modules.utils.sharedImage.ImageContainer
-import com.well.modules.utils.sharedImage.profileImage
-import com.well.modules.utils.toSetOf
-import com.well.modules.utils.withEmptySet
-import com.well.modules.viewHelpers.NavigationBarModel
+import com.well.modules.utils.kotlinUtils.spacedUppercaseName
+import com.well.modules.utils.viewUtils.UrlUtil
+import com.well.modules.utils.viewUtils.currentTimeZoneIdentifier
+import com.well.modules.utils.viewUtils.sharedImage.ImageContainer
+import com.well.modules.utils.viewUtils.sharedImage.profileImage
+import com.well.modules.puerhBase.toSetOf
+import com.well.modules.puerhBase.withEmptySet
+import com.well.modules.utils.viewUtils.NavigationBarModel
 import com.well.modules.features.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature as AvailabilitiesListFeature
 import io.github.aakira.napier.Napier
 

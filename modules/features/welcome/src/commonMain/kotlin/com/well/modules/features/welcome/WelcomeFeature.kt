@@ -1,6 +1,6 @@
 package com.well.modules.features.welcome
 
-import com.well.modules.utils.toSetOf
+import com.well.modules.puerhBase.toSetOf
 
 object WelcomeFeature {
     class State {

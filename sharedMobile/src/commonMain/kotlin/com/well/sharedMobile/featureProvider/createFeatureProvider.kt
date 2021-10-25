@@ -1,11 +1,11 @@
 package com.well.sharedMobile.featureProvider
 
 import com.well.modules.features.call.callFeature.webRtc.WebRtcManagerI
-import com.well.modules.features.login.SocialNetwork
-import com.well.modules.features.login.credentialProviders.CredentialProvider
-import com.well.modules.utils.AppContext
-import com.well.modules.utils.puerh.FeatureProvider
-import com.well.modules.viewHelpers.WebAuthenticator
+import com.well.modules.features.login.loginFeature.SocialNetwork
+import com.well.modules.features.login.loginHandlers.credentialProviders.CredentialProvider
+import com.well.modules.utils.viewUtils.AppContext
+import com.well.modules.puerhBase.FeatureProvider
+import com.well.modules.utils.viewUtils.WebAuthenticator
 import com.well.sharedMobile.TopLevelFeature
 
 fun createFeatureProvider(

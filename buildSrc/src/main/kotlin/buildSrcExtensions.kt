@@ -2,16 +2,20 @@ import org.codehaus.groovy.runtime.GStringImpl
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.DependencyHandlerScope
-import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
 import org.gradle.kotlin.dsl.add
-import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.getValue
+import org.gradle.kotlin.dsl.getting
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
+import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 private fun Project.mapAt(
     path: String,
-    skipLast: Boolean
+    skipLast: Boolean,
 ): Pair<LinkedHashMap<*, *>, String> {
     val components = path.split('.')
     var map = properties["Libs"]?.toLinkedHashMap() ?: throw IllegalStateException("Libs missing")
@@ -76,15 +80,16 @@ fun KotlinSourceSet.libDependencies(libs: List<String>) =
                             }
                         }
                         is Dependency.Module -> {
-                            when (val name = it.name) {
-                                ":modules:atomic",
-                                ":modules:viewHelpers",
-                                ":modules:models",
-                                -> {
-                                    api(project(name))
-                                }
-                                else -> {
-                                    implementation(project(name))
+                            @Suppress("UNCHECKED_CAST")
+                            val forceApiModules =
+                                project.properties["forceApiModules"] as List<String>
+                            it.name.let { name ->
+                                project(name).let { dep ->
+                                    if (forceApiModules.contains(name)) {
+                                        api(dep)
+                                    } else {
+                                        implementation(dep)
+                                    }
                                 }
                             }
                         }
@@ -96,21 +101,33 @@ fun KotlinSourceSet.libDependencies(libs: List<String>) =
         }
     }
 
-fun NamedDomainObjectCollection<KotlinSourceSet>.usePredefinedExperimentalAnnotations(
-    vararg annotations: String
+enum class OptIn {
+    Coroutines,
+    Ktor,
+}
+
+fun NamedDomainObjectCollection<KotlinSourceSet>.optIns(
+    vararg annotations: String,
+    optIns: Set<OptIn> = emptySet(),
 ) {
     all {
-        (annotations.toList() +
-                listOf(
+        (optIns.flatMap {
+            when (it) {
+                OptIn.Coroutines -> listOf(
                     "kotlinx.coroutines.InternalCoroutinesApi",
                     "kotlinx.coroutines.FlowPreview",
                     "kotlinx.coroutines.ExperimentalCoroutinesApi",
-                    "kotlin.ExperimentalUnsignedTypes",
-                    "kotlin.contracts.ExperimentalContracts",
-                    "kotlin.time.ExperimentalTime",
-                    "io.ktor.util.InternalAPI",
+                )
+                OptIn.Ktor -> listOf(
                     "io.ktor.utils.io.core.ExperimentalIoApi",
-                )).forEach {
+                )
+            }
+        } + listOf(
+            "kotlin.ExperimentalUnsignedTypes",
+            "kotlin.contracts.ExperimentalContracts",
+            "kotlin.time.ExperimentalTime",
+            "kotlin.RequiresOptIn",
+        ) + annotations.toList()).forEach {
             languageSettings.optIn(it)
         }
     }
@@ -140,17 +157,17 @@ fun Project.libDependencies(vararg libs: String) =
 sealed class Dependency {
     data class Implementation(
         val dependencyNotation: String,
-        val strictVersion: String?
+        val strictVersion: String?,
     ) : Dependency() {
         constructor(dependencyNotation: String) : this(dependencyNotation, null)
     }
 
     data class Module(
-        val name: String
+        val name: String,
     ) : Dependency()
 
     data class Test(
-        val dependencyNotation: String
+        val dependencyNotation: String,
     ) : Dependency()
 }
 
@@ -181,6 +198,34 @@ fun KotlinTargetContainerWithNativeShortcuts.iosWithSimulator(config: KotlinNati
 
 fun DependencyHandlerScope.coreLibraryDesugaring() =
     add("coreLibraryDesugaring", "com.android.tools:desugar_jdk_libs:1.1.5")
+
+fun KotlinMultiplatformExtension.exportIosModules(project: Project) {
+    @Suppress("UNCHECKED_CAST")
+    val iosExportModulesNames = project.properties["iosExportModulesNames"] as List<String>
+    val iosExportModules = iosExportModulesNames.map { project.project(it) }
+    targets.withType<KotlinNativeTarget> {
+        binaries.withType<Framework> {
+            iosExportModules.forEach {
+                export(it)
+            }
+            export(project.libAt("shared.napier"))
+        }
+    }
+
+    @Suppress("UNUSED_VARIABLE")
+    sourceSets.apply {
+        val commonMain by getting {
+            libDependencies(iosExportModulesNames)
+        }
+        val iosMain by getting {
+            dependencies {
+                iosExportModules.forEach {
+                    api(it)
+                }
+            }
+        }
+    }
+}
 
 val composeOptIns = listOf(
     "androidx.compose.ui.ExperimentalComposeUiApi",

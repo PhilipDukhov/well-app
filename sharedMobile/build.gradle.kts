@@ -36,43 +36,20 @@ kotlin {
         homepage = "-"
         ios.deploymentTarget = project.version("iosDeploymentTarget")
     }
-    val iosExportModulesNames = listOf(
-        ":modules:features:login",
-        ":modules:features:more",
-        ":modules:features:welcome",
-        ":modules:features:myProfile",
-        ":modules:features:call:callFeature",
-        ":modules:features:chatList:chatListFeature",
-        ":modules:features:experts:expertsFeature",
-        ":modules:features:userChat:userChatFeature",
-        ":modules:models",
-        ":modules:utils",
-        ":modules:flowHelper",
-        ":modules:viewHelpers",
-    )
-    val iosExportModules = iosExportModulesNames.map { project(it) }
-    targets.withType<KotlinNativeTarget> {
-        binaries.withType<Framework> {
-            iosExportModules.forEach {
-                export(it)
-            }
-            export(libAt("shared.napier"))
-        }
-    }
+    exportIosModules(project)
     sourceSets {
-        usePredefinedExperimentalAnnotations()
 
         val commonMain by getting {
-            libDependencies(iosExportModulesNames)
             libDependencies(
                 ":modules:atomic",
                 ":modules:annotations",
                 ":modules:db:mobileDb",
                 ":modules:db:chatMessagesDb",
                 ":modules:db:usersDb",
-                ":modules:flowHelper",
-                ":modules:viewHelpers",
+                ":modules:utils:flowUtils",
+                ":modules:utils:kotlinUtils",
                 ":modules:networking",
+                ":modules:features:login:loginHandlers",
                 ":modules:features:call:callHandlers",
                 ":modules:features:chatList:chatListHandlers",
                 ":modules:features:experts:expertsHandlers",
@@ -106,11 +83,6 @@ kotlin {
                 "ktor.client.engine.ios",
                 "kotlin.coroutines.core-strictly",
             )
-            dependencies {
-                iosExportModules.forEach {
-                    api(it)
-                }
-            }
         }
     }
 }

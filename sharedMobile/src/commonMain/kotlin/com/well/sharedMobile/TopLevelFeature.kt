@@ -4,22 +4,22 @@ import com.well.modules.annotations.ScreenStates
 import com.well.modules.models.User
 import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMsg
-import com.well.modules.models.spacedUppercaseName
-import com.well.modules.utils.map
-import com.well.modules.utils.toSetOf
-import com.well.modules.utils.withEmptySet
+import com.well.modules.utils.kotlinUtils.spacedUppercaseName
+import com.well.modules.utils.kotlinUtils.map
+import com.well.modules.puerhBase.toSetOf
+import com.well.modules.puerhBase.withEmptySet
 import com.well.sharedMobile.TopLevelFeature.State.*
 import com.well.modules.features.call.callFeature.CallFeature
 import com.well.modules.features.chatList.chatListFeature.ChatListFeature
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature
-import com.well.modules.features.login.LoginFeature
+import com.well.modules.features.login.loginFeature.LoginFeature
 import com.well.modules.features.more.MoreFeature
 import com.well.modules.features.more.about.AboutFeature
 import com.well.modules.features.more.support.SupportFeature
 import com.well.modules.features.myProfile.MyProfileFeature
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.features.welcome.WelcomeFeature
-import com.well.modules.viewHelpers.Alert
+import com.well.modules.utils.viewUtils.Alert
 
 // remove build/tmp/kapt3 after updating features to refresh cache
 @ScreenStates(

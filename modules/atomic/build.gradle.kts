@@ -10,7 +10,6 @@ kotlin {
     iosWithSimulator()
     jvm()
     sourceSets {
-        usePredefinedExperimentalAnnotations()
         val commonMain by getting {
             libDependencies(
                 "kotlin.coroutines.core",

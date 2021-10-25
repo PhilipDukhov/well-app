@@ -1,6 +1,6 @@
 package com.well.modules.db.users
 
-import com.well.modules.flowHelper.mapIterable
+import com.well.modules.utils.flowUtils.mapIterable
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import com.well.modules.models.User

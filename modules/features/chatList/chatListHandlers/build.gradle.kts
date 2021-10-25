@@ -10,16 +10,14 @@ kotlin {
     androidWithAndroid()
     iosWithSimulator()
     sourceSets {
-        usePredefinedExperimentalAnnotations()
         val commonMain by getting {
             libDependencies(
                 ":modules:features:chatList:chatListFeature",
                 ":modules:db:chatMessagesDb",
                 ":modules:db:usersDb",
-                ":modules:flowHelper",
-                ":modules:viewHelpers",
+                ":modules:utils:flowUtils",
+                ":modules:utils:viewUtils",
                 ":modules:models",
-                ":modules:utils",
                 ":modules:atomic",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",

@@ -1,6 +1,6 @@
 package com.well.modules.db.mobile
 
-import com.well.modules.utils.AppContext
+import com.well.modules.utils.viewUtils.AppContext
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import com.squareup.sqldelight.db.SqlDriver
 

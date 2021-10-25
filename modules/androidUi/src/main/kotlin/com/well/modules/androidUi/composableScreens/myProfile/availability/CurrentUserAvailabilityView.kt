@@ -16,7 +16,7 @@ import com.well.modules.models.Color
 import com.well.modules.models.date.dateTime.localizedDayAndShortMonth
 import com.well.modules.models.date.dateTime.localizedName
 import com.well.modules.models.date.dateTime.localizedVeryShortSymbol
-import com.well.modules.viewHelpers.Gradient
+import com.well.modules.utils.viewUtils.Gradient
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

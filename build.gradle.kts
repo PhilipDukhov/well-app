@@ -78,13 +78,6 @@ subprojects {
         }
     }
 
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
-        kotlinOptions.freeCompilerArgs += listOf(
-            "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-            "-Xopt-in=kotlinx.serialization.ExperimentalSerializationApi",
-        )
-    }
-
     apply(from = "${rootDir}/dependencies.gradle")
     configurations.all {
         resolutionStrategy.eachDependency {

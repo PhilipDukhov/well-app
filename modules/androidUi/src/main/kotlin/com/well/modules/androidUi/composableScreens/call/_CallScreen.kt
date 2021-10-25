@@ -12,8 +12,8 @@ import com.well.modules.models.User
 import com.well.modules.features.call.callFeature.CallFeature.Msg
 import com.well.modules.features.call.callFeature.CallFeature.State
 import com.well.modules.features.call.callFeature.CallFeature.State.Status
-import com.well.modules.viewHelpers.ViewConstants.CallScreen.BottomBar.CallButtonOffset
-import com.well.modules.viewHelpers.ViewConstants.CallScreen.CallButtonRadius
+import com.well.modules.utils.viewUtils.ViewConstants.CallScreen.BottomBar.CallButtonOffset
+import com.well.modules.utils.viewUtils.ViewConstants.CallScreen.CallButtonRadius
 import com.well.modules.features.call.callFeature.drawing.DrawingFeature.Msg as DrawingMsg
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

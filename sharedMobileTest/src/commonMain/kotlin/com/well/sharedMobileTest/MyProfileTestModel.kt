@@ -1,7 +1,7 @@
 package com.well.sharedMobileTest
 
 import com.well.modules.models.Availability
-import com.well.modules.utils.puerh.ReducerViewModel
+import com.well.modules.puerhBase.ReducerViewModel
 import com.well.modules.features.myProfile.MyProfileFeature
 import com.well.modules.features.myProfile.MyProfileFeature.Eff
 import com.well.modules.features.myProfile.MyProfileFeature.Msg

@@ -10,12 +10,13 @@ kotlin {
     androidWithAndroid()
     iosWithSimulator()
     sourceSets {
-        usePredefinedExperimentalAnnotations()
+        optIns()
         val commonMain by getting {
             libDependencies(
                 ":modules:models",
-                ":modules:utils",
-                ":modules:viewHelpers",
+                ":modules:puerhBase",
+                ":modules:utils:kotlinUtils",
+                ":modules:utils:viewUtils",
                 "kotlin.stdLib",
                 "kotlin.datetime",
                 "shared.napier",

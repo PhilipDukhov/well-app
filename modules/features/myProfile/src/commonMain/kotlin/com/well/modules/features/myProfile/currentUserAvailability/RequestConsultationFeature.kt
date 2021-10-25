@@ -3,9 +3,9 @@ package com.well.modules.features.myProfile.currentUserAvailability
 import com.well.modules.models.Availability
 import com.well.modules.models.date.dateTime.daysShift
 import com.well.modules.models.date.dateTime.today
-import com.well.modules.utils.toSetOf
-import com.well.modules.utils.withEmptySet
-import com.well.modules.viewHelpers.GlobalStringsBase
+import com.well.modules.puerhBase.toSetOf
+import com.well.modules.puerhBase.withEmptySet
+import com.well.modules.utils.viewUtils.GlobalStringsBase
 import kotlinx.datetime.LocalDate
 import kotlin.time.Duration
 

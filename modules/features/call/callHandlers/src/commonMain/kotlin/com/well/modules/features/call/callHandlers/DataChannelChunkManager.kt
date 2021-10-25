@@ -2,7 +2,7 @@ package com.well.modules.features.call.callHandlers
 
 import com.well.modules.atomic.AtomicMutableMap
 import com.well.modules.atomic.AtomicRef
-import com.well.modules.utils.map
+import com.well.modules.utils.kotlinUtils.map
 import kotlin.math.min
 
 private typealias ChunkId = Int

@@ -13,14 +13,11 @@ kotlin {
     androidWithAndroid()
     jvm()
     sourceSets {
-        usePredefinedExperimentalAnnotations("kotlinx.serialization.ExperimentalSerializationApi")
+        optIns("kotlinx.serialization.ExperimentalSerializationApi")
         val commonMain by getting {
             libDependencies(
                 "kotlin.datetime",
                 "kotlin.serializationJson",
-                "ktor.client.core",
-                "ktor.client.serialization",
-                "ktor.client.logging",
                 "kotlin.stdLib",
             )
         }

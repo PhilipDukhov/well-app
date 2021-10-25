@@ -1,6 +1,6 @@
 package com.well.server.utils
 
-import com.well.modules.flowHelper.MutableMapFlow
+import com.well.modules.utils.flowUtils.MutableMapFlow
 import com.well.modules.models.UserId
 import com.well.modules.models.createBaseHttpClient
 import com.well.server.routing.UserSession

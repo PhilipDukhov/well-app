@@ -1,9 +1,9 @@
 package com.well.modules.features.more.about
 
-import com.well.modules.utils.toSetOf
-import com.well.modules.utils.withEmptySet
-import com.well.modules.utils.sharedImage.SharedImage
-import com.well.modules.utils.sharedImage.UrlImage
+import com.well.modules.puerhBase.toSetOf
+import com.well.modules.puerhBase.withEmptySet
+import com.well.modules.utils.viewUtils.sharedImage.SharedImage
+import com.well.modules.utils.viewUtils.sharedImage.UrlImage
 
 object AboutFeature {
     data class State(val termsOpened: Boolean = false) {

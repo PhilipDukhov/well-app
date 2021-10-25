@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import com.well.modules.androidUi.composableScreens.userChat.UserChatScreen
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.models.chat.ChatMessage
-import com.well.modules.viewHelpers.chatMessageWithStatus.ChatMessageWithStatus
+import com.well.modules.utils.viewUtils.chatMessageWithStatus.ChatMessageWithStatus
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember

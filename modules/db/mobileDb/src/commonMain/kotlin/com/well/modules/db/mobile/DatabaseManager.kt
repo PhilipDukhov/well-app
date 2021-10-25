@@ -6,7 +6,7 @@ import com.well.modules.db.helper.SerializableColumnAdapter
 import com.well.modules.db.helper.SetEnumColumnAdapter
 import com.well.modules.db.users.Users
 import com.well.modules.db.users.UsersDatabase
-import com.well.modules.utils.AppContext
+import com.well.modules.utils.viewUtils.AppContext
 import com.well.modules.atomic.AtomicLateInitRef
 
 class DatabaseManager(appContext: AppContext) {

@@ -10,7 +10,7 @@ kotlin {
     androidWithAndroid()
     iosWithSimulator()
     sourceSets {
-        usePredefinedExperimentalAnnotations()
+        optIns(optIns = setOf(OptIn.Coroutines))
         val commonMain by getting {
             libDependencies(
                 ":modules:atomic",
@@ -18,7 +18,8 @@ kotlin {
                 ":modules:features:experts:expertsFeature",
                 ":modules:models",
                 ":modules:networking",
-                ":modules:utils",
+                ":modules:utils:flowUtils",
+                ":modules:utils:viewUtils",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",
                 "shared.napier",

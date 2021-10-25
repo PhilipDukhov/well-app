@@ -1,6 +1,7 @@
 package com.well.modules.features.experts.expertsHandlers
 
 import com.well.modules.atomic.asCloseable
+import com.well.modules.db.users.Users
 import com.well.modules.db.users.UsersDatabase
 import com.well.modules.db.users.toUser
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature.Eff
@@ -8,9 +9,10 @@ import com.well.modules.features.experts.expertsFeature.ExpertsFeature.Msg
 import com.well.modules.models.UserId
 import com.well.modules.models.UsersFilter
 import com.well.modules.models.WebSocketMsg
-import com.well.modules.utils.puerh.EffectHandler
+import com.well.modules.puerhBase.EffectHandler
 import com.well.modules.networking.NetworkManager
 import com.well.modules.networking.combineToNetworkConnectedState
+import com.well.modules.utils.flowUtils.mapIterable
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.CoroutineScope
@@ -37,9 +39,7 @@ class ExpertsApiEffectHandler(
                 .getByIds(filteredExperts)
                 .asFlow()
                 .mapToList()
-                .map { list ->
-                    list.map { it.toUser() }
-                }
+                .mapIterable(Users::toUser)
         }
     init {
         networkManager.apply {

@@ -1,9 +1,9 @@
 package com.well.modules.features.experts.expertsFeature.filter
 
 import com.well.modules.models.UsersFilter
-import com.well.modules.utils.toSetOf
-import com.well.modules.utils.withEmptySet
-import com.well.modules.viewHelpers.UIEditingField
+import com.well.modules.puerhBase.toSetOf
+import com.well.modules.puerhBase.withEmptySet
+import com.well.modules.utils.viewUtils.UIEditingField
 
 object FilterFeature {
     data class State(

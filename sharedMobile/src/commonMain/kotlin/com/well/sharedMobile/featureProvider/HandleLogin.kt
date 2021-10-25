@@ -4,24 +4,24 @@ import com.well.modules.atomic.asCloseable
 import com.well.modules.db.users.getByIdsFlow
 import com.well.modules.db.users.insertOrReplace
 import com.well.modules.db.users.usersPresenceFlow
+import com.well.modules.features.chatList.chatListHandlers.ChatListEffHandler
+import com.well.modules.features.experts.expertsHandlers.ExpertsApiEffectHandler
+import com.well.modules.features.login.loginFeature.LoginFeature
+import com.well.modules.features.login.loginFeature.SocialNetwork
+import com.well.modules.features.myProfile.MyProfileFeature
 import com.well.modules.models.AuthResponse
 import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
-import com.well.modules.utils.dataStore.AuthInfo
-import com.well.modules.utils.dataStore.authInfo
-import com.well.modules.utils.puerh.adapt
-import com.well.modules.utils.puerh.wrapWithEffectHandler
 import com.well.modules.networking.NetworkManager
 import com.well.modules.networking.combineToNetworkConnectedState
-import com.well.modules.viewHelpers.Alert
-import com.well.sharedMobile.TopLevelFeature
-import com.well.modules.features.chatList.chatListHandlers.ChatListEffHandler
-import com.well.modules.features.experts.expertsHandlers.ExpertsApiEffectHandler
-import com.well.modules.features.login.LoginFeature
-import com.well.modules.features.login.SocialNetwork
-import com.well.modules.features.myProfile.MyProfileFeature
-import com.well.modules.utils.puerh.EffectHandler
+import com.well.modules.puerhBase.EffectHandler
+import com.well.modules.puerhBase.adapt
+import com.well.modules.puerhBase.wrapWithEffectHandler
+import com.well.modules.utils.viewUtils.Alert
+import com.well.modules.utils.viewUtils.dataStore.AuthInfo
+import com.well.modules.utils.viewUtils.dataStore.authInfo
 import com.well.sharedMobile.ScreenState
+import com.well.sharedMobile.TopLevelFeature
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
@@ -139,8 +139,6 @@ private fun FeatureProviderImpl.notifyUsersDBPresenceCloseable() =
     coroutineScope.launch {
         usersDatabase.usersQueries.usersPresenceFlow()
             .combineToNetworkConnectedState(networkManager)
-            .map { usersPresence ->
-                WebSocketMsg.Front.SetUsersPresence(usersPresence)
-            }
+            .map(WebSocketMsg.Front::SetUsersPresence)
             .collect(networkManager::sendFront)
     }.asCloseable()

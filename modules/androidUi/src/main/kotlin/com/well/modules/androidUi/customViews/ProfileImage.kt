@@ -3,8 +3,8 @@ package com.well.modules.androidUi.customViews
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.models.Color
 import com.well.modules.models.User
-import com.well.modules.utils.sharedImage.SharedImage
-import com.well.modules.utils.sharedImage.profileImage
+import com.well.modules.utils.viewUtils.sharedImage.SharedImage
+import com.well.modules.utils.viewUtils.sharedImage.profileImage
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.shape.CircleShape

@@ -6,10 +6,10 @@ import com.well.modules.androidUi.ext.heightPlusBottomSystemBars
 import com.well.modules.androidUi.ext.toPx
 import com.well.modules.features.call.callFeature.CallFeature.Msg
 import com.well.modules.features.call.callFeature.CallFeature.State
-import com.well.modules.viewHelpers.ViewConstants.CallScreen.BottomBar.CallButtonOffset
-import com.well.modules.viewHelpers.ViewConstants.CallScreen.BottomBar.CallButtonPadding
-import com.well.modules.viewHelpers.ViewConstants.CallScreen.BottomBar.Height
-import com.well.modules.viewHelpers.ViewConstants.CallScreen.CallButtonRadius
+import com.well.modules.utils.viewUtils.ViewConstants.CallScreen.BottomBar.CallButtonOffset
+import com.well.modules.utils.viewUtils.ViewConstants.CallScreen.BottomBar.CallButtonPadding
+import com.well.modules.utils.viewUtils.ViewConstants.CallScreen.BottomBar.Height
+import com.well.modules.utils.viewUtils.ViewConstants.CallScreen.CallButtonRadius
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
