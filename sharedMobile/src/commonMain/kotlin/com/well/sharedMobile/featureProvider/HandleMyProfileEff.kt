@@ -7,6 +7,7 @@ import com.well.modules.utils.viewUtils.showSheetThreadSafe
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature
 import com.well.modules.features.myProfile.MyProfileFeature.Eff
 import com.well.modules.features.myProfile.MyProfileFeature.Msg
+import com.well.modules.networking.userReadableDescription
 import com.well.modules.utils.viewUtils.sharedImage.asByteArrayOptimizedForNetwork
 import com.well.sharedMobile.TopLevelFeature.Msg as TopLevelMsg
 import io.github.aakira.napier.Napier
@@ -68,7 +69,7 @@ internal suspend fun FeatureProviderImpl.handleMyProfileEff(
         }
         is Eff.ShowError
         -> {
-            listener(TopLevelMsg.ShowAlert(Alert.Throwable(eff.throwable)))
+            listener(TopLevelMsg.ShowAlert(Alert.Error(eff.throwable, Throwable::userReadableDescription)))
         }
         is Eff.Back -> {
             listener(TopLevelMsg.Pop)

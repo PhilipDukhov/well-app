@@ -44,7 +44,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             }
         )
-        UITableView.appearance().separatorInset = .zero
         window = initializeWindow()
         return true
     }
@@ -75,21 +74,5 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         options: [UIApplication.OpenURLOptionsKey: Any] = [:]
     ) -> Bool {
         SocialNetworkServiceExtKt.application(featureProvider, app: app, openURL: url, options: options)
-    }
-}
-
-extension Error {
-    var sharedLocalizedDescription: String {
-        "\(kotlinException ?? localizedDescription)"
-    }
-    
-    var kotlinException: Any? {
-        (self as NSError?)?.kotlinException
-    }
-    
-    var isKotlinCancellationException: Bool {
-        kotlinException.map {
-            "\(type(of: $0))".contains("CancellationException")
-        } ?? false
     }
 }

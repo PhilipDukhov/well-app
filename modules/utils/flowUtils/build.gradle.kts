@@ -17,7 +17,15 @@ kotlin {
             libDependencies(
                 ":modules:atomic",
                 "kotlin.coroutines.core",
+                "kotlin.coroutines.core",
             )
+        }
+        if (withAndroid) {
+            val androidMain by getting {
+                libDependencies(
+                    "ktor.client.engine.cio",
+                )
+            }
         }
         val iosMain by getting {
             libDependencies(

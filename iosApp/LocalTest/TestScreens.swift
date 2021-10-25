@@ -1,5 +1,5 @@
 //
-//  LocalTestApp.swift
+//  TestScreens.swift
 //  LocalTest
 //
 //  Created by Phil on 25.10.2021.
@@ -18,57 +18,12 @@ enum Screen: String, CaseIterable {
     case other
 }
 
-@main
-struct LocalTestApp: App {
-    var body: some Scene {
-        WindowGroup {
-            TestingScreen()
-        }
-    }
-}
-
-struct TestingScreen: View {
-    @State
-    var selectedScreen: Screen = .availabilityCalendar
-    
-    @State
-    var opened = true
+struct TestingScreens: View {
+    let selectedScreen: Screen
     
     let messages = ChatMessageWithStatus.companion.getTestMessagesWithStatus(count: 100)
     
     var body: some View {
-        NavigationView {
-            VStack {
-                ScrollViewReader { scrollViewReader in
-                    ScrollView(.horizontal) {
-                        LazyHStack {
-                            ForEach(Screen.allCases, id: \.self) { screen in
-                                Button(screen.rawValue.capitalized) {
-                                    selectedScreen = screen
-                                    opened = true
-                                }.buttonStyle(.bordered)
-                            }
-                        }.onAppear {
-                        }.onChange(of: selectedScreen) { screen in
-                            scrollViewReader.scrollTo(screen, anchor: .center)
-                        }.onVolumeChange {
-                            opened = false
-                        }
-                    }
-                }
-                Spacer().fillMaxHeight()
-                NavigationLink(isActive: $opened) {
-                    screen.navigationBarHidden(true)
-                } label: {
-                    Text("Open")
-                }
-                Spacer().fillMaxHeight()
-            }.navigationBarHidden(true)
-        }
-    }
-    
-    @ViewBuilder
-    var screen: some View {
         switch selectedScreen {
         case .availabilityCalendar:
             ReducerView(

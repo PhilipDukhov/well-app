@@ -36,7 +36,7 @@ kotlin {
         }
         val iosMain by getting {
             libDependencies(
-//                "kotlin.coroutines.core-strictly",
+                "kotlin.coroutines.core-strictly",
             )
         }
     }

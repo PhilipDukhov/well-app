@@ -18,7 +18,7 @@ kotlin {
         withJava()
     }
     sourceSets {
-                val jvmMain by getting {
+        val jvmMain by getting {
             libDependencies(
                 ":modules:db:helperDb",
                 ":modules:db:chatMessagesDb",

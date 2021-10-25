@@ -23,12 +23,14 @@ kotlin {
         if (withAndroid) {
             val androidMain by getting {
                 libDependencies(
+                    "ktor.client.engine.cio",
                 )
             }
         }
         val iosMain by getting {
             libDependencies(
                 "kotlin.coroutines.core-strictly",
+                "ktor.client.engine.ios"
             )
         }
     }

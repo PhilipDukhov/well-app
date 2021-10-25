@@ -1,3 +1,3 @@
-package com.well.modules.utils.viewUtils
+package com.well.modules.networking
 
 expect fun Throwable.userReadableDescription(): String?

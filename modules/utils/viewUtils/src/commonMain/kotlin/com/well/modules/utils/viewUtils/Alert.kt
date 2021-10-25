@@ -2,7 +2,6 @@ package com.well.modules.utils.viewUtils
 
 import com.well.modules.utils.viewUtils.platform.Platform
 import com.well.modules.utils.viewUtils.platform.isDebug
-import com.well.modules.utils.viewUtils.userReadableDescription
 
 sealed class Alert(
     val title: String = "",
@@ -16,14 +15,20 @@ sealed class Alert(
         negativeAction = Action.Settings
     )
 
-    data class Throwable(val throwable: kotlin.Throwable) :
+    data class Error(val throwable: Throwable, val errorDescription: String) :
         Alert(
-            title = throwable.userReadableDescription()
-                ?: "${throwable::class} $throwable",
-//                (if (Platform.isDebug) "${throwable::class} $throwable" else Strings.somethingWentWrong),
-            description = if (Platform.isDebug) "${throwable::class} $throwable" else "",
+            title = errorDescription,
+            description = if (Platform.isDebug) "${errorDescription::class} $errorDescription" else "",
             positiveAction = Action.Ok
+        ) {
+        constructor(
+            throwable: Throwable,
+            descriptionBuilder: (Throwable) -> String?
+        ) : this(
+            throwable = throwable,
+            errorDescription = descriptionBuilder(throwable) ?: "${throwable::class} $throwable"
         )
+    }
 
     sealed class Action(val title: String) {
         object Ok : Action(Strings.ok)

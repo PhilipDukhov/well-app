@@ -14,6 +14,7 @@ import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.networking.NetworkManager
 import com.well.modules.networking.combineToNetworkConnectedState
+import com.well.modules.networking.userReadableDescription
 import com.well.modules.puerhBase.EffectHandler
 import com.well.modules.puerhBase.adapt
 import com.well.modules.puerhBase.wrapWithEffectHandler
@@ -36,7 +37,7 @@ internal suspend fun FeatureProviderImpl.socialNetworkLogin(
         gotAuthResponse(socialNetworkService.login(socialNetwork), listener)
     } catch (t: Throwable) {
         if (t !is CancellationException && t.message?.contains("com.well.modules.utils error 0") != true) {
-            listener.invoke(TopLevelFeature.Msg.ShowAlert(Alert.Throwable(t)))
+            listener.invoke(TopLevelFeature.Msg.ShowAlert(Alert.Error(t, Throwable::userReadableDescription)))
         }
     } finally {
         listener.invoke(TopLevelFeature.Msg.LoginMsg(LoginFeature.Msg.LoginAttemptFinished))

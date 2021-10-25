@@ -1,4 +1,4 @@
-package com.well.modules.features.login.loginHandlers.credentialProviders
+package com.well.modules.features.login.loginFeature
 
 sealed class AuthCredential {
     class FacebookCredential(val token: String) : AuthCredential()

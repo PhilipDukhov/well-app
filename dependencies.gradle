@@ -146,6 +146,7 @@ ext.iosExportModulesNames = [
     ":modules:features:experts:expertsFeature",
     ":modules:features:userChat:userChatFeature",
     ":modules:models",
+    ":modules:puerhBase",
     ":modules:utils:flowUtils",
     ":modules:utils:viewUtils",
 ]

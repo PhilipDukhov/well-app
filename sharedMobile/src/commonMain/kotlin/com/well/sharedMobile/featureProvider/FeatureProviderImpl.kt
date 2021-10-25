@@ -24,18 +24,11 @@ import com.well.modules.features.more.MoreFeature
 import com.well.modules.features.more.about.AboutFeature
 import com.well.modules.features.more.support.SupportFeature
 import com.well.modules.features.myProfile.MyProfileFeature
-import com.well.modules.features.userChat.userChatHandlers.UserChatEffHandler
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
+import com.well.modules.features.userChat.userChatHandlers.UserChatEffHandler
 import com.well.modules.features.welcome.WelcomeFeature
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.networking.NetworkManager
-import com.well.modules.utils.viewUtils.AppContext
-import com.well.modules.utils.viewUtils.dataStore.AuthInfo
-import com.well.modules.utils.viewUtils.dataStore.authInfo
-import com.well.modules.utils.viewUtils.dataStore.welcomeShowed
-import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler
-import com.well.modules.utils.viewUtils.platform.Platform
-import com.well.modules.utils.viewUtils.platform.isDebug
 import com.well.modules.puerhBase.ExecutorEffectHandler
 import com.well.modules.puerhBase.ExecutorEffectsInterpreter
 import com.well.modules.puerhBase.Feature
@@ -43,8 +36,15 @@ import com.well.modules.puerhBase.SyncFeature
 import com.well.modules.puerhBase.adapt
 import com.well.modules.puerhBase.wrapWithEffectHandler
 import com.well.modules.utils.viewUtils.Alert
+import com.well.modules.utils.viewUtils.AppContext
 import com.well.modules.utils.viewUtils.ContextHelper
 import com.well.modules.utils.viewUtils.WebAuthenticator
+import com.well.modules.utils.viewUtils.dataStore.AuthInfo
+import com.well.modules.utils.viewUtils.dataStore.authInfo
+import com.well.modules.utils.viewUtils.dataStore.welcomeShowed
+import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler
+import com.well.modules.utils.viewUtils.platform.Platform
+import com.well.modules.utils.viewUtils.platform.isDebug
 import com.well.modules.utils.viewUtils.sharedImage.asByteArrayOptimizedForNetwork
 import com.well.sharedMobile.ScreenState
 import com.well.sharedMobile.TopLevelFeature
@@ -96,17 +96,11 @@ internal class FeatureProviderImpl(
                 is Eff.ChatListEff,
                 -> Unit
                 is Eff.ShowAlert -> {
-                    MainScope().launch {
-                        if (eff.alert is Alert.Throwable) {
-                            Napier.e("", eff.alert.throwable)
-                        }
-                        contextHelper.showAlert(eff.alert)
-                    }
-                    if (eff.alert is Alert.Throwable) {
+                    if (eff.alert is Alert.Error) {
                         Napier.e("", eff.alert.throwable)
-                        if (!Platform.isDebug) {
-                            println("alert! ${eff.alert.throwable}")
-                        }
+                    }
+                    MainScope().launch {
+                        contextHelper.showAlert(eff.alert)
                     }
                 }
                 is Eff.MyProfileEff -> handleMyProfileEff(eff.eff, listener)

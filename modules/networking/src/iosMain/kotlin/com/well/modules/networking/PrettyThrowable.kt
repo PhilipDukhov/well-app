@@ -1,4 +1,4 @@
-package com.well.modules.utils.viewUtils
+package com.well.modules.networking
 
 import io.ktor.client.engine.ios.*
 

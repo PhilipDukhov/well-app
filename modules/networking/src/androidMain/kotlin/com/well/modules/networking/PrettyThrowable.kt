@@ -1,3 +1,3 @@
-package com.well.modules.utils.viewUtils
+package com.well.modules.networking
 
 actual fun Throwable.userReadableDescription(): String? = null

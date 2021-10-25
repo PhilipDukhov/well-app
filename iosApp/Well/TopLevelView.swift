@@ -14,11 +14,7 @@ struct TopLevelView: View {
     let listener: (TopLevelFeature.Msg) -> Void
 
     var body: some View {
-        VStack(spacing: 0) {
-            content
-                .environment(\.defaultMinListRowHeight, 0)
-                .statusBar(style: .lightContent)
-        }
+        AppContainer(content: VStack(spacing: 0, content: content))
     }
 
     @ViewBuilder
@@ -53,13 +49,13 @@ struct TopLevelView: View {
     @ViewBuilder
     func screenView(screen: ScreenState) -> some View {
         switch screen {
+        case is ScreenState.Launch:
+            EmptyView()
+            
         case let state as ScreenState.Welcome:
             WelcomeScreen(state: state.state) {
                 listener(TopLevelFeature.MsgWelcomeMsg(msg: $0))
             }
-
-        case is ScreenState.Launch:
-            EmptyView()
 
         case let state as ScreenState.Login:
             LoginScreen(state: state.state) {

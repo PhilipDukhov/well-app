@@ -1,5 +1,6 @@
 package com.well.modules.features.login.loginHandlers.credentialProviders
 
+import com.well.modules.features.login.loginFeature.AuthCredential
 import android.content.Intent
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
