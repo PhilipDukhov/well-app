@@ -14,6 +14,7 @@ struct Label: UIViewRepresentable, Equatable {
     func makeUIView(
         context: UIViewRepresentableContext<Self>
     ) -> UIViewType {
+        
         UIViewType().apply {
             $0.textAlignment = .center
             $0.backgroundColor = .green

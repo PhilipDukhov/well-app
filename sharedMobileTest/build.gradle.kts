@@ -11,7 +11,7 @@ plugins {
 
 kotlin {
     androidWithAndroid()
-    val frameworkName = project.name.capitalize()
+    val frameworkName = "SharedMobile"
     iosWithSimulator {
         binaries {
             framework(frameworkName) {

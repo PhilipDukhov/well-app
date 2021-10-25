@@ -16,6 +16,16 @@ target 'Well' do
 
   pod 'R.swift.Library'
   pod 'R.swift'
+end
+
+target 'LocalTest' do
+  platform :ios, ios_deployment_target
+  use_frameworks!
+
+  pod 'sharedMobileTest', :path => '../sharedMobileTest'
+
+  pod 'R.swift.Library'
+  pod 'R.swift'
 
   pod "Introspect"
 end

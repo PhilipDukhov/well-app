@@ -35,6 +35,7 @@ PODS:
     - R.swift.Library (~> 5.3.0)
   - R.swift.Library (5.3.0)
   - sharedMobile (1.0-SNAPSHOT)
+  - sharedMobileTest (1.0-SNAPSHOT)
 
 DEPENDENCIES:
   - FBSDKCoreKit
@@ -45,6 +46,7 @@ DEPENDENCIES:
   - R.swift
   - R.swift.Library
   - sharedMobile (from `../sharedMobile`)
+  - sharedMobileTest (from `../sharedMobileTest`)
 
 SPEC REPOS:
   trunk:
@@ -64,6 +66,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   sharedMobile:
     :path: "../sharedMobile"
+  sharedMobileTest:
+    :path: "../sharedMobileTest"
 
 SPEC CHECKSUMS:
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
@@ -79,7 +83,8 @@ SPEC CHECKSUMS:
   R.swift: c533450b0f7dc494e0993f5f1a1db925d84c3006
   R.swift.Library: 0fc583cb55a99e28901299cc451614cad1161962
   sharedMobile: 8d0123e34f310e8cc25e1a7c57ccad5ed81d2c38
+  sharedMobileTest: b907a9ceacae9ede3246230b4c7ef7e56a0d8578
 
-PODFILE CHECKSUM: 575fb585ab56323e4fee45c93c4560c07357f6b9
+PODFILE CHECKSUM: fe44cf6ba6cf2786950a1e9aaefc5527de2e9dee
 
 COCOAPODS: 1.11.2

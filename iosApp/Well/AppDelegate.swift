@@ -53,13 +53,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> UIWindow {
         let window = UIWindow(frame: UIScreen.main.bounds)
         window.rootViewController = rootViewController
-#if DEBUG
-        if !TestingScreen.testing {
-            startListening()
-        }
-#else
         startListening()
-#endif
         window.makeKeyAndVisible()
         return window
     }

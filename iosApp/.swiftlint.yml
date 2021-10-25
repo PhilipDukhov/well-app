@@ -34,8 +34,8 @@ identifier_name:
   max_length:
     warning: 100
 excluded:
- - Well/Supporting files/R.generated.swift
  - Pods/
+ - Shared/Supporting files/R.generated.swift
 custom_rules:
   local_todo: # rule identifier
     name: "Todo" # rule name. optional.
