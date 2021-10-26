@@ -8,7 +8,7 @@ plugins {
 
 kotlin {
     androidWithAndroid()
-    iosWithSimulator(includeSimulator = true)
+    iosWithSimulator(includeSimulator = true, project = project)
     jvm()
     sourceSets {
         optIns()

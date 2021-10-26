@@ -7,9 +7,17 @@ def versions = [
     kotlinCoroutines   : "1.5.2-native-mt",
     ktor               : "1.6.4",
     sqldelight         : "1.5.2",
+//    sqldelight         : "1.6.0-SNAPSHOT",
     bouncycastle       : "1.69",
     aws                : "1.12.60",
 ]
+
+try {
+    if ("iphonesimulator" == ext["kotlin.native.cocoapods.platform"]) {
+        versions["sqldelight"] = "1.6.0-SNAPSHOT"
+    }
+} catch(Exception e) {
+}
 
 def stableCompose = false
 if (stableCompose) {

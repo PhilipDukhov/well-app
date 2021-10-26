@@ -9,14 +9,13 @@ plugins {
 
 kotlin {
     androidWithAndroid()
-    iosWithSimulator()
+    iosWithSimulator(includeSimulator = true, project = project)
     jvm()
     sourceSets {
         optIns(optIns = setOf(OptIn.Coroutines))
         val commonMain by getting {
             libDependencies(
                 ":modules:atomic",
-                "kotlin.coroutines.core",
                 "kotlin.coroutines.core",
             )
         }

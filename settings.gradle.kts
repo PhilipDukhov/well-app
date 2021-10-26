@@ -3,9 +3,23 @@ rootProject.name = "WELL"
 apply(from = "dependenciesResolver.gradle.kts")
 val withAndroid = System.getProperty("withAndroid")!!.toBoolean()
 
+val platform = try {
+    extra["kotlin.native.cocoapods.platform"] as? String
+} catch (t: Throwable) {
+    null
+}
+if (platform != "iphonesimulator") {
+    if (withAndroid) {
+        include("androidApp")
+        include("androidAppTest")
+        include(":modules:androidUi")
+        include(":modules:androidWebrtc")
+    }
+    include(":sharedMobile")
+}
+
 include(
     ":server",
-    ":sharedMobile",
     ":sharedMobileTest",
     ":modules:annotations",
     ":modules:annotationProcessor",
@@ -38,11 +52,6 @@ include(
     ":modules:features:userChat:userChatFeature",
     ":modules:features:userChat:userChatHandlers",
 )
-if (withAndroid) {
-    include("androidApp")
-    include("androidAppTest")
-    include(":modules:androidUi")
-}
 
 pluginManagement {
     repositories {
@@ -61,4 +70,3 @@ pluginManagement {
         }
     }
 }
-include(":modules:androidWebrtc")

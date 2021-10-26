@@ -1,5 +1,3 @@
-import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
-
 plugins {
     kotlin("multiplatform")
     if (withAndroid) {
@@ -9,7 +7,7 @@ plugins {
 
 kotlin {
     androidWithAndroid()
-    iosWithSimulator(includeSimulator = true)
+    iosWithSimulator(includeSimulator = true, project = project)
     sourceSets {
         val commonMain by getting {
             libDependencies(

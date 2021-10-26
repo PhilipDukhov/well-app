@@ -27,6 +27,7 @@ kotlin {
                 ":modules:utils:ktorUtils",
                 ":modules:models",
                 "server.*",
+                "kotlin.coroutines.core",
                 "ktor.server.*",
                 "ktor.serialization",
                 "ktor.client.serialization",

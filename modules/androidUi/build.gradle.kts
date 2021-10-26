@@ -58,9 +58,3 @@ android {
         kotlinCompilerExtensionVersion = project.version("compose")
     }
 }
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs = freeCompilerArgs + composeOptIns.map { "-Xopt-in=$it" }
-    }
-}

@@ -3,6 +3,7 @@ import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.add
+import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.getting
 import org.gradle.kotlin.dsl.withType
@@ -172,30 +173,50 @@ sealed class Dependency {
 }
 
 private fun Project.customDependencies(libs: List<String>): List<Dependency> =
-    libs.fold(listOf()) { result: List<Dependency>, dep ->
-        when {
-            dep.startsWith("test.") ->
-                result + Dependency.Test(dep)
-            dep.startsWith(":") ->
-                result + Dependency.Module(dep)
-            dep == "kotlin.coroutines.core-strictly" ->
-                result + Dependency.Implementation(
-                    "org.jetbrains.kotlinx:kotlinx-coroutines-core",
-                    version("kotlinCoroutines")
-                )
-            dep.endsWith(".*") -> {
-                result + libsAt(dep.dropLast(2)).map(Dependency::Implementation)
-            }
-            else ->
-                result + Dependency.Implementation(libAt(dep))
+    libs.flatMap { dep ->
+        run list@{
+            listOf(run single@{
+                when {
+                    dep.startsWith("test.") ->
+                        Dependency.Test(dep)
+                    dep.startsWith(":") ->
+                        Dependency.Module(dep)
+                    dep == "kotlin.coroutines.core-strictly" ->
+                        Dependency.Implementation(
+                            "org.jetbrains.kotlinx:kotlinx-coroutines-core",
+                            version("kotlinCoroutines")
+                        )
+                    dep.endsWith(".*") -> {
+                        return@list libsAt(dep.dropLast(2)).map(Dependency::Implementation)
+                    }
+                    else ->
+                        Dependency.Implementation(libAt(dep))
+                }
+            })
+
         }
     }
 
-fun KotlinTargetContainerWithNativeShortcuts.iosWithSimulator(includeSimulator: Boolean = false, config: KotlinNativeTarget.() -> Unit = {}) {
+fun KotlinMultiplatformExtension.iosWithSimulator(
+    includeSimulator: Boolean = false,
+    project: Project? = null,
+    config: KotlinNativeTarget.() -> Unit = {},
+) {
     ios(configure = config)
-//    if (includeSimulator) {
-//        iosSimulatorArm64(configure = config)
-//    }
+
+    val platform = try {
+        project?.let { it.extra["kotlin.native.cocoapods.platform"] as? String }
+    } catch (t: Throwable) { 
+        println("Throwable $t")
+        null
+    }
+
+    if (includeSimulator && platform == "iphonesimulator") {
+        iosSimulatorArm64(configure = config)
+        val iosMain by sourceSets.getting
+        val iosSimulatorArm64Main by sourceSets.getting
+        iosSimulatorArm64Main.dependsOn(iosMain)
+    }
 }
 
 fun DependencyHandlerScope.coreLibraryDesugaring() =
