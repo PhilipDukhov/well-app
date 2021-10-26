@@ -61,5 +61,12 @@ extension View {
     }
 }
 
+extension Shape {
+    @inline(__always)
+    func strokeColorKMM(_ content: SharedMobile.Color, lineWidth: CGFloat = 1) -> some View {
+        stroke(content.toColor(), lineWidth: lineWidth)
+    }
+}
+
 // swiftlint:disable:next identifier_name
 let ColorConstants = SharedMobile.Color.companion

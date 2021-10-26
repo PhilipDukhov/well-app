@@ -28,7 +28,7 @@ struct ChatMessageCell: View {
                 .padding(EdgeInsets(top: 5, leading: incoming ? 22 : 17, bottom: 5, trailing: incoming ? 17 : 22))
                 .background(
                     Image("bubble")
-                        .foregroundColorKMM(incoming ? ColorConstants.LightBlue : ColorConstants.LightGray)
+                        .foregroundColorKMM(incoming ? .companion.LightBlue : .companion.LightGray)
                         .rotation3DEffect(.degrees(incoming ? 180 : 0), axis: (x: 0, y: 1, z: 0))
                 )
             if incoming {
@@ -67,7 +67,7 @@ struct ChatMessageCell: View {
                 // two dateAndStatus hack to align text left and date right
                 VStack(alignment: .leading, spacing: 0) {
                     Text(content.text)
-                        .style(.body2Light)
+                        .textStyle(.body2Light)
                     dateAndStatus()
                         .foregroundColor(.clear)
                 }

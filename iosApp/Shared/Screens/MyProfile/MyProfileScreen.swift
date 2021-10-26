@@ -74,7 +74,7 @@ struct MyProfileScreen: View {
 
             case let group as UIGroup.Editing:
                 Text(group.title)
-                    .foregroundColorKMM(ColorConstants.LightBlue)
+                    .foregroundColorKMM(.companion.LightBlue)
                 ForEach(group.fields, id: \.self) { field in
                     EditingField(field as! UIEditingField<UIEditingFieldContent, MyProfileFeature.Msg>,
                         listener: listener)
@@ -106,7 +106,7 @@ struct MyProfileScreen: View {
                         .padding(.horizontal, 10)
                         .font(.body)
                         .backgroundColorKMM(
-                            ColorConstants.LightBlue
+                            .companion.LightBlue
                                 .withAlpha(alpha: 0.15)
                         )
                         .foregroundColor(Color.black)
@@ -116,7 +116,7 @@ struct MyProfileScreen: View {
             case let content as UIPreviewField.ContentTextAndIcon:
                 HStack {
                     Image(uiImage: content.icon.uiImage())
-                        .foregroundColorKMM(ColorConstants.LightBlue)
+                        .foregroundColorKMM(.companion.LightBlue)
                     Text(content.text)
                         .onTapGesture {
                             if content.isLink {
@@ -151,7 +151,7 @@ struct MyProfileScreen: View {
                     Text(name)
                 } else {
                     Text(header.initiateImageUpdateText)
-                        .foregroundColorKMM(ColorConstants.LightBlue)
+                        .foregroundColorKMM(.companion.LightBlue)
                         .onTapGesture {
                             listener(MyProfileFeature.MsgInitiateImageUpdate())
                         }
@@ -161,7 +161,7 @@ struct MyProfileScreen: View {
                         accountType.imageView()
                             .font(.system(size: 14, weight: .black))
                         Text(accountType.title)
-                    }.foregroundColorKMM(ColorConstants.LightBlue)
+                    }.foregroundColorKMM(.companion.LightBlue)
                 }
                 if let completeness = header.completeness {
                     Text("Profile \(completeness)% complete")
@@ -192,7 +192,7 @@ struct MyProfileScreen: View {
                         listener(MyProfileFeature.MsgOpenUrl(url: link))
                     } label: {
                         Image(uiImage: R.image.profile.twitter()!)
-                            .foregroundColorKMM(ColorConstants.LightBlue)
+                            .foregroundColorKMM(.companion.LightBlue)
                             .padding()
                     }
                 }
@@ -201,7 +201,7 @@ struct MyProfileScreen: View {
                 } label: {
                     Image(systemName: "message.fill")
                         .font(.system(size: 20))
-                        .foregroundColorKMM(ColorConstants.Green)
+                        .foregroundColorKMM(.companion.Green)
                         .padding()
                 }
                 Button {
@@ -209,13 +209,13 @@ struct MyProfileScreen: View {
                 } label: {
                     Image(systemName: "phone.fill")
                         .font(.system(size: 20))
-                        .foregroundColorKMM(ColorConstants.Green)
+                        .foregroundColorKMM(.companion.Green)
                         .padding()
                 }
             }.padding()
             header.nameWithCredentials.map {
                 Text($0)
-                    .style(.h4)
+                    .textStyle(.h4)
             }
             RatingInfoView(ratingInfo: header.ratingInfo) {
                 editingRating = true

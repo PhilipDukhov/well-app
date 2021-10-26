@@ -18,7 +18,7 @@ struct ActionButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .style(.subtitle1)
+            .textStyle(.subtitle1)
             .foregroundColorKMM(foreground)
             .frame(height: 57)
             .fillMaxWidth()
@@ -29,10 +29,10 @@ struct ActionButtonStyle: ButtonStyle {
     private var foreground: SharedMobile.Color {
         switch style {
         case .onWhite:
-            return ColorConstants.White
+            return .companion.White
 
         case .white:
-            return ColorConstants.MediumBlue
+            return .companion.MediumBlue
         }
     }
 

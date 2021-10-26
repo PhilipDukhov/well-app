@@ -12,6 +12,9 @@ buildscript {
         gradlePluginPortal()
         google()
         mavenCentral()
+        maven {
+            url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+        }
     }
 
     apply(from = "dependencies.gradle")
@@ -44,6 +47,9 @@ allprojects {
 
         google()
         mavenCentral()
+        maven {
+            url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+        }
 
         exclusiveContent {
             forRepository {

@@ -23,7 +23,7 @@ struct AboutScreen: View {
                 }
             }
             Text(state.text)
-                .style(.body1)
+                .textStyle(.body1)
             Spacer()
         }.padding()
     }
@@ -40,14 +40,14 @@ private struct TeamMemberCell: View {
                 .padding(.trailing)
             VStack(alignment: .leading) {
                 Text(user.name)
-                    .style(.caption)
+                    .textStyle(.caption)
                 Text(user.position)
-                    .style(.captionLight)
+                    .textStyle(.captionLight)
             }
             Spacer()
             Button(action: onTwitterSelect) {
                 Image(uiImage: R.image.twitter()!)
-                    .foregroundColorKMM(ColorConstants.LightBlue)
+                    .foregroundColorKMM(.companion.LightBlue)
                     .padding()
             }
         }.padding().background(Color.white)

@@ -15,7 +15,7 @@ struct ProjectTextEditor: View {
             if showingPlaceholder {
                 TextEditor(text: .constant(placeholder!))
                     .font(.body)
-                    .foregroundColorKMM(ColorConstants.LightGray)
+                    .foregroundColorKMM(.companion.LightGray)
                     .disabled(true)
             }
             TextEditor(text: $text)
@@ -28,7 +28,7 @@ struct ProjectTextEditor: View {
             .frame(minHeight: 150)
             .overlay(
                 RoundedRectangle(cornerRadius: 14)
-                    .stroke(ColorConstants.LightGray.toColor(), lineWidth: 2)
+                    .strokeColorKMM(.companion.LightGray, lineWidth: 2)
                     .padding(1)
             )
     }

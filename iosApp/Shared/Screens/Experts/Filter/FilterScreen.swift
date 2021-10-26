@@ -34,7 +34,7 @@ struct FilterScreen: View {
                         .padding(.vertical, 5)
                         .padding(.horizontal, 10)
                 }
-            }.style(.body1Light).padding()
+            }.textStyle(.body1Light).padding()
             Divider()
             ForEach(state.fields, id: \.self) { field in
                 EditingField1(field, listener: listener)
@@ -43,7 +43,7 @@ struct FilterScreen: View {
             }
             HStack {
                 Text("Rating")
-                    .style(.body1).padding()
+                    .textStyle(.body1).padding()
                 Spacer()
             }
             SelectableHVStack(
@@ -56,10 +56,10 @@ struct FilterScreen: View {
             ) { item, selected in
                 HStack {
                     Text("\(item.title)")
-                        .style(.body1Light)
+                        .textStyle(.body1Light)
                     if item != UsersFilter.Rating.all {
                         Image(systemName: "star.fill")
-                            .foregroundColorKMM(selected ? ColorConstants.White : ColorConstants.LightGray)
+                            .foregroundColorKMM(selected ? .companion.White : .companion.LightGray)
                     }
                 }
                     .padding(.vertical, 5)
@@ -109,11 +109,11 @@ private struct EditingField1<Msg: AnyObject>: View {
         } label: {
             HStack {
                 Text(field.placeholder)
-                    .foregroundColorKMM(ColorConstants.Black)
+                    .foregroundColorKMM(.companion.Black)
                 Spacer()
                 Image(systemName: "chevron.right")
-                    .foregroundColorKMM(ColorConstants.LightGray)
-            }.style(.body1)
+                    .foregroundColorKMM(.companion.LightGray)
+            }.textStyle(.body1)
                 .padding(.vertical, 7)
         }
             .sheet(isPresented: $showModal) {

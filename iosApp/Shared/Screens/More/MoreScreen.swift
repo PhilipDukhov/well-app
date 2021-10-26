@@ -21,9 +21,9 @@ struct MoreScreen: View {
                     HStack(spacing: 16) {
                         item.icon()
                             .font(.system(size: 25))
-                            .foregroundColorKMM(ColorConstants.LightBlue)
+                            .foregroundColorKMM(.companion.LightBlue)
                         Text("\(item)")
-                            .style(.body1)
+                            .textStyle(.body1)
                         Spacer()
                     }.padding()
                 }

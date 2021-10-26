@@ -149,7 +149,7 @@ struct CallScreen: View {
                 Spacer()
             }
             Text(state.user.fullName)
-                .style(.h4)
+                .textStyle(.h4)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: geometry.size.width * 0.9)
                 .padding(.bottom, 11)

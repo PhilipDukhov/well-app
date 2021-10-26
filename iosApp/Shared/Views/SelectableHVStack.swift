@@ -28,12 +28,12 @@ struct SelectableHVStack<Item, ItemView: View>: View {
             } label: {
                 let selected = item.offset == selectedIndex
                 itemBuilder(item.element, selected)
-                    .foregroundColorKMM(selected ? ColorConstants.White : ColorConstants.Black)
-                    .backgroundColorKMM(selected ? ColorConstants.Green : nil)
+                    .foregroundColorKMM(selected ? .companion.White : .companion.Black)
+                    .backgroundColorKMM(selected ? .companion.Green : nil)
                     .clipShape(Capsule())
                     .overlay(
                         Capsule()
-                            .stroke(ColorConstants.LightGray.toColor(), lineWidth: selected ? 0 : 1.5)
+                            .strokeColorKMM(.companion.LightGray, lineWidth: selected ? 0 : 1.5)
                     )
             }
         }

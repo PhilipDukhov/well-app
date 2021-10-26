@@ -15,30 +15,30 @@ struct ChatListCell: View {
                 Spacer()
                 HStack {
                     Text(item.user.fullName)
-                        .style(.caption)
+                        .textStyle(.caption)
                     Spacer()
                     Text(item.lastMessage.date)
-                        .style(.captionLight)
-                        .foregroundColorKMM(ColorConstants.DarkGrey)
+                        .textStyle(.captionLight)
+                        .foregroundColorKMM(.companion.DarkGrey)
                 }
                 HStack(spacing: 7) {
                     Text(item.lastMessage.message.contentDescription())
-                        .style(.captionLight)
-                        .foregroundColorKMM(ColorConstants.DarkGrey)
+                        .textStyle(.captionLight)
+                        .foregroundColorKMM(.companion.DarkGrey)
                     Spacer()
                     if item.unreadCount > 0 {
                         Text("\(item.unreadCount)")
-                            .style(.body2)
-                            .foregroundColorKMM(ColorConstants.White)
+                            .textStyle(.body2)
+                            .foregroundColorKMM(.companion.White)
                             .padding(.horizontal, 5)
                             .background(
-                                HorizontalCapsule().foregroundColorKMM(ColorConstants.Green)
+                                HorizontalCapsule().foregroundColorKMM(.companion.Green)
                             )
                     }
                 }
                 Spacer()
                 Divider()
             }.padding(.trailing)
-        }.backgroundColorKMM(item.unreadCount > 0 ? ColorConstants.Green10 : ColorConstants.White)
+        }.backgroundColorKMM(item.unreadCount > 0 ? .companion.Green10 : .companion.White)
     }
 }

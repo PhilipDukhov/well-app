@@ -67,17 +67,17 @@ struct EditingField<Msg: AnyObject>: View {
             } else {
                 Text(text.isEmpty ? field.placeholder : text)
                     .foregroundColorKMM(
-                        text.isEmpty ? ColorConstants.LightBlue : ColorConstants.Black
+                        text.isEmpty ? .companion.LightBlue : .companion.Black
                     )
                 Spacer()
                 Image(systemName: "chevron.down")
-                    .foregroundColorKMM(ColorConstants.LightBlue)
+                    .foregroundColorKMM(.companion.LightBlue)
             }
         }.padding()
             .overlay(
                 RoundedRectangle(cornerRadius: 14)
-                    .stroke(
-                        (fieldContent.valid() || textEditing ? ColorConstants.LightBlue : ColorConstants.RadicalRed).toColor(),
+                    .strokeColorKMM(
+                        fieldContent.valid() || textEditing ? .companion.LightBlue : .companion.RadicalRed,
                         lineWidth: 2
                     )
             )

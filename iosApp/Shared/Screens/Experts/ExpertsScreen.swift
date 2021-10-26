@@ -27,7 +27,7 @@ struct ExpertsScreen: View {
                 view: HStack {
                     Image(systemName: "line.horizontal.3.decrease.circle")
                     Text("Filter")
-                }.style(.subtitle2),
+                }.textStyle(.subtitle2),
                 handler: {
                     filterPresented = true
                 }
@@ -35,7 +35,7 @@ struct ExpertsScreen: View {
             rightItem: NavigationBarItem(
                 view: Image(systemName: state.filterState.filter.favorite ? "suit.heart.fill" : "heart")
                     .font(.system(size: 25))
-                    .foregroundColorKMM(ColorConstants.White)
+                    .foregroundColorKMM(.companion.White)
             ) {
                 listener(ExpertsFeature.MsgToggleFilterFavorite())
             }

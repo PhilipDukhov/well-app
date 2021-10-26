@@ -54,7 +54,7 @@ struct ProfileImage: View {
     private func placeholder() -> some View {
         GeometryReader { geometry in
             ZStack {
-                Rectangle().foregroundColorKMM(ColorConstants.LightGray)
+                Rectangle().foregroundColorKMM(.companion.LightGray)
                     .aspectRatio(aspectRatio, contentMode: contentMode)
                 if image == nil {
                     initials.map { initials in

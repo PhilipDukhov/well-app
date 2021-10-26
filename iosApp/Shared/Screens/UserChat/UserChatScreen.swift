@@ -23,7 +23,7 @@ struct UserChatScreen: View {
             rightItem: NavigationBarItem(
                 view: Image(systemName: "phone.fill")
                     .font(.system(size: 20))
-                    .foregroundColorKMM(ColorConstants.White)
+                    .foregroundColorKMM(.companion.White)
                     .padding(),
                 enabled: state.user != nil,
                 handler: {
@@ -47,8 +47,8 @@ struct UserChatScreen: View {
                 Image(systemName: "photo")
             }
             TextField("Message", text: $text, onCommit: send)
-                .style(.body2Light)
-                .foregroundColorKMM(ColorConstants.Black)
+                .textStyle(.body2Light)
+                .foregroundColorKMM(.companion.Black)
                 .padding(.vertical, 3)
                 .padding(.horizontal, 8)
                 .background(
@@ -61,7 +61,7 @@ struct UserChatScreen: View {
                 .disabled(text.isEmpty)
                 .opacity(text.isEmpty ? 0.4 : 1)
         }
-            .foregroundColorKMM(ColorConstants.White)
+            .foregroundColorKMM(.companion.White)
             .font(.system(size: 25))
             .padding(.horizontal)
             .padding(.vertical, 3)
@@ -73,13 +73,13 @@ struct UserChatScreen: View {
         HStack {
             Image(systemName: "chevron.left")
                 .font(.system(size: 20))
-                .foregroundColorKMM(ColorConstants.White)
+                .foregroundColorKMM(.companion.White)
                 .padding()
             if let user = state.user {
                 ProfileImage(user)
                     .frame(size: 40)
                 Text(user.fullName)
-                    .style(.subtitle2)
+                    .textStyle(.subtitle2)
             }
         }
     }
@@ -149,7 +149,7 @@ private struct ChatsList: View {
                     scrollToFirstNeeded = true
                 } label: {
                     Image(systemName: "chevron.down.circle.fill")
-                        .foregroundColorKMM(ColorConstants.Green)
+                        .foregroundColorKMM(.companion.Green)
                         .font(.system(size: 25))
                         .padding()
                 }

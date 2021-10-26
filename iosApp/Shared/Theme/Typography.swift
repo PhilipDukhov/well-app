@@ -33,7 +33,7 @@ struct TextStyle: Equatable {
 }
 
 extension Text {
-    @inline(__always) func style(
+    @inline(__always) func textStyle(
         _ style: TextStyle
     ) -> Text {
         font(style.font)
@@ -41,7 +41,7 @@ extension Text {
 }
 
 extension View {
-    @inline(__always) func style(
+    @inline(__always) func textStyle(
         _ style: TextStyle
     ) -> some View {
         font(style.font)

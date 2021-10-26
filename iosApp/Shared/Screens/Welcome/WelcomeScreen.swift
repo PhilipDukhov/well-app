@@ -49,8 +49,8 @@ struct WelcomeScreen: View {
     var welcomeInfoView: some View {
         VStack(spacing: 0) {
             Text(state.title)
-                .style(.h4)
-                .foregroundColorKMM(ColorConstants.DarkBlue)
+                .textStyle(.h4)
+                .foregroundColorKMM(.companion.DarkBlue)
                 .padding(.top)
             AutoLayoutTextPageView(
                 Array(state.descriptions.enumerated()),
@@ -58,7 +58,7 @@ struct WelcomeScreen: View {
                 selection: $selection.animation()
             ) { text in
                 Text(text.element)
-                    .style(.body1)
+                    .textStyle(.body1)
                     .multilineTextAlignment(.center)
                     .padding()
             }.foregroundColor(.black)

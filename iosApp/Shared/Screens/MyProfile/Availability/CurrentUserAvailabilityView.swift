@@ -44,7 +44,7 @@ struct CurrentUserAvailabilityView: View {
                 showPrevMonth: {
                     listener(Feature.MsgPrevMonth())
                 }
-            ).style(.init(fontSize: 15, fontWeight: .bold))
+            ).textStyle(.init(fontSize: 15, fontWeight: .bold))
             AvailabilitiesList(
                 selectedItem: state.weeks.firstNotNullOfOrNull {
                     $0.first {
@@ -85,7 +85,7 @@ private struct CalendarView: View {
             HStack(spacing: 0) {
                 ForEach(Feature.StateCompanion().allDaysOfWeek) { weekDay in
                     Text(weekDay.localizedVeryShortSymbol)
-                        .foregroundColorKMM(ColorConstants.LightBlue)
+                        .foregroundColorKMM(.companion.LightBlue)
                         .fillMaxWidth()
                 }
             }
@@ -119,9 +119,9 @@ private struct DayView: View {
         self.selected = selected
         textColor = { () -> SharedMobile.Color in
             if day.isCurrentDay || selected {
-                return ColorConstants.White
+                return .companion.White
             } else {
-                return ColorConstants.DarkGrey
+                return .companion.DarkGrey
             }
         }().toColor().opacity(day.isCurrentMonth ? 1 : 0.5)
     }
@@ -134,7 +134,7 @@ private struct DayView: View {
                         .fillMaxSize()
                         .opacity(selected ? 1 : 0.5)
                 } else if selected {
-                    Rectangle().foregroundColorKMM(ColorConstants.DarkGrey)
+                    Rectangle().foregroundColorKMM(.companion.DarkGrey)
                         .opacity(day.isCurrentMonth ? 1 : 0.5)
                 }
                 VStack(spacing: 0) {
@@ -171,7 +171,7 @@ private struct CalendarTitleView: View {
                 Image(systemName: "arrow.backward")
             }
             Text(title)
-                .style(.h4.copy(fontWeight: .light))
+                .textStyle(.h4.copy(fontWeight: .light))
             Button(action: showNextMonth) {
                 Image(systemName: "arrow.forward")
             }

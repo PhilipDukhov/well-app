@@ -117,7 +117,7 @@ struct NavigationBar<Title: View, LV: View, RV: View>: View {
     var body: some View {
         ZStack(alignment: .top) {
             title.map(control)
-                .style(.subtitle2)
+                .textStyle(.subtitle2)
                 .frame(height: controlMinSize)
             HStack {
                 leftItem.map(control)
@@ -193,5 +193,5 @@ extension NavigationBarModelItemContent {
 }
 
 private func itemTextView(_ text: String) -> Text {
-    Text(text).style(.body2)
+    Text(text).textStyle(.body2)
 }

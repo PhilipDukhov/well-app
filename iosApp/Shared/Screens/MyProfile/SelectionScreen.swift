@@ -25,12 +25,12 @@ struct SelectionScreen: View {
                     Spacer()
                     if selected {
                         Image(systemName: "checkmark")
-                            .foregroundColorKMM(ColorConstants.Green)
+                            .foregroundColorKMM(.companion.Green)
                     }
                 }.padding().fillMaxWidth().listRowInsets(.zero)
                 .background(
                     Color.white.overlay(
-                        (selected ? ColorConstants.Green.withAlpha(alpha: 0.1) : ColorConstants.White).toColor()
+                        (selected ? ColorConstants.Green.withAlpha(alpha: 0.1) : .companion.White).toColor()
                     )
                 )
                 .onTapGesture {

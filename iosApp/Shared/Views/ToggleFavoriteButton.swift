@@ -12,7 +12,7 @@ struct ToggleFavoriteButton: View {
         Button(action: action) {
             Image(systemName: favorite ? "suit.heart.fill" : "heart")
                 .font(.system(size: 25))
-                .foregroundColorKMM(favorite ? ColorConstants.Green : ColorConstants.LightGray)
+                .foregroundColorKMM(favorite ? .companion.Green : .companion.LightGray)
                 .frame(minSize: 45)
         }
     }

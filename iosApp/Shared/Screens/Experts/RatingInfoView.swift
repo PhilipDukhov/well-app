@@ -34,14 +34,14 @@ struct RatingInfoView: View {
                 Image(systemName: "star.fill")
                     .foregroundColorKMM(
                         Double(star) <= value ?
-                        (ratingInfo.currentUserRating != nil ? ColorConstants.Supernova : ColorConstants.Green)
-                        : ColorConstants.LightGray
+                        (ratingInfo.currentUserRating != nil ? .companion.Supernova : .companion.Green)
+                        : .companion.LightGray
                     )
             }
         }
         Spacer()
         Text("reviews (\(Int(ratingInfo.count)))")
-            .foregroundColorKMM(ColorConstants.MediumBlue)
-            .style(.captionLight)
+            .foregroundColorKMM(.companion.MediumBlue)
+            .textStyle(.captionLight)
     }
 }

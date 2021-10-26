@@ -22,7 +22,7 @@ struct SupportScreen: View {
 
         VStack {
             Text(state.text)
-                .style(.body1)
+                .textStyle(.body1)
                 .layoutPriority(3)
             ProjectTextEditor(placeholder: "Please write your message", text: $text)
             Spacer()

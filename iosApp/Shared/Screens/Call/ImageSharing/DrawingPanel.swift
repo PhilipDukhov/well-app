@@ -119,6 +119,6 @@ struct DrawingPanel: View {
                 .padding([.trailing, .leading, .top], padding)
                 .padding(.bottom, padding + geometry.safeAreaInsets.bottom)
         }
-        .backgroundColorKMM(ColorConstants.MineShaft)
+        .backgroundColorKMM(.companion.MineShaft)
     }
 }

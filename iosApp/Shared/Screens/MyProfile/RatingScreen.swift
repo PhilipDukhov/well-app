@@ -47,9 +47,9 @@ struct RatingScreen: View {
                 Spacer().frame(height: 18)
                 ScrollView {
                     Text(user.ratingInfo.currentUserRating != nil ? "Update your review" : "Please write a review about")
-                        .style(.body2)
+                        .textStyle(.body2)
                     Text(user.fullName)
-                        .style(.h4)
+                        .textStyle(.h4)
                     Spacer().frame(height: 20)
                     starSelector
                     Spacer().frame(height: 50)
@@ -77,7 +77,7 @@ struct RatingScreen: View {
                 } label: {
                     Image(systemName: selected ? "star.fill" : "star")
                         .font(.system(size: 27))
-                        .foregroundColorKMM(selected ? ColorConstants.Green : ColorConstants.LightGray)
+                        .foregroundColorKMM(selected ? .companion.Green : .companion.LightGray)
                 }
             }
         }

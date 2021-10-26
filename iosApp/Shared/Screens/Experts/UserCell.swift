@@ -21,16 +21,16 @@ struct UserCell: View {
                 .padding(.trailing)
             VStack(alignment: .leading) {
                 Text(user.fullName)
-                    .style(.caption)
+                    .textStyle(.caption)
                 user.academicRank.map { academicRank in
                     Text(academicRank.localizedDescription())
-                        .style(.captionLight)
+                        .textStyle(.captionLight)
                 }
                 user.countryName().map { countryName in
                     HStack {
                         Image(uiImage: R.image.profile.location()!)
                         Text(countryName)
-                            .style(.captionLight)
+                            .textStyle(.captionLight)
                     }
                 }
             }
