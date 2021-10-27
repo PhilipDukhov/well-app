@@ -26,8 +26,6 @@ target 'LocalTest' do
 
   pod 'R.swift.Library'
   pod 'R.swift'
-
-  pod "Introspect"
 end
 
 post_install do |installer|

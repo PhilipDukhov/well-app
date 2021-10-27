@@ -12,10 +12,14 @@ import SharedMobile
 @main
 struct LocalTestApp: App {
     @State
-    var selectedScreen: Screen = .availabilityCalendar
+    var selectedScreen: Screen = .initial
     
     @State
     var opened = true
+    
+    init() {
+        NapierProxy.shared.initializeLogging()
+    }
     
     var body: some Scene {
         WindowGroup {
@@ -49,7 +53,10 @@ struct LocalTestApp: App {
                     }
                     Spacer().fillMaxHeight()
                     NavigationLink(isActive: $opened) {
-                        AppContainer(content: TestingScreens(selectedScreen: selectedScreen).navigationBarHidden(true))
+                        AppContainer(
+                            content: TestingScreens(selectedScreen: selectedScreen)
+                                .navigationBarHidden(true)
+                        )
                     } label: {
                         Text("Open")
                     }

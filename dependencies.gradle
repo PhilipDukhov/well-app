@@ -144,7 +144,9 @@ ext.Libs = [
         junit: "junit:junit:4.13.2",
     ],
 ]
-ext.iosExportModulesNames = [
+ext.iosExportItems = [
+    "shared.napier",
+    "kotlin.datetime",
     ":modules:features:more",
     ":modules:features:welcome",
     ":modules:features:myProfile",

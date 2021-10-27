@@ -207,7 +207,6 @@ fun KotlinMultiplatformExtension.iosWithSimulator(
     val platform = try {
         project?.let { it.extra["kotlin.native.cocoapods.platform"] as? String }
     } catch (t: Throwable) { 
-        println("Throwable $t")
         null
     }
 
@@ -224,21 +223,24 @@ fun DependencyHandlerScope.coreLibraryDesugaring() =
 
 fun KotlinMultiplatformExtension.exportIosModules(project: Project) {
     @Suppress("UNCHECKED_CAST")
-    val iosExportModulesNames = project.properties["iosExportModulesNames"] as List<String>
-    val iosExportModules = iosExportModulesNames.map { project.project(it) }
+    val iosExportItems = project.properties["iosExportItems"] as List<String>
+    val (modulesNames, libNames) = iosExportItems.partition { it.startsWith(':') }
+    val iosExportModules = modulesNames.map { project.project(it) }
     targets.withType<KotlinNativeTarget> {
         binaries.withType<Framework> {
             iosExportModules.forEach {
                 export(it)
             }
-            export(project.libAt("shared.napier"))
+            libNames.forEach {
+                export(project.libAt(it))
+            }
         }
     }
 
     @Suppress("UNUSED_VARIABLE")
     sourceSets.apply {
         val commonMain by getting {
-            libDependencies(iosExportModulesNames)
+            libDependencies(modulesNames)
         }
         val iosMain by getting {
             dependencies {
@@ -257,6 +259,7 @@ val composeOptIns = listOf(
     "androidx.compose.material.ExperimentalMaterialApi",
     "androidx.compose.animation.ExperimentalAnimationApi",
     "coil.annotation.ExperimentalCoilApi",
+    "kotlin.RequiresOptIn",
 )
 
 //fun Project.enableDesugaring() {

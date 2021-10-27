@@ -9,27 +9,45 @@
 import SharedMobile
 import SwiftUI
 
-struct ReducerView<State: NSObject, Msg, ScreenView: View>: View {
+struct ReducerView<State: NSObject, Msg, Eff, ScreenView: View>: View {
     @SwiftUI.State
     var state: State
     
     @ViewBuilder
     private let view: (State, @escaping (Msg) -> Void) -> ScreenView
     private let reducer: (Msg, State) -> KotlinPair<State, NSSet>
+    private let effHandler: ((Eff) -> Void)?
     
     init(
-        _ initial: State,
+        initial: State,
         reducer:@escaping (Msg, State) -> KotlinPair<State, NSSet>,
-        @ViewBuilder view: @escaping (State, @escaping (Msg) -> Void) -> ScreenView
+        @ViewBuilder view: @escaping (State, @escaping (Msg) -> Void) -> ScreenView,
+        effHandler: @escaping (Eff) -> Void
     ) {
         state = initial
         self.reducer = reducer
         self.view = view
+        self.effHandler = effHandler
+    }
+    
+    init(
+        initial: State,
+        reducer:@escaping (Msg, State) -> KotlinPair<State, NSSet>,
+        @ViewBuilder view: @escaping (State, @escaping (Msg) -> Void) -> ScreenView
+    ) where Eff == Void {
+        state = initial
+        self.reducer = reducer
+        self.view = view
+        self.effHandler = nil
     }
     
     var body: some View {
         view(state) {
-            state = reducer($0, state).first!
+            let pair = reducer($0, state)
+            state = pair.first!
+            pair.second?.forEach { eff in
+                effHandler?(eff as! Eff)
+            }
         }
     }
 }

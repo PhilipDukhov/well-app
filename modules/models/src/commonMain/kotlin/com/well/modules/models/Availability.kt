@@ -2,13 +2,12 @@
 
 package com.well.modules.models
 
-import com.well.modules.models.serializers.LocalTimeAsStringSerializer
 import com.well.modules.models.date.dateTime.LocalTime
 import com.well.modules.models.date.dateTime.atTime
 import com.well.modules.models.date.dateTime.plus
 import com.well.modules.models.date.dateTime.toLocalDate
 import com.well.modules.models.date.dateTime.toLocalTime
-import kotlinx.datetime.Clock
+import com.well.modules.models.serializers.LocalTimeAsStringSerializer
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -23,6 +22,10 @@ enum class Repeat {
     Workdays,
     Weekends,
     ;
+
+    companion object {
+        val allCases = values().toList()
+    }
 }
 
 typealias AvailabilityId = Int
@@ -58,9 +61,6 @@ data class Availability(
     val startDay = startInstant.toLocalDate(TimeZone.currentSystemDefault())
     val startTime = startInstant.toLocalTime(TimeZone.currentSystemDefault())
     val endTime = startTime.plus(Duration.minutes(durationMinutes))
-
-    val startTimeValid get() = startInstant >= Clock.System.now()
-    val endTimeValid get() = durationMinutes > 0
 
     val intervalString: String
         get() = "$startTime-$endTime"

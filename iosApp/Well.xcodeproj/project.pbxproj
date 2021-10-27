@@ -25,6 +25,10 @@
 		350C89E3F053B6A9DC3969E5 /* Pods_LocalTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71FE008199F99D007499B8C1 /* Pods_LocalTest.framework */; };
 		4A0A75942727440500632E84 /* AppContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0A75932727440500632E84 /* AppContainer.swift */; };
 		4A0A75952727440500632E84 /* AppContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0A75932727440500632E84 /* AppContainer.swift */; };
+		4A0A75F82728AA4E00632E84 /* AvailabilitiesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0A75F72728AA4E00632E84 /* AvailabilitiesList.swift */; };
+		4A0A75F92728AA4F00632E84 /* AvailabilitiesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0A75F72728AA4E00632E84 /* AvailabilitiesList.swift */; };
+		4A0A75FB2728BBB300632E84 /* AvailabilityEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0A75FA2728BBB300632E84 /* AvailabilityEditView.swift */; };
+		4A0A75FC2728BBB300632E84 /* AvailabilityEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0A75FA2728BBB300632E84 /* AvailabilityEditView.swift */; };
 		4A3A82BA26626D70003DD1F3 /* MoreScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D19F97DCC9822CBBE4C71 /* MoreScreen.swift */; };
 		4A4E3E8F267A469300BF34EC /* ChatListScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D1C3DE2A7916F73A72D11 /* ChatListScreen.swift */; };
 		4A4E3E90267A469300BF34EC /* UserChatScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D1E65EC96D4AE332C928E /* UserChatScreen.swift */; };
@@ -188,6 +192,8 @@
 		347D1E65EC96D4AE332C928E /* UserChatScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserChatScreen.swift; sourceTree = "<group>"; };
 		347D1E959C04E1097F02FE36 /* SharedImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharedImage.swift; sourceTree = "<group>"; };
 		4A0A75932727440500632E84 /* AppContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContainer.swift; sourceTree = "<group>"; };
+		4A0A75F72728AA4E00632E84 /* AvailabilitiesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailabilitiesList.swift; sourceTree = "<group>"; };
+		4A0A75FA2728BBB300632E84 /* AvailabilityEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailabilityEditView.swift; sourceTree = "<group>"; };
 		4A6ABABA270F45B900D8621E /* Napier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Napier.swift; sourceTree = "<group>"; };
 		4A6ABABE270F544D00D8621E /* HorizontalCapsule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalCapsule.swift; sourceTree = "<group>"; };
 		4A82800B2725EBFB004DF64E /* LocalTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LocalTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -391,6 +397,8 @@
 			isa = PBXGroup;
 			children = (
 				4AC263DA27229F4E002BE68B /* CurrentUserAvailabilityView.swift */,
+				4A0A75FA2728BBB300632E84 /* AvailabilityEditView.swift */,
+				4A0A75F72728AA4E00632E84 /* AvailabilitiesList.swift */,
 			);
 			path = Availability;
 			sourceTree = "<group>";
@@ -946,6 +954,7 @@
 				4A8280682725F549004DF64E /* HasApply.swift in Sources */,
 				4A82804D2725EDAB004DF64E /* EditingField.swift in Sources */,
 				4A82801B2725EDAB004DF64E /* ExpertsScreen.swift in Sources */,
+				4A0A75FC2728BBB300632E84 /* AvailabilityEditView.swift in Sources */,
 				4A8280212725EDAB004DF64E /* InactiveOverlay.swift in Sources */,
 				4A82804E2725EDAB004DF64E /* SelectionScreen.swift in Sources */,
 				4A8280372725EDAB004DF64E /* ViewModelObservable.swift in Sources */,
@@ -1000,6 +1009,7 @@
 				4A82802A2725EDAB004DF64E /* FilterScreen.swift in Sources */,
 				4A8280382725EDAB004DF64E /* ProjectTextEditor.swift in Sources */,
 				4A82805A2725EDAB004DF64E /* ActivityIndicatorView.swift in Sources */,
+				4A0A75F92728AA4F00632E84 /* AvailabilitiesList.swift in Sources */,
 				4A8280652725F1DE004DF64E /* R.generated.swift in Sources */,
 				4A8280282725EDAB004DF64E /* SearchBar.swift in Sources */,
 				4A8280472725EDAB004DF64E /* MyProfileScreen.swift in Sources */,
@@ -1043,6 +1053,7 @@
 				D568033D2638322500CFE16B /* DrawingContent.swift in Sources */,
 				D568032B2638320300CFE16B /* ProfileImage.swift in Sources */,
 				D568031F263831DB00CFE16B /* Color.swift in Sources */,
+				4A0A75FB2728BBB300632E84 /* AvailabilityEditView.swift in Sources */,
 				D568033A2638320F00CFE16B /* GoogleProvider.swift in Sources */,
 				D568031E263831DB00CFE16B /* ServerModels.swift in Sources */,
 				D56803362638320400CFE16B /* ActivityIndicatorView.swift in Sources */,
@@ -1070,6 +1081,7 @@
 				4A3A82BA26626D70003DD1F3 /* MoreScreen.swift in Sources */,
 				4AC263DB27229F4E002BE68B /* CurrentUserAvailabilityView.swift in Sources */,
 				D56803422638322500CFE16B /* MyProfileScreen.swift in Sources */,
+				4A0A75F82728AA4E00632E84 /* AvailabilitiesList.swift in Sources */,
 				4A570D4E2642760200569A40 /* R.generated.swift in Sources */,
 				D568034E26383DA900CFE16B /* SearchBar.swift in Sources */,
 				4A0A75942727440500632E84 /* AppContainer.swift in Sources */,

@@ -16,6 +16,8 @@ enum Screen: String, CaseIterable {
     case filter
     
     case other
+    
+    static let initial: Screen = .availabilityCalendar
 }
 
 struct TestingScreens: View {
@@ -27,7 +29,7 @@ struct TestingScreens: View {
         switch selectedScreen {
         case .availabilityCalendar:
             ReducerView(
-                CurrentUserAvailabilitiesListFeature().testState(),
+                initial: CurrentUserAvailabilitiesListFeature().testState(),
                 reducer: CurrentUserAvailabilitiesListFeature().reducer,
                 view: CurrentUserAvailabilityView.init
             )
@@ -36,13 +38,13 @@ struct TestingScreens: View {
 
         case .call:
             ReducerView(
-                CallFeature().testState(status: .ongoing),
+                initial: CallFeature().testState(status: .ongoing),
                 reducer: CallFeature().reducer,
                 view: CallScreen.init
             )
         case .filter:
             ReducerView(
-                FilterFeature.State(filter: UsersFilter.Companion().default(searchString: "")),
+                initial: FilterFeature.State(filter: UsersFilter.Companion().default(searchString: "")),
                 reducer: FilterFeature().reducer
             ) {
                 FilterScreen(state: $0, listener: $1) {

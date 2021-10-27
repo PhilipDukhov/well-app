@@ -34,10 +34,8 @@ actual class LocalTime private constructor(private val delegate: KLocalTime) : C
 
 
 	actual companion object {
-
 		actual val min: LocalTime = LocalTime(KLocalTime.MIN)
 		actual val max: LocalTime = LocalTime(KLocalTime.MAX)
-
 
 		actual fun parse(isoString: String): LocalTime =
 			LocalTime(KLocalTime.parse(isoString))

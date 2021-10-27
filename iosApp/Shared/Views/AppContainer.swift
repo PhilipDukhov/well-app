@@ -13,7 +13,6 @@ struct AppContainer<Content: View>: View {
     
     var body: some View {
         content
-            .environment(\.defaultMinListRowHeight, 0)
             .statusBar(style: .lightContent)
             .onAppear {
                 UITableView.appearance().separatorInset = .zero

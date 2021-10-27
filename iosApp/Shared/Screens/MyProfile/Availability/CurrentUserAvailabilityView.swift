@@ -19,10 +19,10 @@ struct CurrentUserAvailabilityView: View {
         case create(LocalDate)
         case update(Availability)
 
-        var id: UInt {
+        var id: String {
             switch self {
-            case .create(let date): return date.hash()
-            case .update(let availability): return UInt(availability.id)
+            case .create(let date): return date.toString()
+            case .update(let availability): return availability.id.toString()
             }
         }
     }
@@ -58,10 +58,44 @@ struct CurrentUserAvailabilityView: View {
                 onCreate: {
                     presentingDialog = .create($0.date)
                 }
-            ).sheet(item: $presentingDialog) { _ in
+            ).sheet(item: $presentingDialog) { dialog in
+                NavigationView {
+                    let finish = { (msg: Feature.Msg?) in
+                        presentingDialog = nil
+                        msg.map(listener)
+                    }
+                    Group {
+                        switch dialog {
+                        case .create(let date):
+                            AvailabilityEditView.createNew(
+                                startDay: date,
+                                onCancel: {
+                                    finish(nil)
+                                },
+                                onFinish: { availability in
+                                    finish(Feature.MsgAdd(availability: availability))
+                                }
+                            )
+                            
+                        case .update(let availability):
+                            AvailabilityEditView.update(
+                                availability: availability,
+                                onCancel: {
+                                    finish(nil)
+                                },
+                                onFinish: { availability in
+                                    finish(Feature.MsgUpdate(availability: availability))
+                                }
+                            )
+                        }
+                    }
+                }
             }
             Spacer()
         }.padding(.horizontal)
+            .onAppear {
+                presentingDialog = .create(.companion.today()) 
+            }
     }
 }
 
@@ -178,37 +212,3 @@ private struct CalendarTitleView: View {
         }.font(.system(size: 20)).foregroundColor(.black)
     }
 }
-
-private struct AvailabilitiesList: View {
-    var selectedItem: Feature.StateCalendarItem?
-
-    let allAvailabilities: [Availability]
-    let onSelect: (Availability) -> Void
-    let onCreate: (Feature.StateCalendarItem) -> Void
-
-    var body: some View {
-        EmptyView()
-    }
-}
-
-//@Composable
-//private fun AvailabilityCell(
-//    firstRowText: String?,
-//    secondRowText: String,
-//    aspectRatio: Float?,
-//    modifier: Modifier = Modifier,
-//    onClick: () -> Unit = {},
-//) {
-//    AvailabilityCell(
-//        onClick = onClick,
-//        aspectRatio = aspectRatio,
-//        modifier = modifier,
-//    ) {
-//        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-//            firstRowText?.let {
-//                AutoSizeText(it)
-//            }
-//            AutoSizeText(secondRowText)
-//        }
-//    }
-//}

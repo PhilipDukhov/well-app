@@ -40,6 +40,12 @@ extension CGSize {
     }
 }
 
+extension CGSize {
+    var aspectRatio: CGFloat {
+        width / height
+    }
+}
+
 extension CGFloat {
     func toFloat() -> Float {
         Float(self)

@@ -2,6 +2,7 @@ package com.well.modules.utils.viewUtils
 
 open class GlobalStringsBase {
     val add = "Add"
+    val done = "Done"
     val cancel = "Cancel"
     val ok = "OK"
     val delete = "Delete"

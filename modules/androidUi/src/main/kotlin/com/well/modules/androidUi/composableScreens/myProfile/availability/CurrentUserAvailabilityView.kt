@@ -2,7 +2,6 @@ package com.well.modules.androidUi.composableScreens.myProfile.availability
 
 import com.well.modules.androidUi.customViews.AutoSizeText
 import com.well.modules.androidUi.customViews.GradientView
-import com.well.modules.androidUi.customViews.clickable
 import com.well.modules.androidUi.customViews.swipeableLeftRight
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.thenOrNull
@@ -10,13 +9,12 @@ import com.well.modules.androidUi.ext.toColor
 import com.well.modules.androidUi.theme.body1Light
 import com.well.modules.features.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature.Msg
 import com.well.modules.features.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature.State
-import com.well.modules.features.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature.Strings
 import com.well.modules.models.Availability
 import com.well.modules.models.Color
 import com.well.modules.models.date.dateTime.localizedDayAndShortMonth
-import com.well.modules.models.date.dateTime.localizedName
 import com.well.modules.models.date.dateTime.localizedVeryShortSymbol
 import com.well.modules.utils.viewUtils.Gradient
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -36,6 +34,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -51,7 +50,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,8 +68,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.insets.navigationBarsPadding
-import com.vanpra.composematerialdialogs.MaterialDialog
-import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import kotlinx.datetime.LocalDate
 
 private sealed class PresentingDialog {
@@ -82,7 +78,7 @@ private sealed class PresentingDialog {
 @Composable
 fun CurrentUserAvailabilityView(
     state: State,
-    listener: (Msg) -> Unit
+    listener: (Msg) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -127,56 +123,38 @@ fun CurrentUserAvailabilityView(
             },
         )
         if (presentingDialog != null) {
-            MaterialDialog(
-                dialogState = rememberMaterialDialogState(initialValue = true),
-                onCloseRequest = {
+            val finish = remember {
+                { msg: Msg? ->
                     setPresentingDialog(null)
-                },
-                buttons = {
-                    positiveButton(Strings.add)
-                    negativeButton(Strings.cancel, onClick = {
-                        setPresentingDialog(null)
-                    })
-                    if (presentingDialog is PresentingDialog.Update) {
-                        negativeButton(
-                            Strings.delete,
-                            textStyle = MaterialTheme.typography.button.copy(color = Color.RadicalRed.toColor()),
-                            onClick = {
-                                setPresentingDialog(null)
-                                listener(Msg.Delete(presentingDialog.availability.id))
-                            })
-                    }
+                    msg?.let(listener)
                 }
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(top = 16.dp)
-                ) {
-                    ProvideTextStyle(value = MaterialTheme.typography.body1Light) {
-                        when (presentingDialog) {
-                            is PresentingDialog.Create -> {
-                                Text(
-                                    Strings.newAvailability,
-                                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                                )
-                                CreateAvailability(presentingDialog.date) { availability ->
-                                    setPresentingDialog(null)
-                                    listener(Msg.Add(availability))
-                                }
-                            }
-                            is PresentingDialog.Update -> {
-                                Text(
-                                    Strings.updateAvailability,
-                                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                                )
-                                UpdateAvailability(presentingDialog.availability) { availability ->
-                                    setPresentingDialog(null)
-                                    listener(Msg.Update(availability))
-                                }
-                            }
-                        }
+            }
+            ProvideTextStyle(value = MaterialTheme.typography.body1Light) {
+                when (presentingDialog) {
+                    is PresentingDialog.Create -> {
+                        CreateAvailability(
+                            startDay = presentingDialog.date,
+                            created = { availability ->
+                                finish(Msg.Add(availability))
+                            },
+                            onCancel = {
+                                finish(null)
+                            },
+                        )
+                    }
+                    is PresentingDialog.Update -> {
+                        UpdateAvailability(
+                            availability = presentingDialog.availability,
+                            onSave = { availability ->
+                                finish(Msg.Update(availability))
+                            },
+                            onCancel = {
+                                finish(null)
+                            },
+                            onDelete = {
+                                finish(Msg.Delete(presentingDialog.availability.id))
+                            },
+                        )
                     }
                 }
             }
@@ -237,6 +215,7 @@ private fun CalendarView(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun AvailabilitiesList(
     selectedItem: State.CalendarItem?,
@@ -244,14 +223,13 @@ private fun AvailabilitiesList(
     onSelect: (Availability) -> Unit,
     onCreate: (State.CalendarItem) -> Unit,
 ) {
-    val cellsCount = 3
     val padding = 10.dp
     CalculateAspectRatio(
-        cellsCount = cellsCount,
+        cellsCount = State.availabilityCellsCount,
         padding = padding,
     ) { aspectRatio ->
         LazyVerticalGrid(
-            cells = GridCells.Fixed(cellsCount),
+            cells = GridCells.Fixed(State.availabilityCellsCount),
             verticalArrangement = Arrangement.spacedBy(padding),
             horizontalArrangement = Arrangement.spacedBy(padding),
             contentPadding = PaddingValues(vertical = padding),
@@ -282,6 +260,11 @@ private fun AvailabilitiesList(
                     }
                 }
             }
+        }
+    }
+    LazyRow {
+        item {
+            Modifier.fillParentMaxWidth()
         }
     }
 }
@@ -362,7 +345,7 @@ private fun CalendarTitleView(
 private fun RowScope.DayView(
     day: State.CalendarItem,
     selectedDate: LocalDate?,
-    onSelect: () -> Unit
+    onSelect: () -> Unit,
 ) {
     val selected = day.date == selectedDate
     Box(
@@ -447,7 +430,7 @@ private fun CalculateAspectRatio(
     @Suppress("SameParameterValue")
     cellsCount: Int,
     padding: Dp,
-    content: @Composable (Float) -> Unit
+    content: @Composable (Float) -> Unit,
 ) {
     BoxWithConstraints {
         val (aspectRatio, setAspectRatio) = remember { mutableStateOf<Float?>(null) }

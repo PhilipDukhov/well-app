@@ -38,7 +38,6 @@ kotlin {
     }
     exportIosModules(project)
     sourceSets {
-
         val commonMain by getting {
             libDependencies(
                 ":modules:atomic",

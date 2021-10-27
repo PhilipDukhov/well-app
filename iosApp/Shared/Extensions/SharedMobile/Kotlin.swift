@@ -5,11 +5,6 @@
 
 import SharedMobile
 
-typealias LocalDate = Kotlinx_datetimeLocalDate
-typealias LocalDateTime = Kotlinx_datetimeLocalDateTime
-typealias Month = Kotlinx_datetimeMonth
-typealias DayOfWeek = Kotlinx_datetimeDayOfWeek
-
 extension KotlinClosedFloatingPointRange {
     func toClosedRange<Bound>() -> ClosedRange<Bound> where Bound: Comparable {
         (start as! Bound)...(endInclusive as! Bound)

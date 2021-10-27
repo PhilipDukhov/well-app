@@ -28,6 +28,7 @@ object CurrentUserAvailabilitiesListFeature {
     ) {
         companion object {
             val allDaysOfWeek = DayOfWeek.values().toList()
+            val availabilityCellsCount = 3
         }
 
         data class CalendarItem(

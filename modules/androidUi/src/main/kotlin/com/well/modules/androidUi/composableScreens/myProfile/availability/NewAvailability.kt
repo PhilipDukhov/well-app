@@ -3,22 +3,27 @@ package com.well.modules.androidUi.composableScreens.myProfile.availability
 import com.well.modules.androidUi.customViews.rememberAndroidDialog
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.featureListener
+import com.well.modules.androidUi.ext.toColor
+import com.well.modules.features.myProfile.currentUserAvailability.CreateAvailabilityFeature.Msg
+import com.well.modules.features.myProfile.currentUserAvailability.CreateAvailabilityFeature.Strings
+import com.well.modules.features.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature
 import com.well.modules.models.Availability
 import com.well.modules.models.Color
 import com.well.modules.models.Repeat
 import com.well.modules.models.date.dateTime.LocalTime
-import com.well.modules.features.myProfile.currentUserAvailability.CreateAvailabilityFeature.Msg
-import com.well.modules.features.myProfile.currentUserAvailability.CreateAvailabilityFeature.Strings
 import com.well.modules.features.myProfile.currentUserAvailability.CreateAvailabilityFeature as Feature
 import android.app.TimePickerDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -26,8 +31,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.dp
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.MaterialDialogButtons
 import com.vanpra.composematerialdialogs.MaterialDialogScope
@@ -37,19 +44,41 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 
 @Composable
-fun MaterialDialogScope.CreateAvailability(startDay: LocalDate, created: (Availability) -> Unit) {
+fun CreateAvailability(
+    startDay: LocalDate,
+    created: (Availability) -> Unit,
+    onCancel: () -> Unit,
+) {
     UpdateAvailability(
-        Feature.initialState(startDay),
-        created
+        initial = Feature.initialStateCreate(startDay),
+        onSave = created,
+        onCancel = onCancel
     )
 }
 
 @Composable
-fun MaterialDialogScope.UpdateAvailability(
-    initial: Availability,
-    onSave: (Availability) -> Unit
+fun UpdateAvailability(
+    availability: Availability,
+    onSave: (Availability) -> Unit,
+    onCancel: () -> Unit,
+    onDelete: () -> Unit,
 ) {
-    val mutableState = rememberSaveable(saver = AvailabilitySaver) {
+    UpdateAvailability(
+        Feature.initialStateUpdate(availability),
+        onSave = onSave,
+        onDelete = onDelete,
+        onCancel = onCancel
+    )
+}
+
+@Composable
+private fun UpdateAvailability(
+    initial: Feature.State,
+    onSave: (Availability) -> Unit,
+    onCancel: () -> Unit,
+    onDelete: () -> Unit = {},
+) {
+    val mutableState = rememberSaveable(saver = StateSaver) {
         mutableStateOf(initial)
     }
     val state = mutableState.value
@@ -61,36 +90,72 @@ fun MaterialDialogScope.UpdateAvailability(
                 is Feature.Eff.Save -> {
                     onSave(eff.availability)
                 }
+                is Feature.Eff.Delete -> {
+                    onDelete()
+                }
             }
         }
     )
+    MaterialDialog(
+        dialogState = rememberMaterialDialogState(initialValue = true),
+        onCloseRequest = {
+            onCancel()
+        },
+        buttons = {
+            negativeButton(
+                CurrentUserAvailabilitiesListFeature.Strings.cancel,
+                onClick = onCancel
+            )
+            if (state.type == Feature.State.Type.Editing) {
+                negativeButton(
+                    CurrentUserAvailabilitiesListFeature.Strings.delete,
+                    textStyle = MaterialTheme.typography.button.copy(color = Color.RadicalRed.toColor()),
+                    onClick = onDelete
+                )
+            }
+            positiveButton(
+                state.finishButtonTitle,
+                onClick = {
+                    listener(Msg.Save)
+                }
+            )
+        }
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(top = 16.dp)
+        ) {
+            PositiveButtonEnabled(valid = state.valid) {}
+            Text(state.title)
 
-    PositiveButtonEnabled(valid = state.startTimeValid && state.endTimeValid) {}
-    DialogCallback {
-        listener(Msg.Save)
+            Divider(Modifier.backgroundKMM(Color.LightGray))
+            TimerPickerRow(Strings.start,
+                state.availability.startTime,
+                valid = state.startTimeValid) {
+                listener(
+                    Msg.SetStartTime(it)
+                )
+            }
+
+            Divider(Modifier.backgroundKMM(Color.LightGray))
+            TimerPickerRow(Strings.end, state.availability.endTime, valid = state.endTimeValid) {
+                listener(
+                    Msg.SetEndTime(it)
+                )
+            }
+
+            Divider(Modifier.backgroundKMM(Color.LightGray))
+
+            RepeatRow(state.availability.repeat) {
+                listener(Msg.SetRepeat(it))
+            }
+
+            Divider(Modifier.backgroundKMM(Color.LightGray))
+        }
     }
-
-    Divider(Modifier.backgroundKMM(Color.LightGray))
-    TimerPickerRow(Strings.start, state.startTime, valid = state.startTimeValid) {
-        listener(
-            Msg.SetStartTime(it)
-        )
-    }
-
-    Divider(Modifier.backgroundKMM(Color.LightGray))
-    TimerPickerRow(Strings.end, state.endTime, valid = state.endTimeValid) {
-        listener(
-            Msg.SetEndTime(it)
-        )
-    }
-
-    Divider(Modifier.backgroundKMM(Color.LightGray))
-
-    RepeatRow(state.repeat) {
-        listener(Msg.SetRepeat(it))
-    }
-
-    Divider(Modifier.backgroundKMM(Color.LightGray))
 }
 
 @Composable
@@ -187,15 +252,18 @@ private fun Cell(
     }
 }
 
-private val AvailabilitySaver = Saver<MutableState<Availability>, Any>(
-    save = {
-        it.value.run {
-            listOf(
-                id.toString(),
-                startInstant.toString(),
-                durationMinutes.toString(),
-                repeat.ordinal.toString(),
-            )
+private val StateSaver = Saver<MutableState<Feature.State>, Any>(
+    save = { mutableState ->
+        mutableState.value.let { state ->
+            state.availability.run {
+                listOf(
+                    id.toString(),
+                    startInstant.toString(),
+                    durationMinutes.toString(),
+                    repeat.ordinal.toString(),
+                    state.type.ordinal,
+                )
+            }
         }
     },
     restore = {
@@ -203,11 +271,14 @@ private val AvailabilitySaver = Saver<MutableState<Availability>, Any>(
         val iterator = (it as List<String>).iterator()
 
         mutableStateOf(
-            Availability(
-                id = iterator.next().toInt(),
-                startInstant = Instant.parse(iterator.next()),
-                durationMinutes = iterator.next().toInt(),
-                repeat = Repeat.values()[iterator.next().toInt()]
+            Feature.State(
+                availability = Availability(
+                    id = iterator.next().toInt(),
+                    startInstant = Instant.parse(iterator.next()),
+                    durationMinutes = iterator.next().toInt(),
+                    repeat = Repeat.values()[iterator.next().toInt()]
+                ),
+                type = Feature.State.Type.values()[iterator.next().toInt()],
             )
         ).also {
             if (iterator.hasNext()) {
