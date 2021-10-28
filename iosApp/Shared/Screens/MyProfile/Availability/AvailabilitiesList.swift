@@ -128,7 +128,7 @@ private struct Cell<Content: View>: View {
     var body: some View {
         Button(action: onClick) {
             content().textStyle(.body2)
-                .foregroundColorKMM(.constants.DarkGray)
+                .foregroundColorKMM(.companion.DarkGrey)
                 .padding(10)
                 .minimumScaleFactor(0.01)
                 .frame(width: layoutInfo.width)

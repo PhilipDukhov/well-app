@@ -9,7 +9,7 @@
 import SwiftUI
 import SharedMobile
 
-private var observation: NSKeyValueObservation?
+private typealias Feature = MyProfileFeature
 
 struct MyProfileScreen: View {
     let state: MyProfileFeature.State
@@ -17,38 +17,76 @@ struct MyProfileScreen: View {
 
     @State
     private var editingRating = false
-
+    
+    @State
+    private var selectedTab: Feature.ProfileTab = .profileinformation
+    
     var body: some View {
         state.navigationBarModel.map {
-            ModeledNavigationBar(model: $0, listener: listener)
+            ModeledNavigationBar(
+                model: $0,
+                listener: listener,
+                extraContent: {
+                    if state.tabs.count > 1 {
+                        TabRow(
+                            tabs: state.tabs,
+                            selection: $selectedTab,
+                            selectionColor: .companion.White
+                        ) { tab in
+                            Text(tab.title)
+                                .textStyle(.body2)
+                                .padding(.bottom, 8)
+                                .padding(.top, 2)
+                                .padding(.horizontal, 4)
+                        }.padding(.top)
+                    }
+                }
+            )
         }
         if !state.loaded {
             ProgressView()
         }
-        ZStack(alignment: .topLeading) {
-            ScrollView {
-                ForEach(state.groups, id: \.self) { group in
-                    groupView(group)
-                    Divider()
-                }
-            } // ScrollView
-                .edgesIgnoringSafeArea(state.isCurrent ? Edge.Set() : .top)
-            if !state.isCurrent {
-                Control(Image(systemName: "chevron.left").foregroundColor(.white)) {
-                    listener(MyProfileFeature.MsgBack())
+        TabView(selection: $selectedTab.animation()) {
+            ForEach(state.tabs, id: \.self) { tab in
+                switch tab {
+                case .profileinformation:
+                    ZStack(alignment: .topLeading) {
+                        ScrollView {
+                            ForEach(state.groups, id: \.self) { group in
+                                groupView(group)
+                                Divider()
+                            }
+                        } // ScrollView
+                            .edgesIgnoringSafeArea(state.isCurrent ? Edge.Set() : .top)
+                        if !state.isCurrent {
+                            Control(Image(systemName: "chevron.left").foregroundColor(.white)) {
+                                listener(Feature.MsgBack())
+                            }
+                        }
+                        if state.editingStatus == .uploading {
+                            InactiveOverlay(showActivityIndicator: false)
+                        }
+                    }.sheet(isPresented: $editingRating) {
+                        state.user.map { user in
+                            RatingScreen(user: user) { rating in
+                                listener(Feature.MsgRate(rating: rating))
+                                editingRating = false
+                            }
+                        }
+                    }
+                    
+                case .availability:
+                    state.availabilityState.map {
+                        CurrentUserAvailabilityView(state: $0) {
+                            listener(Feature.MsgAvailabilityMsg(msg: $0))
+                        }
+                    }
+                    
+                default:
+                    fatalError("Unexpected tab")
                 }
             }
-            if state.editingStatus == .uploading {
-                InactiveOverlay(showActivityIndicator: false)
-            }
-        }.sheet(isPresented: $editingRating) {
-            state.user.map { user in
-                RatingScreen(user: user) { rating in
-                    listener(MyProfileFeature.MsgRate(rating: rating))
-                    editingRating = false
-                }
-            }
-        }
+        }.tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
     }
 
     @ViewBuilder
@@ -76,7 +114,7 @@ struct MyProfileScreen: View {
                 Text(group.title)
                     .foregroundColorKMM(.companion.LightBlue)
                 ForEach(group.fields, id: \.self) { field in
-                    EditingField(field as! UIEditingField<UIEditingFieldContent, MyProfileFeature.Msg>,
+                    EditingField(field as! UIEditingField<UIEditingFieldContent, Feature.Msg>,
                         listener: listener)
                         .fillMaxWidth()
                         .padding(.vertical, 7)
@@ -120,12 +158,12 @@ struct MyProfileScreen: View {
                     Text(content.text)
                         .onTapGesture {
                             if content.isLink {
-                                listener(MyProfileFeature.MsgOpenUrl(url: content.text))
+                                listener(Feature.MsgOpenUrl(url: content.text))
                             }
                         }
                 }
 
-            case let content as UIPreviewFieldContentButton<MyProfileFeature.Msg>:
+            case let content as UIPreviewFieldContentButton<Feature.Msg>:
                 Button {
                     listener(content.msg!)
                 } label: {
@@ -153,7 +191,7 @@ struct MyProfileScreen: View {
                     Text(header.initiateImageUpdateText)
                         .foregroundColorKMM(.companion.LightBlue)
                         .onTapGesture {
-                            listener(MyProfileFeature.MsgInitiateImageUpdate())
+                            listener(Feature.MsgInitiateImageUpdate())
                         }
                 }
                 header.accountType.map { accountType in
@@ -185,11 +223,11 @@ struct MyProfileScreen: View {
                 }
                 Spacer()
                 ToggleFavoriteButton(favorite: header.favorite) {
-                    listener(MyProfileFeature.MsgToggleFavorite())
+                    listener(Feature.MsgToggleFavorite())
                 }
                 header.twitterLink.map { link in
                     Button {
-                        listener(MyProfileFeature.MsgOpenUrl(url: link))
+                        listener(Feature.MsgOpenUrl(url: link))
                     } label: {
                         Image(uiImage: R.image.profile.twitter()!)
                             .foregroundColorKMM(.companion.LightBlue)
@@ -197,7 +235,7 @@ struct MyProfileScreen: View {
                     }
                 }
                 Button {
-                    listener(MyProfileFeature.MsgMessage())
+                    listener(Feature.MsgMessage())
                 } label: {
                     Image(systemName: "message.fill")
                         .font(.system(size: 20))
@@ -205,7 +243,7 @@ struct MyProfileScreen: View {
                         .padding()
                 }
                 Button {
-                    listener(MyProfileFeature.MsgCall())
+                    listener(Feature.MsgCall())
                 } label: {
                     Image(systemName: "phone.fill")
                         .font(.system(size: 20))

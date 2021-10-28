@@ -17,7 +17,7 @@ enum Screen: String, CaseIterable {
     
     case other
     
-    static let initial: Screen = .availabilityCalendar
+    static let initial: Screen = .profile
 }
 
 struct TestingScreens: View {

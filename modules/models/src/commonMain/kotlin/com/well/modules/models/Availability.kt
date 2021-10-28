@@ -23,6 +23,8 @@ enum class Repeat {
     Weekends,
     ;
 
+    val title get() = name.lowercase()
+
     companion object {
         val allCases = values().toList()
     }

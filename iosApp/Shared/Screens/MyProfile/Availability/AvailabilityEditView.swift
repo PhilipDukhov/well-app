@@ -54,18 +54,8 @@ struct AvailabilityEditView: View {
         ReducerView(
             initial: initialState,
             reducer: Feature().reducer,
-            view: { state, listener in
-                Content(
-                    state: state,
-                    listener: listener
-                ).navigationBarTitleDisplayMode(.inline)
-                    .navigationTitle(state.title)
-                    .navigationBarItems(
-                        leading: Button("Cancel", action: onCancel),
-                        trailing: Button(state.finishButtonTitle) {
-                            listener(Feature.MsgSave())
-                        }.disabled(!state.valid)
-                    )
+            view: {
+                Content(state: $0, listener: $1, onCancel: onCancel)
             },
             effHandler: { (eff: Feature.Eff) in
                 switch eff {
@@ -75,16 +65,61 @@ struct AvailabilityEditView: View {
                 default: break
                 }
             }
-        )
+        ).foregroundColorKMM(.companion.DarkGrey)
     }
 }
 
 private struct Content: View {
     let state: Feature.State
     let listener: (Feature.Msg) -> Void
+    let onCancel: () -> Void
+    
+    @State
+    private var editingRepeat = false
     
     var body: some View {
-        Form {
+        VStack(spacing: 0) {
+            NavigationBar(
+                title: .init(view: Text(state.title).opacity(editingRepeat ? 0 : 1)),
+                leftItem: .init(
+                    viewBuilder: {
+                        if !editingRepeat {
+                            Text(Feature.Strings.shared.cancel)
+                        } else {
+                            HStack {
+                                Image(systemName: "chevron.left")
+                                Text(state.title)
+                            }
+                        }
+                    },
+                    handler: {
+                        if editingRepeat {
+                            editingRepeat = false
+                        } else {
+                            onCancel()
+                        }
+                    }
+                ),
+                rightItem: .init(
+                    view: Text(state.finishButtonTitle).opacity(editingRepeat ? 0 : 1),
+                    enabled: state.valid,
+                    handler: editingRepeat ? nil : {
+                        listener(Feature.MsgSave())
+                    }
+                )
+            )
+            if !editingRepeat {
+                content
+                    .transition(.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing)))
+            } else {
+                editRepeatView
+                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+            }
+        }.animation(.default, value: editingRepeat)
+    }
+    
+    var content: some View {
+        List {
             Section {
                 DatePicker(
                     Feature.Strings.shared.start,
@@ -104,23 +139,53 @@ private struct Content: View {
                         ),
                     displayedComponents: .hourAndMinute
                 )
-                Picker(
-                    Feature.Strings().repeat,
-                    selection: .init(get: { state.availability.repeat }, set: { listener(Feature.MsgSetRepeat(repeat: $0)) })
-                ) {
-                    ForEach(Repeat.companion.allCases, id: \.self) {
-                        Text($0.name)
+                Button(
+                    action: {
+                        editingRepeat = true
                     }
+                ) {
+                    HStack {
+                        Text(Feature.Strings().repeat)
+                        Spacer().fillMaxWidth()
+                        Text(state.availability.repeat.title)
+                        Image(systemName: "chevron.right")
+                    }.foregroundColorKMM(.companion.DarkGrey)
                 }
             }
             if state.type == .editing {
                 Section {
-                    Button(Feature.Strings.shared.delete_) {
-                        listener(Feature.MsgDelete())
-                    }.foregroundColorKMM(.companion.RadicalRed)
+                    HStack {
+                        Spacer()
+                        Button(Feature.Strings.shared.delete_) {
+                            listener(Feature.MsgDelete())
+                        }.foregroundColorKMM(.companion.RadicalRed)
+                        Spacer()
+                    }
                 }
             }
-        }.listStyle(.grouped)
+        }.listStyle(.insetGrouped)
+    }
+    
+    var editRepeatView: some View {
+        List {
+            ForEach(Repeat.companion.allCases, id: \.self) { value in
+                Button(
+                    action: {
+                        editingRepeat = false
+                        listener(Feature.MsgSetRepeat(repeat: value))
+                    }
+                ) {
+                    HStack {
+                        Text(value.title.lowercased())
+                        Spacer()
+                        if value == state.availability.repeat {
+                            Image(systemName: "checkmark")
+                                .foregroundColorKMM(.companion.Green)
+                        }
+                    }
+                }
+            }
+        }.listStyle(.insetGrouped)
     }
 }
 

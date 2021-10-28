@@ -199,7 +199,7 @@ private fun RepeatRow(repeat: Repeat, onUpdate: (Repeat) -> Unit) {
         },
         dialogContent = {
             listItemsSingleChoice(
-                list = Repeat.values().map(Repeat::name),
+                list = Repeat.allCases.map(Repeat::name),
                 initialSelection = repeat.ordinal,
                 waitForPositiveButton = false,
                 onChoiceChange = {

@@ -9,16 +9,16 @@ import com.well.modules.androidUi.customViews.ModeledNavigationBar
 import com.well.modules.androidUi.customViews.ProfileImage
 import com.well.modules.androidUi.customViews.RatingInfoView
 import com.well.modules.androidUi.customViews.ToggleFavoriteButton
-import androidx.compose.foundation.Image
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.androidUi.ext.visibility
-import com.well.modules.models.Color
-import com.well.modules.models.User
 import com.well.modules.features.myProfile.MyProfileFeature.Msg
 import com.well.modules.features.myProfile.MyProfileFeature.State
-import com.well.modules.features.myProfile.MyProfileFeature as Feature
 import com.well.modules.features.myProfile.UIGroup
+import com.well.modules.models.Color
+import com.well.modules.models.User
+import com.well.modules.features.myProfile.MyProfileFeature as Feature
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,8 +56,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.navigationBarsWithImePadding
-import io.github.aakira.napier.Napier
 
+// ColumnScope unused
 @Suppress("unused")
 @Composable
 fun ColumnScope.MyProfileScreen(
@@ -71,30 +71,26 @@ fun ColumnScope.MyProfileScreen(
     }
     val availabilityState = state.availabilityState
     var selectedTab by rememberSaveable(availabilityState != null) {
-        mutableStateOf(
-            availabilityState?.let {
-                Feature.Tabs.ProfileInformation
-            }
-        )
+        mutableStateOf(state.tabs.first())
     }
     state.navigationBarModel?.let {
         ModeledNavigationBar(
             it.copy(
                 rightItem = when (selectedTab) {
-                    null, Feature.Tabs.ProfileInformation -> it.rightItem
+                    Feature.ProfileTab.ProfileInformation -> it.rightItem
                     else -> null
                 }
             ),
             listener,
             rightItemBeforeAction = rightItemBeforeAction,
             extraContent = {
-                if (selectedTab != null && state.editingStatus == State.EditingStatus.Preview) {
+                if (state.tabs.count() > 1) {
                     TabRow(
-                        selectedTabIndex = Feature.Tabs.values().indexOf(selectedTab!!),
+                        selectedTabIndex = state.tabs.indexOf(selectedTab!!),
                         backgroundColor = Color.Transparent.toColor(),
                         contentColor = Color.White.toColor(),
                     ) {
-                        Feature.Tabs.values().forEach { tab ->
+                        Feature.ProfileTab.values().forEach { tab ->
                             Tab(
                                 text = {
                                     Text(
@@ -115,10 +111,10 @@ fun ColumnScope.MyProfileScreen(
         )
     }
     when (selectedTab) {
-        null, Feature.Tabs.ProfileInformation -> {
+        Feature.ProfileTab.ProfileInformation -> {
             ProfileInformation(state, listener, setRightItemBeforeAction)
         }
-        Feature.Tabs.Availability -> {
+        Feature.ProfileTab.Availability -> {
             availabilityState?.let {
                 CurrentUserAvailabilityView(state = availabilityState) {
                     listener(Msg.AvailabilityMsg(it))

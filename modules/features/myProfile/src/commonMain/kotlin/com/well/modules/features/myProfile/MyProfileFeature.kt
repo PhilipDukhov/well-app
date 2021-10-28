@@ -7,19 +7,19 @@ import com.well.modules.models.Rating
 import com.well.modules.models.RatingRequest
 import com.well.modules.models.User
 import com.well.modules.models.UserId
+import com.well.modules.puerhBase.toSetOf
+import com.well.modules.puerhBase.withEmptySet
 import com.well.modules.utils.kotlinUtils.spacedUppercaseName
+import com.well.modules.utils.viewUtils.NavigationBarModel
 import com.well.modules.utils.viewUtils.UrlUtil
 import com.well.modules.utils.viewUtils.currentTimeZoneIdentifier
 import com.well.modules.utils.viewUtils.sharedImage.ImageContainer
 import com.well.modules.utils.viewUtils.sharedImage.profileImage
-import com.well.modules.puerhBase.toSetOf
-import com.well.modules.puerhBase.withEmptySet
-import com.well.modules.utils.viewUtils.NavigationBarModel
 import com.well.modules.features.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature as AvailabilitiesListFeature
 import io.github.aakira.napier.Napier
 
 object MyProfileFeature {
-    enum class Tabs {
+    enum class ProfileTab {
         ProfileInformation,
         Availability,
         ;
@@ -66,6 +66,12 @@ object MyProfileFeature {
         val availabilityState: AvailabilitiesListFeature.State? = null,
         val requestConsultationState: RequestConsultationFeature.State? = null,
     ) {
+        val tabs =
+            if (editingStatus != EditingStatus.Preview || availabilityState == null)
+                listOf(ProfileTab.ProfileInformation)
+            else
+                ProfileTab.values().toList()
+
         val maxRatingCharacters = 150
         val loaded = user != null
         internal val image = newImage ?: user?.profileImage()
@@ -85,7 +91,8 @@ object MyProfileFeature {
             ) + when (editingStatus) {
                 EditingStatus.Preview -> user.previewGroups(isCurrent = isCurrent)
                 EditingStatus.Editing,
-                EditingStatus.Uploading -> user.editingGroups()
+                EditingStatus.Uploading,
+                -> user.editingGroups()
             }
         } else {
             emptyList()
@@ -104,7 +111,8 @@ object MyProfileFeature {
                     )
                 }
                 EditingStatus.Editing,
-                EditingStatus.Uploading -> {
+                EditingStatus.Uploading,
+                -> {
                     NavigationBarModel.Item(
                         text = Strings.cancel,
                         enabled = editingStatus == EditingStatus.Editing,
@@ -170,7 +178,7 @@ object MyProfileFeature {
         data class OpenUrl(val url: String) : Eff()
         data class UploadUser(
             val user: User,
-            val newProfileImage: ImageContainer?
+            val newProfileImage: ImageContainer?,
         ) : Eff()
 
         data class ShowError(val throwable: Throwable) : Eff()
@@ -191,7 +199,7 @@ object MyProfileFeature {
 
     fun reducer(
         msg: Msg,
-        state: State
+        state: State,
     ): Pair<State, Set<Eff>> = run state@{
         return@reducer state toSetOf (run eff@{
             when (msg) {
@@ -293,7 +301,10 @@ object MyProfileFeature {
                         Napier.wtf("AvailabilityMsg ${msg.msg} unexpected: $state")
                         return@state state
                     }
-                    val (childState, effs) = AvailabilitiesListFeature.reducer(msg.msg, state.availabilityState)
+                    val (childState, effs) = AvailabilitiesListFeature.reducer(
+                        msg = msg.msg,
+                        state = state.availabilityState,
+                    )
                     return@reducer state.copy(
                         availabilityState = childState
                     ) to effs.mapTo(mutableSetOf(), Eff::AvailabilityEff)

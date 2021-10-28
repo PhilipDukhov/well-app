@@ -28,14 +28,15 @@ struct WelcomeScreen: View {
     var topImagesView: some View {
         GeometryReader { geometry in
             let offset = geometry.safeAreaInsets.top
-            let size = CGSize(width: geometry.size.width,
-                height: max(geometry.size.width * 1084 / 929, geometry.size.height) + offset + cornerRadius)
+            let size = CGSize(
+                width: geometry.size.width,
+                height: max(geometry.size.width * 1084 / 929, geometry.size.height) + offset + cornerRadius
+            )
             TabView(selection: $selection.animation()) {
                 ForEachIndexed(state.descriptions) { i, _ in
                     Image("welcome/welcome_\(i)")
                         .resizable()
                         .scaledToFill()
-                        .frame(size: size)
                         .clipped()
                         .offset(y: -offset)
                 }

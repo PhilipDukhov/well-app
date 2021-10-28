@@ -77,14 +77,15 @@ extension View {
             alignment: alignment
         )
     }
-
-    #if DEBUG // testing functions
-        func getSize(_ block: @escaping (CGSize) -> Void) -> some View {
-            overlay(GeometryReader {
-                // swiftlint:disable:next redundant_discardable_let
-                let _ = block($0.size)
-                Rectangle().foregroundColor(.yellow).opacity(0.01)
-            })
-        }
-    #endif
+    
+    func sizeReader(_ block: @escaping (CGSize) -> Void) -> some View {
+        background(
+            GeometryReader { geometry -> SwiftUI.Color in
+                DispatchQueue.main.async { // to avoid warning
+                    block(geometry.size)
+                }
+                return SwiftUI.Color.clear
+            }
+        )
+    }
 }

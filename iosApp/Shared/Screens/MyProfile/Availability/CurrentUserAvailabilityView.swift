@@ -59,43 +59,36 @@ struct CurrentUserAvailabilityView: View {
                     presentingDialog = .create($0.date)
                 }
             ).sheet(item: $presentingDialog) { dialog in
-                NavigationView {
-                    let finish = { (msg: Feature.Msg?) in
-                        presentingDialog = nil
-                        msg.map(listener)
-                    }
-                    Group {
-                        switch dialog {
-                        case .create(let date):
-                            AvailabilityEditView.createNew(
-                                startDay: date,
-                                onCancel: {
-                                    finish(nil)
-                                },
-                                onFinish: { availability in
-                                    finish(Feature.MsgAdd(availability: availability))
-                                }
-                            )
-                            
-                        case .update(let availability):
-                            AvailabilityEditView.update(
-                                availability: availability,
-                                onCancel: {
-                                    finish(nil)
-                                },
-                                onFinish: { availability in
-                                    finish(Feature.MsgUpdate(availability: availability))
-                                }
-                            )
+                let finish = { (msg: Feature.Msg?) in
+                    presentingDialog = nil
+                    msg.map(listener)
+                }
+                switch dialog {
+                case .create(let date):
+                    AvailabilityEditView.createNew(
+                        startDay: date,
+                        onCancel: {
+                            finish(nil)
+                        },
+                        onFinish: { availability in
+                            finish(Feature.MsgAdd(availability: availability))
                         }
-                    }
+                    )
+                    
+                case .update(let availability):
+                    AvailabilityEditView.update(
+                        availability: availability,
+                        onCancel: {
+                            finish(nil)
+                        },
+                        onFinish: { availability in
+                            finish(Feature.MsgUpdate(availability: availability))
+                        }
+                    )
                 }
             }
             Spacer()
         }.padding(.horizontal)
-            .onAppear {
-                presentingDialog = .create(.companion.today()) 
-            }
     }
 }
 
