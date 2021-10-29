@@ -8,7 +8,7 @@ import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
 import com.well.modules.models.date.dateTime.daysShift
 import com.well.modules.models.date.dateTime.time
-import com.well.modules.utils.viewUtils.chatMessageWithStatus.ChatMessageWithStatus
+import com.well.modules.models.chat.ChatMessageWithStatus
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime

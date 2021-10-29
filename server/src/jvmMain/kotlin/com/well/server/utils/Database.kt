@@ -1,17 +1,15 @@
 package com.well.server.utils
 
-import com.squareup.sqldelight.EnumColumnAdapter
-import com.squareup.sqldelight.sqlite.driver.asJdbcDriver
 import com.well.modules.db.helper.SetEnumColumnAdapter
 import com.well.modules.db.helper.migrateIfNeeded
-import com.well.modules.db.server.ChatMessages
 import com.well.modules.db.server.Database
 import com.well.modules.db.server.Users
+import com.squareup.sqldelight.EnumColumnAdapter
+import com.squareup.sqldelight.sqlite.driver.asJdbcDriver
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.util.DriverDataSource
-import io.ktor.application.Application
-import io.ktor.application.ApplicationStopped
+import io.ktor.application.*
 import org.slf4j.LoggerFactory
 import java.io.File
 

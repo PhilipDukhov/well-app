@@ -4,8 +4,6 @@ import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.freeze
 import com.well.modules.models.NetworkConstants
 import com.well.modules.utils.kotlinUtils.mapNotNull
-import com.well.modules.utils.viewUtils.platform.Platform
-import com.well.modules.utils.viewUtils.platform.isDebug
 import com.well.modules.utils.viewUtils.sharedImage.LocalImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -94,7 +92,7 @@ actual class ContextHelper actual constructor(actual val appContext: AppContext)
             MainScope().launch {
                 val session = ASWebAuthenticationSession(
                     uRL = NSURL(string = url),
-                    callbackURLScheme = NetworkConstants.current(Platform.isDebug).oauthCallbackProtocol,
+                    callbackURLScheme = NetworkConstants.oauthCallbackProtocol,
                     completionHandler = completionHandler@{ callbackUrl, error ->
                         if (continuation.isCancelled) {
                             return@completionHandler

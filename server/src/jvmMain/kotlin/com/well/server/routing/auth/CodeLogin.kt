@@ -1,6 +1,6 @@
 package com.well.server.routing.auth
 
-import com.amazonaws.regions.Regions
+import com.well.server.utils.Dependencies
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder
 import com.amazonaws.services.simpleemail.model.Body
 import com.amazonaws.services.simpleemail.model.Content
@@ -10,7 +10,6 @@ import com.amazonaws.services.simpleemail.model.SendEmailRequest
 import com.amazonaws.services.sns.AmazonSNSClientBuilder
 import com.amazonaws.services.sns.model.MessageAttributeValue
 import com.amazonaws.services.sns.model.PublishRequest
-import com.well.server.utils.Dependencies
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -33,7 +32,7 @@ suspend fun PipelineContext<*, ApplicationCall>.sendSms(
 
 private fun sendSms(
     message: String,
-    phoneNumber: String
+    phoneNumber: String,
 ) {
     val client = AmazonSNSClientBuilder.standard()
         .build()
@@ -56,7 +55,7 @@ private fun sendEmail(
     source: String,
     destination: String,
     subject: String,
-    body: String
+    body: String,
 ) {
     AmazonSimpleEmailServiceClientBuilder
         .standard()

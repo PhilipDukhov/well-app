@@ -1,8 +1,8 @@
 package com.well.server.utils
 
-import com.well.modules.utils.flowUtils.MutableMapFlow
 import com.well.modules.models.UserId
-import com.well.modules.models.createBaseHttpClient
+import com.well.modules.utils.flowUtils.MutableMapFlow
+import com.well.modules.utils.ktorUtils.createBaseHttpClient
 import com.well.server.routing.UserSession
 import io.ktor.application.*
 import java.util.*
@@ -26,7 +26,7 @@ class Dependencies(app: Application) {
 
     fun awsProfileImagePath(
         uid: UserId,
-        ext: String
+        ext: String,
     ) = "profilePictures/$uid-${UUID.randomUUID()}.$ext"
 
     fun getCurrentUser(id: UserId) = getUser(uid = id, currentUid = id)

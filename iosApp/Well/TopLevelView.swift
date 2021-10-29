@@ -18,7 +18,7 @@ struct TopLevelView: View {
     }
 
     @ViewBuilder
-    var content: some View {
+    func content() -> some View {
         switch state.currentScreen {
         case let screen as TopLevelFeature.StateScreenSingle:
             screenView(screen: screen.screen)

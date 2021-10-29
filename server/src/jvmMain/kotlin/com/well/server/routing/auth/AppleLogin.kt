@@ -10,6 +10,7 @@ import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
+import io.ktor.util.*
 import io.ktor.util.pipeline.*
 
 suspend fun PipelineContext<*, ApplicationCall>.appleLoginPrincipal(
@@ -71,13 +72,14 @@ data class Oauth2Parameters(
     val code: String,
     val clientId: String,
     val clientSecret: String,
-    val redirectUri: String?
+    val redirectUri: String?,
 )
 
+@OptIn(InternalAPI::class)
 class Oauth2Service(val client: HttpClient) {
     suspend inline fun authenticate(
         tokenUrl: String,
-        parameters: Oauth2Parameters
+        parameters: Oauth2Parameters,
     ): AppleOauthResponse {
         val data = Parameters.build {
             append("grant_type", parameters.grantType)
@@ -110,6 +112,7 @@ data class AppleOauthResponse(
     val token_type: String
 )
 
+@OptIn(InternalAPI::class)
 fun Parameters.Companion.build(list: List<Pair<String, String>>) =
     build {
         list.forEach {

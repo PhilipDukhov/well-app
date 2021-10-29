@@ -8,7 +8,6 @@ import io.ktor.auth.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.util.pipeline.*
-import java.lang.IllegalStateException
 
 suspend fun PipelineContext<*, ApplicationCall>.twitterLogin(
     dependencies: Dependencies

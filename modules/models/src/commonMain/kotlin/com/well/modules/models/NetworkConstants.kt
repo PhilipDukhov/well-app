@@ -8,8 +8,8 @@ class NetworkConstants private constructor(isDebug: Boolean) {
         WSS,
         ;
     }
-    val oauthCallbackProtocol = "world.endo.live.link"
-    fun oauthCallbackPath(path: String = "") = "$oauthCallbackProtocol://$path"
+
+    fun oauthCallbackPath(path: String = "") = NetworkConstants.oauthCallbackPath(path)
 
     val localHttpProtocol = if (isDebug) URLProtocol.HTTP else URLProtocol.HTTPS
     val localWebSocketProtocol = if (localHttpProtocol == URLProtocol.HTTPS) URLProtocol.WSS else URLProtocol.WS
@@ -26,5 +26,8 @@ class NetworkConstants private constructor(isDebug: Boolean) {
         val base = release
 
         fun current(isDebug: Boolean) = if (isDebug) debug else release
+
+        val oauthCallbackProtocol = "world.endo.live.link"
+        fun oauthCallbackPath(path: String = "") = "$oauthCallbackProtocol://$path"
     }
 }

@@ -1,7 +1,6 @@
-package com.well.modules.utils.viewUtils.chatMessageWithStatus
+package com.well.modules.models.chat
 
 import com.well.modules.models.date.Date
-import com.well.modules.models.chat.ChatMessage
 import com.well.modules.models.formatters.DateFormatter
 import com.well.modules.models.formatters.formatChatMessage
 import kotlinx.serialization.Serializable

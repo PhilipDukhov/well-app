@@ -14,7 +14,6 @@ dependencies {
 
 libDependencies(
     "android.appCompat",
-    "android.activity",
     "android.webrtc",
     "android.compose.activity",
     "android.compose.accompanist.insets",
@@ -22,7 +21,6 @@ libDependencies(
     "firebase.analytics",
     "shared.napier",
 
-    "kotlin.coroutines.playServices",
     "kotlin.serializationJson",
     "kotlin.coroutines.core",
     "kotlin.reflect",

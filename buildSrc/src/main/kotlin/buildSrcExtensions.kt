@@ -8,7 +8,6 @@ import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.getting
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinTargetContainerWithNativeShortcuts
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
@@ -102,9 +101,27 @@ fun KotlinSourceSet.libDependencies(libs: List<String>) =
         }
     }
 
-enum class OptIn {
-    Coroutines,
-    Ktor,
+enum class OptIn(val deps: List<String>) {
+    Basic(
+        "kotlin.ExperimentalUnsignedTypes",
+        "kotlin.contracts.ExperimentalContracts",
+        "kotlin.time.ExperimentalTime",
+        "kotlin.RequiresOptIn",
+    ),
+    Coroutines(
+        "kotlinx.coroutines.InternalCoroutinesApi",
+        "kotlinx.coroutines.FlowPreview",
+        "kotlinx.coroutines.ExperimentalCoroutinesApi",
+    ),
+    Ktor(
+        "io.ktor.utils.io.core.ExperimentalIoApi",
+    ),
+    Serialization(
+        "io.ktor.utils.io.core.ExperimentalIoApi",
+    ),
+    ;
+
+    constructor(vararg deps: String) : this(deps.toList())
 }
 
 fun NamedDomainObjectCollection<KotlinSourceSet>.optIns(
@@ -112,25 +129,12 @@ fun NamedDomainObjectCollection<KotlinSourceSet>.optIns(
     optIns: Set<OptIn> = emptySet(),
 ) {
     all {
-        (optIns.flatMap {
-            when (it) {
-                OptIn.Coroutines -> listOf(
-                    "kotlinx.coroutines.InternalCoroutinesApi",
-                    "kotlinx.coroutines.FlowPreview",
-                    "kotlinx.coroutines.ExperimentalCoroutinesApi",
-                )
-                OptIn.Ktor -> listOf(
-                    "io.ktor.utils.io.core.ExperimentalIoApi",
-                )
+        (optIns.plus(OptIn.Basic)
+            .flatMap(OptIn::deps)
+                + annotations.toList()
+                ).forEach {
+                languageSettings.optIn(it)
             }
-        } + listOf(
-            "kotlin.ExperimentalUnsignedTypes",
-            "kotlin.contracts.ExperimentalContracts",
-            "kotlin.time.ExperimentalTime",
-            "kotlin.RequiresOptIn",
-        ) + annotations.toList()).forEach {
-            languageSettings.optIn(it)
-        }
     }
 }
 
@@ -206,7 +210,7 @@ fun KotlinMultiplatformExtension.iosWithSimulator(
 
     val platform = try {
         project?.let { it.extra["kotlin.native.cocoapods.platform"] as? String }
-    } catch (t: Throwable) { 
+    } catch (t: Throwable) {
         null
     }
 

@@ -15,7 +15,6 @@ kotlin {
         optIns(optIns = setOf(OptIn.Coroutines))
         val commonMain by getting {
             libDependencies(
-                ":modules:atomic",
                 "kotlin.coroutines.core",
             )
         }

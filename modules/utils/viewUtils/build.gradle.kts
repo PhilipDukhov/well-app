@@ -9,7 +9,6 @@ plugins {
 kotlin {
     androidWithAndroid()
     iosWithSimulator(includeSimulator = true, project = project)
-    jvm()
     sourceSets {
         val commonMain by getting {
             libDependencies(
@@ -33,9 +32,6 @@ kotlin {
                     "android.activity",
                     "android.browser",
                 )
-            }
-            val jvmMain by getting {
-                kotlin.srcDir("src/androidMain/kotlin")
             }
         }
         val iosMain by getting {

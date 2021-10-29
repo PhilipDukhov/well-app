@@ -9,7 +9,6 @@ plugins {
 kotlin {
     androidWithAndroid()
     iosWithSimulator()
-    jvm()
     sourceSets {
         optIns()
         val commonMain by getting {

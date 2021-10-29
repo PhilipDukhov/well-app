@@ -1,6 +1,6 @@
 package com.well.server
 
-import com.well.modules.utils.viewUtils.Constants
+import com.well.modules.models.NetworkConstants
 import com.well.server.routing.auth.AppleOauthResponse
 import com.well.server.routing.auth.appleLoginPrincipal
 import com.well.server.routing.auth.build
@@ -85,7 +85,7 @@ fun Application.module() {
                 twitterLoginProvider
             }
             urlProvider = {
-                Constants.oauthCallbackPath()
+                NetworkConstants.oauthCallbackPath()
             }
         }
 

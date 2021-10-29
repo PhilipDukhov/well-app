@@ -14,7 +14,6 @@ dependencies {
 
 libDependencies(
     "android.appCompat",
-    "android.activity",
     "android.compose.*",
     "android.dataStore",
     "shared.napier",

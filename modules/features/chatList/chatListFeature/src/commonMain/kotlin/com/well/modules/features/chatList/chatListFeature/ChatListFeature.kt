@@ -4,7 +4,7 @@ import com.well.modules.models.User
 import com.well.modules.models.UserId
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
-import com.well.modules.utils.viewUtils.chatMessageWithStatus.ChatMessageWithStatus
+import com.well.modules.models.chat.ChatMessageWithStatus
 
 object ChatListFeature {
     data class State(

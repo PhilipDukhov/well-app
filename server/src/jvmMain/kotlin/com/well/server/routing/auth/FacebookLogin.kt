@@ -1,25 +1,25 @@
 package com.well.server.routing.auth
 
+import com.well.modules.models.User
+import com.well.modules.models.UserId
 import com.well.server.utils.Dependencies
 import com.well.server.utils.append
 import com.well.server.utils.getPrimitiveContent
 import com.well.server.utils.uploadToS3FromUrl
-import com.well.modules.models.User
-import com.well.modules.models.UserId
 import io.ktor.application.*
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.request.*
-import io.ktor.response.*
 import io.ktor.util.pipeline.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 suspend fun PipelineContext<*, ApplicationCall>.facebookLogin(
-    dependencies: Dependencies
+    dependencies: Dependencies,
 ) = dependencies.run {
     getFacebookAuthenticatedClient().run {
         val facebookId = getUid(call.receive())

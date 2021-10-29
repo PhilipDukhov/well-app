@@ -21,7 +21,6 @@ kotlin {
         val commonMain by getting {
             libDependencies(
                 ":modules:models",
-                ":modules:networking",
                 ":modules:utils:flowUtils",
                 ":modules:db:helperDb",
                 "shared.napier",

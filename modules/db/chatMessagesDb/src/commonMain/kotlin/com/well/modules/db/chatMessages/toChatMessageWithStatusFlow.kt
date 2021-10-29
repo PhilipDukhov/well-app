@@ -1,13 +1,13 @@
 package com.well.modules.db.chatMessages
 
-import com.well.modules.utils.flowUtils.asSingleFlow
-import com.well.modules.utils.flowUtils.mapIterable
 import com.well.modules.models.UserId
 import com.well.modules.models.chat.ChatMessage
-import com.well.modules.utils.viewUtils.chatMessageWithStatus.ChatMessageWithStatus
-import io.github.aakira.napier.Napier
+import com.well.modules.models.chat.ChatMessageWithStatus
+import com.well.modules.utils.flowUtils.asSingleFlow
+import com.well.modules.utils.flowUtils.mapIterable
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map

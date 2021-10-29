@@ -1,7 +1,7 @@
 package com.well.server.utils
 
-import com.auth0.jwt.interfaces.Payload
 import com.well.modules.models.UserId
+import com.auth0.jwt.interfaces.Payload
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
