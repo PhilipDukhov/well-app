@@ -74,48 +74,24 @@ private struct Content: View {
     let listener: (Feature.Msg) -> Void
     let onCancel: () -> Void
     
-    @State
-    private var editingRepeat = false
-    
     var body: some View {
         VStack(spacing: 0) {
             NavigationBar(
-                title: .init(view: Text(state.title).opacity(editingRepeat ? 0 : 1)),
+                title: state.title,
                 leftItem: .init(
-                    viewBuilder: {
-                        if !editingRepeat {
-                            Text(Feature.Strings.shared.cancel)
-                        } else {
-                            HStack {
-                                Image(systemName: "chevron.left")
-                                Text(state.title)
-                            }
-                        }
-                    },
-                    handler: {
-                        if editingRepeat {
-                            editingRepeat = false
-                        } else {
-                            onCancel()
-                        }
-                    }
+                    text: Feature.Strings.shared.cancel,
+                    handler: onCancel
                 ),
                 rightItem: .init(
-                    view: Text(state.finishButtonTitle).opacity(editingRepeat ? 0 : 1),
+                    view: Text(state.finishButtonTitle),
                     enabled: state.valid,
-                    handler: editingRepeat ? nil : {
+                    handler: {
                         listener(Feature.MsgSave())
                     }
                 )
             )
-            if !editingRepeat {
-                content
-                    .transition(.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing)))
-            } else {
-                editRepeatView
-                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
-            }
-        }.animation(.default, value: editingRepeat)
+            content
+        }
     }
     
     var content: some View {
@@ -139,18 +115,31 @@ private struct Content: View {
                         ),
                     displayedComponents: .hourAndMinute
                 )
-                Button(
-                    action: {
-                        editingRepeat = true
+                Menu(
+                    content: {
+                        ForEach(Repeat.companion.allCases, id: \.self) { value in
+                            Toggle(
+                                value.title.lowercased(),
+                                isOn: .init(
+                                    get: { value == state.availability.repeat },
+                                    set: {
+                                        if $0 {
+                                            listener(Feature.MsgSetRepeat(repeat: value))
+                                        }
+                                    }
+                                )
+                            )
+                        }
+                    },
+                    label: {
+                        HStack {
+                            Text(Feature.Strings().repeat)
+                            Spacer().fillMaxWidth()
+                            Text(state.availability.repeat.title)
+                            Image(systemName: "chevron.right")
+                        }.foregroundColorKMM(.companion.DarkGrey)
                     }
-                ) {
-                    HStack {
-                        Text(Feature.Strings().repeat)
-                        Spacer().fillMaxWidth()
-                        Text(state.availability.repeat.title)
-                        Image(systemName: "chevron.right")
-                    }.foregroundColorKMM(.companion.DarkGrey)
-                }
+                )
             }
             if state.type == .editing {
                 Section {
@@ -160,28 +149,6 @@ private struct Content: View {
                             listener(Feature.MsgDelete())
                         }.foregroundColorKMM(.companion.RadicalRed)
                         Spacer()
-                    }
-                }
-            }
-        }.listStyle(.insetGrouped)
-    }
-    
-    var editRepeatView: some View {
-        List {
-            ForEach(Repeat.companion.allCases, id: \.self) { value in
-                Button(
-                    action: {
-                        editingRepeat = false
-                        listener(Feature.MsgSetRepeat(repeat: value))
-                    }
-                ) {
-                    HStack {
-                        Text(value.title.lowercased())
-                        Spacer()
-                        if value == state.availability.repeat {
-                            Image(systemName: "checkmark")
-                                .foregroundColorKMM(.companion.Green)
-                        }
                     }
                 }
             }

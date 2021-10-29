@@ -7,11 +7,11 @@ import com.well.modules.androidUi.customViews.clickable
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.borderKMM
 import com.well.modules.androidUi.ext.toColor
+import com.well.modules.features.myProfile.currentUserAvailability.RequestConsultationFeature.Msg
+import com.well.modules.features.myProfile.currentUserAvailability.RequestConsultationFeature.State
 import com.well.modules.models.Availability
 import com.well.modules.models.Color
 import com.well.modules.models.date.dateTime.localizedDayAndShortMonth
-import com.well.modules.features.myProfile.currentUserAvailability.RequestConsultationFeature.Msg
-import com.well.modules.features.myProfile.currentUserAvailability.RequestConsultationFeature.State
 import com.well.modules.features.myProfile.currentUserAvailability.RequestConsultationFeature as Feature
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -92,7 +92,7 @@ private fun BoxScope.Overlay(status: State.Status) {
         }
         is State.Status.BookingFailed -> InactiveOverlay(showActivityIndicator = false) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Booking failed:", style = MaterialTheme.typography.body1)
+                Text(Feature.Strings.bookingFailed, style = MaterialTheme.typography.body1)
                 Text(status.reason, textAlign = TextAlign.Center)
             }
         }
@@ -121,7 +121,6 @@ private fun Content(
         Column(
             verticalArrangement = Arrangement.spacedBy(52.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
         ) {
             Availabilities(state.availabilitiesByDay) {
                 listener(Msg.Book(it))
@@ -133,7 +132,7 @@ private fun Content(
 @Composable
 private fun Availabilities(
     availabilities: List<Pair<LocalDate, List<Availability>>>,
-    onBookNow: (Availability) -> Unit
+    onBookNow: (Availability) -> Unit,
 ) {
     val (selectedDayIndex, setSelectedDayIndex) = rememberSaveable(availabilities) {
         mutableStateOf(0)
@@ -152,7 +151,7 @@ private fun Availabilities(
             items = remember(availabilities) { availabilities.map { it.first } },
             selectedIndex = selectedDayIndex,
             setSelectedIndex = setSelectedDayIndex,
-            itemText = { it.localizedDayAndShortMonth.split(" ").joinToString("\n") },
+            itemText = { it.localizedDayAndShortMonth(separator = "\n") },
             textStyle = MaterialTheme.typography.body2,
             aspectRatio = 1f,
             fillParentMaxWidthPart = 0.2f
@@ -167,11 +166,8 @@ private fun Availabilities(
                 if (topRowState.layoutInfo.visibleItemsInfo.none { it.index == selectedDayIndex }) {
                     scope.launch {
                         try {
-                            Napier.wtf("topRowState.animateScrollToItem start")
                             topRowState.animateScrollToItem(selectedDayIndex)
-                            Napier.wtf("topRowState.animateScrollToItem end")
                         } catch (t: Throwable) {
-                            Napier.wtf("topRowState.animateScrollToItem $t")
                         }
                     }
                 }

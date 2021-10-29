@@ -27,6 +27,16 @@ extension View {
     func fillMaxHeight() -> some View {
         frame(maxHeight: .infinity)
     }
+    
+    @inline(__always)
+    func height(_ height: CGFloat) -> some View {
+        frame(height: height)
+    }
+    
+    @inline(__always)
+    func width(_ height: CGFloat) -> some View {
+        frame(width: height)
+    }
 
     @inline(__always)
     func frame(
@@ -88,4 +98,49 @@ extension View {
             }
         )
     }
+    
+    func overlay<Content: View>(@ViewBuilder _ block: () -> Content) -> some View {
+        overlay(block())
+    }
+    
+    func background<Content: View>(@ViewBuilder _ block: () -> Content) -> some View {
+        background(block())
+    }
+    
+#if DEBUG
+    @inline(__always)
+    func printUI(_ items: Any..., separator: String = " ", file: String = #file, function: String = #function) -> Self {
+        print(items.map { "\($0)" }.joined(separator: separator))
+        return self
+    }
+#endif
+}
+
+// swiftlint:disable:next identifier_name
+func Button<Item, Label: View>(
+    item: Item?,
+    action: @escaping (Item) -> Void,
+    @ViewBuilder label: () -> Label
+) -> some View {
+    Button(
+        action: {
+            action(item!)
+        },
+        label: label
+    ).disabled(item == nil)
+}
+
+// swiftlint:disable:next identifier_name
+func Button<Item, Label: View>(
+    item: Item,
+    disabled: (Item) -> Bool,
+    action: @escaping (Item) -> Void,
+    @ViewBuilder label: () -> Label
+) -> some View {
+    Button(
+        action: {
+            action(item)
+        },
+        label: label
+    ).disabled(disabled(item))
 }

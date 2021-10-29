@@ -22,6 +22,27 @@ struct MyProfileScreen: View {
     private var selectedTab: Feature.ProfileTab = .profileinformation
     
     var body: some View {
+        VStack(spacing: 0) {
+            content
+        }.onAppear {
+            listener(Feature.MsgRequestConsultation())
+        }
+        .partialSheet(
+            item: state.requestConsultationState,
+            onDismiss: {
+                listener(Feature.MsgRequestConsultationMsg(msg: RequestConsultationFeature.MsgClose()))
+            },
+            sheetContent: {
+                RequestConsultationView(state: $0) {
+                    listener(Feature.MsgRequestConsultationMsg(msg: $0))
+                }
+            },
+            overlayContent: RequestConsultationOverlay.init
+        )
+    }
+    
+    @ViewBuilder
+    var content: some View {
         state.navigationBarModel.map {
             ModeledNavigationBar(
                 model: $0,

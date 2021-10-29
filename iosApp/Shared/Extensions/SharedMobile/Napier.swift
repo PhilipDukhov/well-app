@@ -9,16 +9,6 @@
 import SharedMobile
 import SwiftUI
 
-#if DEBUG
-extension View {
-    @inline(__always)
-    func printUI(tag: String? = nil, _ items: Any..., separator: String = " ", file: String = #file, function: String = #function) -> Self {
-        Napier.log(logLevel: .debug, tag: tag, items, separator: separator, file: file, function: function)
-        return self
-    }
-}
-#endif
-
 extension Napier {
     #if DEBUG
     @inline(__always)

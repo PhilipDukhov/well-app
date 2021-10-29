@@ -238,7 +238,7 @@ private fun AvailabilitiesList(
             items(selectedItem?.availabilities ?: allAvailabilities) { availability ->
                 AvailabilityCell(
                     firstRowText = selectedItem?.let { null }
-                        ?: availability.startDay.localizedDayAndShortMonth,
+                        ?: availability.startDay.localizedDayAndShortMonth(),
                     secondRowText = availability.intervalString,
                     onClick = {
                         onSelect(availability)

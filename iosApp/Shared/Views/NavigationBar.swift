@@ -208,7 +208,7 @@ extension NavigationBarModelItemContent {
             itemTextView(content.text)
 
         case is NavigationBarModelItemContent.ActivityIndicator:
-            Well.ActivityIndicator()
+            ProgressView()
 
         case let content as NavigationBarModelItemContent.Icon:
             switch content.icon {

@@ -68,5 +68,17 @@ extension Shape {
     }
 }
 
+extension LocalDate {
+    func localizedDayAndShortMonth() -> String {
+        localizedDayAndShortMonth(separator: " ")
+    }
+}
+
+extension CircularProgressViewStyle {
+    init(tint: SharedMobile.Color) {
+        self.init(tint: tint.toColor())
+    }
+}
+
 // swiftlint:disable:next identifier_name
 let ColorConstants = SharedMobile.Color.companion

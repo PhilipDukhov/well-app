@@ -45,7 +45,7 @@ struct SharedImage<Placeholder: View>: View {
                     placeholder: {
                         ZStack {
                             placeholder
-                            ActivityIndicator()
+                            ProgressView()
                         }
                     },
                     image: {

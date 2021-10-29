@@ -13,6 +13,7 @@ object RequestConsultationFeature {
     object Strings : GlobalStringsBase() {
         const val title = "Book day and time"
         const val bookNow = "Book now"
+        const val bookingFailed = "Booking failed:"
     }
 
     fun initial() = State(State.Status.Loading) toSetOf Eff.Update
@@ -51,7 +52,7 @@ object RequestConsultationFeature {
 
     fun reducer(
         msg: Msg,
-        state: State
+        state: State,
     ): Pair<State, Set<Eff>> = run state@{
         return@reducer state toSetOf (run eff@{
             when (msg) {

@@ -14,8 +14,9 @@ enum Screen: String, CaseIterable {
     case availabilityCalendar = "Availability Calendar"
     case call
     case filter
+    case chatMessagesList
     
-    case other
+    case local
     
     static let initial: Screen = .profile
 }
@@ -51,7 +52,7 @@ struct TestingScreens: View {
                 }
             }
 
-        case .other:
+        case .chatMessagesList:
             ScrollView {
                 LazyVStack {
                     ForEachIndexed(messages) { i, message in
@@ -65,6 +66,9 @@ struct TestingScreens: View {
                     }
                 }
             }
+            
+        case .local:
+            EmptyView()
         }
     }
 }

@@ -34,14 +34,14 @@ struct ChatMessageCell: View {
             if incoming {
                 Spacer(minLength: .minSpacerWidth)
             }
+        }.sheet(item: $fullscreenImage) { fullscreenImage in
+            SharedImage(
+                url: NSURL(string: fullscreenImage.url)!,
+                placeholder: ProgressView(),
+                aspectRatio: fullscreenImage.aspectRatio?.toCGFloat(),
+                contentMode: .fit
+            )
         }
-            .sheet(item: $fullscreenImage) { fullscreenImage in
-                SharedImage(url: NSURL(string: fullscreenImage.url)!,
-                    placeholder: ActivityIndicator(),
-                    aspectRatio: fullscreenImage.aspectRatio?.toCGFloat(),
-                    contentMode: .fit
-                )
-            }
     }
 
     @ViewBuilder
@@ -51,7 +51,7 @@ struct ChatMessageCell: View {
             let width = UIScreen.main.bounds.width / 2.5
             SharedImage(
                 url: NSURL(string: content.url)!,
-                placeholder: ActivityIndicator()
+                placeholder: ProgressView()
             )
                 .frame(
                     width: width,

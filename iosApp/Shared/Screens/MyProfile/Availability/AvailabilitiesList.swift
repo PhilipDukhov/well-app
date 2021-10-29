@@ -33,7 +33,7 @@ struct AvailabilitiesList: View {
             ) {
                 ForEach(selectedItem?.availabilities ?? allAvailabilities, id: \.self) { availability in
                     Cell(
-                        firstRowText: selectedItem.map { _ in nil } ?? availability.startDay.localizedDayAndShortMonth,
+                        firstRowText: selectedItem.map { _ in nil } ?? availability.startDay.localizedDayAndShortMonth(),
                         secondRowText: availability.intervalString,
                         layoutInfo: cellLayoutInfo,
                         onClick: {

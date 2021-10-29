@@ -1,7 +1,13 @@
 package com.well.modules.models.date.dateTime
 
-import kotlinx.datetime.*
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.Month
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
+import kotlinx.datetime.plus
 
 
 fun LocalDate.atTime(time: LocalTime): LocalDateTime =
@@ -23,7 +29,7 @@ fun LocalDate.monthOffset(dayOfMonth: Int, monthOffset: Int): LocalDate {
     return LocalDate(dayOfMonth = dayOfMonth, month = month, year = year)
 }
 
-val LocalDate.localizedDayAndShortMonth get() = "$dayOfMonth ${month.localizedShortName}"
+fun LocalDate.localizedDayAndShortMonth(separator: String = " ") = "$dayOfMonth$separator${month.localizedShortName}"
 
 fun LocalDate.daysShift(days: Int): LocalDate = when {
     days < 0 -> {
