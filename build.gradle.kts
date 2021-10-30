@@ -20,7 +20,6 @@ buildscript {
     apply(from = "dependencies.gradle")
     val libs: List<String> = project.libsAt("build")
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31")
         libs.forEach { classpath(it) }
     }
 }
