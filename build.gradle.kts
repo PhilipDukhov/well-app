@@ -84,22 +84,9 @@ subprojects {
     }
 
     apply(from = "${rootDir}/dependencies.gradle")
-    configurations.all {
-        resolutionStrategy.eachDependency {
-            when (requested.group to requested.name) {
-                "org.jetbrains.kotlin" to "kotlin-reflect" -> useVersion(project.version("kotlin"))
-            }
-        }
-    }
 }
 
-configurations.all {
-    resolutionStrategy.eachDependency {
-        when (requested.group to requested.name) {
-            "org.jetbrains.kotlin" to "kotlin-reflect" -> useVersion(project.version("kotlin"))
-        }
-    }
-}
+subprojectsConfigurationsResolutionStrategy(setOf(ResolutionStrategy.Reflect, ResolutionStrategy.Coroutines))
 
 // ./gradlew -q -PallDepsNeeded=1 allDeps > deps.txt && open deps.txt
 val allDepsNeeded: String? by project

@@ -1,6 +1,7 @@
 import org.codehaus.groovy.runtime.GStringImpl
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ModuleVersionSelector
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.add
 import org.gradle.kotlin.dsl.extra
@@ -187,17 +188,17 @@ private fun Project.customDependencies(libs: List<String>): List<Dependency> =
                         Dependency.Module(dep)
                     dep == "kotlin.coroutines.core-strictly" ->
                         Dependency.Implementation(
-                            "org.jetbrains.kotlinx:kotlinx-coroutines-core",
-                            version("kotlinCoroutines")
+                            dependencyNotation = "org.jetbrains.kotlinx:kotlinx-coroutines-core",
+                            strictVersion = version("kotlinCoroutines")
                         )
                     dep.endsWith(".*") -> {
                         return@list libsAt(dep.dropLast(2)).map(Dependency::Implementation)
                     }
-                    else ->
+                    else -> {
                         Dependency.Implementation(libAt(dep))
+                    }
                 }
             })
-
         }
     }
 
@@ -266,13 +267,42 @@ val composeOptIns = listOf(
     "kotlin.RequiresOptIn",
 )
 
-//fun Project.enableDesugaring() {
-//    dependencies {
-//        coreLibraryDesugaring()
-//    }
-//    android {
-//        compileOptions {
-//            isCoreLibraryDesugaringEnabled = true
-//        }
-//    }
-//}
+enum class ResolutionStrategy {
+    Compose,
+    Reflect,
+    Coroutines,
+}
+
+fun Project.subprojectsConfigurationsResolutionStrategy(strategies: Set<ResolutionStrategy>) {
+    subprojects.plus(project).forEach {
+        it.configurations.all {
+            resolutionStrategy.eachDependency {
+                strategies.forEach { strategy ->
+                    when (strategy) {
+                        ResolutionStrategy.Compose -> {
+                            if (requested.group.startsWith("androidx.compose") && requested.group != "androidx.compose.material3") {
+                                useVersion(project.version("compose"))
+                            }
+                        }
+                        ResolutionStrategy.Reflect -> {
+                            when (requested.groupToName()) {
+                                "org.jetbrains.kotlin" to "kotlin-reflect" -> {
+                                    useVersion(project.version("kotlin"))
+                                }
+                            }
+                        }
+                        ResolutionStrategy.Coroutines -> {
+                            when (requested.groupToName()) {
+                                "org.jetbrains.kotlinx" to "kotlinx-coroutines-core" -> {
+                                    useVersion(project.version("kotlinCoroutines"))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+private fun ModuleVersionSelector.groupToName() = group to name

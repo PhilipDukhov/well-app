@@ -1,7 +1,24 @@
+def iPhoneSimulator = false
+
+DataInputStream file
+try {
+    file = (new File(projectDir.parent + '/local.properties')).newDataInputStream()
+} catch (Exception e) {
+    file = project.rootProject.file('local.properties').newDataInputStream()
+}
+def properties = new Properties()
+properties.load(file)
+def stableCompose = properties.getProperty('compose.stable') == "true"
+def material3 = properties.getProperty('material3') == "true"
+
+try {
+    iPhoneSimulator = ext["kotlin.native.cocoapods.platform"] == "iphonesimulator"
+} catch (Exception e) {
+}
+
 def versions = [
     iosDeploymentTarget: "14.0",
     androidActivity    : "1.3.1",
-    accompanist        : "0.21.0-beta",
     kotlinSerialization: "1.3.0",
     coil               : "1.4.0",
     kotlinCoroutines   : "1.5.2-native-mt",
@@ -11,20 +28,18 @@ def versions = [
     aws                : "1.12.60",
 ]
 
-try {
-    if (ext["kotlin.native.cocoapods.platform"] == "iphonesimulator") {
-        versions["sqldelight"] = "1.6.0-SNAPSHOT"
-    }
-} catch(Exception e) {
+if (iPhoneSimulator) {
+    versions["sqldelight"] = "1.6.0-SNAPSHOT"
 }
 
-def stableCompose = false
 if (stableCompose) {
     versions["kotlin"] = "1.5.31"
     versions["compose"] = "1.0.4"
+    versions["accompanist"] = "0.20.0"
 } else {
     versions["kotlin"] = "1.5.31"
     versions["compose"] = "1.1.0-beta01"
+    versions["accompanist"] = "0.21.0-beta"
 }
 
 ext.Versions = versions
@@ -59,16 +74,16 @@ ext.Libs = [
         webrtc       : "org.webrtc:google-webrtc:1.0.32006",
         facebookLogin: "com.facebook.android:facebook-login:11.2.0",
         compose      : [
-            ui                    : "androidx.compose.ui:ui:$versions.compose",
-            util                  : "androidx.compose.ui:ui-util:$versions.compose",
-            tooling               : "androidx.compose.ui:ui-tooling:$versions.compose",
-            foundation            : "androidx.compose.foundation:foundation:$versions.compose",
-            material              : "androidx.compose.material:material:$versions.compose",
-            materialIconsCore     : "androidx.compose.material:material-icons-core:$versions.compose",
-            materialIconsExtended : "androidx.compose.material:material-icons-extended:$versions.compose",
-            activity              : "androidx.activity:activity-compose:$versions.androidActivity",
+            ui                   : "androidx.compose.ui:ui:$versions.compose",
+            util                 : "androidx.compose.ui:ui-util:$versions.compose",
+            tooling              : "androidx.compose.ui:ui-tooling:$versions.compose",
+            foundation           : "androidx.compose.foundation:foundation:$versions.compose",
+            material             : "androidx.compose.material:material:$versions.compose",
+            materialIconsCore    : "androidx.compose.material:material-icons-core:$versions.compose",
+            materialIconsExtended: "androidx.compose.material:material-icons-extended:$versions.compose",
             constraintLayout      : "androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02",
             viewModel             : "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha06",
+            activity              : "androidx.activity:activity-compose:$versions.androidActivity",
             coil                  : "io.coil-kt:coil-compose:$versions.coil",
             composeMaterialDialogs: [
                 datetime: "io.github.vanpra.compose-material-dialogs:datetime:0.6.1",
@@ -168,4 +183,8 @@ ext.forceApiModules = [
 def gradlePluginVersion = System.getProperty("gradlePluginVersion")
 if (gradlePluginVersion != null) {
     ext.Libs["build"]["gradle"] = "com.android.tools.build:gradle:$gradlePluginVersion"
+}
+if (material3) {
+    ext.Libs["android"]["material"] = "com.google.android.material:material:1.5.0-alpha05"
+    ext.Libs["android"]["compose"]["material3"] = "androidx.compose.material3:material3:1.0.0-alpha01"
 }

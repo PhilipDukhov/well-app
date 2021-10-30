@@ -33,13 +33,5 @@ kotlin {
 }
 
 if (withAndroid) {
-    android {
-        compileOptions {
-            isCoreLibraryDesugaringEnabled = true
-        }
-    }
-
-    dependencies {
-        coreLibraryDesugaring()
-    }
+    apply(from = "${rootDir}/androidEnableDesugaring.gradle.kts")
 }

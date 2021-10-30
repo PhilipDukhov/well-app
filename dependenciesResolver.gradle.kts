@@ -14,22 +14,37 @@ enum class Executor {
     AndroidStudio,
     Idea,
     Cocoapods,
+    CocoapodsArm64Simulator,
     Console,
 }
 
-val executor = Executor.AndroidStudio
-//    try {
-//    Executor.valueOf(System.getProperty("idea.platform.prefix"))
-//} catch (t: Throwable) {
-//    val dir = System.getProperty("user.dir").toString()
-//    when {
-//        dir.endsWith("Pods") -> Executor.Cocoapods
-//        dir.endsWith("fastlane") -> Executor.AndroidStudio
-//        else -> {
-//            Executor.Console
-//        }
-//    }
-//}
+val executor = try {
+    try {
+        // specify executor in call
+        // parentheses to only export to ENV into gradlew
+        // (export executor=Idea; ./gradlew :server:dependencies)
+        Executor.valueOf(System.getenv("executor"))
+    } catch (t: Throwable) {
+        Executor.valueOf(System.getProperty("idea.platform.prefix"))
+    }
+} catch (t: Throwable) {
+    val dir = System.getProperty("user.dir").toString()
+    when {
+        dir.endsWith("Pods") -> {
+            if (extra["kotlin.native.cocoapods.platform"] == "iphonesimulator") {
+                Executor.CocoapodsArm64Simulator
+            } else {
+                Executor.Cocoapods
+            }
+        }
+        dir.endsWith("fastlane") -> {
+            Executor.AndroidStudio
+        }
+        else -> {
+            Executor.Console
+        }
+    }
+}
 
 //val withAndroid = true
 val withAndroid = executor == Executor.AndroidStudio && run {
@@ -59,4 +74,5 @@ if (gradlePluginVersion != null) {
 }
 extra["withAndroid"] = withAndroid
 
-println("executor:$executor withAndroid:$withAndroid gradlePluginVersion:$gradlePluginVersion")
+extra["executor"] = executor.ordinal
+System.setProperty("executor", executor.ordinal.toString())

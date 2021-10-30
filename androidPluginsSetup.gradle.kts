@@ -42,3 +42,5 @@ subprojects {
         }
     }
 }
+
+subprojectsConfigurationsResolutionStrategy(setOf(ResolutionStrategy.Compose))

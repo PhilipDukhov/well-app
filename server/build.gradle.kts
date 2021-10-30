@@ -2,7 +2,6 @@ import io.github.cdimascio.dotenv.dotenv
 
 plugins {
     kotlin("multiplatform")
-    kotlin("plugin.serialization")
     application
     id("com.github.johnrengelman.shadow") version "7.1.0"
 }

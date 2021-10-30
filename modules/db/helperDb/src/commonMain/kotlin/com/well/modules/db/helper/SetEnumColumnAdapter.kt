@@ -7,7 +7,7 @@ inline fun <reified T : Enum<T>> SetEnumColumnAdapter() =
     SetEnumColumnAdapter(enumValues<T>())
 
 class SetEnumColumnAdapter<T : Enum<T>>(
-    private val enumValues: Array<out T>
+    private val enumValues: Array<out T>,
 ) : ColumnAdapter<Set<T>, String> {
     override fun decode(databaseValue: String): Set<T> =
         if (databaseValue.isNotEmpty())
