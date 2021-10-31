@@ -11,24 +11,20 @@ import FBSDKCoreKit
 import FBSDKLoginKit
 
 final class FacebookProvider: CredentialProvider {
-    private let appContext: AppContext
-    private let loginManager = LoginManager()
+    private let loginManager: LoginManager
     
     override init(appContext: AppContext) {
-        self.appContext = appContext
+        Settings.shared.isAdvertiserIDCollectionEnabled = true
+        Settings.shared.loggingBehaviors = Set()
+        ApplicationDelegate.shared.initializeSDK()
+        Settings.shared.isAdvertiserIDCollectionEnabled = false
+        loginManager = LoginManager()
         super.init(appContext: appContext)
-        Settings.isAdvertiserIDCollectionEnabled = false
-        ApplicationDelegate.shared.application(
-            appContext.application,
-            didFinishLaunchingWithOptions: appContext.launchOptions as? [UIApplication.LaunchOptionsKey: Any]
-        )
     }
     
     override func getCredentials(completionHandler: @escaping (AuthCredential?, Error?) -> Void) {
-        loginManager.logIn(
-            permissions: [],
-            viewController: appContext.rootController
-        ) { result in
+        loginManager.logOut()
+        loginManager.logIn(configuration: LoginConfiguration()!) { result in
             switch result {
             case let .success(_, _, token):
                 if let token = token {
@@ -41,6 +37,8 @@ final class FacebookProvider: CredentialProvider {
                 
             case .cancelled:
                 completionHandler(nil, KotlinCancellationException().toNSError())
+            @unknown default:
+                fatalError()
             }
         }
     }

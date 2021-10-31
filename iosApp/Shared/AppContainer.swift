@@ -15,7 +15,7 @@ struct AppContainer<Content: View>: View {
         content
             .statusBar(style: .lightContent)
             .accentColor(ColorConstants.Green.toColor())
-            .progressViewStyle(CircularProgressViewStyle(tint: .companion.Green))
+            .progressViewStyle(CircularProgressViewStyle(tint: .companion.White))
             .onAppear {
                 UITableView.appearance().separatorInset = .zero
             }

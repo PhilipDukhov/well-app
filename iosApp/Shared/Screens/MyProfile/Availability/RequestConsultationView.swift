@@ -16,31 +16,50 @@ struct RequestConsultationOverlay: View {
     
     var body: some View {
         if isVisible {
-            InactiveOverlay(
-                showActivityIndicator: state.status is Feature.StateStatusProcessing
-            ) {
-                switch state.status {
-                case is Feature.StateStatusProcessing:
-                    EmptyView()
+            InactiveOverlay {
+                ZStack {
+                    switch state.status {
+                    case is Feature.StateStatusProcessing, is Feature.StateStatusLoading:
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .companion.Green))
 
-                case is Feature.StateStatusBooked:
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 60, weight: .black))
-                        .foregroundColorKMM(.companion.Green)
-                        .padding().background(RoundedRectangle(cornerRadius: 16).foregroundColorKMM(.companion.White))
+                    case is Feature.StateStatusBooked:
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 60, weight: .black))
+                            .foregroundColorKMM(.companion.Green)
+                            .padding().background(RoundedRectangle(cornerRadius: 16).foregroundColorKMM(.companion.White))
 
-                case let failed as Feature.StateStatusBookingFailed:
-                    VStack {
-                        Text(Feature.Strings.shared.bookingFailed)
-                        Text(failed.reason)
-                    }.padding().background(RoundedRectangle(cornerRadius: 16).foregroundColorKMM(.companion.White))
+                    case let failed as Feature.StateStatusBookingFailed:
+                        VStack {
+                            Text(Feature.Strings.shared.bookingFailed)
+                            Text(failed.reason)
+                        }.padding().background(RoundedRectangle(cornerRadius: 16).foregroundColorKMM(.companion.White))
 
-                case is Feature.StateStatusLoading, is Feature.StateStatusLoaded:
-                    EmptyView()
-                default:
-                    EmptyView()
-                }
-            }.animation(.default, value: state.status).transition(.opacity).zIndex(1)
+                    case is Feature.StateStatusLoading, is Feature.StateStatusLoaded:
+                        EmptyView()
+                    default:
+                        EmptyView()
+                    }
+                }.padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .foregroundColor(.white)
+                    )
+            }.animation(.default, value: state.status)
+        }
+    }
+
+    private var isEmptyContent: Bool {
+        switch state.status {
+        case
+            is Feature.StateStatusProcessing,
+            is Feature.StateStatusLoading,
+            is Feature.StateStatusLoaded:
+
+            return true
+
+        default:
+            return false
         }
     }
 
@@ -53,7 +72,6 @@ struct RequestConsultationOverlay: View {
 
             return true
 
-        case is Feature.StateStatusLoading, is Feature.StateStatusLoaded: fallthrough
         default:
             return false
         }

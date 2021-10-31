@@ -35,7 +35,7 @@ struct LoginScreen: View {
                     .edgesIgnoringSafeArea(.all)
             )
             if state.processing {
-                InactiveOverlay()
+                InactiveOverlay.withActivityIndicator()
             }
         }
     }

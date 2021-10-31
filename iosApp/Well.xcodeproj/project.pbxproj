@@ -41,7 +41,6 @@
 		4A570D4E2642760200569A40 /* R.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51625602503C945009E103B /* R.generated.swift */; };
 		4A6ABABB270F45B900D8621E /* Napier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6ABABA270F45B900D8621E /* Napier.swift */; };
 		4A6ABABF270F544D00D8621E /* HorizontalCapsule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6ABABE270F544D00D8621E /* HorizontalCapsule.swift */; };
-		4A74DC7B270B71B900737206 /* Pods_Well.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8560B869390C33CC211DA86 /* Pods_Well.framework */; };
 		4A82800E2725EBFB004DF64E /* LocalTestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82800D2725EBFB004DF64E /* LocalTestApp.swift */; };
 		4A8280102725EBFB004DF64E /* VideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82800F2725EBFB004DF64E /* VideoView.swift */; };
 		4A82801B2725EDAB004DF64E /* ExpertsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F0A09B2578AC4D002A55DB /* ExpertsScreen.swift */; };
@@ -124,6 +123,7 @@
 		7555FF7F242A565900829871 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF7E242A565900829871 /* AppDelegate.swift */; };
 		7555FF85242A565B00829871 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF84242A565B00829871 /* Assets.xcassets */; };
 		7555FF8B242A565B00829871 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF89242A565B00829871 /* LaunchScreen.storyboard */; };
+		75D63E01AB55D9F29B093AE6 /* Pods_Well.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8560B869390C33CC211DA86 /* Pods_Well.framework */; };
 		96351CB235DE05363561861E /* AppleProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96351D2E86F38ED05C0FAA14 /* AppleProvider.swift */; };
 		D5680316263831A500CFE16B /* HasApply.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD57825249E1900A94FCC /* HasApply.swift */; };
 		D5680319263831A500CFE16B /* Bundle+displayName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5BFD57E2524B0AB00A94FCC /* Bundle+displayName.swift */; };
@@ -298,7 +298,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4A74DC7B270B71B900737206 /* Pods_Well.framework in Frameworks */,
+				75D63E01AB55D9F29B093AE6 /* Pods_Well.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -709,8 +709,6 @@
 			dependencies = (
 			);
 			name = LocalTest;
-			packageProductDependencies = (
-			);
 			productName = LocalTest;
 			productReference = 4A82800B2725EBFB004DF64E /* LocalTest.app */;
 			productType = "com.apple.product-type.application";
@@ -732,8 +730,6 @@
 			dependencies = (
 			);
 			name = Well;
-			packageProductDependencies = (
-			);
 			productName = well;
 			productReference = 7555FF7B242A565900829871 /* Well_D.app */;
 			productType = "com.apple.product-type.application";
@@ -767,8 +763,6 @@
 				Base,
 			);
 			mainGroup = 7555FF72242A565900829871;
-			packageReferences = (
-			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1337,6 +1331,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Well/Supporting files/Well.entitlements";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FACEBOOK_APP_ID = "$(SHARED_FACEBOOK_APP_ID)";
+				FACEBOOK_CLIENT_TOKEN = "$(SHARED_FACEBOOK_CLIENT_TOKEN)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/R.swift.Library\"",
@@ -1430,6 +1425,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "Well/Supporting files/Well.entitlements";
 				FACEBOOK_APP_ID = "$(SHARED_FACEBOOK_APP_ID)";
+				FACEBOOK_CLIENT_TOKEN = "$(SHARED_FACEBOOK_CLIENT_TOKEN)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/R.swift.Library\"",

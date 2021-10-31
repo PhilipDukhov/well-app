@@ -85,7 +85,7 @@ struct MyProfileScreen: View {
                             }
                         }
                         if state.editingStatus == .uploading {
-                            InactiveOverlay(showActivityIndicator: false)
+                            InactiveOverlay()
                         }
                     }.sheet(isPresented: $editingRating) {
                         state.user.map { user in

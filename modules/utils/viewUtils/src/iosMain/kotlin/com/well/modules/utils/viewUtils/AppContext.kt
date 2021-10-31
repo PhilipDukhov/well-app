@@ -10,7 +10,7 @@ actual data class AppContext(
     val rootController: UIViewController,
     val application: UIApplication,
     val launchOptions: Map<Any?, Any>?,
-    val cacheImage: (ImageContainer, NSURL) -> Unit
+    val cacheImage: (ImageContainer, NSURL) -> Unit,
 ) {
     actual val permissionsHandlerContext: PermissionHandlerContext
         get() = PermissionHandlerContext()
