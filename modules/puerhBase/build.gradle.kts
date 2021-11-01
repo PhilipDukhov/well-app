@@ -13,6 +13,7 @@ kotlin {
         val commonMain by getting {
             libDependencies(
                 ":modules:atomic",
+                ":modules:utils:kotlinUtils",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",
                 "shared.napier",

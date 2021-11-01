@@ -27,6 +27,7 @@ libDependencies(
     ":modules:androidWebrtc",
     ":modules:annotations",
     ":modules:models",
+    ":modules:utils:viewUtils",
     ":modules:features:more",
     ":modules:features:welcome",
     ":modules:features:myProfile:myProfileFeature",

@@ -176,7 +176,6 @@ ext.iosExportItems = [
 ]
 ext.forceApiModules = [
     ":modules:atomic",
-    ":modules:utils:viewUtils",
     ":modules:models",
     ":modules:puerhBase",
 ]

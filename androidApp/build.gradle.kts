@@ -25,12 +25,13 @@ libDependencies(
     "kotlin.coroutines.core",
     "kotlin.reflect",
 
+    ":sharedMobile",
+    ":modules:androidUi",
+    ":modules:androidWebrtc",
+    ":modules:utils:viewUtils",
     ":modules:features:login:loginFeature",
     ":modules:features:login:loginHandlers",
     ":modules:features:call:callFeature",
-    ":modules:androidUi",
-    ":modules:androidWebrtc",
-    ":sharedMobile",
 )
 
 android {

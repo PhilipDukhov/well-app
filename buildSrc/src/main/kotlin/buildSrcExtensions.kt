@@ -82,8 +82,8 @@ fun KotlinSourceSet.libDependencies(libs: List<String>) =
                         }
                         is Dependency.Module -> {
                             @Suppress("UNCHECKED_CAST")
-                            val forceApiModules =
-                                project.properties["forceApiModules"] as List<String>
+                            val forceApiModules = project
+                                .properties["forceApiModules"] as List<String>
                             it.name.let { name ->
                                 project(name).let { dep ->
                                     if (forceApiModules.contains(name)) {
