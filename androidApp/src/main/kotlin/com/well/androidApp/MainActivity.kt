@@ -1,15 +1,16 @@
 package com.well.androidApp
 
-import com.well.modules.androidWebrtc.WebRtcManager
 import com.well.modules.androidUi.composableScreens.TopLevelScreen
 import com.well.modules.androidUi.theme.Theme
+import com.well.modules.androidWebrtc.WebRtcManager
 import com.well.modules.features.login.loginHandlers.credentialProviders.providerGenerator
-import com.well.modules.utils.viewUtils.AppContext
-import com.well.sharedMobile.TopLevelFeature
-import com.well.modules.utils.viewUtils.napier.NapierProxy
 import com.well.modules.puerhBase.FeatureProvider
+import com.well.modules.utils.viewUtils.AppContext
+import com.well.modules.utils.viewUtils.napier.NapierProxy
+import com.well.sharedMobile.TopLevelFeature
 import com.well.sharedMobile.featureProvider.createFeatureProvider
 import com.well.sharedMobile.handleActivityResult
+import com.well.sharedMobile.handleOnNewIntent
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
@@ -17,7 +18,6 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.google.accompanist.insets.ProvideWindowInsets
-import com.well.sharedMobile.handleOnNewIntent
 
 class MainActivity : AppCompatActivity() {
     init {

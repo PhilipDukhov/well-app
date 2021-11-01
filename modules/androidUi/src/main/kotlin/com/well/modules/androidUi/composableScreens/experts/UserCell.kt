@@ -1,11 +1,10 @@
 package com.well.modules.androidUi.composableScreens.experts
 
-import com.well.modules.androidUi.R
-import com.well.modules.androidUi.theme.captionLight
 import com.well.modules.androidUi.customViews.ProfileImage
 import com.well.modules.androidUi.customViews.RatingInfoView
 import com.well.modules.androidUi.customViews.ToggleFavoriteButton
 import com.well.modules.androidUi.ext.toColor
+import com.well.modules.androidUi.theme.captionLight
 import com.well.modules.models.Color
 import com.well.modules.models.User
 import com.well.modules.utils.viewUtils.countryCodes.countryName
@@ -26,7 +25,6 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 private val padding = 16.dp

@@ -42,9 +42,6 @@ android {
     buildFeatures {
         compose = true
     }
-    compileOptions {
-        isCoreLibraryDesugaringEnabled = true
-    }
     composeOptions {
         kotlinCompilerExtensionVersion = project.version("compose")
     }
@@ -81,6 +78,7 @@ android {
                 listOf(
                     "project_id" to dotEnv["GOOGLE_PROJECT_ID"],
                     "facebook_app_id" to dotEnv.facebookAppId,
+                    "facebook_client_token" to dotEnv["SHARED_FACEBOOK_CLIENT_TOKEN"],
                     "fb_login_protocol_scheme" to "fb${dotEnv.facebookAppId}",
                     "gcm_defaultSenderId" to dotEnv.googleAppId,
                     "google_app_id" to "1:${dotEnv.googleAppId}:android:23b05b40100225534c61a4",

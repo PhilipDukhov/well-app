@@ -79,9 +79,11 @@ class NetworkManager(
             while (startWebSocket) {
                 try {
                     _state.value = Connecting
+                    Napier.i("Connecting")
                     client.ws("/mainWebSocket") {
                         webSocketSession = this
                         _state.value = Connected
+                        Napier.i("Connected")
                         for (string in incoming) {
                             Napier.i("websocket msg: $string")
                             _webSocketMsgSharedFlow.emit(

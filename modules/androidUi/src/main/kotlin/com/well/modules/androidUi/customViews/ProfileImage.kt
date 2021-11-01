@@ -15,22 +15,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 
-@Suppress("NAME_SHADOWING")
 @Composable
 fun ProfileImage(
     user: User?,
     modifier: Modifier = Modifier,
     squareCircleShaped: Boolean = true,
     contentScale: ContentScale = ContentScale.Crop,
-) = ProfileImage(
-    image = user?.profileImage(),
-    modifier = modifier,
-    initials = user?.initials,
-    squareCircleShaped = squareCircleShaped,
-    contentScale = contentScale,
-)
+) {
+    ProfileImage(
+        image = user?.profileImage(),
+        modifier = modifier,
+        initials = user?.initials,
+        squareCircleShaped = squareCircleShaped,
+        contentScale = contentScale,
+    )
+}
 
-@Suppress("NAME_SHADOWING")
 @Composable
 fun ProfileImage(
     image: SharedImage?,
@@ -38,28 +38,31 @@ fun ProfileImage(
     initials: String? = null,
     squareCircleShaped: Boolean = true,
     contentScale: ContentScale = ContentScale.Crop,
-) = if (squareCircleShaped) {
-    modifier
-        .clip(CircleShape)
-        .aspectRatio(1F)
-} else {
-    modifier
-}.let { modifier ->
-    image?.let {
+) {
+    val contentModifier = if (squareCircleShaped) {
+        modifier
+            .clip(CircleShape)
+            .aspectRatio(1F)
+    } else {
+        modifier
+    }
+    if (image != null) {
         LoadingCoilImage(
-            it.coilDataAny,
-            modifier,
+            image.coilDataAny,
+            contentModifier,
             contentScale,
         )
-    } ?: BoxWithConstraints(
-        contentAlignment = Alignment.Center,
-        modifier = modifier.backgroundKMM(Color.LightGray)
-    ) {
-        initials?.let { initials ->
-            FillFullSizeText(
-                text = initials,
-                baseStyle = MaterialTheme.typography.body2,
-            )
+    } else {
+        BoxWithConstraints(
+            contentAlignment = Alignment.Center,
+            modifier = contentModifier.backgroundKMM(Color.LightGray)
+        ) {
+            initials?.let { initials ->
+                FillFullSizeText(
+                    text = initials,
+                    baseStyle = MaterialTheme.typography.body2,
+                )
+            }
         }
     }
 }

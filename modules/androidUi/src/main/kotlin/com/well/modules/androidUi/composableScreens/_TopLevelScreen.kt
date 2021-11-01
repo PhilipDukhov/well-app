@@ -57,9 +57,9 @@ fun TopLevelScreen(
                     Screen(screen[state.selectedTab].screen, listener)
                 }
                 BottomNavigation(
-                    modifier = Modifier
-                        .navigationBarsPadding(),
                     backgroundColor = Color.White.toColor(),
+                    modifier = Modifier
+                        .navigationBarsPadding()
                 ) {
                     screen.tabs.forEach { tabScreen ->
                         BottomNavigationItem(

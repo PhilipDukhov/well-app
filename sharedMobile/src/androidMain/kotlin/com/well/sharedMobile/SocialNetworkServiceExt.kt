@@ -1,13 +1,13 @@
 package com.well.sharedMobile
 
 import com.well.modules.puerhBase.FeatureProvider
-import android.content.Intent
 import com.well.sharedMobile.featureProvider.FeatureProviderImpl
+import android.content.Intent
 
 fun FeatureProvider<TopLevelFeature.Msg, TopLevelFeature.State>.handleActivityResult(
     requestCode: Int,
     resultCode: Int,
-    data: Intent?
+    data: Intent?,
 ) = (this as FeatureProviderImpl).run {
     socialNetworkService
         .credentialProviders
@@ -16,7 +16,7 @@ fun FeatureProvider<TopLevelFeature.Msg, TopLevelFeature.State>.handleActivityRe
 }
 
 fun FeatureProvider<TopLevelFeature.Msg, TopLevelFeature.State>.handleOnNewIntent(
-    data: Intent?
+    data: Intent?,
 ) = (this as FeatureProviderImpl).run {
     socialNetworkService
         .credentialProviders

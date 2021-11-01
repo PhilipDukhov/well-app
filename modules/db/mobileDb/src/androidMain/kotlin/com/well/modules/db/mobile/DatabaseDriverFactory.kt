@@ -13,6 +13,6 @@ internal actual class DatabaseDriverFactory actual constructor(private val appCo
         )
 
     actual fun deleteDatabase(filename: String) {
-        TODO()
+        appContext.androidContext.deleteDatabase(filename)
     }
 }
