@@ -49,6 +49,7 @@ kotlin {
                 ":modules:utils:kotlinUtils",
                 ":modules:networking",
                 ":modules:features:login:loginHandlers",
+                ":modules:features:myProfile:myProfileHandlers",
                 ":modules:features:call:callHandlers",
                 ":modules:features:chatList:chatListHandlers",
                 ":modules:features:experts:expertsHandlers",

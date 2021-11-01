@@ -3,7 +3,7 @@ package com.well.modules.androidUi.composableScreens.myProfile
 import com.well.modules.androidUi.customViews.ControlItem
 import com.well.modules.androidUi.customViews.NavigationBar
 import com.well.modules.androidUi.customViews.clearFocusOnKeyboardDismiss
-import com.well.modules.features.myProfile.MyProfileFeature.Msg
+import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Msg
 import com.well.modules.utils.viewUtils.UIEditingField
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*

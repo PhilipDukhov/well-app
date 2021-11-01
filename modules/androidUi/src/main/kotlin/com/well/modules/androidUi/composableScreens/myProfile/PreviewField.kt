@@ -5,7 +5,7 @@ import com.well.modules.androidUi.customViews.ActionButton
 import androidx.compose.foundation.Image
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.models.Color
-import com.well.modules.features.myProfile.UIPreviewField
+import com.well.modules.features.myProfile.myProfileFeature.UIPreviewField
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer

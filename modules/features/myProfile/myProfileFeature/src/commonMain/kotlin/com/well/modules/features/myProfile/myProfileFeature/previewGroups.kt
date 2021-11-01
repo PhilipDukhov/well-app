@@ -1,7 +1,7 @@
-package com.well.modules.features.myProfile
+package com.well.modules.features.myProfile.myProfileFeature
 
-import com.well.modules.models.date.Date
 import com.well.modules.models.User
+import com.well.modules.models.date.Date
 import com.well.modules.models.formatters.DateFormatter
 import com.well.modules.models.formatters.format
 import com.well.modules.utils.kotlinUtils.spacedUppercaseName

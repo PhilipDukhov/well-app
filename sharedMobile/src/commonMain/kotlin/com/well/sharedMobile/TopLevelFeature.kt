@@ -16,7 +16,7 @@ import com.well.modules.features.login.loginFeature.LoginFeature
 import com.well.modules.features.more.MoreFeature
 import com.well.modules.features.more.about.AboutFeature
 import com.well.modules.features.more.support.SupportFeature
-import com.well.modules.features.myProfile.MyProfileFeature
+import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.features.welcome.WelcomeFeature
 import com.well.modules.utils.viewUtils.Alert

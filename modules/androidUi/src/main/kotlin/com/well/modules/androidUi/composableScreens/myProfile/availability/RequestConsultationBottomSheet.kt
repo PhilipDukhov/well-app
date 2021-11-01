@@ -7,12 +7,12 @@ import com.well.modules.androidUi.customViews.clickable
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.borderKMM
 import com.well.modules.androidUi.ext.toColor
-import com.well.modules.features.myProfile.currentUserAvailability.RequestConsultationFeature.Msg
-import com.well.modules.features.myProfile.currentUserAvailability.RequestConsultationFeature.State
+import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.RequestConsultationFeature.Msg
+import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.RequestConsultationFeature.State
 import com.well.modules.models.Availability
 import com.well.modules.models.Color
 import com.well.modules.models.date.dateTime.localizedDayAndShortMonth
-import com.well.modules.features.myProfile.currentUserAvailability.RequestConsultationFeature as Feature
+import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.RequestConsultationFeature as Feature
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope

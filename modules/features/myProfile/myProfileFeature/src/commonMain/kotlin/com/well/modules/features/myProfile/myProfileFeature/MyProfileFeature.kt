@@ -1,7 +1,7 @@
-package com.well.modules.features.myProfile
+package com.well.modules.features.myProfile.myProfileFeature
 
-import com.well.modules.features.myProfile.MyProfileFeature.State.EditingStatus
-import com.well.modules.features.myProfile.currentUserAvailability.RequestConsultationFeature
+import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.State.EditingStatus
+import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.RequestConsultationFeature
 import com.well.modules.models.FavoriteSetter
 import com.well.modules.models.Rating
 import com.well.modules.models.RatingRequest
@@ -15,7 +15,7 @@ import com.well.modules.utils.viewUtils.UrlUtil
 import com.well.modules.utils.viewUtils.currentTimeZoneIdentifier
 import com.well.modules.utils.viewUtils.sharedImage.ImageContainer
 import com.well.modules.utils.viewUtils.sharedImage.profileImage
-import com.well.modules.features.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature as AvailabilitiesListFeature
+import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.CurrentUserAvailabilitiesListFeature as AvailabilitiesListFeature
 import io.github.aakira.napier.Napier
 
 object MyProfileFeature {
@@ -30,15 +30,26 @@ object MyProfileFeature {
     fun initialState(
         isCurrent: Boolean,
         uid: UserId,
-    ) = State(
+    ) = initialState(
         isCurrent = isCurrent,
         uid = uid,
+        user = null,
     )
 
     fun initialState(
         isCurrent: Boolean,
         user: User,
-    ) = user.run {
+    ) = initialState(
+        isCurrent = isCurrent,
+        uid = user.id,
+        user = user,
+    )
+
+    private fun initialState(
+        isCurrent: Boolean,
+        uid: UserId,
+        user: User?,
+    ) = user?.run {
         if (user.initialized)
             this
         else
@@ -48,11 +59,11 @@ object MyProfileFeature {
     }.let {
         State(
             isCurrent = isCurrent,
-            uid = user.id,
+            uid = uid,
             originalUser = it,
             user = it,
-            editingStatus = if (!isCurrent || user.initialized) EditingStatus.Preview else EditingStatus.Editing,
-            availabilityState = if (isCurrent && user.initialized) AvailabilitiesListFeature.State() else null,
+            editingStatus = if (!isCurrent || user?.initialized != false) EditingStatus.Preview else EditingStatus.Editing,
+            availabilityState = if (isCurrent && user?.initialized != false) AvailabilitiesListFeature.State() else null,
         )
     }
 

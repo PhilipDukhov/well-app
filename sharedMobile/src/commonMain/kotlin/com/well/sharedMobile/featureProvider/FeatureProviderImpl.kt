@@ -23,7 +23,7 @@ import com.well.modules.features.login.loginHandlers.credentialProviders.OAuthCr
 import com.well.modules.features.more.MoreFeature
 import com.well.modules.features.more.about.AboutFeature
 import com.well.modules.features.more.support.SupportFeature
-import com.well.modules.features.myProfile.MyProfileFeature
+import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.features.userChat.userChatHandlers.UserChatEffHandler
 import com.well.modules.features.welcome.WelcomeFeature
@@ -61,7 +61,7 @@ internal class FeatureProviderImpl(
     private val appContext: AppContext,
     val webRtcManagerGenerator: (List<String>, WebRtcManagerI.Listener) -> WebRtcManagerI,
     providerGenerator: (SocialNetwork, AppContext, WebAuthenticator) -> CredentialProvider,
-): Feature<Msg, TopLevelFeature.State, Eff> by SyncFeature(
+) : Feature<Msg, TopLevelFeature.State, Eff> by SyncFeature(
     TopLevelFeature.initialState(),
     TopLevelFeature.initialEffects(),
     TopLevelFeature::reducer,

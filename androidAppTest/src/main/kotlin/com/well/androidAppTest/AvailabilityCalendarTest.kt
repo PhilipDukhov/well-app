@@ -3,7 +3,7 @@ package com.well.androidAppTest
 import androidx.compose.runtime.Composable
 
 import com.well.modules.androidUi.composableScreens.myProfile.availability.CurrentUserAvailabilityView
-import com.well.modules.features.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature
+import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.CurrentUserAvailabilitiesListFeature
 import com.well.sharedMobileTest.testState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.mutableStateOf

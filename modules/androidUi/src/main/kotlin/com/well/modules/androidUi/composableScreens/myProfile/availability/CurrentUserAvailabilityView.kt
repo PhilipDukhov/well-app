@@ -7,8 +7,8 @@ import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.thenOrNull
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.androidUi.theme.body1Light
-import com.well.modules.features.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature.Msg
-import com.well.modules.features.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature.State
+import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.CurrentUserAvailabilitiesListFeature.Msg
+import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.CurrentUserAvailabilitiesListFeature.State
 import com.well.modules.models.Availability
 import com.well.modules.models.Color
 import com.well.modules.models.date.dateTime.localizedDayAndShortMonth

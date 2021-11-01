@@ -1,4 +1,4 @@
-package com.well.modules.features.myProfile.currentUserAvailability
+package com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability
 
 import com.well.modules.models.Availability
 import com.well.modules.models.date.dateTime.daysShift

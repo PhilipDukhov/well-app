@@ -1,7 +1,7 @@
-package com.well.modules.features.myProfile
+package com.well.modules.features.myProfile.myProfileFeature
 
+import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Msg
 import com.well.modules.models.User
-import com.well.modules.features.myProfile.MyProfileFeature.Msg
 import com.well.modules.utils.viewUtils.UIEditingField
 import com.well.modules.utils.viewUtils.timeZonesIdentifiersList
 

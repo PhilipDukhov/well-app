@@ -2,12 +2,12 @@ package com.well.sharedMobileTest
 
 import com.well.modules.models.Availability
 import com.well.modules.puerhBase.ReducerViewModel
-import com.well.modules.features.myProfile.MyProfileFeature
-import com.well.modules.features.myProfile.MyProfileFeature.Eff
-import com.well.modules.features.myProfile.MyProfileFeature.Msg
-import com.well.modules.features.myProfile.MyProfileFeature.State
-import com.well.modules.features.myProfile.currentUserAvailability.CurrentUserAvailabilitiesListFeature
-import com.well.modules.features.myProfile.currentUserAvailability.RequestConsultationFeature
+import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature
+import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Eff
+import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Msg
+import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.State
+import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.CurrentUserAvailabilitiesListFeature
+import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.RequestConsultationFeature
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

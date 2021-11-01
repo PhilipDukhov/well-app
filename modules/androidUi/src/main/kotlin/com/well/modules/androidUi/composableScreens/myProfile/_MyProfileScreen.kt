@@ -12,12 +12,12 @@ import com.well.modules.androidUi.customViews.ToggleFavoriteButton
 import com.well.modules.androidUi.ext.findRoot
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.androidUi.ext.visibility
-import com.well.modules.features.myProfile.MyProfileFeature.Msg
-import com.well.modules.features.myProfile.MyProfileFeature.State
-import com.well.modules.features.myProfile.UIGroup
+import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Msg
+import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.State
+import com.well.modules.features.myProfile.myProfileFeature.UIGroup
 import com.well.modules.models.Color
 import com.well.modules.models.User
-import com.well.modules.features.myProfile.MyProfileFeature as Feature
+import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature as Feature
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable

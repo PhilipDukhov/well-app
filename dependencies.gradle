@@ -163,7 +163,7 @@ ext.iosExportItems = [
     "kotlin.datetime",
     ":modules:features:more",
     ":modules:features:welcome",
-    ":modules:features:myProfile",
+    ":modules:features:myProfile:myProfileFeature",
     ":modules:features:login:loginFeature",
     ":modules:features:call:callFeature",
     ":modules:features:chatList:chatListFeature",

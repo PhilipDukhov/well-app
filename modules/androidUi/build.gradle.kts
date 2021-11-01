@@ -29,7 +29,7 @@ libDependencies(
     ":modules:models",
     ":modules:features:more",
     ":modules:features:welcome",
-    ":modules:features:myProfile",
+    ":modules:features:myProfile:myProfileFeature",
     ":modules:features:call:callFeature",
     ":modules:features:login:loginFeature",
     ":modules:features:chatList:chatListFeature",
