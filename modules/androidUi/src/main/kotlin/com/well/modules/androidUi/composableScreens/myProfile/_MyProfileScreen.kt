@@ -9,6 +9,7 @@ import com.well.modules.androidUi.customViews.ModeledNavigationBar
 import com.well.modules.androidUi.customViews.ProfileImage
 import com.well.modules.androidUi.customViews.RatingInfoView
 import com.well.modules.androidUi.customViews.ToggleFavoriteButton
+import com.well.modules.androidUi.ext.findRoot
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.androidUi.ext.visibility
 import com.well.modules.features.myProfile.MyProfileFeature.Msg
@@ -24,6 +25,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -34,6 +36,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -44,6 +48,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.ChatBubble
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,9 +58,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.navigationBarsWithImePadding
+import com.google.accompanist.insets.LocalWindowInsets
 
 // ColumnScope unused
 @Suppress("unused")
@@ -173,12 +181,32 @@ private fun Content(
     ) {
         val paddingModifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
         Box {
+            val density = LocalDensity.current
+            val bottomIme = with(density) { LocalWindowInsets.current.ime.bottom.toDp() }
+            val (editingIndex, updateEditingIndex) = remember { mutableStateOf<Int?>(null) }
+            var bottomOffsetInRoot by remember { mutableStateOf(0.dp) }
+            val bottomOffset = remember(bottomIme, bottomOffsetInRoot) {
+                (bottomIme - bottomOffsetInRoot).coerceAtLeast(0.dp)
+            }
+            val lazyState = rememberLazyListState()
+            if (editingIndex != null) {
+                LaunchedEffect(editingIndex, bottomOffset) {
+                    lazyState.animateScrollToItem(editingIndex)
+                }
+            }
             LazyColumn(
+                state = lazyState,
+                contentPadding = PaddingValues(bottom = bottomOffset),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .navigationBarsWithImePadding()
+                    .onGloballyPositioned {
+                        bottomOffsetInRoot = with(density) {
+                            (it.findRoot().size.height - it.boundsInRoot().bottom)
+                                .toDp()
+                        }
+                    }
             ) {
-                state.groups.forEach { group ->
+                state.groups.forEachIndexed { groupIndex, group ->
                     when (group) {
                         is UIGroup.Preview -> {
                             items(group.fields) { field ->
@@ -186,11 +214,33 @@ private fun Content(
                             }
                         }
                         is UIGroup.Editing -> {
-                            items(group.fields) { field ->
+                            itemsIndexed(group.fields) { fieldIndex, field ->
                                 EditingField(
                                     field,
                                     listener,
-                                    onTextInputEditingHandler = setRightItemBeforeAction,
+                                    onTextInputEditingHandler = { action ->
+                                        setRightItemBeforeAction(action)
+                                        updateEditingIndex(
+                                            action?.let { _ ->
+                                                fieldIndex + state
+                                                    .groups
+                                                    .subList(0, groupIndex)
+                                                    .sumOf {
+                                                        1 + when (it) {
+                                                            is UIGroup.Preview -> {
+                                                                it.fields.count()
+                                                            }
+                                                            is UIGroup.Editing -> {
+                                                                it.fields.count()
+                                                            }
+                                                            is UIGroup.Header -> {
+                                                                1
+                                                            }
+                                                        }
+                                                    }
+                                            }
+                                        )
+                                    },
                                     showModalContent = showModalContent,
                                     modifier = paddingModifier,
                                 )

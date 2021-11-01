@@ -24,8 +24,6 @@ struct MyProfileScreen: View {
     var body: some View {
         VStack(spacing: 0) {
             content
-        }.onAppear {
-            listener(Feature.MsgRequestConsultation())
         }
         .partialSheet(
             item: state.requestConsultationState,

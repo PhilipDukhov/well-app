@@ -9,18 +9,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -126,3 +122,13 @@ fun Modifier.thenOrNull(other: Modifier?) = other?.let { then(it) } ?: this
 fun Dp.toPx(density: Density) = with(density) { toPx() }
 
 val DisplayMetrics.widthDp get() = (widthPixels / density).dp
+
+fun LayoutCoordinates.findRoot(): LayoutCoordinates {
+    var root = this
+    var parent = root.parentLayoutCoordinates
+    while (parent != null) {
+        root = parent
+        parent = root.parentLayoutCoordinates
+    }
+    return root
+}
