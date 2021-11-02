@@ -70,9 +70,9 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.insets.navigationBarsPadding
 import kotlinx.datetime.LocalDate
 
-private sealed class PresentingDialog {
-    data class Create(val date: LocalDate) : PresentingDialog()
-    data class Update(val availability: Availability) : PresentingDialog()
+private sealed interface PresentingDialog {
+    data class Create(val date: LocalDate) : PresentingDialog
+    data class Update(val availability: Availability) : PresentingDialog
 }
 
 @Composable

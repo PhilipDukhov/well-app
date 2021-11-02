@@ -1,11 +1,10 @@
 package com.well.modules.features.call.callFeature.webRtc
 
-import com.well.modules.models.date.Date
+import com.well.modules.features.call.callFeature.CallFeature
 import com.well.modules.models.Path
 import com.well.modules.models.Size
+import com.well.modules.models.date.Date
 import com.well.modules.models.prepareToDebug
-import com.well.modules.features.call.callFeature.CallFeature
-import com.well.modules.features.call.callFeature.webRtc.RemoteDeviceState
 import kotlinx.serialization.Serializable
 
 @Serializable

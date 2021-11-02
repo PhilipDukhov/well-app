@@ -58,10 +58,10 @@ object AboutFeature {
         object Back : Msg()
     }
 
-    sealed class Eff {
-        data class OpenLink(val link: String) : Eff()
-//        data class Push(val screen: MoreScreenState) : Eff()
-        object Back : Eff()
+    sealed interface Eff {
+        data class OpenLink(val link: String) : Eff
+//        data class Push(val screen: MoreScreenState) : Eff
+        object Back : Eff
     }
 
     fun reducer(

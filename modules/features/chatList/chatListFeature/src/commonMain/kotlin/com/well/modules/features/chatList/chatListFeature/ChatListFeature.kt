@@ -29,8 +29,8 @@ object ChatListFeature {
         data class UpdateItems(val listItems: List<State.ListItem>) : Msg()
     }
 
-    sealed class Eff {
-        data class SelectChat(val uid: UserId) : Eff()
+    sealed interface Eff {
+        data class SelectChat(val uid: UserId) : Eff
     }
 
     fun reducer(

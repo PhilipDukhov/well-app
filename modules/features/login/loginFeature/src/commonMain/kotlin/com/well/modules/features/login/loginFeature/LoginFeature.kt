@@ -20,8 +20,8 @@ object LoginFeature {
         object LoginAttemptFinished : Msg()
     }
 
-    sealed class Eff {
-        data class Login(val socialNetwork: SocialNetwork) : Eff()
+    sealed interface Eff {
+        data class Login(val socialNetwork: SocialNetwork) : Eff
     }
 
     fun reducer(

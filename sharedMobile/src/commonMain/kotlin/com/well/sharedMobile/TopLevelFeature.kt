@@ -79,14 +79,14 @@ object TopLevelFeature {
             is Screen.Tabs -> currentScreen.tabs.first { it.tab == selectedTab }.screen
         }
 
-        sealed class Screen {
-            data class Tabs(val tabs: List<TabScreen>) : Screen() {
+        sealed interface Screen {
+            data class Tabs(val tabs: List<TabScreen>) : Screen {
                 operator fun get(tab: Tab): TabScreen = tabs.first { it.tab == tab }
 
                 data class TabScreen(val tab: Tab, val screen: ScreenState)
             }
 
-            data class Single(val screen: ScreenState) : Screen()
+            data class Single(val screen: ScreenState) : Screen
         }
 
         override fun toString() =
@@ -149,6 +149,7 @@ object TopLevelFeature {
         object SystemBack : Eff
         object Initial : Eff
         data class TopScreenUpdated(val screen: ScreenState) : Eff
+
     }
 
     internal fun reducer(

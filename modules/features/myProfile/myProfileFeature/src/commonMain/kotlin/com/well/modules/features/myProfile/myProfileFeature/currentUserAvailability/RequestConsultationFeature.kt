@@ -43,11 +43,11 @@ object RequestConsultationFeature {
         ) : Msg()
     }
 
-    sealed class Eff {
-        object Update : Eff()
-        data class Book(val availability: Availability) : Eff()
-        data class Close(val timeoutMillis: Long = 0) : Eff()
-        data class ClearFailedState(val timeoutMillis: Long = 2000) : Eff()
+    sealed interface Eff {
+        object Update : Eff
+        data class Book(val availability: Availability) : Eff
+        data class Close(val timeoutMillis: Long = 0) : Eff
+        data class ClearFailedState(val timeoutMillis: Long = 2000) : Eff
     }
 
     fun reducer(

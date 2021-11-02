@@ -184,28 +184,27 @@ object MyProfileFeature {
         data class RequestConsultationMsg(val msg: RequestConsultationFeature.Msg) : Msg()
     }
 
-    sealed class Eff {
-        data class InitiateImageUpdate(val hasImage: Boolean) : Eff()
-        data class OpenUrl(val url: String) : Eff()
+    sealed interface Eff {
+        data class InitiateImageUpdate(val hasImage: Boolean) : Eff
+        data class OpenUrl(val url: String) : Eff
         data class UploadUser(
             val user: User,
             val newProfileImage: ImageContainer?,
-        ) : Eff()
+        ) : Eff
 
-        data class ShowError(val throwable: Throwable) : Eff()
-        data class Call(val user: User) : Eff()
-        data class Message(val uid: UserId) : Eff()
-        data class RatingRequest(val ratingRequest: com.well.modules.models.RatingRequest) :
-            Eff()
+        data class ShowError(val throwable: Throwable) : Eff
+        data class Call(val user: User) : Eff
+        data class Message(val uid: UserId) : Eff
+        data class RatingRequest(val ratingRequest: com.well.modules.models.RatingRequest) : Eff
 
-        object Back : Eff()
-        object InitializationFinished : Eff()
-        object Logout : Eff()
-        object BecomeExpert : Eff()
-        data class SetUserFavorite(val setter: FavoriteSetter) : Eff()
-        data class AvailabilityEff(val eff: AvailabilitiesListFeature.Eff) : Eff()
-        data class RequestConsultationEff(val eff: RequestConsultationFeature.Eff) : Eff()
-        object CloseConsultationRequest : Eff()
+        object Back : Eff
+        object InitializationFinished : Eff
+        object Logout : Eff
+        object BecomeExpert : Eff
+        data class SetUserFavorite(val setter: FavoriteSetter) : Eff
+        data class AvailabilityEff(val eff: AvailabilitiesListFeature.Eff) : Eff
+        data class RequestConsultationEff(val eff: RequestConsultationFeature.Eff) : Eff
+        object CloseConsultationRequest : Eff
     }
 
     fun reducer(

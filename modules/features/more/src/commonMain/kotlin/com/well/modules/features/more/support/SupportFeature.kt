@@ -17,9 +17,9 @@ object SupportFeature {
         object Back : Msg()
     }
 
-    sealed class Eff {
-        data class Send(val text: String) : Eff()
-        object Back : Eff()
+    sealed interface Eff {
+        data class Send(val text: String) : Eff
+        object Back : Eff
     }
 
     fun reducer(

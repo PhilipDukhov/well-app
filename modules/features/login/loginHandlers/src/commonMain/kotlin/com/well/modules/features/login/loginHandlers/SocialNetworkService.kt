@@ -1,7 +1,7 @@
 package com.well.modules.features.login.loginHandlers
 
-import com.well.modules.features.login.loginFeature.AuthCredential
-import com.well.modules.features.login.loginFeature.AuthCredential.*
+import com.well.modules.features.login.loginFeature.credentialProvider.AuthCredential
+import com.well.modules.features.login.loginFeature.credentialProvider.AuthCredential.*
 import com.well.modules.features.login.loginHandlers.credentialProviders.CredentialProvider
 import com.well.modules.atomic.AtomicMutableMap
 import com.well.modules.features.login.loginFeature.SocialNetwork

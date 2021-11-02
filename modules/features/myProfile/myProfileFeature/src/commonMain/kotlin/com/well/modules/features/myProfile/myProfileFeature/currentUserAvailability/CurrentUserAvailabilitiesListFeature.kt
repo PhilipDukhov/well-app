@@ -94,10 +94,10 @@ object CurrentUserAvailabilitiesListFeature {
         data class SetAvailabilities(val availabilities: List<Availability>) : Msg()
     }
 
-    sealed class Eff {
-        data class Add(val availability: Availability) : Eff()
-        data class Remove(val availabilityId: AvailabilityId) : Eff()
-        data class Update(val availability: Availability) : Eff()
+    sealed interface Eff {
+        data class Add(val availability: Availability) : Eff
+        data class Remove(val availabilityId: AvailabilityId) : Eff
+        data class Update(val availability: Availability) : Eff
     }
 
     fun reducer(

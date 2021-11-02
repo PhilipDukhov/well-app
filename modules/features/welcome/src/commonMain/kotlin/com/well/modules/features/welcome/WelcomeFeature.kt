@@ -16,8 +16,8 @@ object WelcomeFeature {
         object Continue : Msg()
     }
 
-    sealed class Eff {
-        object Continue : Eff()
+    sealed interface Eff {
+        object Continue : Eff
     }
 
     fun reducer(

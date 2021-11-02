@@ -14,12 +14,12 @@ import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
 actual class ImageContainer(private val content: Content) : SharedImage() {
-    sealed class Content {
-        data class Bitmap(val bitmap: android.graphics.Bitmap) : Content()
+    sealed interface Content {
+        data class Bitmap(val bitmap: android.graphics.Bitmap) : Content
         data class Uri(
             val uri: android.net.Uri,
-            val context: Context
-        ) : Content() {
+            val context: Context,
+        ) : Content {
             fun inputStream(): InputStream = context.contentResolver.openInputStream(uri)!!
         }
     }

@@ -57,9 +57,9 @@ struct AvailabilityEditView: View {
             view: {
                 Content(state: $0, listener: $1, onCancel: onCancel)
             },
-            effHandler: { (eff: Feature.Eff) in
+            effHandler: { (eff: CreateAvailabilityFeatureEff) in
                 switch eff {
-                case let eff as Feature.EffSave:
+                case let eff as CreateAvailabilityFeatureEffSave:
                     onFinish(eff.availability)
                     
                 default: break

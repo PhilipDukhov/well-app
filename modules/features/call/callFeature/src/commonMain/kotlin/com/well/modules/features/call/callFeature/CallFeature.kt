@@ -1,9 +1,9 @@
 package com.well.modules.features.call.callFeature
 
-import com.well.modules.models.date.Date
-import com.well.modules.models.date.secondsSinceNow
-import com.well.modules.features.call.callFeature.CallFeature.State.Status.*
-import com.well.modules.features.call.callFeature.drawing.DrawingFeature.State as DrawingState
+import com.well.modules.features.call.callFeature.CallFeature.State.Status.Calling
+import com.well.modules.features.call.callFeature.CallFeature.State.Status.Connecting
+import com.well.modules.features.call.callFeature.CallFeature.State.Status.Incoming
+import com.well.modules.features.call.callFeature.CallFeature.State.Status.Ongoing
 import com.well.modules.features.call.callFeature.drawing.DrawingFeature
 import com.well.modules.features.call.callFeature.drawing.DrawingFeature.copyClear
 import com.well.modules.features.call.callFeature.webRtc.LocalDeviceState
@@ -12,11 +12,14 @@ import com.well.modules.models.Size
 import com.well.modules.models.User
 import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMsg
+import com.well.modules.models.date.Date
+import com.well.modules.models.date.secondsSinceNow
 import com.well.modules.puerhBase.plus
-import com.well.modules.utils.viewUtils.nativeFormat
-import com.well.modules.utils.kotlinUtils.toFilterNotNull
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
+import com.well.modules.utils.kotlinUtils.toFilterNotNull
+import com.well.modules.utils.viewUtils.nativeFormat
+import com.well.modules.features.call.callFeature.drawing.DrawingFeature.State as DrawingState
 
 object CallFeature {
     fun callingStateAndEffects(user: User) =
@@ -136,17 +139,17 @@ object CallFeature {
         data class DrawingMsg(val msg: DrawingFeature.Msg) : Msg()
     }
 
-    sealed class Eff {
-        data class Initiate(val userId: UserId) : Eff()
-        data class Accept(val incomingCall: WebSocketMsg.Back.IncomingCall) : Eff()
-        object End : Eff()
-        object ChooseViewPoint : Eff()
-        object SystemBack : Eff()
-        data class SyncLocalDeviceState(val localDeviceState: LocalDeviceState) : Eff()
-        data class NotifyLocalCaptureDimensionsChanged(val dimensions: Size) : Eff()
-        data class NotifyDeviceStateChanged(val deviceState: RemoteDeviceState) : Eff()
-        data class NotifyUpdateViewPoint(val viewPoint: State.ViewPoint) : Eff()
-        data class DrawingEff(val eff: DrawingFeature.Eff) : Eff()
+    sealed interface Eff {
+        data class Initiate(val userId: UserId) : Eff
+        data class Accept(val incomingCall: WebSocketMsg.Back.IncomingCall) : Eff
+        object End : Eff
+        object ChooseViewPoint : Eff
+        object SystemBack : Eff
+        data class SyncLocalDeviceState(val localDeviceState: LocalDeviceState) : Eff
+        data class NotifyLocalCaptureDimensionsChanged(val dimensions: Size) : Eff
+        data class NotifyDeviceStateChanged(val deviceState: RemoteDeviceState) : Eff
+        data class NotifyUpdateViewPoint(val viewPoint: State.ViewPoint) : Eff
+        data class DrawingEff(val eff: DrawingFeature.Eff) : Eff
     }
 
     fun reducer(

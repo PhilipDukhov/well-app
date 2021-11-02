@@ -13,9 +13,9 @@ object SignupFeature {
         object SignIn : Msg()
     }
 
-    sealed class Eff {
-        data class Create(val info: SignupInfo) : Eff()
-        object SignIn : Eff()
+    sealed interface Eff {
+        data class Create(val info: SignupInfo) : Eff
+        object SignIn : Eff
     }
 
     fun reducer(

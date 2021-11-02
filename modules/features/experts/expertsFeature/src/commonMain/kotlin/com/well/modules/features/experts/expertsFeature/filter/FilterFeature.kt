@@ -50,8 +50,8 @@ object FilterFeature {
         object Show : Msg()
     }
 
-    sealed class Eff {
-        data class Show(val usersFilter: UsersFilter) : Eff()
+    sealed interface Eff {
+        data class Show(val usersFilter: UsersFilter) : Eff
     }
 
     fun reducer(

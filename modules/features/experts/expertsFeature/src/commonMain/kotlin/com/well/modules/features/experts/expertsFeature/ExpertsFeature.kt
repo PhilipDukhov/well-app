@@ -48,12 +48,12 @@ object ExpertsFeature {
         object Reload : Msg()
     }
 
-    sealed class Eff {
-        data class SelectedUser(val user: User) : Eff()
-        data class CallUser(val user: User) : Eff()
-        data class UpdateList(val filter: UsersFilter) : Eff()
-        data class SetUserFavorite(val setter: FavoriteSetter) : Eff()
-        data class FilterEff(val eff: FilterFeature.Eff) : Eff()
+    sealed interface Eff {
+        data class SelectedUser(val user: User) : Eff
+        data class CallUser(val user: User) : Eff
+        data class UpdateList(val filter: UsersFilter) : Eff
+        data class SetUserFavorite(val setter: FavoriteSetter) : Eff
+        data class FilterEff(val eff: FilterFeature.Eff) : Eff
     }
 
     fun reducer(

@@ -1,16 +1,17 @@
 package com.well.modules.features.call.callFeature.drawing
 
-import com.well.modules.models.*
+import com.well.modules.models.Color
+import com.well.modules.models.Path
+import com.well.modules.models.Point
+import com.well.modules.models.Size
 import com.well.modules.models.date.Date
 import com.well.modules.models.date.compareTo
-import com.well.modules.utils.viewUtils.sharedImage.ImageContainer
-import com.well.modules.utils.viewUtils.platform.Platform
-import com.well.modules.utils.viewUtils.platform.nativeScale
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
-import com.well.modules.utils.kotlinUtils.map
+import com.well.modules.utils.viewUtils.platform.Platform
+import com.well.modules.utils.viewUtils.platform.nativeScale
+import com.well.modules.utils.viewUtils.sharedImage.ImageContainer
 import kotlin.time.Duration
-import kotlin.time.measureTimedValue
 
 object DrawingFeature {
     data class State(
@@ -79,9 +80,9 @@ object DrawingFeature {
             }
         }
 
-        sealed class Brush {
-            object Pen : Brush()
-            object Eraser : Brush()
+        sealed interface Brush {
+            object Pen : Brush
+            object Eraser : Brush
         }
 
         fun notifyViewSizeUpdateEff() =
@@ -143,27 +144,27 @@ object DrawingFeature {
         data class LocalClear(val saveHistory: Boolean) : Msg()
         data class RemoteClear(
             val saveHistory: Boolean,
-            val date: Date
+            val date: Date,
         ) : Msg()
     }
 
-    sealed class Eff {
-        data class RequestImageUpdate(val alreadyHasImage: Boolean) : Eff()
-        data class NotifyViewSizeUpdate(val size: Size) : Eff()
-        object ClearImage : Eff()
+    sealed interface Eff {
+        data class RequestImageUpdate(val alreadyHasImage: Boolean) : Eff
+        data class NotifyViewSizeUpdate(val size: Size) : Eff
+        object ClearImage : Eff
         data class UploadImage(
             val image: ImageContainer,
-            val remoteViewSize: Size
-        ) : Eff()
+            val remoteViewSize: Size,
+        ) : Eff
 
         data class UploadPaths(
-            val paths: List<Path>
-        ) : Eff()
+            val paths: List<Path>,
+        ) : Eff
 
         data class NotifyClear(
             val saveHistory: Boolean,
-            val date: Date
-        ) : Eff()
+            val date: Date,
+        ) : Eff
     }
 
     fun reducer(

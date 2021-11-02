@@ -19,8 +19,8 @@ object MoreFeature {
         data class SelectItem(val item: State.Item) : Msg()
     }
 
-    sealed class Eff {
-        data class Push(val screen: MoreScreenState) : Eff()
+    sealed interface Eff {
+        data class Push(val screen: MoreScreenState) : Eff
     }
 
     @Suppress("UNREACHABLE_CODE")

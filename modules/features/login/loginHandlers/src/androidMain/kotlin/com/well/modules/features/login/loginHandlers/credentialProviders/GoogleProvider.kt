@@ -1,6 +1,6 @@
 package com.well.modules.features.login.loginHandlers.credentialProviders
 
-import com.well.modules.features.login.loginFeature.AuthCredential
+import com.well.modules.features.login.loginFeature.credentialProvider.AuthCredential
 import com.well.modules.utils.viewUtils.AppContext
 import com.well.sharedMobile.BuildKonfig
 import android.content.Intent

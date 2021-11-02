@@ -86,9 +86,9 @@ object CreateAvailabilityFeature {
         object Delete : Msg()
     }
 
-    sealed class Eff {
-        data class Save(val availability: Availability) : Eff()
-        object Delete : Eff()
+    sealed interface Eff {
+        data class Save(val availability: Availability) : Eff
+        object Delete : Eff
     }
 
     fun reducer(

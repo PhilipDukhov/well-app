@@ -33,8 +33,8 @@ object LoginOtpFeature {
         object SwitchMethod : Msg()
     }
 
-    sealed class Eff {
-        data class Send(val info: String, val method: State.Method) : Eff()
+    sealed interface Eff {
+        data class Send(val info: String, val method: State.Method) : Eff
     }
 
     fun reducer(
