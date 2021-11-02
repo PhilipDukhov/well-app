@@ -2,11 +2,13 @@ import org.codehaus.groovy.runtime.GStringImpl
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ModuleVersionSelector
+import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.add
 import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.getting
+import org.gradle.kotlin.dsl.support.delegates.ProjectDelegate
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
@@ -306,3 +308,11 @@ fun Project.subprojectsConfigurationsResolutionStrategy(strategies: Set<Resoluti
 }
 
 private fun ModuleVersionSelector.groupToName() = group to name
+
+fun RepositoryHandler.addSnapshots(uri: (Any) -> java.net.URI) {
+    if (executor == Executor.CocoapodsArm64Simulator) {
+        maven {
+            url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+        }
+    }
+}

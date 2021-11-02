@@ -16,6 +16,7 @@ enum class Executor {
     Cocoapods,
     CocoapodsArm64Simulator,
     Console,
+    // update other locations after adding/updating values
 }
 
 val executor = try {

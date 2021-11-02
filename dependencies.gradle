@@ -3,7 +3,7 @@ def iPhoneSimulator = false
 DataInputStream file
 try {
     file = (new File(projectDir.parent + '/local.properties')).newDataInputStream()
-} catch (Exception e) {
+} catch (Exception ignored) {
     file = project.rootProject.file('local.properties').newDataInputStream()
 }
 def properties = new Properties()
@@ -13,7 +13,7 @@ def material3 = properties.getProperty('material3') == "true"
 
 try {
     iPhoneSimulator = ext["kotlin.native.cocoapods.platform"] == "iphonesimulator"
-} catch (Exception e) {
+} catch (Exception ignored) {
 }
 
 def versions = [
@@ -22,7 +22,7 @@ def versions = [
     kotlinSerialization: "1.3.0",
     coil               : "1.4.0",
     kotlinCoroutines   : "1.5.2-native-mt",
-    ktor               : "1.6.4",
+    ktor               : "1.6.5",
     sqldelight         : "1.5.2",
     bouncycastle       : "1.69",
     aws                : "1.12.60",

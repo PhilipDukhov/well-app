@@ -6,6 +6,7 @@ enum class Executor {
     Cocoapods,
     CocoapodsArm64Simulator,
     Console,
+    // update other locations after adding/updating values
 }
 
 apply(from = "dependenciesResolver.gradle.kts")
