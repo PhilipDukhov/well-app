@@ -4,25 +4,33 @@ import com.well.modules.atomic.asCloseable
 import com.well.modules.db.users.getByIdsFlow
 import com.well.modules.db.users.insertOrReplace
 import com.well.modules.db.users.usersPresenceFlow
+import com.well.modules.features.chatList.chatListFeature.ChatListFeature
 import com.well.modules.features.chatList.chatListHandlers.ChatListEffHandler
+import com.well.modules.features.experts.expertsFeature.ExpertsFeature
 import com.well.modules.features.experts.expertsHandlers.ExpertsApiEffectHandler
 import com.well.modules.features.login.loginFeature.LoginFeature
 import com.well.modules.features.login.loginFeature.SocialNetwork
-import com.well.modules.features.myProfile.MyProfileFeature
+import com.well.modules.features.more.MoreFeature
+import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature
 import com.well.modules.models.AuthResponse
 import com.well.modules.models.User
+import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.networking.NetworkManager
 import com.well.modules.networking.combineToNetworkConnectedState
-import com.well.modules.networking.userReadableDescription
 import com.well.modules.puerhBase.EffectHandler
 import com.well.modules.puerhBase.adapt
 import com.well.modules.puerhBase.wrapWithEffectHandler
 import com.well.modules.utils.viewUtils.Alert
 import com.well.modules.utils.viewUtils.dataStore.AuthInfo
 import com.well.modules.utils.viewUtils.dataStore.authInfo
+import com.well.sharedMobile.FeatureEff
+import com.well.sharedMobile.FeatureMsg
 import com.well.sharedMobile.ScreenState
 import com.well.sharedMobile.TopLevelFeature
+import com.well.sharedMobile.TopLevelFeature.State.ScreenPosition
+import com.well.sharedMobile.TopLevelFeature.State.Tab
+import com.well.sharedMobile.createTab
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
@@ -37,10 +45,18 @@ internal suspend fun FeatureProviderImpl.socialNetworkLogin(
         gotAuthResponse(socialNetworkService.login(socialNetwork), listener)
     } catch (t: Throwable) {
         if (t !is CancellationException && t.message?.contains("com.well.modules.utils error 0") != true) {
-            listener.invoke(TopLevelFeature.Msg.ShowAlert(Alert.Error(t, Throwable::userReadableDescription)))
+            listener.invoke(TopLevelFeature.Msg.ShowAlert(Alert.Error.fixDescription(t)))
         }
     } finally {
-        listener.invoke(TopLevelFeature.Msg.LoginMsg(LoginFeature.Msg.LoginAttemptFinished))
+        listener.invoke(
+            FeatureMsg.Login(
+                msg = LoginFeature.Msg.LoginAttemptFinished,
+                position = ScreenPosition(
+                    tab = Tab.Login,
+                    index = 0
+                )
+            )
+        )
     }
 }
 
@@ -58,12 +74,10 @@ internal fun FeatureProviderImpl.gotAuthResponse(
                 sessionInfo = null
             })
         listener.invoke(
-            TopLevelFeature.Msg.Push(
-                ScreenState.MyProfile(
-                    MyProfileFeature.initialState(
-                        isCurrent = true,
-                        authResponse.user
-                    )
+            TopLevelFeature.Msg.PushMyProfile(
+                MyProfileFeature.initialState(
+                    isCurrent = true,
+                    authResponse.user
                 )
             )
         )
@@ -90,8 +104,16 @@ internal fun FeatureProviderImpl.loggedIn(
             usersDatabase,
             scope,
         ).adapt(
-            effAdapter = { (it as? TopLevelFeature.Eff.ExpertsEff)?.eff },
-            msgAdapter = { TopLevelFeature.Msg.ExpertsMsg(it) }
+            effAdapter = { (it as? FeatureEff.Experts)?.eff },
+            msgAdapter = {
+                FeatureMsg.Experts(
+                    msg = it,
+                    position = ScreenPosition(
+                        tab = Tab.Experts,
+                        index = 0
+                    )
+                )
+            }
         ),
         ChatListEffHandler(
             authInfo.id,
@@ -106,8 +128,16 @@ internal fun FeatureProviderImpl.loggedIn(
             messagesDatabase,
             scope,
         ).adapt(
-            effAdapter = { (it as? TopLevelFeature.Eff.ChatListEff)?.eff },
-            msgAdapter = { TopLevelFeature.Msg.ChatListMsg(it) }
+            effAdapter = { (it as? FeatureEff.ChatList)?.eff },
+            msgAdapter = {
+                FeatureMsg.ChatList(
+                    it,
+                    position = ScreenPosition(
+                        tab = Tab.ChatList,
+                        index = 0
+                    )
+                )
+            }
         ),
     )
     val webSocketListenerCloseable = coroutineScope.launch {
@@ -133,6 +163,32 @@ internal fun FeatureProviderImpl.logOut(listener: (TopLevelFeature.Msg) -> Unit)
     databaseManager.clear()
     listener.invoke(TopLevelFeature.Msg.OpenLoginScreen)
 }
+
+internal fun loggedInTabs(uid: UserId) = mapOf(
+    createTab(
+        Tab.MyProfile,
+        state = MyProfileFeature.initialState(
+            isCurrent = true,
+            uid = uid
+        ),
+        createScreen = ScreenState::MyProfile,
+    ),
+    createTab(
+        tab = Tab.Experts,
+        state = ExpertsFeature.initialState(),
+        createScreen = ScreenState::Experts,
+    ),
+    createTab(
+        tab = Tab.ChatList,
+        state = ChatListFeature.State(),
+        createScreen = ScreenState::ChatList,
+    ),
+    createTab(
+        tab = Tab.More,
+        state = MoreFeature.State(),
+        createScreen = ScreenState::More,
+    ),
+)
 
 private fun AuthResponse.toAuthInfo() = AuthInfo(token = token, id = user.id)
 

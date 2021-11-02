@@ -8,38 +8,24 @@ import com.well.sharedMobile.TopLevelFeature.State.Tab
 
 internal typealias ReducerResult = Pair<State, Set<Eff>>
 
-internal inline fun <reified R : ScreenState> Map<Tab, List<ScreenState>>.screenAndPositionOfTopOrNull(
-    state: State,
-): Pair<R, ScreenPosition>? {
-    keys.sortedBy { tab ->
-        state.selectedScreenPosition.tab != tab
-    }.forEach { tab ->
-        getValue(tab).withIndex().reversed().forEach {
-            val (index, screen) = it
-            if (screen is R) {
-                return screen to ScreenPosition(tab, index)
-            }
-        }
-    }
-    return null
-}
-
-internal fun State.copyReplace(
+internal fun<ChildState> State.copyReplace(
     tab: Tab = selectedScreenPosition.tab,
-    screen: ScreenState,
+    state: ChildState,
+    createScreen: (ScreenPosition, ChildState) -> ScreenState,
 ): State {
-    val (tabs, screenPosition) = tabs.replace(tab, screen)
+    val (tabs, screenPosition) = tabs.replace(tab, state, createScreen)
     return copy(
         tabs = tabs,
         selectedScreenPosition = screenPosition
     )
 }
 
-internal fun State.copyPush(
+internal fun<ChildState> State.copyPush(
     tab: Tab = selectedScreenPosition.tab,
-    screen: ScreenState,
+    state: ChildState,
+    createScreen: (ScreenPosition, ChildState) -> ScreenState,
 ): State {
-    val (tabs, screenPosition) = tabs.push(tab, screen)
+    val (tabs, screenPosition) = tabs.push(tab, state, createScreen)
     return copy(
         tabs = tabs,
         selectedScreenPosition = screenPosition
@@ -83,11 +69,12 @@ internal fun State.copyHideTab(
     )
 }
 
-private fun Map<Tab, List<ScreenState>>.push(
+private fun<ChildState> Map<Tab, List<ScreenState>>.push(
     tab: Tab,
-    screen: ScreenState,
+    state: ChildState,
+    createScreen: (ScreenPosition, ChildState) -> ScreenState,
 ) = modify(tab) {
-    it + screen
+    it + createScreen(ScreenPosition(tab = tab, index = it.indices.last + 1), state)
 }
 
 private fun Map<Tab, List<ScreenState>>.pop(
@@ -103,11 +90,12 @@ private fun Map<Tab, List<ScreenState>>.popToRoot(
     listOf(it.first())
 }
 
-private fun Map<Tab, List<ScreenState>>.replace(
+private fun<ChildState> Map<Tab, List<ScreenState>>.replace(
     tab: Tab,
-    screen: ScreenState,
+    state: ChildState,
+    createScreen: (ScreenPosition, ChildState) -> ScreenState,
 ) = modify(tab) {
-    it.dropLast(1) + screen
+    it.dropLast(1) + createScreen(ScreenPosition(tab = tab, index = it.indices.last), state)
 }
 
 private fun Map<Tab, List<ScreenState>>.modify(
@@ -145,3 +133,15 @@ internal fun <T : ScreenState> Map<Tab, List<ScreenState>>.copy(
 }
 
 internal fun State.reduceScreenChanged() = this toSetOf Eff.TopScreenUpdated(topScreen)
+
+internal fun<State, SS: ScreenState> createTab(tab: Tab, state: State, createScreen: (ScreenPosition, State) -> SS) =
+    tab to listOf(
+        createScreen(ScreenPosition(tab, index = 0), state)
+    )
+
+internal fun <Eff, FE : FeatureEff> Set<Eff>.mapTo(
+    featureEff: (Eff, ScreenPosition) -> FE,
+    position: ScreenPosition,
+): Set<FE> = mapTo(HashSet()) {
+    featureEff(it, position)
+}

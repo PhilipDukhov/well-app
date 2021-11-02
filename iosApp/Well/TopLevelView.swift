@@ -20,10 +20,10 @@ struct TopLevelView: View {
     @ViewBuilder
     func content() -> some View {
         switch state.currentScreen {
-        case let screen as TopLevelFeature.StateScreenSingle:
+        case let screen as TopLevelFeatureStateScreenSingle:
             screenView(screen: screen.screen)
             
-        case let tabsScreen as TopLevelFeature.StateScreenTabs:
+        case let tabsScreen as TopLevelFeatureStateScreenTabs:
             TabView(selection: Binding<TopLevelFeature.StateTab>(get: {
                 state.selectedTab
             }, set: { tab in
@@ -54,52 +54,52 @@ struct TopLevelView: View {
             
         case let state as ScreenState.Welcome:
             WelcomeScreen(state: state.state) {
-                listener(TopLevelFeature.MsgWelcomeMsg(msg: $0))
+                listener(state.mapMsgToTopLevel(msg: $0))
             }
 
         case let state as ScreenState.Login:
             LoginScreen(state: state.state) {
-                listener(TopLevelFeature.MsgLoginMsg(msg: $0))
+                listener(state.mapMsgToTopLevel(msg: $0))
             }
 
         case let state as ScreenState.MyProfile:
             MyProfileScreen(state: state.state) {
-                listener(TopLevelFeature.MsgMyProfileMsg(msg: $0))
+                listener(state.mapMsgToTopLevel(msg: $0))
             }
 
         case let state as ScreenState.Experts:
             ExpertsScreen(state: state.state) {
-                listener(TopLevelFeature.MsgExpertsMsg(msg: $0))
+                listener(state.mapMsgToTopLevel(msg: $0))
             }
 
         case let state as ScreenState.Call:
             CallScreen(state: state.state) {
-                listener(TopLevelFeature.MsgCallMsg(msg: $0))
+                listener(state.mapMsgToTopLevel(msg: $0))
             }
 
         case let state as ScreenState.More:
             MoreScreen(state: state.state) {
-                listener(TopLevelFeature.MsgMoreMsg(msg: $0))
+                listener(state.mapMsgToTopLevel(msg: $0))
             }
 
         case let state as ScreenState.About:
             AboutScreen(state: state.state) {
-                listener(TopLevelFeature.MsgAboutMsg(msg: $0))
+                listener(state.mapMsgToTopLevel(msg: $0))
             }
 
         case let state as ScreenState.Support:
             SupportScreen(state: state.state) {
-                listener(TopLevelFeature.MsgSupportMsg(msg: $0))
+                listener(state.mapMsgToTopLevel(msg: $0))
             }
 
         case let state as ScreenState.ChatList:
             ChatListScreen(state: state.state) {
-                listener(TopLevelFeature.MsgChatListMsg(msg: $0))
+                listener(state.mapMsgToTopLevel(msg: $0))
             }
 
         case let state as ScreenState.UserChat:
             UserChatScreen(state: state.state) {
-                listener(TopLevelFeature.MsgUserChatMsg(msg: $0))
+                listener(state.mapMsgToTopLevel(msg: $0))
             }
 
         default:

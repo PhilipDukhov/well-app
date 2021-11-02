@@ -69,9 +69,10 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(
         requestCode: Int,
         resultCode: Int,
-        data: Intent?
+        data: Intent?,
     ) {
         if (!featureProvider.handleActivityResult(requestCode, resultCode, data)) {
+            @Suppress("DEPRECATION")
             super.onActivityResult(requestCode, resultCode, data)
         }
     }

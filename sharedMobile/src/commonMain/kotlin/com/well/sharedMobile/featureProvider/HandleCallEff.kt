@@ -2,41 +2,45 @@ package com.well.sharedMobile.featureProvider
 
 import com.well.modules.atomic.CloseableFuture
 import com.well.modules.atomic.freeze
+import com.well.modules.features.call.callFeature.CallFeature
+import com.well.modules.features.call.callFeature.drawing.DrawingFeature
+import com.well.modules.features.call.callHandlers.CallEffectHandler
 import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
-import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler
-import com.well.modules.utils.viewUtils.permissionsHandler.requestPermissions
+import com.well.modules.puerhBase.adapt
 import com.well.modules.puerhBase.addEffectHandler
 import com.well.modules.utils.viewUtils.Alert
 import com.well.modules.utils.viewUtils.SuspendAction
-import com.well.sharedMobile.TopLevelFeature
+import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler
+import com.well.modules.utils.viewUtils.permissionsHandler.requestPermissions
 import com.well.modules.utils.viewUtils.pickSystemImageSafe
-import com.well.modules.utils.viewUtils.showSheetThreadSafe
-import com.well.modules.features.call.callHandlers.CallEffectHandler
-import com.well.modules.features.call.callFeature.CallFeature
-import com.well.modules.features.call.callFeature.drawing.DrawingFeature
-import com.well.modules.puerhBase.adapt
 import com.well.modules.utils.viewUtils.sharedImage.ImageContainer
-import com.well.sharedMobile.TopLevelFeature.Msg as TopLevelMsg
+import com.well.modules.utils.viewUtils.showSheetThreadSafe
+import com.well.sharedMobile.FeatureEff
+import com.well.sharedMobile.FeatureMsg
+import com.well.sharedMobile.TopLevelFeature
 import com.well.modules.features.call.callFeature.CallFeature.Msg as CallMsg
 import com.well.modules.features.call.callFeature.drawing.DrawingFeature.Msg as DrawingMsg
+import com.well.sharedMobile.TopLevelFeature.Msg as TopLevelMsg
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 
 internal suspend fun FeatureProviderImpl.handleCallEff(
     eff: CallFeature.Eff,
     listener: (TopLevelMsg) -> Unit,
+    position: TopLevelFeature.State.ScreenPosition,
 ) {
     when (eff) {
         is CallFeature.Eff.NotifyDeviceStateChanged,
         is CallFeature.Eff.SyncLocalDeviceState,
         is CallFeature.Eff.NotifyUpdateViewPoint,
         is CallFeature.Eff.NotifyLocalCaptureDimensionsChanged,
-        CallFeature.Eff.SystemBack,
+        is CallFeature.Eff.SystemBack,
+        is CallFeature.Eff.DrawingEff,
         -> Unit
         is CallFeature.Eff.Initiate, is CallFeature.Eff.Accept -> {
             callCloseableContainer.addCloseableChild(
-                createWebRtcManagerHandler(eff).freeze()
+                createWebRtcManagerHandler(eff, position).freeze()
             )
         }
         is CallFeature.Eff.End -> {
@@ -48,40 +52,35 @@ internal suspend fun FeatureProviderImpl.handleCallEff(
         CallFeature.Eff.ChooseViewPoint -> {
             fun startDrawing(viewPoint: CallFeature.State.ViewPoint) =
                 listener(
-                    TopLevelMsg.CallMsg(
-                        CallMsg.LocalUpdateViewPoint(
-                            viewPoint
-                        )
+                    FeatureMsg.Call(
+                        CallMsg.LocalUpdateViewPoint(viewPoint),
+                        position = position,
                     )
                 )
             contextHelper.showSheetThreadSafe(
-                coroutineScope,
                 SuspendAction("Draw on image") {
                     val image = contextHelper.pickSystemImageSafe()
                     if (image != null) {
                         listener.invokeDrawingMsg(
-                            DrawingMsg.LocalUpdateImage(image.toImageContainer())
+                            DrawingMsg.LocalUpdateImage(image.toImageContainer()),
+                            position,
                         )
                     }
                 },
                 SuspendAction("Draw on your own camera") {
-                    startDrawing(
-                        CallFeature.State.ViewPoint.Mine
-                    )
+                    startDrawing(CallFeature.State.ViewPoint.Mine)
                 },
                 SuspendAction("Draw on your partners camera") {
-                    startDrawing(
-                        CallFeature.State.ViewPoint.Partner
-                    )
+                    startDrawing(CallFeature.State.ViewPoint.Partner)
                 },
             )
         }
-        is CallFeature.Eff.DrawingEff -> Unit
     }
 }
 
 private fun FeatureProviderImpl.createWebRtcManagerHandler(
     initiateEffect: CallFeature.Eff? = null,
+    position: TopLevelFeature.State.ScreenPosition,
 ) = CloseableFuture(coroutineScope) {
     addEffectHandler(
         CallEffectHandler(
@@ -101,8 +100,8 @@ private fun FeatureProviderImpl.createWebRtcManagerHandler(
         ).apply {
             initiateEffect?.let { handleEffect(it) }
         }.adapt(
-            effAdapter = { (it as? TopLevelFeature.Eff.CallEff)?.eff },
-            msgAdapter = { TopLevelMsg.CallMsg(it) }
+            effAdapter = { (it as? FeatureEff.Call)?.eff },
+            msgAdapter = { FeatureMsg.Call(it, position) }
         )
     )
 }
@@ -113,7 +112,6 @@ private suspend fun FeatureProviderImpl.handleRequestImageUpdate(
 ) {
     if (eff.alreadyHasImage) {
         contextHelper.showSheetThreadSafe(
-            coroutineScope,
             SuspendAction("Replace image") {
                 contextHelper.pickSystemImageSafe()?.let { updateImage(it.toImageContainer()) }
             },
@@ -150,12 +148,15 @@ internal suspend fun FeatureProviderImpl.handleCallPermissions() =
             it.second != PermissionsHandler.Result.Authorized
         }
 
-private fun ((TopLevelMsg) -> Unit).invokeDrawingMsg(msg: DrawingMsg) =
-    invoke(
-        TopLevelMsg.CallMsg(
+private fun ((TopLevelMsg) -> Unit).invokeDrawingMsg(
+    msg: DrawingMsg,
+    position: TopLevelFeature.State.ScreenPosition,
+) = invoke(
+        FeatureMsg.Call(
             CallMsg.DrawingMsg(
                 msg
-            )
+            ),
+            position
         )
     )
 

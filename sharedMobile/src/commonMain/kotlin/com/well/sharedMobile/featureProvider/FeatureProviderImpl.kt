@@ -46,6 +46,7 @@ import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler
 import com.well.modules.utils.viewUtils.platform.Platform
 import com.well.modules.utils.viewUtils.platform.isDebug
 import com.well.modules.utils.viewUtils.sharedImage.asByteArrayOptimizedForNetwork
+import com.well.sharedMobile.FeatureEff
 import com.well.sharedMobile.ScreenState
 import com.well.sharedMobile.TopLevelFeature
 import com.well.sharedMobile.TopLevelFeature.Eff
@@ -93,7 +94,7 @@ internal class FeatureProviderImpl(
     private val effectInterpreter: ExecutorEffectsInterpreter<Eff, Msg> =
         interpreter@{ eff, listener ->
             when (eff) {
-                is Eff.ChatListEff,
+                is FeatureEff.ChatList,
                 -> Unit
                 is Eff.ShowAlert -> {
                     if (eff.alert is Alert.Error) {
@@ -103,20 +104,19 @@ internal class FeatureProviderImpl(
                         contextHelper.showAlert(eff.alert)
                     }
                 }
-                is Eff.MyProfileEff -> handleMyProfileEff(eff.eff, listener)
-                is Eff.ExpertsEff -> when (eff.eff) {
+                is FeatureEff.MyProfile -> {
+                }
+                is FeatureEff.Experts -> when (eff.eff) {
                     is ExpertsFeature.Eff.UpdateList,
                     is ExpertsFeature.Eff.SetUserFavorite,
                     is ExpertsFeature.Eff.FilterEff,
                     -> Unit
                     is ExpertsFeature.Eff.SelectedUser -> {
                         listener.invoke(
-                            Msg.Push(
-                                ScreenState.MyProfile(
-                                    state = MyProfileFeature.initialState(
-                                        isCurrent = sessionInfo!!.uid == eff.eff.user.id,
-                                        user = eff.eff.user,
-                                    )
+                            Msg.PushMyProfile(
+                                MyProfileFeature.initialState(
+                                    isCurrent = sessionInfo!!.uid == eff.eff.user.id,
+                                    user = eff.eff.user,
                                 )
                             )
                         )
@@ -125,7 +125,9 @@ internal class FeatureProviderImpl(
                         handleCall(eff.eff.user, listener)
                     }
                 }
-                is Eff.CallEff -> handleCallEff(eff.eff, listener)
+                is FeatureEff.Call -> {
+                    handleCallEff(eff.eff, listener, eff.position)
+                }
                 Eff.Initial -> {
                     val authInfo = platform.dataStore.authInfo
                     if (authInfo != null) {
@@ -141,14 +143,14 @@ internal class FeatureProviderImpl(
                 Eff.SystemBack -> {
                     appContext.systemBack()
                 }
-                is Eff.LoginEff -> {
+                is FeatureEff.Login -> {
                     when (eff.eff) {
                         is LoginFeature.Eff.Login -> {
                             socialNetworkLogin(eff.eff.socialNetwork, listener)
                         }
                     }
                 }
-                is Eff.WelcomeEff -> {
+                is FeatureEff.Welcome -> {
                     when (eff.eff) {
                         WelcomeFeature.Eff.Continue -> {
 //                            platform.dataStore.welcomeShowed = true
@@ -156,7 +158,7 @@ internal class FeatureProviderImpl(
                         }
                     }
                 }
-                is Eff.AboutEff -> {
+                is FeatureEff.About -> {
                     when (eff.eff) {
                         AboutFeature.Eff.Back -> {
                             listener(Msg.Pop)
@@ -169,14 +171,14 @@ internal class FeatureProviderImpl(
 //                        }
                     }
                 }
-                is Eff.MoreEff -> {
+                is FeatureEff.More -> {
                     when (eff.eff) {
                         is MoreFeature.Eff.Push -> {
                             error("${eff.eff} should be handler in screen state")
                         }
                     }
                 }
-                is Eff.SupportEff -> {
+                is FeatureEff.Support -> {
                     when (eff.eff) {
                         SupportFeature.Eff.Back -> {
                             listener(Msg.Pop)
@@ -186,7 +188,7 @@ internal class FeatureProviderImpl(
                         }
                     }
                 }
-                is Eff.UserChatEff -> {
+                is FeatureEff.UserChat -> {
                     when (eff.eff) {
                         UserChatFeature.Eff.ChooseImage,
                         is UserChatFeature.Eff.MarkMessageRead,
@@ -201,12 +203,10 @@ internal class FeatureProviderImpl(
                         }
                         is UserChatFeature.Eff.OpenUserProfile -> {
                             listener(
-                                Msg.Push(
-                                    ScreenState.MyProfile(
-                                        state = MyProfileFeature.initialState(
-                                            isCurrent = false,
-                                            user = eff.eff.user,
-                                        )
+                                Msg.PushMyProfile(
+                                    MyProfileFeature.initialState(
+                                        isCurrent = false,
+                                        user = eff.eff.user,
                                     )
                                 )
                             )
@@ -223,7 +223,7 @@ internal class FeatureProviderImpl(
                                             .getByIdFlow(eff.screen.state.uid)
                                             .collect { user ->
                                                 listener(
-                                                    Msg.MyProfileMsg(
+                                                    eff.screen.mapMsgToTopLevel(
                                                         MyProfileFeature.Msg.RemoteUpdateUser(user)
                                                     )
                                                 )
@@ -259,8 +259,8 @@ internal class FeatureProviderImpl(
                                     messagesDatabase = messagesDatabase,
                                     coroutineScope = CoroutineScope(coroutineContext),
                                 ).adapt(
-                                    effAdapter = { (it as? Eff.UserChatEff)?.eff },
-                                    msgAdapter = { Msg.UserChatMsg(it) }
+                                    effAdapter = { (it as? FeatureEff.UserChat)?.eff },
+                                    msgAdapter = { eff.screen.mapMsgToTopLevel(it) }
                                 )
                             )
                         }

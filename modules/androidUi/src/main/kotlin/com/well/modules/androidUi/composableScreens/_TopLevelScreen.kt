@@ -116,34 +116,34 @@ private fun ColumnScope.Screen(screenState: ScreenState, listener: (Feature.Msg)
     when (screenState) {
         is ScreenState.Launch -> Unit
         is ScreenState.Welcome -> WelcomeScreen(screenState.state) {
-            listener(Feature.Msg.WelcomeMsg(it))
+            listener(screenState.mapMsgToTopLevel(it))
         }
         is ScreenState.Login -> LoginScreen(screenState.state) {
-            listener(Feature.Msg.LoginMsg(it))
+            listener(screenState.mapMsgToTopLevel(it))
         }
         is ScreenState.Experts -> ExpertsScreen(screenState.state) {
-            listener(Feature.Msg.ExpertsMsg(it))
+            listener(screenState.mapMsgToTopLevel(it))
         }
         is ScreenState.Call -> CallScreen(screenState.state) {
-            listener(Feature.Msg.CallMsg(it))
+            listener(screenState.mapMsgToTopLevel(it))
         }
         is ScreenState.MyProfile -> MyProfileScreen(screenState.state) {
-            listener(Feature.Msg.MyProfileMsg(it))
+            listener(screenState.mapMsgToTopLevel(it))
         }
         is ScreenState.More -> MoreScreen(screenState.state) {
-            listener(Feature.Msg.MoreMsg(it))
+            listener(screenState.mapMsgToTopLevel(it))
         }
         is ScreenState.About -> AboutScreen(screenState.state) {
-            listener(Feature.Msg.AboutMsg(it))
+            listener(screenState.mapMsgToTopLevel(it))
         }
         is ScreenState.Support -> SupportScreen(screenState.state) {
-            listener(Feature.Msg.SupportMsg(it))
+            listener(screenState.mapMsgToTopLevel(it))
         }
         is ScreenState.ChatList -> ChatListScreen(screenState.state) {
-            listener(Feature.Msg.ChatListMsg(it))
+            listener(screenState.mapMsgToTopLevel(it))
         }
         is ScreenState.UserChat -> UserChatScreen(screenState.state) {
-            listener(Feature.Msg.UserChatMsg(it))
+            listener(screenState.mapMsgToTopLevel(it))
         }
     }
 }

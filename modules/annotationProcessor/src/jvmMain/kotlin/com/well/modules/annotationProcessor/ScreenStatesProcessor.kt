@@ -36,7 +36,7 @@ class ScreenStatesProcessor : AbstractProcessor() {
 
     override fun process(
         annotations: MutableSet<out TypeElement>?,
-        roundEnv: RoundEnvironment?
+        roundEnv: RoundEnvironment?,
     ): Boolean {
         roundEnv?.getElementsAnnotatedWith(ScreenStates::class.java)?.forEach { element ->
             println("getElementsAnnotatedWith $element")
@@ -60,7 +60,10 @@ class ScreenStatesProcessor : AbstractProcessor() {
                     .file()
                     .writeTo(File(generatedSourcesRoot))
             } catch (t: Throwable) {
-                processingEnv.println(Kind.ERROR, "ContainerInfo(element, processingEnv) $t\n${t.stackTraceToString()}")
+                processingEnv.println(
+                    kind = Kind.ERROR,
+                    msg = "ContainerInfo(element, processingEnv) $t\n${t.stackTraceToString()}"
+                )
                 throw t
             }
         }
@@ -70,7 +73,7 @@ class ScreenStatesProcessor : AbstractProcessor() {
 
 fun ProcessingEnvironment.println(
     kind: Kind,
-    msg: String
+    msg: String,
 ) = messager.printMessage(kind, "$msg\r\n")
 
 class ContainerInfo(
@@ -81,10 +84,16 @@ class ContainerInfo(
     val setClassName = ClassName("kotlin.collections", "Set")
     val annotation = element.getAnnotation(ScreenStates::class.java)!!
     val packageName = processingEnv.elementUtils.getPackageOf(element).toString()
-    val screenStateName = "ScreenState"
     val containerFeatureClassName = ClassName(packageName, element.simpleName.toString())
+    val screenStateName = "ScreenState"
     val screenStateClassName = ClassName(packageName, screenStateName)
+    val featureMsgContainerName = "FeatureMsg"
+    val featureMsgContainerClassName = ClassName(packageName, featureMsgContainerName)
+    val featureEffContainerName = "FeatureEff"
+    val featureEffContainerClassName = ClassName(packageName, featureEffContainerName)
     val containerFeatureStateClassName = containerFeatureClassName.nestedClass("State")
+    val containerFeatureScreenPositionClassName =
+        containerFeatureStateClassName.nestedClass("ScreenPosition")
     val containerFeatureMsgClassName = containerFeatureClassName.nestedClass("Msg")
     val containerFeatureEffClassName = containerFeatureClassName.nestedClass("Eff")
     val reducerResultClassName = pairClassName.parameterizedBy(
@@ -110,6 +119,8 @@ class ContainerInfo(
 
     fun file() =
         FileSpec.builder(packageName, "ScreenState")
+            .addType(featureMsgInterface())
+            .addType(featureEffInterface())
             .addType(statesClass())
             .apply {
                 val reduceScreenMsgFuncBuilder =
@@ -118,7 +129,7 @@ class ContainerInfo(
                         .addParameter(
                             ParameterSpec.builder(
                                 "msg",
-                                containerFeatureMsgClassName
+                                featureMsgContainerClassName
                             ).build()
                         )
                         .addParameter(
@@ -141,18 +152,18 @@ class ContainerInfo(
                         )
                         .returns(reducerResultClassName.copy(nullable = true))
                         .addModifiers(KModifier.INTERNAL)
-                        .beginControlFlow("return when (state.topScreen)")
+                        .beginControlFlow("return when (val topScreen = state.topScreen)")
                 featureInfos
                     .forEach { featureInfo ->
                         val reducerFunc = featureInfo.featureReducerFunc()
                         addFunction(reducerFunc)
                         reduceScreenMsgFuncBuilder.addStatement(
-                            "is %T.${featureInfo.featureShortName}Msg -> ${reducerFunc.name}(msg.msg, state)",
-                            containerFeatureMsgClassName
+                            "is %T -> ${reducerFunc.name}(msg.position, msg.msg, state)",
+                            featureInfo.featureMsgContainerClassName
                         )
                         if (featureInfo.featureBackMsg != null) {
                             reduceBackMsgFuncBuilder.addStatement(
-                                "is %T.${featureInfo.featureShortName} -> ${reducerFunc.name}(%T, state)",
+                                "is %T.${featureInfo.featureShortName} -> ${reducerFunc.name}(topScreen.position, %T, state)",
                                 screenStateClassName,
                                 featureInfo.featureBackMsg,
                             )
@@ -160,7 +171,6 @@ class ContainerInfo(
                     }
                 addFunction(
                     reduceScreenMsgFuncBuilder
-                        .addStatement("else -> throw IllegalStateException()")
                         .endControlFlow()
                         .build()
                 )
@@ -173,7 +183,7 @@ class ContainerInfo(
                 addFunction(reduceScreenFunc())
             }
             .addAnnotation(
-                AnnotationSpec.suppressWarningTypes("RedundantVisibilityModifier")
+                AnnotationSpec.suppressWarningTypes("RedundantVisibilityModifier", "TrailingComma")
             )
             .build()
 
@@ -194,6 +204,12 @@ class ContainerInfo(
                     eff,
                 ).forEach(::addTypeVariable)
             }
+            .addParameter(
+                ParameterSpec.builder(
+                    "position",
+                    containerFeatureScreenPositionClassName
+                ).build()
+            )
             .addParameter(
                 ParameterSpec.builder(
                     "msg",
@@ -224,20 +240,22 @@ class ContainerInfo(
                     "effCreator",
                     LambdaTypeName.get(
                         returnType = containerFeatureEffClassName,
-                        parameters = arrayOf(eff),
+                        parameters = arrayOf(eff, containerFeatureScreenPositionClassName),
                     )
                 ).build()
             )
             .returns(reducerResultClassName)
             .addStatement(
                 """
-                val (screen, position) = state.tabs.screenAndPositionOfTopOrNull<SS>(state)
+                val screen = state.tabs[position.tab]?.getOrNull(position.index)
                     ?: run {
                         %T.e("reduceScreen ${'$'}msg | ${'$'}state")
                         return state.%T()
                     }
                 val (newScreenState, effs) = reducer(msg, screen.baseState as S)
-                val newEffs = effs.mapTo(HashSet(), effCreator)
+                val newEffs = effs.mapTo(HashSet()) {
+                    effCreator(it, position)
+                }
                 return state.changeScreen<SS>(position) {
                     baseCopy(newScreenState as Any) as SS
                 } to newEffs
@@ -250,6 +268,28 @@ class ContainerInfo(
             )
             .build()
     }
+
+    fun featureEffInterface() =
+        TypeSpec
+            .interfaceBuilder(featureEffContainerName)
+            .addModifiers(KModifier.SEALED, KModifier.INTERNAL)
+            .addSuperinterface(containerFeatureEffClassName)
+            .apply {
+                val sealedSubclasses = featureInfos.map { it.featureEffContainer() }
+                sealedSubclasses.forEach(::addType)
+            }
+            .build()
+
+    fun featureMsgInterface() =
+        TypeSpec
+            .classBuilder(featureMsgContainerName)
+            .addModifiers(KModifier.SEALED, KModifier.INTERNAL)
+            .superclass(containerFeatureMsgClassName)
+            .apply {
+                val sealedSubclasses = featureInfos.map { it.featureMsgContainer() }
+                sealedSubclasses.forEach(::addType)
+            }
+            .build()
 
     fun statesClass() =
         TypeSpec
@@ -270,6 +310,11 @@ class ContainerInfo(
                     .initializer("baseState")
                     .build()
             )
+            .addProperty(
+                PropertySpec.builder("position", containerFeatureScreenPositionClassName)
+                    .addModifiers(KModifier.INTERNAL, KModifier.ABSTRACT)
+                    .build()
+            )
             .addFunction(
                 FunSpec.baseCopy()
                     .addModifiers(KModifier.INTERNAL, KModifier.ABSTRACT)
@@ -285,11 +330,26 @@ class ContainerInfo(
 
     fun emptyStateType(
         name: String,
-        screenStateClassName: ClassName
+        screenStateClassName: ClassName,
     ) = TypeSpec
         .objectBuilder(name)
         .superclass(screenStateClassName)
         .addSuperclassConstructorParameter("Unit")
+        .addProperty(
+            PropertySpec.builder(
+                name = "position",
+                type = containerFeatureScreenPositionClassName
+            )
+                .addModifiers(KModifier.OVERRIDE, KModifier.INTERNAL)
+                .getter(
+                    FunSpec.getterBuilder()
+                        .addStatement(
+                            "return throw IllegalStateException()",
+                        )
+                        .build()
+                )
+                .build()
+        )
         .addFunction(
             FunSpec.baseCopy()
                 .addModifiers(KModifier.OVERRIDE)
@@ -326,27 +386,62 @@ class FeatureInfo(
     )
     val featureStateClassName = featureClassName.nestedClass("State")
     val featureMsgClassName = featureClassName.nestedClass("Msg")
+    val featureMsgContainerClassName =
+        containerInfo.featureMsgContainerClassName.nestedClass(featureShortName)
+    val featureEffContainerClassName =
+        containerInfo.featureEffContainerClassName.nestedClass(featureShortName)
     val featureEffClassName = featureClassName.nestedClass("Eff")
     val screenClassName = containerInfo.screenStateClassName.nestedClass(featureShortName)
-    val featureScreenState = processingEnv.elementUtils.getTypeElement("$featurePackage.${featureShortName}ScreenState")
+    val featureScreenState =
+        processingEnv.elementUtils.getTypeElement("$featurePackage.${featureShortName}ScreenState")
+
+    fun featureMsgContainer() =
+        TypeSpec
+            .classBuilder(featureShortName)
+            .superclass(containerInfo.featureMsgContainerClassName)
+            .dataClassConstructorParameters(
+                PropertyInfo(
+                    name = "msg",
+                    className = featureMsgClassName,
+                ),
+                PropertyInfo(
+                    name = "position",
+                    className = containerInfo.containerFeatureScreenPositionClassName,
+                ),
+            )
+            .build()
+
+    fun featureEffContainer() =
+        TypeSpec
+            .classBuilder(featureShortName)
+            .addSuperinterface(containerInfo.featureEffContainerClassName)
+            .dataClassConstructorParameters(
+                PropertyInfo(
+                    name = "eff",
+                    className = featureEffClassName,
+                ),
+                PropertyInfo(
+                    name = "position",
+                    className = containerInfo.containerFeatureScreenPositionClassName,
+                ),
+            )
+            .build()
 
     fun featureClass() =
         TypeSpec
             .classBuilder(featureShortName)
             .addModifiers(KModifier.DATA)
-            .primaryConstructor(
-                FunSpec.constructorBuilder()
-                    .addParameter(
-                        ParameterSpec.builder(
-                            "state",
-                            featureStateClassName
-                        ).build()
-                    ).build()
-            )
-            .addProperty(
-                PropertySpec.builder("state", featureStateClassName)
-                    .initializer("state")
-                    .build()
+            .dataClassConstructorParameters(
+                PropertyInfo(
+                    name = "position",
+                    className = containerInfo.containerFeatureScreenPositionClassName,
+                    KModifier.OVERRIDE, KModifier.INTERNAL,
+                ),
+                PropertyInfo(
+                    name = "state",
+                    className = featureStateClassName,
+                ),
+                modifiers = listOf(KModifier.INTERNAL),
             )
             .superclass(containerInfo.screenStateClassName)
             .addSuperclassConstructorParameter("state")
@@ -360,11 +455,27 @@ class FeatureInfo(
                     .returns(containerInfo.screenStateClassName)
                     .build()
             )
+            .addFunction(
+                FunSpec.builder("mapMsgToTopLevel")
+                    .addParameter(name = "msg", type = featureMsgClassName)
+                    .returns(containerInfo.containerFeatureMsgClassName)
+                    .addStatement(
+                        "return %T(msg = msg, position = position)",
+                        featureMsgContainerClassName
+                    )
+                    .build()
+            )
             .build()
 
     fun featureReducerFunc() =
         FunSpec
             .builder("reduce$featureShortName")
+            .addParameter(
+                ParameterSpec.builder(
+                    "position",
+                    containerInfo.containerFeatureScreenPositionClassName,
+                ).build()
+            )
             .addParameter(
                 ParameterSpec.builder(
                     "msg",
@@ -386,10 +497,11 @@ class FeatureInfo(
                     %T,
                     %T
                     >(
+                    position,
                     msg,
                     state,
                     %T::reducer,
-                    %T::${featureShortName}Eff
+                    %T::$featureShortName
                 ) 
                 """.trimIndent(),
                 screenClassName,
@@ -397,42 +509,46 @@ class FeatureInfo(
                 featureStateClassName,
                 featureEffClassName,
                 featureClassName,
-                containerInfo.containerFeatureEffClassName
+                containerInfo.featureEffContainerClassName
             )
             .apply {
                 if (featurePushEff != null) {
                     addStatement(
                         """
                         effs.mapNotNull {
-                            val pushEff = (it as? %1T.${featureShortName}Eff)?.eff as? %2T ?:
+                            val pushEff = (it as? %1T)?.eff as? %2T ?:
                             return@mapNotNull null
                             it to pushEff.screen
                         }.firstOrNull()
                             ?.%3T { pushEff, screen ->
-                                val mappedScreen = when (screen) {
+                                val finalState = when (screen) {
                         """.trimIndent(),
-                        containerInfo.containerFeatureEffClassName,
+                        featureEffContainerClassName,
                         featurePushEff,
                         containerInfo.letNamedClassName,
                     )
                     featureScreenState.enclosedElements
                         .filter { it.kind != ElementKind.CONSTRUCTOR }
                         .forEach { screenState ->
-                        addStatement(
-                            """
-                            is $screenState -> { 
-                                ScreenState.${screenState.simpleName}(screen.state)
-                            }
-                            """.trimIndent()
-                        )
-                    }
+                            addStatement(
+                                """
+                                is $screenState -> { 
+                                    newState.copyPush(
+                                        state = screen.state, 
+                                        createScreen = %L
+                                    )
+                                }
+                                """.trimIndent(),
+                                containerInfo.screenStateClassName.nestedClass(screenState.simpleName.toString()).constructorReference()
+                            )
+                        }
                     addStatement(
                         """
                                 }
-                                return newState.copyPush(screen = mappedScreen) to
+                                return finalState to
                                         effs.toMutableSet().apply {
                                             remove(pushEff)
-                                            add(%1T.TopScreenUpdated(mappedScreen))
+                                            add(%1T.TopScreenUpdated(finalState.topScreen))
                                         }
                             }
                         """.trimIndent(),

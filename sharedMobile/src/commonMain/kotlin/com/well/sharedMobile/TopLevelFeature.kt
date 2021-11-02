@@ -1,14 +1,6 @@
 package com.well.sharedMobile
 
 import com.well.modules.annotations.ScreenStates
-import com.well.modules.models.User
-import com.well.modules.models.UserId
-import com.well.modules.models.WebSocketMsg
-import com.well.modules.utils.kotlinUtils.spacedUppercaseName
-import com.well.modules.utils.kotlinUtils.map
-import com.well.modules.puerhBase.toSetOf
-import com.well.modules.puerhBase.withEmptySet
-import com.well.sharedMobile.TopLevelFeature.State.*
 import com.well.modules.features.call.callFeature.CallFeature
 import com.well.modules.features.chatList.chatListFeature.ChatListFeature
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature
@@ -19,7 +11,17 @@ import com.well.modules.features.more.support.SupportFeature
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.features.welcome.WelcomeFeature
+import com.well.modules.models.User
+import com.well.modules.models.UserId
+import com.well.modules.models.WebSocketMsg
+import com.well.modules.puerhBase.toSetOf
+import com.well.modules.puerhBase.withEmptySet
+import com.well.modules.utils.kotlinUtils.map
+import com.well.modules.utils.kotlinUtils.spacedUppercaseName
 import com.well.modules.utils.viewUtils.Alert
+import com.well.sharedMobile.TopLevelFeature.State.ScreenPosition
+import com.well.sharedMobile.TopLevelFeature.State.Tab
+import com.well.sharedMobile.featureProvider.loggedInTabs
 
 // remove build/tmp/kapt3 after updating features to refresh cache
 @ScreenStates(
@@ -50,10 +52,11 @@ object TopLevelFeature {
         Eff.Initial,
     )
 
-    data class State(
+    data class State internal constructor(
         internal val tabs: Map<Tab, List<ScreenState>>,
         internal val selectedScreenPosition: ScreenPosition,
     ) {
+        @Suppress("unused")
         val backButtonNeeded = selectedScreenPosition.index > 0
         val currentScreen = run {
             if (listOf(
@@ -89,12 +92,12 @@ object TopLevelFeature {
         override fun toString() =
             "State($currentScreen at $selectedScreenPosition; tabs=$tabs)"
 
-        fun <T : ScreenState> changeScreen(
+        internal fun <T : ScreenState> changeScreen(
             screenPosition: ScreenPosition,
             block: T.() -> T,
         ): State = copy(tabs = tabs.copy(screenPosition = screenPosition, block = block))
 
-        data class ScreenPosition(
+        internal data class ScreenPosition(
             val tab: Tab,
             val index: Int,
         )
@@ -124,17 +127,6 @@ object TopLevelFeature {
     }
 
     sealed class Msg {
-        data class CallMsg(val msg: CallFeature.Msg) : Msg()
-        data class WelcomeMsg(val msg: WelcomeFeature.Msg) : Msg()
-        data class MyProfileMsg(val msg: MyProfileFeature.Msg) : Msg()
-        data class LoginMsg(val msg: LoginFeature.Msg) : Msg()
-        data class ExpertsMsg(val msg: ExpertsFeature.Msg) : Msg()
-        data class ChatListMsg(val msg: ChatListFeature.Msg) : Msg()
-        data class MoreMsg(val msg: MoreFeature.Msg) : Msg()
-        data class AboutMsg(val msg: AboutFeature.Msg) : Msg()
-        data class SupportMsg(val msg: SupportFeature.Msg) : Msg()
-        data class UserChatMsg(val msg: UserChatFeature.Msg) : Msg()
-
         data class StartCall(val user: User) : Msg()
         data class IncomingCall(val incomingCall: WebSocketMsg.Back.IncomingCall) : Msg()
         object EndCall : Msg()
@@ -143,7 +135,7 @@ object TopLevelFeature {
 
         data class ShowAlert(val alert: Alert) : Msg()
         data class LoggedIn(val uid: UserId) : Msg()
-        data class Push(val screen: ScreenState) : Msg()
+        data class PushMyProfile(val myProfileState: MyProfileFeature.State) : Msg()
         data class SelectTab(val tab: Tab) : Msg()
         object OpenLoginScreen : Msg()
         object OpenWelcomeScreen : Msg()
@@ -152,22 +144,11 @@ object TopLevelFeature {
         object Pop : Msg()
     }
 
-    internal sealed class Eff {
-        data class ShowAlert(val alert: Alert) : Eff()
-        object SystemBack : Eff()
-        object Initial : Eff()
-        data class TopScreenUpdated(val screen: ScreenState) : Eff()
-
-        data class CallEff(val eff: CallFeature.Eff) : Eff()
-        data class MyProfileEff(val eff: MyProfileFeature.Eff) : Eff()
-        data class WelcomeEff(val eff: WelcomeFeature.Eff) : Eff()
-        data class LoginEff(val eff: LoginFeature.Eff) : Eff()
-        data class ExpertsEff(val eff: ExpertsFeature.Eff) : Eff()
-        data class ChatListEff(val eff: ChatListFeature.Eff) : Eff()
-        data class UserChatEff(val eff: UserChatFeature.Eff) : Eff()
-        data class MoreEff(val eff: MoreFeature.Eff) : Eff()
-        data class AboutEff(val eff: AboutFeature.Eff) : Eff()
-        data class SupportEff(val eff: SupportFeature.Eff) : Eff()
+    internal sealed interface Eff {
+        data class ShowAlert(val alert: Alert) : Eff
+        object SystemBack : Eff
+        object Initial : Eff
+        data class TopScreenUpdated(val screen: ScreenState) : Eff
     }
 
     internal fun reducer(
@@ -189,8 +170,11 @@ object TopLevelFeature {
             is Msg.Pop -> {
                 return@reducer state.reducePop()
             }
-            is Msg.Push -> {
-                return@reducer state.copyPush(screen = msg.screen).reduceScreenChanged()
+            is Msg.PushMyProfile -> {
+                return@reducer state.copyPush(
+                    state = msg.myProfileState,
+                    createScreen = ScreenState::MyProfile,
+                ).reduceScreenChanged()
             }
             is Msg.SelectTab -> {
                 return@reducer if (state.selectedScreenPosition.tab == msg.tab)
@@ -205,18 +189,7 @@ object TopLevelFeature {
             }
             is Msg.LoggedIn -> {
                 val newState = state.copy(
-                    tabs = mapOf(
-                        Tab.MyProfile to listOf(
-                            ScreenState.MyProfile(
-                                MyProfileFeature.initialState(
-                                    isCurrent = true, msg.uid
-                                )
-                            )
-                        ),
-                        Tab.Experts to listOf(ScreenState.Experts(ExpertsFeature.initialState())),
-                        Tab.ChatList to listOf(ScreenState.ChatList(ChatListFeature.State())),
-                        Tab.More to listOf(ScreenState.More(MoreFeature.State())),
-                    ),
+                    tabs = loggedInTabs(msg.uid),
                     selectedScreenPosition = ScreenPosition(Tab.Experts, 0),
                 )
                 return@reducer newState.reduceScreenChanged()
@@ -224,29 +197,24 @@ object TopLevelFeature {
             is Msg.IncomingCall -> {
                 val (callState, effs) = CallFeature.incomingStateAndEffects(msg.incomingCall)
                 return@reducer state.copyShowCall(callState) to
-                        effs.mapTo(HashSet(), Eff::CallEff)
+                        effs.mapTo(
+                            featureEff = FeatureEff::Call,
+                            position = ScreenPosition(tab = Tab.Overlay, index = 0)
+                        )
             }
             is Msg.StartCall -> {
                 return@reducer CallFeature.callingStateAndEffects(msg.user)
                     .map(
                         { state.copyShowCall(it) },
                         {
-                            it.map(Eff::CallEff)
-                                .toSet()
+                            it.mapTo(
+                                featureEff = FeatureEff::Call,
+                                position = ScreenPosition(tab = Tab.Overlay, index = 0)
+                            )
                         },
                     )
             }
-            is Msg.WelcomeMsg,
-            is Msg.LoginMsg,
-            is Msg.MyProfileMsg,
-            is Msg.ExpertsMsg,
-            is Msg.CallMsg,
-            is Msg.MoreMsg,
-            is Msg.AboutMsg,
-            is Msg.SupportMsg,
-            is Msg.ChatListMsg,
-            is Msg.UserChatMsg,
-            -> {
+            is FeatureMsg -> {
                 return@reducer reduceScreenMsg(msg, state)
             }
             is Msg.StopImageSharing -> {
@@ -258,25 +226,25 @@ object TopLevelFeature {
             Msg.OpenLoginScreen -> {
                 return@state state.copy(
                     tabs = mapOf(
-                        Tab.Login to listOf(
-                            ScreenState.Login(LoginFeature.State())
-                        ),
+                        createTab(Tab.Login, LoginFeature.State(), ScreenState::Login)
                     ),
                     selectedScreenPosition = ScreenPosition(Tab.Login, 0),
                 )
             }
             Msg.OpenWelcomeScreen -> {
-                return@state state.copyReplace(screen = ScreenState.Welcome(WelcomeFeature.State()))
+                return@state state.copyReplace(
+                    state = WelcomeFeature.State(),
+                    createScreen = ScreenState::Welcome
+                )
             }
             is Msg.OpenUserChat -> {
                 return@reducer state
                     .copyPush(
-                        screen = ScreenState.UserChat(
-                            UserChatFeature.State(
-                                peerId = msg.uid,
-                                backToUser = state.topScreen is ScreenState.UserChat,
-                            )
-                        )
+                        state = UserChatFeature.State(
+                            peerId = msg.uid,
+                            backToUser = state.topScreen is ScreenState.UserChat,
+                        ),
+                        createScreen = ScreenState::UserChat,
                     )
                     .reduceScreenChanged()
             }
@@ -286,7 +254,8 @@ object TopLevelFeature {
     private fun State.copyShowCall(callState: CallFeature.State): State =
         copyPush(
             Tab.Overlay,
-            ScreenState.Call(callState),
+            callState,
+            ScreenState::Call,
         )
 
     private fun State.copyHideOverlay(): State =
