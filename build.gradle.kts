@@ -12,7 +12,7 @@ buildscript {
         gradlePluginPortal()
         google()
         mavenCentral()
-        addSnapshots(::uri)
+        addSnapshots(::uri, project)
     }
 
     apply(from = "dependencies.gradle")
@@ -44,7 +44,7 @@ allprojects {
 
         google()
         mavenCentral()
-        addSnapshots(::uri)
+        addSnapshots(::uri, project)
 
         exclusiveContent {
             forRepository {

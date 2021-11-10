@@ -19,6 +19,7 @@ import com.well.modules.models.WebSocketMsg
 import com.well.modules.networking.NetworkManager
 import com.well.modules.networking.combineToNetworkConnectedState
 import com.well.modules.puerhBase.EffectHandler
+import com.well.modules.puerhBase.Listener
 import com.well.modules.puerhBase.adapt
 import com.well.modules.puerhBase.wrapWithEffectHandler
 import com.well.modules.utils.viewUtils.Alert
@@ -39,7 +40,7 @@ import kotlinx.coroutines.launch
 
 internal suspend fun FeatureProviderImpl.socialNetworkLogin(
     socialNetwork: SocialNetwork,
-    listener: (TopLevelFeature.Msg) -> Unit,
+    listener: Listener<TopLevelFeature.Msg>,
 ) {
     try {
         gotAuthResponse(socialNetworkService.login(socialNetwork), listener)
@@ -62,7 +63,7 @@ internal suspend fun FeatureProviderImpl.socialNetworkLogin(
 
 internal fun FeatureProviderImpl.gotAuthResponse(
     authResponse: AuthResponse,
-    listener: (TopLevelFeature.Msg) -> Unit,
+    listener: Listener<TopLevelFeature.Msg>,
 ) {
     val authInfo = authResponse.toAuthInfo()
     if (!authResponse.user.initialized) {
@@ -89,7 +90,7 @@ internal fun FeatureProviderImpl.gotAuthResponse(
 internal fun FeatureProviderImpl.loggedIn(
     authInfo: AuthInfo,
     user: User? = null,
-    listener: (TopLevelFeature.Msg) -> Unit,
+    listener: Listener<TopLevelFeature.Msg>,
 ) {
     sessionInfo = SessionInfo(authInfo.id)
     databaseManager.open()
@@ -97,8 +98,14 @@ internal fun FeatureProviderImpl.loggedIn(
     networkManager = NetworkManager(authInfo.token, startWebSocket = true, unauthorizedHandler = {
         logOut(listener)
     })
+    listener.invoke(TopLevelFeature.Msg.LoggedIn(authInfo.id))
     val scope = CoroutineScope(coroutineContext)
     val effectHandlers = listOf<EffectHandler<TopLevelFeature.Eff, TopLevelFeature.Msg>>(
+        createProfileEffHandler(
+            uid = authInfo.id,
+            position = ScreenPosition(tab = Tab.MyProfile, index = 0),
+            listener = listener,
+        ),
         ExpertsApiEffectHandler(
             networkManager,
             usersDatabase,
@@ -106,13 +113,7 @@ internal fun FeatureProviderImpl.loggedIn(
         ).adapt(
             effAdapter = { (it as? FeatureEff.Experts)?.eff },
             msgAdapter = {
-                FeatureMsg.Experts(
-                    msg = it,
-                    position = ScreenPosition(
-                        tab = Tab.Experts,
-                        index = 0
-                    )
-                )
+                FeatureMsg.Experts(msg = it)
             }
         ),
         ChatListEffHandler(
@@ -129,15 +130,7 @@ internal fun FeatureProviderImpl.loggedIn(
             scope,
         ).adapt(
             effAdapter = { (it as? FeatureEff.ChatList)?.eff },
-            msgAdapter = {
-                FeatureMsg.ChatList(
-                    it,
-                    position = ScreenPosition(
-                        tab = Tab.ChatList,
-                        index = 0
-                    )
-                )
-            }
+            msgAdapter = { FeatureMsg.ChatList(it) }
         ),
     )
     val webSocketListenerCloseable = coroutineScope.launch {
@@ -154,7 +147,6 @@ internal fun FeatureProviderImpl.loggedIn(
         scope.asCloseable(),
     )).forEach(sessionInfo!!::addCloseableChild)
     platform.dataStore.authInfo = authInfo
-    listener.invoke(TopLevelFeature.Msg.LoggedIn(authInfo.id))
 }
 
 internal fun FeatureProviderImpl.logOut(listener: (TopLevelFeature.Msg) -> Unit) {

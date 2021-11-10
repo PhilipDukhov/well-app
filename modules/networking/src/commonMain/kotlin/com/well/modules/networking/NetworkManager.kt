@@ -3,6 +3,8 @@ package com.well.modules.networking
 import com.well.modules.atomic.AtomicRef
 import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
+import com.well.modules.models.Availability
+import com.well.modules.models.AvailabilityId
 import com.well.modules.models.FavoriteSetter
 import com.well.modules.models.NetworkConstants
 import com.well.modules.models.RatingRequest
@@ -210,6 +212,21 @@ class NetworkManager(
         }
         return false
     }
+
+    suspend fun addAvailability(availability: Availability) {
+
+    }
+    suspend fun removeAvailability(availabilityId: AvailabilityId) {
+
+    }
+    suspend fun updateAvailability(availability: Availability) {
+
+    }
+    suspend fun book(availability: Availability) {
+
+    }
+    suspend fun getAvailabilities(userId: UserId): List<Availability> =
+        listOf()
 }
 
 private fun Throwable.toResponseException(): Throwable =

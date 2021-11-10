@@ -1,15 +1,22 @@
 package com.well.modules.puerhBase
 
-import com.well.modules.atomic.*
-import kotlinx.coroutines.*
+import com.well.modules.atomic.AtomicMutableList
+import com.well.modules.atomic.AtomicRef
+import com.well.modules.atomic.Closeable
+import com.well.modules.atomic.addListenerAndMakeCloseable
+import com.well.modules.atomic.notifyAll
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlin.coroutines.CoroutineContext
 
 class SyncFeature<Msg : Any, Model : Any, Eff : Any>(
     initialState: Model,
-    initialEffects: Set<Eff>,
     private val reducer: (Msg, Model) -> Pair<Model, Set<Eff>>,
-    override val coroutineContext: CoroutineContext
+    override val coroutineContext: CoroutineContext,
 ) : Feature<Msg, Model, Eff> {
     private val effectScope = CoroutineScope(Dispatchers.Default)
     private val reducerMutex = Mutex()
@@ -18,15 +25,6 @@ class SyncFeature<Msg : Any, Model : Any, Eff : Any>(
 
     private val stateListeners = AtomicMutableList<(state: Model) -> Unit>()
     private val effListeners = AtomicMutableList<(eff: Eff) -> Unit>()
-
-    init {
-        effectScope.launch {
-            delay(100)
-            initialEffects.forEach { command ->
-                effListeners.notifyAll(command)
-            }
-        }
-    }
 
     override fun accept(msg: Msg) {
         launch(coroutineContext) {

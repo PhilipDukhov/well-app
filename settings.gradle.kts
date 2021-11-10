@@ -38,10 +38,8 @@ if (includeServer) {
     )
 }
 if (includeSharedMobile) {
-    if (executor != Executor.CocoapodsArm64Simulator) {
-        include(":sharedMobile")
-    }
     include(
+        ":sharedMobile",
         ":sharedMobileTest",
         ":modules:atomic",
         ":modules:utils:viewUtils",

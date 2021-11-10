@@ -7,15 +7,12 @@ target 'Well' do
   use_frameworks!
 
   pod 'sharedMobile', :path => '../sharedMobile'
-  pod 'GoogleWebRTC'
-#  pod "WebRTC-lib"
-
+#  pod 'GoogleWebRTC'
+  pod "WebRTC-lib"
+  
   pod 'GoogleSignIn'
   pod 'FBSDKLoginKit'
   pod 'FBSDKCoreKit'
-
-  pod 'R.swift.Library'
-  pod 'R.swift'
 end
 
 target 'LocalTest' do
@@ -23,9 +20,6 @@ target 'LocalTest' do
   use_frameworks!
 
   pod 'sharedMobileTest', :path => '../sharedMobileTest'
-
-  pod 'R.swift.Library'
-  pod 'R.swift'
 end
 
 post_install do |installer|

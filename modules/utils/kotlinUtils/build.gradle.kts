@@ -8,10 +8,16 @@ plugins {
 
 kotlin {
     androidWithAndroid()
-    iosWithSimulator(includeSimulator = true, project = project)
+    iosWithSimulator(project = project)
     jvm()
     sourceSets {
         optIns()
+        val commonMain by getting {
+            libDependencies(
+                "kotlin.coroutines.core",
+                "kotlin.reflect",
+            )
+        }
         if (withAndroid) {
             val androidMain by getting {
                 kotlin.srcDir("src/jvmMain/kotlin")

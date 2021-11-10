@@ -9,7 +9,6 @@ import com.well.modules.models.date.dateTime.monthOffset
 import com.well.modules.models.date.dateTime.today
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
-import com.well.modules.utils.viewUtils.GlobalStringsBase
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
@@ -17,18 +16,13 @@ import kotlinx.datetime.Month
 import kotlinx.datetime.plus
 
 object CurrentUserAvailabilitiesListFeature {
-    object Strings : GlobalStringsBase() {
-        const val newAvailability = "New Availability"
-        const val updateAvailability = "Update Availability"
-    }
-
     data class State(
         internal val availabilities: List<Availability> = listOf(),
         val monthOffset: Int = 0,
     ) {
         companion object {
             val allDaysOfWeek = DayOfWeek.values().toList()
-            val availabilityCellsCount = 3
+            const val availabilityCellsCount = 3
         }
 
         data class CalendarItem(

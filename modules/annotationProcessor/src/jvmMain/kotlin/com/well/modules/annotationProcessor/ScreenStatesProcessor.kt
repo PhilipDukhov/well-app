@@ -5,6 +5,7 @@ package com.well.modules.annotationProcessor
 import com.well.modules.annotations.ScreenStates
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
@@ -92,6 +93,9 @@ class ContainerInfo(
     val featureEffContainerName = "FeatureEff"
     val featureEffContainerClassName = ClassName(packageName, featureEffContainerName)
     val containerFeatureStateClassName = containerFeatureClassName.nestedClass("State")
+    val featureTabType = processingEnv.elementUtils.getTypeElement(
+        containerFeatureStateClassName.nestedClass("Tab").canonicalName
+    )!!
     val containerFeatureScreenPositionClassName =
         containerFeatureStateClassName.nestedClass("ScreenPosition")
     val containerFeatureMsgClassName = containerFeatureClassName.nestedClass("Msg")
@@ -106,6 +110,8 @@ class ContainerInfo(
     val napierClassName = ClassName("io.github.aakira.napier", "Napier")
     val withEmptySetClassName = ClassName("com.well.modules.puerhBase", "withEmptySet")
     val letNamedClassName = ClassName("com.well.modules.utils.kotlinUtils", "letNamed")
+    val pairMapClassName = ClassName("com.well.modules.utils.kotlinUtils", "map")
+    val setRemovingClassName = ClassName("com.well.modules.utils.kotlinUtils", "removing")
 
     val ScreenStates.safeFeatures: List<TypeMirror>
         get() {
@@ -379,6 +385,8 @@ class FeatureInfo(
     }
 
     val featureShortName = featureName.removeSuffix("Feature")
+    val featureStateTab = containerInfo.featureTabType.enclosedElements
+        .find { it.simpleName.toString() == featureShortName }
     val featurePackage = processingEnv.elementUtils.getPackageOf(feature).qualifiedName.toString()
     val featureClassName = ClassName(
         featurePackage,
@@ -407,6 +415,13 @@ class FeatureInfo(
                 PropertyInfo(
                     name = "position",
                     className = containerInfo.containerFeatureScreenPositionClassName,
+                    defaultValue = featureStateTab?.let {
+                        CodeBlock.of(
+                            "%T(tab = %T.${it.simpleName}, index = 0)",
+                            containerInfo.containerFeatureScreenPositionClassName,
+                            it,
+                        )
+                    },
                 ),
             )
             .build()
@@ -539,20 +554,21 @@ class FeatureInfo(
                                     )
                                 }
                                 """.trimIndent(),
-                                containerInfo.screenStateClassName.nestedClass(screenState.simpleName.toString()).constructorReference()
+                                containerInfo.screenStateClassName.nestedClass(screenState.simpleName.toString())
+                                    .constructorReference()
                             )
                         }
                     addStatement(
                         """
                                 }
-                                return finalState to
-                                        effs.toMutableSet().apply {
-                                            remove(pushEff)
-                                            add(%1T.TopScreenUpdated(finalState.topScreen))
-                                        }
+                                return finalState.reduceScreenChanged(state).%T(
+                                    transformA = { it },
+                                    transformB = { it.%T(pushEff) }
+                                )
                             }
                         """.trimIndent(),
-                        containerInfo.containerFeatureEffClassName
+                        containerInfo.pairMapClassName,
+                        containerInfo.setRemovingClassName,
                     )
                 }
             }

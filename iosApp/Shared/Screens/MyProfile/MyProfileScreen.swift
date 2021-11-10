@@ -172,7 +172,7 @@ struct MyProfileScreen: View {
 
             case let content as UIPreviewField.ContentTextAndIcon:
                 HStack {
-                    Image(uiImage: content.icon.uiImage())
+                    Image("profile/\(content.icon.name.lowercased())")
                         .foregroundColorKMM(.companion.LightBlue)
                     Text(content.text)
                         .onTapGesture {
@@ -248,7 +248,7 @@ struct MyProfileScreen: View {
                     Button {
                         listener(Feature.MsgOpenUrl(url: link))
                     } label: {
-                        Image(uiImage: R.image.profile.twitter()!)
+                        Image("profile/twitter")
                             .foregroundColorKMM(.companion.LightBlue)
                             .padding()
                     }
@@ -277,22 +277,6 @@ struct MyProfileScreen: View {
             RatingInfoView(ratingInfo: header.ratingInfo) {
                 editingRating = true
             }.padding()
-        }
-    }
-}
-
-private extension UIPreviewField.Icon {
-    func uiImage() -> UIImage {
-        switch self {
-        case .location:
-            return R.image.profile.location()!
-        case .publications:
-            return R.image.profile.publications()!
-        case .twitter:
-            return R.image.profile.twitter()!
-        case .doximity:
-            return R.image.profile.doximity()!
-        default: fatalError()
         }
     }
 }

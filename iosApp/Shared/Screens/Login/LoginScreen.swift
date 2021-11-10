@@ -20,7 +20,7 @@ struct LoginScreen: View {
                 HStack(spacing: 0) {
                     Spacer()
                     ForEach(SocialNetwork.companion.allCases, id: \.self) { socialNetwork in
-                        Image(uiImage: socialNetwork.image)
+                        Image("loginSocials/\(socialNetwork.name.lowercased())")
                             .onTapGesture {
                                 listener(LoginFeature.MsgOnSocialNetworkSelected(socialNetwork: socialNetwork))
                             }
@@ -37,24 +37,6 @@ struct LoginScreen: View {
             if state.processing {
                 InactiveOverlay.withActivityIndicator()
             }
-        }
-    }
-}
-
-private extension SocialNetwork {
-     var image: UIImage {
-        let images = R.image.loginSocials.self
-        switch self {
-        case .apple:
-            return images.apple()!
-        case .twitter:
-            return images.twitter()!
-        case .facebook:
-            return images.facebook()!
-        case .google:
-            return images.google()!
-            
-        default: fatalError("unexpected \(self)")
         }
     }
 }

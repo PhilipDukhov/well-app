@@ -12,7 +12,7 @@ import FBSDKLoginKit
 
 final class FacebookProvider: CredentialProvider {
     private let loginManager: LoginManager
-    
+
     override init(appContext: AppContext) {
         Settings.shared.isAdvertiserIDCollectionEnabled = true
         Settings.shared.loggingBehaviors = Set()
@@ -21,7 +21,7 @@ final class FacebookProvider: CredentialProvider {
         loginManager = LoginManager()
         super.init(appContext: appContext)
     }
-    
+
     override func getCredentials(completionHandler: @escaping (AuthCredential?, Error?) -> Void) {
         loginManager.logOut()
         loginManager.logIn(configuration: LoginConfiguration()!) { result in
@@ -34,7 +34,7 @@ final class FacebookProvider: CredentialProvider {
                 }
             case .failed(let error):
                 completionHandler(nil, error)
-                
+
             case .cancelled:
                 completionHandler(nil, KotlinCancellationException().toNSError())
             @unknown default:
@@ -42,7 +42,7 @@ final class FacebookProvider: CredentialProvider {
             }
         }
     }
-    
+
     override func application(app: UIApplication, openURL: URL, options: [AnyHashable: Any] = [:]) -> Bool {
         ApplicationDelegate.shared.application(
             app,
@@ -50,5 +50,4 @@ final class FacebookProvider: CredentialProvider {
             options: options as? [UIApplication.OpenURLOptionsKey: Any] ?? [:]
         )
     }
-    
 }

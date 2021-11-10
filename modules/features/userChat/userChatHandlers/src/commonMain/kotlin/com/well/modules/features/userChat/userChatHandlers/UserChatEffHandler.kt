@@ -40,18 +40,18 @@ class UserChatEffHandler(
     init {
         coroutineScope.launch {
             services.peerUserFlow().collect {
-                listener?.invoke(Msg.UpdateUser(it))
+                listener(Msg.UpdateUser(it))
             }
         }
         coroutineScope.launch {
             messagesFlow.collect {
-                listener?.invoke(Msg.UpdateMessages(it))
+                listener(Msg.UpdateMessages(it))
                 Napier.i("Msg.UpdateMessages $it")
             }
         }
     }
 
-    override fun handleEffect(eff: Eff) {
+    override suspend fun processEffect(eff: Eff) {
         when (eff) {
             Eff.Back,
             is Eff.Call,
@@ -59,7 +59,7 @@ class UserChatEffHandler(
             -> Unit
             Eff.ChooseImage -> {
                 coroutineScope.launch {
-                    listener?.invoke(Msg.SendImage(services.pickSystemImage()))
+                    listener(Msg.SendImage(services.pickSystemImage()))
                 }
             }
             is Eff.MarkMessageRead -> {

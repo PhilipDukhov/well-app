@@ -205,7 +205,6 @@ private fun Project.customDependencies(libs: List<String>): List<Dependency> =
     }
 
 fun KotlinMultiplatformExtension.iosWithSimulator(
-    includeSimulator: Boolean = false,
     project: Project? = null,
     config: KotlinNativeTarget.() -> Unit = {},
 ) {
@@ -217,7 +216,7 @@ fun KotlinMultiplatformExtension.iosWithSimulator(
         null
     }
 
-    if (includeSimulator && platform == "iphonesimulator") {
+    if (platform == "iphonesimulator") {
         iosSimulatorArm64(configure = config)
         val iosMain by sourceSets.getting
         val iosSimulatorArm64Main by sourceSets.getting
@@ -309,10 +308,18 @@ fun Project.subprojectsConfigurationsResolutionStrategy(strategies: Set<Resoluti
 
 private fun ModuleVersionSelector.groupToName() = group to name
 
-fun RepositoryHandler.addSnapshots(uri: (Any) -> java.net.URI) {
+fun RepositoryHandler.addSnapshots(uri: (Any) -> java.net.URI, project: Project) {
     if (executor == Executor.CocoapodsArm64Simulator) {
         maven {
             url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+        }
+    }
+    if (project.extra.properties["kotlin.native.binary.memoryModel"] as? String == "experimental") {
+        maven {
+            url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
+        }
+        maven {
+            url = uri("https://maven.pkg.jetbrains.space/public/p/kotlinx-coroutines/maven")
         }
     }
 }

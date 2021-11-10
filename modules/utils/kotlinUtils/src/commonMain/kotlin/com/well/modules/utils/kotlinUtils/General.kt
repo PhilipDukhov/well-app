@@ -12,6 +12,8 @@ inline fun <A, B, RA, RB> Pair<A, B>.map(
     return f to s
 }
 
+fun<E> Set<E>.removing(element: E): Set<E> = toMutableSet().apply { remove(element) }
+
 inline fun <A, B, RA, RB> Pair<A, B>.mapNotNull(
     transformA: ((A) -> RA?),
     transformB: (B) -> RB?,
@@ -26,7 +28,7 @@ infix fun <S, E> S.toFilterNotNull(that: Set<E?>): Pair<S, Set<E>> =
 
 suspend fun <R> tryF(
     block: suspend () -> R,
-    catch: (t: Throwable) -> Unit
+    catch: (t: Throwable) -> Unit,
 ): R? = try {
     block()
 } catch (t: Throwable) {

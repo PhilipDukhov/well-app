@@ -21,7 +21,7 @@ kapt {
 kotlin {
     androidWithAndroid()
     val frameworkName = "SharedMobile"
-    iosWithSimulator {
+    iosWithSimulator(project = project) {
         binaries {
             framework(frameworkName) {
                 freeCompilerArgs += listOf("-Xobjc-generics")

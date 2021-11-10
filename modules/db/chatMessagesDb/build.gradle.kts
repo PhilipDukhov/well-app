@@ -14,7 +14,7 @@ sqldelight {
 
 kotlin {
     androidWithAndroid()
-    iosWithSimulator()
+    iosWithSimulator(project = project)
     jvm()
     sourceSets {
         optIns(optIns = setOf(OptIn.Coroutines))

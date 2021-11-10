@@ -46,7 +46,7 @@ private struct TeamMemberCell: View {
             }
             Spacer()
             Button(action: onTwitterSelect) {
-                Image(uiImage: R.image.twitter()!)
+                Image("twitter")
                     .foregroundColorKMM(.companion.LightBlue)
                     .padding()
             }

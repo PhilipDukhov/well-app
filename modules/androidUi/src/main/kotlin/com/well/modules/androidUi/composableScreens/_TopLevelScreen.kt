@@ -35,12 +35,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import com.google.accompanist.insets.navigationBarsPadding
+import io.github.aakira.napier.Napier
 
 @Composable
 fun TopLevelScreen(
     state: Feature.State,
     listener: (Feature.Msg) -> Unit,
-) = state.currentScreen.let { screen ->
+) {
+    val screen = state.currentScreen
     Column(
         Modifier.fillMaxSize()
     ) {

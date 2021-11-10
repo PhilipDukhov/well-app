@@ -23,7 +23,8 @@ import com.well.sharedMobile.TopLevelFeature.State.ScreenPosition
 import com.well.sharedMobile.TopLevelFeature.State.Tab
 import com.well.sharedMobile.featureProvider.loggedInTabs
 
-// remove build/tmp/kapt3 after updating features to refresh cache
+// to remove build/tmp/kapt3 after updating features to refresh cache
+// run kaptClean&Generate config
 @ScreenStates(
     empties = [
         "Launch"
@@ -46,10 +47,6 @@ object TopLevelFeature {
     ): State = State(
         tabs = mapOf(Tab.Login to listOf(ScreenState.Launch)),
         selectedScreenPosition = ScreenPosition(Tab.Login, 0),
-    )
-
-    internal fun initialEffects(): Set<Eff> = setOf(
-        Eff.Initial,
     )
 
     data class State internal constructor(
@@ -127,6 +124,7 @@ object TopLevelFeature {
     }
 
     sealed class Msg {
+        object Initial : Msg()
         data class StartCall(val user: User) : Msg()
         data class IncomingCall(val incomingCall: WebSocketMsg.Back.IncomingCall) : Msg()
         object EndCall : Msg()
@@ -148,108 +146,112 @@ object TopLevelFeature {
         data class ShowAlert(val alert: Alert) : Eff
         object SystemBack : Eff
         object Initial : Eff
-        data class TopScreenUpdated(val screen: ScreenState) : Eff
-
+        data class TopScreenAppeared(val screen: ScreenState, val position: ScreenPosition) : Eff
     }
 
     internal fun reducer(
         msg: Msg,
         state: State,
     ): ReducerResult = run state@{
-        when (msg) {
-            is Msg.ShowAlert -> {
-                return@reducer state toSetOf Eff.ShowAlert(msg.alert)
-            }
-            is Msg.Back -> {
-                val childBackReducerResult = reduceBackMsg(state)
-                if (childBackReducerResult != null) {
-                    return@reducer childBackReducerResult
-                } else {
+        return@reducer state toSetOf (run eff@{
+            when (msg) {
+                is Msg.Initial -> {
+                    return@eff Eff.Initial
+                }
+                is Msg.ShowAlert -> {
+                    return@reducer state toSetOf Eff.ShowAlert(msg.alert)
+                }
+                is Msg.Back -> {
+                    val childBackReducerResult = reduceBackMsg(state)
+                    if (childBackReducerResult != null) {
+                        return@reducer childBackReducerResult
+                    } else {
+                        return@reducer state.reducePop()
+                    }
+                }
+                is Msg.Pop -> {
                     return@reducer state.reducePop()
                 }
-            }
-            is Msg.Pop -> {
-                return@reducer state.reducePop()
-            }
-            is Msg.PushMyProfile -> {
-                return@reducer state.copyPush(
-                    state = msg.myProfileState,
-                    createScreen = ScreenState::MyProfile,
-                ).reduceScreenChanged()
-            }
-            is Msg.SelectTab -> {
-                return@reducer if (state.selectedScreenPosition.tab == msg.tab)
-                    state.copyPopToRoot().reduceScreenChanged()
-                else
-                    state.copy(
-                        selectedScreenPosition = ScreenPosition(
-                            tab = msg.tab,
-                            index = state.tabs[msg.tab]!!.indices.last
-                        ),
-                    ).reduceScreenChanged()
-            }
-            is Msg.LoggedIn -> {
-                val newState = state.copy(
-                    tabs = loggedInTabs(msg.uid),
-                    selectedScreenPosition = ScreenPosition(Tab.Experts, 0),
-                )
-                return@reducer newState.reduceScreenChanged()
-            }
-            is Msg.IncomingCall -> {
-                val (callState, effs) = CallFeature.incomingStateAndEffects(msg.incomingCall)
-                return@reducer state.copyShowCall(callState) to
-                        effs.mapTo(
-                            featureEff = FeatureEff::Call,
-                            position = ScreenPosition(tab = Tab.Overlay, index = 0)
-                        )
-            }
-            is Msg.StartCall -> {
-                return@reducer CallFeature.callingStateAndEffects(msg.user)
-                    .map(
-                        { state.copyShowCall(it) },
-                        {
-                            it.mapTo(
+                is Msg.PushMyProfile -> {
+                    return@reducer state.copyPush(
+                        state = msg.myProfileState,
+                        createScreen = ScreenState::MyProfile,
+                    ).reduceScreenChanged(oldState = state)
+                }
+                is Msg.SelectTab -> {
+                    return@reducer if (state.selectedScreenPosition.tab == msg.tab)
+                        state.copyPopToRoot().reduceScreenChanged(oldState = state)
+                    else
+                        state.copy(
+                            selectedScreenPosition = ScreenPosition(
+                                tab = msg.tab,
+                                index = state.tabs[msg.tab]!!.indices.last
+                            ),
+                        ).reduceScreenChanged(oldState = state)
+                }
+                is Msg.LoggedIn -> {
+                    val newState = state.copy(
+                        tabs = loggedInTabs(msg.uid),
+                        selectedScreenPosition = ScreenPosition(Tab.Experts, 0),
+                    )
+                    return@reducer newState.reduceScreenChanged(oldState = state)
+                }
+                is Msg.IncomingCall -> {
+                    val (callState, effs) = CallFeature.incomingStateAndEffects(msg.incomingCall)
+                    return@reducer state.copyShowCall(callState) to
+                            effs.mapTo(
                                 featureEff = FeatureEff::Call,
                                 position = ScreenPosition(tab = Tab.Overlay, index = 0)
                             )
-                        },
-                    )
-            }
-            is FeatureMsg -> {
-                return@reducer reduceScreenMsg(msg, state)
-            }
-            is Msg.StopImageSharing -> {
-                return@reducer state.copyPop(Tab.Overlay).reduceScreenChanged()
-            }
-            is Msg.EndCall -> {
-                return@reducer state.copyHideOverlay().reduceScreenChanged()
-            }
-            Msg.OpenLoginScreen -> {
-                return@state state.copy(
-                    tabs = mapOf(
-                        createTab(Tab.Login, LoginFeature.State(), ScreenState::Login)
-                    ),
-                    selectedScreenPosition = ScreenPosition(Tab.Login, 0),
-                )
-            }
-            Msg.OpenWelcomeScreen -> {
-                return@state state.copyReplace(
-                    state = WelcomeFeature.State(),
-                    createScreen = ScreenState::Welcome
-                )
-            }
-            is Msg.OpenUserChat -> {
-                return@reducer state
-                    .copyPush(
-                        state = UserChatFeature.State(
-                            peerId = msg.uid,
-                            backToUser = state.topScreen is ScreenState.UserChat,
+                }
+                is Msg.StartCall -> {
+                    return@reducer CallFeature.callingStateAndEffects(msg.user)
+                        .map(
+                            { state.copyShowCall(it) },
+                            {
+                                it.mapTo(
+                                    featureEff = FeatureEff::Call,
+                                    position = ScreenPosition(tab = Tab.Overlay, index = 0)
+                                )
+                            },
+                        )
+                }
+                is FeatureMsg -> {
+                    return@reducer reduceScreenMsg(msg, state)
+                }
+                is Msg.StopImageSharing -> {
+                    return@reducer state.copyPop(Tab.Overlay).reduceScreenChanged(oldState = state)
+                }
+                is Msg.EndCall -> {
+                    return@reducer state.copyHideOverlay().reduceScreenChanged(oldState = state)
+                }
+                Msg.OpenLoginScreen -> {
+                    return@state state.copy(
+                        tabs = mapOf(
+                            createTab(Tab.Login, LoginFeature.State(), ScreenState::Login)
                         ),
-                        createScreen = ScreenState::UserChat,
+                        selectedScreenPosition = ScreenPosition(Tab.Login, 0),
                     )
-                    .reduceScreenChanged()
+                }
+                Msg.OpenWelcomeScreen -> {
+                    return@state state.copyReplace(
+                        state = WelcomeFeature.State(),
+                        createScreen = ScreenState::Welcome
+                    )
+                }
+                is Msg.OpenUserChat -> {
+                    return@reducer state
+                        .copyPush(
+                            state = UserChatFeature.State(
+                                peerId = msg.uid,
+                                backToUser = state.topScreen is ScreenState.UserChat,
+                            ),
+                            createScreen = ScreenState::UserChat,
+                        )
+                        .reduceScreenChanged(oldState = state)
+                }
             }
-        }
+        })
     }.withEmptySet()
 
     private fun State.copyShowCall(callState: CallFeature.State): State =
@@ -268,6 +270,6 @@ object TopLevelFeature {
         if (selectedTab.isTabBar() && selectedScreenPosition.index == 0) {
             this toSetOf Eff.SystemBack
         } else {
-            copyPop().reduceScreenChanged()
+            copyPop().reduceScreenChanged(oldState = this)
         }
 }

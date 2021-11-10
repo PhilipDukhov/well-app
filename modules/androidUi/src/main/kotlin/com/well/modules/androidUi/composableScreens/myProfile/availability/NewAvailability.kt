@@ -6,7 +6,6 @@ import com.well.modules.androidUi.ext.featureListener
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.CreateAvailabilityFeature.Msg
 import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.CreateAvailabilityFeature.Strings
-import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.CurrentUserAvailabilitiesListFeature
 import com.well.modules.models.Availability
 import com.well.modules.models.Color
 import com.well.modules.models.Repeat
@@ -103,12 +102,12 @@ private fun UpdateAvailability(
         },
         buttons = {
             negativeButton(
-                CurrentUserAvailabilitiesListFeature.Strings.cancel,
+                Strings.cancel,
                 onClick = onCancel
             )
             if (state.type == Feature.State.Type.Editing) {
                 negativeButton(
-                    CurrentUserAvailabilitiesListFeature.Strings.delete,
+                    Strings.delete,
                     textStyle = MaterialTheme.typography.button.copy(color = Color.RadicalRed.toColor()),
                     onClick = onDelete
                 )

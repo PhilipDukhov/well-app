@@ -16,7 +16,7 @@ final class GoogleProvider: CredentialProvider {
         self.appContext = appContext
         super.init(appContext: appContext)
     }
-    
+
     override func getCredentials(completionHandler: @escaping (AuthCredential?, Error?) -> Void) {
         GIDSignIn.sharedInstance.signIn(
             with: GIDConfiguration(clientID: Bundle.main.object(forInfoDictionaryKey: "googleClientId") as! String),

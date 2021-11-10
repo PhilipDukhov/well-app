@@ -1,6 +1,5 @@
 package com.well.sharedMobile
 
-import com.well.modules.puerhBase.toSetOf
 import com.well.sharedMobile.TopLevelFeature.Eff
 import com.well.sharedMobile.TopLevelFeature.State
 import com.well.sharedMobile.TopLevelFeature.State.ScreenPosition
@@ -132,7 +131,10 @@ internal fun <T : ScreenState> Map<Tab, List<ScreenState>>.copy(
         }
 }
 
-internal fun State.reduceScreenChanged() = this toSetOf Eff.TopScreenUpdated(topScreen)
+internal fun State.reduceScreenChanged(oldState: State) = this to setOf(
+//    Eff.TopScreenDisappeared(oldState.topScreen, oldState.selectedScreenPosition),
+    Eff.TopScreenAppeared(topScreen, selectedScreenPosition),
+)
 
 internal fun<State, SS: ScreenState> createTab(tab: Tab, state: State, createScreen: (ScreenPosition, State) -> SS) =
     tab to listOf(

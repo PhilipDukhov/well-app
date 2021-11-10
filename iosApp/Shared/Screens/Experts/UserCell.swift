@@ -28,7 +28,7 @@ struct UserCell: View {
                 }
                 user.countryName().map { countryName in
                     HStack {
-                        Image(uiImage: R.image.profile.location()!)
+                        Image("profile/location")
                         Text(countryName)
                             .textStyle(.captionLight)
                     }

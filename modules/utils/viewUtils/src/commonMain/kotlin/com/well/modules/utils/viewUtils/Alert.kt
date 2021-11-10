@@ -15,19 +15,22 @@ sealed class Alert(
         negativeAction = Action.Settings
     )
 
-    data class Error(val throwable: Throwable, val errorDescription: String) :
-        Alert(
-            title = errorDescription,
-            description = if (Platform.isDebug) "${errorDescription::class} $errorDescription" else "",
-            positiveAction = Action.Ok
-        ) {
+    data class Error(
+        val throwable: Throwable,
+        val errorDescription: String,
+    ) : Alert(
+        title = errorDescription,
+        description = if (Platform.isDebug) "${errorDescription::class} $errorDescription" else "",
+        positiveAction = Action.Ok
+    ) {
         constructor(
             throwable: Throwable,
-            descriptionBuilder: (Throwable) -> String?
+            descriptionBuilder: (Throwable) -> String?,
         ) : this(
             throwable = throwable,
             errorDescription = descriptionBuilder(throwable) ?: "${throwable::class} $throwable"
         )
+        companion object
     }
 
     sealed class Action(val title: String) {

@@ -94,7 +94,7 @@ fun ColumnScope.MyProfileScreen(
             extraContent = {
                 if (state.tabs.count() > 1) {
                     TabRow(
-                        selectedTabIndex = state.tabs.indexOf(selectedTab!!),
+                        selectedTabIndex = state.tabs.indexOf(selectedTab),
                         backgroundColor = Color.Transparent.toColor(),
                         contentColor = Color.White.toColor(),
                     ) {

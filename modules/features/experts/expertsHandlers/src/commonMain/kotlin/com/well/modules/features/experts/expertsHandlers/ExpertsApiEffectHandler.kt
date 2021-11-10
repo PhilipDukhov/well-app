@@ -47,7 +47,7 @@ class ExpertsApiEffectHandler(
             listOf(
                 coroutineScope.launch {
                     stateFlow.collect {
-                        listener?.invoke(Msg.OnConnectionStatusChange(
+                        listener(Msg.OnConnectionStatusChange(
                             when (it) {
                                 NetworkManager.Status.Disconnected -> State.ConnectionStatus.Disconnected
                                 NetworkManager.Status.Connecting -> State.ConnectionStatus.Connecting
@@ -67,7 +67,7 @@ class ExpertsApiEffectHandler(
                     filteredExpertsUsersFlow
                         .combineToNetworkConnectedState(networkManager)
                         .collect {
-                            listener?.invoke(Msg.OnUsersUpdated(it))
+                            listener(Msg.OnUsersUpdated(it))
                         }
                 }.asCloseable(),
                 coroutineScope.launch {
@@ -81,7 +81,7 @@ class ExpertsApiEffectHandler(
         }
     }
 
-    override fun handleEffect(eff: Eff) {
+    override suspend fun processEffect(eff: Eff) {
         addCloseableChild(
             coroutineScope.launch {
                 when (eff) {
@@ -94,7 +94,7 @@ class ExpertsApiEffectHandler(
 //                    is Eff.FilterEff -> {
 //                        when (eff.eff) {
 //                            is FilterFeature.Eff.Show -> {
-//                                listener?.invoke(
+//                                listener(
 //                                    Msg.FilterMsg()
 //                                )
 //                            }

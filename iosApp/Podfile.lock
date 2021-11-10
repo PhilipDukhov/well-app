@@ -16,26 +16,21 @@ PODS:
     - AppAuth (~> 1.4)
     - GTMAppAuth (~> 1.0)
     - GTMSessionFetcher/Core (~> 1.1)
-  - GoogleWebRTC (1.1.31999)
   - GTMAppAuth (1.2.2):
     - AppAuth/Core (~> 1.4)
     - GTMSessionFetcher/Core (~> 1.5)
   - GTMSessionFetcher/Core (1.7.0)
-  - R.swift (5.4.0):
-    - R.swift.Library (~> 5.3.0)
-  - R.swift.Library (5.3.0)
   - sharedMobile (1.0-SNAPSHOT)
   - sharedMobileTest (1.0-SNAPSHOT)
+  - WebRTC-lib (95.0.0)
 
 DEPENDENCIES:
   - FBSDKCoreKit
   - FBSDKLoginKit
   - GoogleSignIn
-  - GoogleWebRTC
-  - R.swift
-  - R.swift.Library
   - sharedMobile (from `../sharedMobile`)
   - sharedMobileTest (from `../sharedMobileTest`)
+  - WebRTC-lib
 
 SPEC REPOS:
   trunk:
@@ -45,11 +40,9 @@ SPEC REPOS:
     - FBSDKCoreKit_Basics
     - FBSDKLoginKit
     - GoogleSignIn
-    - GoogleWebRTC
     - GTMAppAuth
     - GTMSessionFetcher
-    - R.swift
-    - R.swift.Library
+    - WebRTC-lib
 
 EXTERNAL SOURCES:
   sharedMobile:
@@ -64,14 +57,12 @@ SPEC CHECKSUMS:
   FBSDKCoreKit_Basics: 39865aff97e5f6951a78fb3e89dc4460e35e1895
   FBSDKLoginKit: e993f97c7cc794c5da4056d8aec3c3d66033a727
   GoogleSignIn: fd381840dbe7c1137aa6dc30849a5c3e070c034a
-  GoogleWebRTC: b39a78c4f5cc6b0323415b9233db03a2faa7b0f0
   GTMAppAuth: ad5c2b70b9a8689e1a04033c9369c4915bfcbe89
   GTMSessionFetcher: 43748f93435c2aa068b1cbe39655aaf600652e91
-  R.swift: c533450b0f7dc494e0993f5f1a1db925d84c3006
-  R.swift.Library: 0fc583cb55a99e28901299cc451614cad1161962
   sharedMobile: 8d0123e34f310e8cc25e1a7c57ccad5ed81d2c38
   sharedMobileTest: b907a9ceacae9ede3246230b4c7ef7e56a0d8578
+  WebRTC-lib: 66d9177b90d16aab9dc78a607295c3e0cd88940d
 
-PODFILE CHECKSUM: 20c334303d61f92939598a9401354900fe4664bd
+PODFILE CHECKSUM: 6349cdf4455f5991c34bed90980c346418d14625
 
 COCOAPODS: 1.11.2

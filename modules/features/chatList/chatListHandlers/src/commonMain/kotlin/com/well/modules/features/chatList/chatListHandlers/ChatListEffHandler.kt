@@ -96,7 +96,7 @@ class ChatListEffHandler(
             chatListItemsFlow
                 .combineToUnit(services.onConnectedFlow)
                 .collect { chatList ->
-                    listener?.invoke(Msg.UpdateItems(chatList))
+                    listener(Msg.UpdateItems(chatList))
                 }
         }
         coroutineScope.launch {
@@ -137,7 +137,7 @@ class ChatListEffHandler(
         }
     }
 
-    override fun handleEffect(eff: Eff) {
+    override suspend fun processEffect(eff: Eff) {
         when (eff) {
             is Eff.SelectChat -> {
                 services.openUserChat(eff.uid)

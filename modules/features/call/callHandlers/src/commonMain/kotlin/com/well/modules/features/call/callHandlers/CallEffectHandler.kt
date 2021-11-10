@@ -51,7 +51,7 @@ class CallEffectHandler(
         },
         onRequestImageUpdate = {
             services.requestImageUpdate(it) {
-                listener?.invoke(
+                listener(
                     Msg.DrawingMsg(DrawingFeature.Msg.LocalUpdateImage(it))
                 )
             }
@@ -92,12 +92,12 @@ class CallEffectHandler(
             }
 
             override fun updateCaptureDimensions(dimensions: Size) {
-                listener?.invoke(Msg.UpdateLocalCaptureDimensions(dimensions))
+                listener(Msg.UpdateLocalCaptureDimensions(dimensions))
             }
 
             override fun updateRemoveVideoContext(viewContext: VideoViewContext?) {
                 viewContext?.let {
-                    handler?.listener?.invoke(
+                    handler?.listener(
                         Msg.UpdateRemoteVideoContext(viewContext)
                     )
                 }
@@ -118,7 +118,7 @@ class CallEffectHandler(
             }
 
             override fun dataChannelStateChanged(state: DataChannelState) {
-                handler?.listener?.invoke(
+                handler?.listener(
                     if (state == DataChannelState.Open) {
                         Msg.DataConnectionEstablished
                     } else {
@@ -169,7 +169,7 @@ class CallEffectHandler(
     }
 
     @Suppress("NAME_SHADOWING")
-    override fun handleEffect(eff: Eff) {
+    override suspend fun processEffect(eff: Eff) {
         when (eff) {
             Eff.SystemBack,
             -> Unit
@@ -287,14 +287,14 @@ class CallEffectHandler(
                 imageSharingEffectHandler
                     .handleDataChannelMessage(msg.msg)
                     ?.let {
-                        listener?.invoke(it)
+                        listener(it)
                     }
             }
             is RtcMsg.UpdateDeviceState -> {
-                listener?.invoke(Msg.UpdateRemoteDeviceState(msg.deviceState))
+                listener(Msg.UpdateRemoteDeviceState(msg.deviceState))
             }
             is RtcMsg.UpdateViewPoint -> {
-                listener?.invoke(
+                listener(
                     Msg.RemoteUpdateViewPoint(
                         when (msg.viewPoint) {
                             State.ViewPoint.Both -> State.ViewPoint.Both
@@ -305,7 +305,7 @@ class CallEffectHandler(
                 )
             }
             is RtcMsg.UpdateCaptureDimensions -> {
-                listener?.invoke(Msg.UpdateRemoteCaptureDimensions(msg.dimensions))
+                listener(Msg.UpdateRemoteCaptureDimensions(msg.dimensions))
             }
         }
     }
@@ -313,7 +313,7 @@ class CallEffectHandler(
     private fun listenWebSocketMessage(msg: WebSocketMsg.Call) = runWebRtcManager {
         when (msg) {
             is WebSocketMsg.Call.Offer -> {
-                listener?.invoke(Msg.UpdateStatus(State.Status.Connecting))
+                listener(Msg.UpdateStatus(State.Status.Connecting))
                 acceptOffer(msg.sessionDescriptor)
             }
             is WebSocketMsg.Call.Answer -> {

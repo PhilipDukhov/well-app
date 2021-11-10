@@ -12,7 +12,7 @@ plugins {
 kotlin {
     androidWithAndroid()
     val frameworkName = "SharedMobile"
-    iosWithSimulator(includeSimulator = true, project = project) {
+    iosWithSimulator(project = project) {
         binaries {
             framework(frameworkName) {
                 freeCompilerArgs += listOf("-Xobjc-generics")

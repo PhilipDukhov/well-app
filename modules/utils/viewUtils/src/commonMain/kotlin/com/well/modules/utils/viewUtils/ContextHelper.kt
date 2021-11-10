@@ -3,12 +3,12 @@ package com.well.modules.utils.viewUtils
 import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
 import com.well.modules.atomic.asCloseable
-import com.well.modules.utils.viewUtils.AppContext
 import com.well.modules.utils.viewUtils.sharedImage.LocalImage
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import kotlin.coroutines.coroutineContext
 
 expect class ContextHelper(appContext: AppContext): WebAuthenticator {
     val appContext: AppContext
@@ -20,16 +20,16 @@ expect class ContextHelper(appContext: AppContext): WebAuthenticator {
 }
 
 suspend fun ContextHelper.showSheetThreadSafe(
-    coroutineScope: CoroutineScope,
     vararg actions: SuspendAction,
 ): Closeable {
+    val context = coroutineContext
     val closeableContainer = CloseableContainer()
     closeableContainer.addCloseableChild(
         MainScope().launch {
             closeableContainer.addCloseableChild(
                 showSheet(actions.map {
                     Action(it.title) {
-                        coroutineScope.launch {
+                        CoroutineScope(context).launch {
                             it.block()
                         }
                     }

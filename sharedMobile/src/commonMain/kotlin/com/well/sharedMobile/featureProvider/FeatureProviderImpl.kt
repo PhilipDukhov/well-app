@@ -5,7 +5,6 @@ import com.well.modules.atomic.AtomicCloseableRef
 import com.well.modules.atomic.AtomicLateInitRef
 import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
-import com.well.modules.atomic.asCloseable
 import com.well.modules.atomic.freeze
 import com.well.modules.db.chatMessages.ChatMessagesDatabase
 import com.well.modules.db.chatMessages.insert
@@ -55,7 +54,6 @@ import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 internal class FeatureProviderImpl(
@@ -64,7 +62,6 @@ internal class FeatureProviderImpl(
     providerGenerator: (SocialNetwork, AppContext, WebAuthenticator) -> CredentialProvider,
 ) : Feature<Msg, TopLevelFeature.State, Eff> by SyncFeature(
     TopLevelFeature.initialState(),
-    TopLevelFeature.initialEffects(),
     TopLevelFeature::reducer,
     Dispatchers.Default
 ) {
@@ -95,6 +92,7 @@ internal class FeatureProviderImpl(
         interpreter@{ eff, listener ->
             when (eff) {
                 is FeatureEff.ChatList,
+                is FeatureEff.MyProfile,
                 -> Unit
                 is Eff.ShowAlert -> {
                     if (eff.alert is Alert.Error) {
@@ -103,8 +101,6 @@ internal class FeatureProviderImpl(
                     MainScope().launch {
                         contextHelper.showAlert(eff.alert)
                     }
-                }
-                is FeatureEff.MyProfile -> {
                 }
                 is FeatureEff.Experts -> when (eff.eff) {
                     is ExpertsFeature.Eff.UpdateList,
@@ -213,22 +209,20 @@ internal class FeatureProviderImpl(
                         }
                     }
                 }
-                is Eff.TopScreenUpdated -> {
+                is Eff.TopScreenAppeared -> {
                     when (eff.screen) {
                         is ScreenState.MyProfile -> {
-                            if (eff.screen.state.user?.initialized != false) {
-                                topScreenHandlerCloseable =
-                                    coroutineScope.launch {
-                                        usersDatabase.usersQueries
-                                            .getByIdFlow(eff.screen.state.uid)
-                                            .collect { user ->
-                                                listener(
-                                                    eff.screen.mapMsgToTopLevel(
-                                                        MyProfileFeature.Msg.RemoteUpdateUser(user)
-                                                    )
-                                                )
-                                            }
-                                    }.asCloseable()
+                            if (
+                                eff.screen.state.user?.initialized != false
+                                && eff.screen.position.tab != TopLevelFeature.State.Tab.MyProfile
+                            ) {
+                                topScreenHandlerCloseable = wrapWithEffectHandler(
+                                    createProfileEffHandler(
+                                        uid = eff.screen.state.uid,
+                                        position = eff.position,
+                                        listener = listener,
+                                    )
+                                )
                             }
                         }
                         is ScreenState.UserChat -> {
@@ -264,7 +258,9 @@ internal class FeatureProviderImpl(
                                 )
                             )
                         }
-                        else -> Unit
+                        else -> {
+                            topScreenHandlerCloseable = null
+                        }
                     }
                 }
             }
@@ -280,6 +276,7 @@ internal class FeatureProviderImpl(
             handler
         )
         handler.freeze()
+        accept(Msg.Initial)
     }
 
     fun webSocketMessageHandler(

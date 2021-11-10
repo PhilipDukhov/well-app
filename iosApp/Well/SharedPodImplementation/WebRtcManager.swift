@@ -90,7 +90,7 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
             with: config,
             constraints: constraints,
             delegate: nil
-        )
+        )!
 
         // MARK: - createMediaSenders
 
@@ -161,12 +161,12 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
                 sdpMLineIndex: candidate.sdpMLineIndex,
                 sdpMid: candidate.sdpMid
             )
-        )
-//        ) { error in
-//            if let error = error {
-//                Napier.w(#function, error)
-//            }
-//        }
+//        )
+        ) { error in
+            if let error = error {
+                Napier.w(#function, error)
+            }
+        }
     }
 
     func acceptOffer(
@@ -203,8 +203,8 @@ final class WebRtcManager: NSObject, WebRtcManagerI {
 
     private var localVideoTrackSender: RTCRtpSender?
     func createOfferOrAnswer(
-//        create: (RTCMediaConstraints, @escaping RTCCreateSessionDescriptionCompletionHandler) -> Void,
-        create: (RTCMediaConstraints, ((RTCSessionDescription?, Error?) -> Void)?) -> Void,
+        create: (RTCMediaConstraints, @escaping RTCCreateSessionDescriptionCompletionHandler) -> Void,
+//        create: (RTCMediaConstraints, ((RTCSessionDescription?, Error?) -> Void)?) -> Void,
         completion: @escaping (String) -> Void
     ) {
         peerConnection.add(localAudioTrack, streamIds: streamIds)

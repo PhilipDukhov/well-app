@@ -25,7 +25,7 @@ buildkonfig {
 
 kotlin {
     androidWithAndroid()
-    iosWithSimulator()
+    iosWithSimulator(project = project)
     sourceSets {
         val commonMain by getting {
             libDependencies(
