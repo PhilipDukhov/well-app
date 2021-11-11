@@ -14,7 +14,7 @@ kotlin {
                 ":modules:models",
                 ":modules:db:usersDb",
                 ":modules:db:chatMessagesDb",
-                ":modules:db:helperDb",
+                ":modules:utils:dbUtils",
                 ":modules:atomic",
                 ":modules:utils:viewUtils",
                 "kotlin.coroutines.core",

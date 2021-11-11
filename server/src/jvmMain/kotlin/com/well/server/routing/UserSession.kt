@@ -1,7 +1,7 @@
 package com.well.server.routing
 
-import com.well.modules.db.helper.adaptedIntersectionRegex
-import com.well.modules.db.helper.adaptedOneOfRegex
+import com.well.modules.utils.dbUtils.adaptedIntersectionRegex
+import com.well.modules.utils.dbUtils.adaptedOneOfRegex
 import com.well.modules.db.server.LastReadMessages
 import com.well.modules.db.server.insertChatMessage
 import com.well.modules.db.server.toChatMessage

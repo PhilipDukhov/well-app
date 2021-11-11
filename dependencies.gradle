@@ -19,7 +19,7 @@ try {
 def versions = [
     iosDeploymentTarget: "14.0",
     androidActivity    : "1.4.0",
-    kotlinSerialization: "1.3.0",
+    kotlinSerialization: "1.3.1",
     coil               : "1.4.0",
     kotlinCoroutines   : "1.5.2-native-mt",
     ktor               : "1.6.5",

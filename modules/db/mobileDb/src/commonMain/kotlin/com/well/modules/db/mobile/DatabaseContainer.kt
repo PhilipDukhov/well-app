@@ -8,7 +8,7 @@ internal class DatabaseContainer<T> (
     name: String,
     schema: SqlDriver.Schema,
     val driverFactory: DatabaseDriverFactory,
-    createDatabase: (SqlDriver) -> T
+    createDatabase: (SqlDriver) -> T,
 ) {
     private val fileName = if (Platform.isDebug) "${name}Debug.db" else "${name}Prod.db"
     private val driver = driverFactory.createDriver(fileName, schema)

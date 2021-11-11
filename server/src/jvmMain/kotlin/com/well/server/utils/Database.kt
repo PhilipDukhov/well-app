@@ -1,7 +1,7 @@
 package com.well.server.utils
 
-import com.well.modules.db.helper.SetEnumColumnAdapter
-import com.well.modules.db.helper.migrateIfNeeded
+import com.well.modules.utils.dbUtils.SetEnumColumnAdapter
+import com.well.modules.utils.dbUtils.migrateIfNeeded
 import com.well.modules.db.server.Database
 import com.well.modules.db.server.Users
 import com.squareup.sqldelight.EnumColumnAdapter

@@ -1,4 +1,4 @@
-package com.well.modules.db.helper
+package com.well.modules.utils.dbUtils
 
 inline fun <reified T : Enum<T>> Set<Enum<T>>.adaptedIntersectionRegex() =
     map { it.name }.adaptedIntersectionRegex()

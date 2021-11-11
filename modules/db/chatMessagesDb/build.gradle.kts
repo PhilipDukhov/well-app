@@ -22,7 +22,7 @@ kotlin {
             libDependencies(
                 ":modules:models",
                 ":modules:utils:flowUtils",
-                ":modules:db:helperDb",
+                ":modules:utils:dbUtils",
                 "shared.napier",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",

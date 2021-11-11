@@ -1,4 +1,4 @@
-package com.well.modules.db.helper
+package com.well.modules.utils.dbUtils
 
 import com.squareup.sqldelight.ColumnAdapter
 

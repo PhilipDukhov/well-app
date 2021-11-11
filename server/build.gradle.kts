@@ -20,7 +20,7 @@ kotlin {
         optIns(optIns = setOf(OptIn.Coroutines))
         val jvmMain by getting {
             libDependencies(
-                ":modules:db:helperDb",
+                ":modules:utils:dbUtils",
                 ":modules:db:chatMessagesDb",
                 ":modules:db:serverDb",
                 ":modules:utils:flowUtils",

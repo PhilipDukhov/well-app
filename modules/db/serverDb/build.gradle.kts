@@ -16,7 +16,7 @@ kotlin {
         val commonMain by getting {
             libDependencies(
                 ":modules:models",
-                ":modules:db:helperDb",
+                ":modules:utils:dbUtils",
             )
         }
     }
