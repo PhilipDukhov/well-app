@@ -96,7 +96,7 @@ object CurrentUserAvailabilitiesListFeature {
 
     fun reducer(
         msg: Msg,
-        state: State
+        state: State,
     ): Pair<State, Set<Eff>> = run state@{
         when (msg) {
             is Msg.SetAvailabilities -> {

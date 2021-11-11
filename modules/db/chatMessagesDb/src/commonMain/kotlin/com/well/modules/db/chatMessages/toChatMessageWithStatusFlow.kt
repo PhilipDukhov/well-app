@@ -62,7 +62,7 @@ fun Flow<List<ChatMessage>>.toChatMessageWithStatusFlow(
                     .map { container ->
                         val key = container.message.let { it.peerId to it.fromId }
                         val lastReadMessageId = lastReadMessagesMap[key]?.messageId
-                        val read = container.message.id <= lastReadMessageId ?: -1
+                        val read = container.message.id <= (lastReadMessageId ?: -1)
                         val status = if (container.message.peerId == currentUid) {
                             if (read) ChatMessageWithStatus.Status.IncomingRead
                             else ChatMessageWithStatus.Status.IncomingUnread

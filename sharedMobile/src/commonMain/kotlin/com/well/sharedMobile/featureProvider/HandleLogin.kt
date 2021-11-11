@@ -1,6 +1,10 @@
 package com.well.sharedMobile.featureProvider
 
 import com.well.modules.atomic.asCloseable
+import com.well.modules.db.chatMessages.lastListWithStatusFlow
+import com.well.modules.db.chatMessages.messagePresenceFlow
+import com.well.modules.db.chatMessages.selectAllFlow
+import com.well.modules.db.chatMessages.unreadCountsFlow
 import com.well.modules.db.users.getByIdsFlow
 import com.well.modules.db.users.insertOrReplace
 import com.well.modules.db.users.usersPresenceFlow
@@ -22,6 +26,7 @@ import com.well.modules.puerhBase.EffectHandler
 import com.well.modules.puerhBase.Listener
 import com.well.modules.puerhBase.adapt
 import com.well.modules.puerhBase.wrapWithEffectHandler
+import com.well.modules.utils.kotlinUtils.map
 import com.well.modules.utils.viewUtils.Alert
 import com.well.modules.utils.viewUtils.dataStore.AuthInfo
 import com.well.modules.utils.viewUtils.dataStore.authInfo
@@ -92,17 +97,18 @@ internal fun FeatureProviderImpl.loggedIn(
     user: User? = null,
     listener: Listener<TopLevelFeature.Msg>,
 ) {
-    sessionInfo = SessionInfo(authInfo.id)
+    val uid = authInfo.id
+    sessionInfo = SessionInfo(uid)
     databaseManager.open()
     user?.let(usersDatabase.usersQueries::insertOrReplace)
     networkManager = NetworkManager(authInfo.token, startWebSocket = true, unauthorizedHandler = {
         logOut(listener)
     })
-    listener.invoke(TopLevelFeature.Msg.LoggedIn(authInfo.id))
+    listener.invoke(TopLevelFeature.Msg.LoggedIn(uid))
     val scope = CoroutineScope(coroutineContext)
-    val effectHandlers = listOf<EffectHandler<TopLevelFeature.Eff, TopLevelFeature.Msg>>(
+    val effectHandlers: List<EffectHandler<TopLevelFeature.Eff, TopLevelFeature.Msg>> = listOf(
         createProfileEffHandler(
-            uid = authInfo.id,
+            uid = uid,
             position = ScreenPosition(tab = Tab.MyProfile, index = 0),
             listener = listener,
         ),
@@ -117,16 +123,25 @@ internal fun FeatureProviderImpl.loggedIn(
             }
         ),
         ChatListEffHandler(
-            authInfo.id,
+            uid,
             ChatListEffHandler.Services(
-                openUserChat = {
-                    listener(TopLevelFeature.Msg.OpenUserChat(it))
-                },
+                openUserChat = listener.map(TopLevelFeature.Msg::OpenUserChat),
                 onConnectedFlow = networkManager.onConnectedFlow,
+                lastListWithStatusFlow = messagesDatabase.lastListWithStatusFlow(uid),
+                unreadCountsFlow = { messages ->
+                    messagesDatabase
+                        .chatMessagesQueries
+                        .unreadCountsFlow(uid, messages)
+                },
+                lastPresentMessageIdFlow = messagesDatabase
+                    .chatMessagesQueries
+                    .messagePresenceFlow(),
+                lastReadPresenceFlow = messagesDatabase
+                    .lastReadMessagesQueries
+                    .selectAllFlow(),
+                getUsersByIdsFlow = usersDatabase.usersQueries::getByIdsFlow,
                 sendFrontWebSocketMsg = networkManager::sendFront,
-                getUsersByIds = usersDatabase.usersQueries::getByIdsFlow
             ),
-            messagesDatabase,
             scope,
         ).adapt(
             effAdapter = { (it as? FeatureEff.ChatList)?.eff },

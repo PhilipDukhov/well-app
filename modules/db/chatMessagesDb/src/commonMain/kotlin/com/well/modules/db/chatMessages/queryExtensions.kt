@@ -1,12 +1,14 @@
 package com.well.modules.db.chatMessages
 
-import com.well.modules.utils.flowUtils.mapIterable
 import com.well.modules.models.ChatMessageId
 import com.well.modules.models.UserId
 import com.well.modules.models.chat.ChatMessage
 import com.well.modules.models.chat.LastReadMessage
+import com.well.modules.utils.flowUtils.flattenFlow
+import com.well.modules.utils.flowUtils.mapIterable
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
+import com.squareup.sqldelight.runtime.coroutines.mapToOne
 import com.squareup.sqldelight.runtime.coroutines.mapToOneOrDefault
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -107,3 +109,33 @@ fun ChatMessagesDatabase.insertTmpMessage(
     tmpMessageIdsQueries.updateTmpId(message.id)
     message
 }
+
+fun ChatMessagesQueries.lastListFlow(uid: UserId) =
+    lastList(uid)
+        .asFlow()
+        .mapToList()
+
+fun ChatMessagesDatabase.lastListWithStatusFlow(uid: UserId) =
+    chatMessagesQueries.lastListFlow(uid)
+        .mapIterable(ChatMessages::toChatMessage)
+        .toChatMessageWithStatusFlow(currentUid = uid, messagesDatabase = this)
+
+fun ChatMessagesQueries.unreadCountFlow(uid: UserId, message: ChatMessage) =
+    unreadCount(fromId = message.secondId(uid), peerId = uid)
+        .asFlow()
+        .mapToOne()
+        .map { unreadCount ->
+            message.id to unreadCount
+        }
+
+fun ChatMessagesQueries.unreadCountsFlow(uid: UserId, messages: List<ChatMessage>) =
+    messages
+        .map { unreadCountFlow(uid, it) }
+        .flattenFlow()
+        .map { it.toMap() }
+
+fun LastReadMessagesQueries.selectAllFlow() =
+    selectAll()
+        .asFlow()
+        .mapToList()
+        .mapIterable(LastReadMessages::toLastReadMessage)

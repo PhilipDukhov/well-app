@@ -240,12 +240,13 @@ internal class FeatureProviderImpl(
                                             )
                                         },
                                         uploadMessagePicture = {
-                                            networkManager.uploadMessagePicture(it.asByteArrayOptimizedForNetwork())
+                                            networkManager
+                                                .uploadMessagePicture(it.asByteArrayOptimizedForNetwork())
                                         },
                                         peerUserFlow = {
-                                            usersDatabase.usersQueries.getByIdFlow(
-                                                peerId
-                                            )
+                                            usersDatabase
+                                                .usersQueries
+                                                .getByIdFlow(peerId)
                                         },
                                         pickSystemImage = contextHelper::pickSystemImage,
                                         cacheImage = contextHelper.appContext::cacheImage,

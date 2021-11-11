@@ -14,8 +14,6 @@ kotlin {
         val commonMain by getting {
             libDependencies(
                 ":modules:features:chatList:chatListFeature",
-                ":modules:db:chatMessagesDb",
-                ":modules:db:usersDb",
                 ":modules:utils:flowUtils",
                 ":modules:utils:viewUtils",
                 ":modules:models",
