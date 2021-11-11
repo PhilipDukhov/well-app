@@ -11,7 +11,7 @@ import com.well.modules.models.chat.ChatMessage
 import com.well.modules.models.chat.ChatMessageWithStatus
 import com.well.modules.models.chat.LastReadMessage
 import com.well.modules.puerhBase.EffectHandler
-import com.well.modules.utils.flowUtils.combineToUnit
+import com.well.modules.utils.flowUtils.combineWithUnit
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -58,14 +58,14 @@ class ChatListEffHandler(
     init {
         coroutineScope.launch {
             chatListItemsFlow
-                .combineToUnit(services.onConnectedFlow)
+                .combineWithUnit(services.onConnectedFlow)
                 .collect { chatList ->
                     listener(Msg.UpdateItems(chatList))
                 }
         }
         coroutineScope.launch {
             services.lastPresentMessageIdFlow
-                .combineToUnit(services.onConnectedFlow)
+                .combineWithUnit(services.onConnectedFlow)
                 .collect { lastPresentMessageId ->
                     Napier.i("WebSocketMsg.Front.SetChatMessagePresence $lastPresentMessageId")
                     services.sendFrontWebSocketMsg(
@@ -77,7 +77,7 @@ class ChatListEffHandler(
         }
         coroutineScope.launch {
             services.lastReadPresenceFlow
-                .combineToUnit(services.onConnectedFlow)
+                .combineWithUnit(services.onConnectedFlow)
                 .collect { lastReadPresence ->
                     services.sendFrontWebSocketMsg(
                         WebSocketMsg.Front.UpdateChatReadStatePresence(

@@ -14,16 +14,11 @@ kotlin {
         val commonMain by getting {
             libDependencies(
                 ":modules:atomic",
-                ":modules:db:usersDb",
                 ":modules:features:experts:expertsFeature",
                 ":modules:models",
-                ":modules:networking",
-                ":modules:utils:flowUtils",
-                ":modules:utils:viewUtils",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",
                 "shared.napier",
-                "sqldelight.coroutinesExtensions",
             )
         }
         if (withAndroid) {

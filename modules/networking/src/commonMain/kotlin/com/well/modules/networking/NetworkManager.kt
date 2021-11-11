@@ -5,15 +5,15 @@ import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
 import com.well.modules.models.Availability
 import com.well.modules.models.AvailabilityId
+import com.well.modules.models.ConnectionStatus.Connected
+import com.well.modules.models.ConnectionStatus.Connecting
+import com.well.modules.models.ConnectionStatus.Disconnected
 import com.well.modules.models.FavoriteSetter
 import com.well.modules.models.NetworkConstants
 import com.well.modules.models.RatingRequest
 import com.well.modules.models.User
 import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMsg
-import com.well.modules.networking.NetworkManager.Status.Connected
-import com.well.modules.networking.NetworkManager.Status.Connecting
-import com.well.modules.networking.NetworkManager.Status.Disconnected
 import com.well.modules.networking.webSocketManager.WebSocketClient
 import com.well.modules.networking.webSocketManager.WebSocketSession
 import com.well.modules.networking.webSocketManager.ws
@@ -45,7 +45,7 @@ class NetworkManager(
     startWebSocket: Boolean,
     private val unauthorizedHandler: () -> Unit,
 ) : CloseableContainer() {
-    private val client = WebSocketClient(
+    private val clientWrapper = WebSocketClient(
         NetworkConstants.current(Platform.isDebug).let { constants ->
             WebSocketClient.Config(
                 host = constants.host,
@@ -55,13 +55,7 @@ class NetworkManager(
             )
         }
     )
-
-    enum class Status {
-        Disconnected,
-        Connecting,
-        Connected,
-        ;
-    }
+    private val client = clientWrapper.client
 
     private val webSocketScope = CoroutineScope(Dispatchers.Default)
 
@@ -70,38 +64,37 @@ class NetworkManager(
     private val _webSocketMsgSharedFlow = MutableSharedFlow<WebSocketMsg>()
     val webSocketMsgSharedFlow: Flow<WebSocketMsg> = _webSocketMsgSharedFlow
 
-    private val _state = MutableStateFlow(Disconnected)
+    private val _connectionStatus = MutableStateFlow(Disconnected)
 
-    val stateFlow = _state.asStateFlow()
-    val isConnectedFlow = stateFlow.map { it == Connected }.distinctUntilChanged()
+    val connectionStatusFlow = _connectionStatus.asStateFlow()
+    val isConnectedFlow = connectionStatusFlow.map { it == Connected }.distinctUntilChanged()
     val onConnectedFlow = isConnectedFlow.filter { it }.map { }
 
     init {
         webSocketScope.launch {
             while (startWebSocket) {
                 try {
-                    _state.value = Connecting
+                    _connectionStatus.value = Connecting
                     Napier.i("Connecting")
-                    client.ws("/mainWebSocket") {
+                    clientWrapper.ws("/mainWebSocket") {
                         webSocketSession = this
-                        _state.value = Connected
+                        _connectionStatus.value = Connected
                         Napier.i("Connected")
                         for (string in incoming) {
                             Napier.i("websocket msg: $string")
-                            _webSocketMsgSharedFlow.emit(
-                                Json.decodeFromString(
-                                    WebSocketMsg.serializer(),
-                                    string
-                                )
+                            val msg = Json.decodeFromString(
+                                WebSocketMsg.serializer(),
+                                string
                             )
+                            _webSocketMsgSharedFlow.emit(msg)
                         }
                     }
                 } catch (t: Throwable) {
                     if (handleUnauthorized(t)) break
                     Napier.e("web socket connection error", t)
                 } finally {
-                    val wasConnected = _state.value == Connected
-                    _state.value = Disconnected
+                    val wasConnected = _connectionStatus.value == Connected
+                    _connectionStatus.value = Disconnected
                     webSocketSession = null
                     if (!wasConnected) {
                         delay(5000L)
@@ -139,15 +132,15 @@ class NetworkManager(
         userId: UserId,
         data: ByteArray,
     ) = tryCheckAuth {
-        client.client.post<String>("/user/uploadProfilePicture") {
+        client.post<String>("/user/uploadProfilePicture") {
             body = data.toMultiPartFormDataContent(userId.toString())
         }
     }
 
     suspend fun uploadMessagePicture(
-        data: ByteArray
+        data: ByteArray,
     ) = tryCheckAuth {
-        client.client.post<String>("uploadMessageMedia") {
+        client.post<String>("uploadMessageMedia") {
             body = data.toMultiPartFormDataContent()
         }
     }
@@ -172,25 +165,25 @@ class NetworkManager(
         )
 
     suspend fun putUser(user: User) = tryCheckAuth {
-        client.client.put<Unit>("/user") {
+        client.put<Unit>("/user") {
             contentType(ContentType.Application.Json)
             body = user
         }
     }
 
     suspend fun setFavorite(favoriteSetter: FavoriteSetter) = tryCheckAuth {
-        client.client.post<Unit>("/user/setFavorite") {
+        client.post<Unit>("/user/setFavorite") {
             contentType(ContentType.Application.Json)
             body = favoriteSetter
         }
     }
 
     suspend fun requestBecomeExpert() = tryCheckAuth {
-        client.client.post<Unit>("/user/requestBecomeExpert")
+        client.post<Unit>("/user/requestBecomeExpert")
     }
 
     suspend fun rate(ratingRequest: RatingRequest) = tryCheckAuth {
-        client.client.post<Unit>("/user/rate") {
+        client.post<Unit>("/user/rate") {
             contentType(ContentType.Application.Json)
             body = ratingRequest
         }

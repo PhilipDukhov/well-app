@@ -21,11 +21,12 @@ import com.well.modules.models.User
 import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.networking.NetworkManager
-import com.well.modules.networking.combineToNetworkConnectedState
 import com.well.modules.puerhBase.EffectHandler
 import com.well.modules.puerhBase.Listener
 import com.well.modules.puerhBase.adapt
 import com.well.modules.puerhBase.wrapWithEffectHandler
+import com.well.modules.utils.flowUtils.combineWithUnit
+import com.well.modules.utils.flowUtils.mapProperty
 import com.well.modules.utils.kotlinUtils.map
 import com.well.modules.utils.viewUtils.Alert
 import com.well.modules.utils.viewUtils.dataStore.AuthInfo
@@ -40,6 +41,8 @@ import com.well.sharedMobile.createTab
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
@@ -113,9 +116,21 @@ internal fun FeatureProviderImpl.loggedIn(
             listener = listener,
         ),
         ExpertsApiEffectHandler(
-            networkManager,
-            usersDatabase,
-            scope,
+            services = ExpertsApiEffectHandler.Services(
+                connectionStatusFlow = networkManager.connectionStatusFlow,
+                usersListFlow = networkManager
+                    .webSocketMsgSharedFlow
+                    .filterIsInstance<WebSocketMsg.Back.ListFilteredExperts>()
+                    .mapProperty(WebSocketMsg.Back.ListFilteredExperts::userIds)
+                    .flatMapLatest(usersDatabase.usersQueries::getByIdsFlow)
+                    .combineWithUnit(networkManager.onConnectedFlow),
+                updateUsersFilter = {
+                    networkManager.sendFront(WebSocketMsg.Front.SetExpertsFilter(it))
+                },
+                onConnectedFlow = networkManager.onConnectedFlow,
+                setFavorite = networkManager::setFavorite,
+            ),
+            coroutineScopeArg = scope,
         ).adapt(
             effAdapter = { (it as? FeatureEff.Experts)?.eff },
             msgAdapter = {
@@ -202,7 +217,7 @@ private fun AuthResponse.toAuthInfo() = AuthInfo(token = token, id = user.id)
 private fun FeatureProviderImpl.notifyUsersDBPresenceCloseable() =
     coroutineScope.launch {
         usersDatabase.usersQueries.usersPresenceFlow()
-            .combineToNetworkConnectedState(networkManager)
+            .combineWithUnit(networkManager.onConnectedFlow)
             .map(WebSocketMsg.Front::SetUsersPresence)
             .collect(networkManager::sendFront)
     }.asCloseable()

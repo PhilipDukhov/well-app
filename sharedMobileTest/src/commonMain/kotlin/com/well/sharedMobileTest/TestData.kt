@@ -3,12 +3,12 @@ package com.well.sharedMobileTest
 import com.well.modules.atomic.AtomicMutableList
 import com.well.modules.models.Availability
 import com.well.modules.models.Repeat
-import com.well.modules.models.date.Date
 import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
+import com.well.modules.models.chat.ChatMessageWithStatus
+import com.well.modules.models.date.Date
 import com.well.modules.models.date.dateTime.daysShift
 import com.well.modules.models.date.dateTime.time
-import com.well.modules.models.chat.ChatMessageWithStatus
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -88,7 +88,7 @@ private data class TestAvailabilitiesState(
     val daysOffset: Int,
     val repeat: Repeat,
     val startTime: Int,
-    val hoursDuration: Int
+    val hoursDuration: Int,
 ) {
     fun availability(i: Int) =
         Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).let { now ->

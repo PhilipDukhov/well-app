@@ -1,8 +1,9 @@
 package com.well.modules.features.experts.expertsFeature
 
-import com.well.modules.features.experts.expertsFeature.ExpertsFeature.State.ConnectionStatus.Connected
-import com.well.modules.features.experts.expertsFeature.ExpertsFeature.State.ConnectionStatus.Disconnected
 import com.well.modules.features.experts.expertsFeature.filter.FilterFeature
+import com.well.modules.models.ConnectionStatus
+import com.well.modules.models.ConnectionStatus.Connected
+import com.well.modules.models.ConnectionStatus.Disconnected
 import com.well.modules.models.FavoriteSetter
 import com.well.modules.models.User
 import com.well.modules.models.UsersFilter
@@ -25,17 +26,10 @@ object ExpertsFeature {
     ) {
         val updating = connectionStatus != Connected || updatingFilter
         val connectionStatusDescription = connectionStatus.name
-
-        enum class ConnectionStatus {
-            Disconnected,
-            Connecting,
-            Connected,
-            ;
-        }
     }
 
     sealed class Msg {
-        data class OnConnectionStatusChange(val connectionStatus: State.ConnectionStatus) : Msg()
+        data class OnConnectionStatusChange(val connectionStatus: ConnectionStatus) : Msg()
         data class OnUsersUpdated(val users: List<User>) : Msg()
         data class OnUserSelected(val user: User) : Msg()
         data class OnUserFavorite(val user: User) : Msg()
@@ -58,7 +52,7 @@ object ExpertsFeature {
 
     fun reducer(
         msg: Msg,
-        state: State
+        state: State,
     ): Pair<State, Set<Eff>> = run state@{
         return@reducer state toSetOf (run eff@{
             when (msg) {
