@@ -10,7 +10,7 @@ import io.ktor.response.*
 import io.ktor.util.pipeline.*
 
 suspend fun PipelineContext<*, ApplicationCall>.setUserFavorite(
-    dependencies: Dependencies
+    dependencies: Dependencies,
 ) = dependencies.run {
     val setFavorite = call.receive<FavoriteSetter>()
     val uid = call.authUid

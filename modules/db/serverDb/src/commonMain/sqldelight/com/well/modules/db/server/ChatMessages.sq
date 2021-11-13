@@ -1,8 +1,11 @@
+import com.well.modules.models.User;
+import com.well.modules.models.chat.ChatMessage;
+
 CREATE TABLE ChatMessages (
-    id INTEGER AS Int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    id BIGINT AS ChatMessage.Id NOT NULL PRIMARY KEY AUTO_INCREMENT,
     creation DOUBLE NOT NULL,
-    fromId INTEGER AS Int NOT NULL,
-    peerId INTEGER AS Int NOT NULL,
+    fromId BIGINT AS User.Id NOT NULL,
+    peerId BIGINT AS User.Id NOT NULL,
     text TEXT NOT NULL,
     photoUrl TEXT,
     photoAspectRatio REAL AS Float

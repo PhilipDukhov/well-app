@@ -10,7 +10,7 @@ sealed class WebSocketMsg {
     sealed class Front: WebSocketMsg() {
         @Serializable
         data class InitiateCall(
-            val uid: UserId,
+            val uid: User.Id,
         ) : Front()
 
         @Serializable
@@ -25,7 +25,7 @@ sealed class WebSocketMsg {
 
         @Serializable
         data class SetChatMessagePresence(
-            val messagePresenceId: ChatMessageId,
+            val messagePresenceId: ChatMessage.Id,
         ) : Front()
 
         @Serializable
@@ -35,7 +35,7 @@ sealed class WebSocketMsg {
 
         @Serializable
         data class ChatMessageRead(
-            val messageId: ChatMessageId,
+            val messageId: ChatMessage.Id,
         ) : Front()
 
         @Serializable
@@ -53,7 +53,7 @@ sealed class WebSocketMsg {
 
         @Serializable
         data class ListFilteredExperts(
-            val userIds: List<UserId>,
+            val userIds: List<User.Id>,
         ) : Back()
 
         @Serializable
@@ -68,7 +68,7 @@ sealed class WebSocketMsg {
             @Serializable
             data class UpdateMessageInfo(
                 val message: ChatMessage,
-                val tmpId: UserId? = null,
+                val tmpId: ChatMessage.Id? = null,
             )
         }
 

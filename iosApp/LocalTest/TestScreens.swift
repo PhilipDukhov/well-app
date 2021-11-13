@@ -30,8 +30,8 @@ struct TestingScreens: View {
         switch selectedScreen {
         case .availabilityCalendar:
             ReducerView(
-                initial: CurrentUserAvailabilitiesListFeature().testState(),
-                reducer: CurrentUserAvailabilitiesListFeature().reducer,
+                initial: AvailabilitiesCalendarFeature().testState(),
+                reducer: AvailabilitiesCalendarFeature().reducer,
                 view: CurrentUserAvailabilityView.init
             )
         case .profile:

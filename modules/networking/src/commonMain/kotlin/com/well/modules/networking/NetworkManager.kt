@@ -12,7 +12,6 @@ import com.well.modules.models.FavoriteSetter
 import com.well.modules.models.NetworkConstants
 import com.well.modules.models.RatingRequest
 import com.well.modules.models.User
-import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.networking.webSocketManager.WebSocketClient
 import com.well.modules.networking.webSocketManager.WebSocketSession
@@ -55,7 +54,7 @@ class NetworkManager(
             )
         }
     )
-    private val client = clientWrapper.client
+    private val client get() = clientWrapper.client
 
     private val webSocketScope = CoroutineScope(Dispatchers.Default)
 
@@ -129,10 +128,10 @@ class NetworkManager(
     }
 
     suspend fun uploadProfilePicture(
-        userId: UserId,
+        userId: User.Id,
         data: ByteArray,
     ) = tryCheckAuth {
-        client.post<String>("/user/uploadProfilePicture") {
+        client.post<String>("user/uploadProfilePicture") {
             body = data.toMultiPartFormDataContent(userId.toString())
         }
     }
@@ -165,25 +164,25 @@ class NetworkManager(
         )
 
     suspend fun putUser(user: User) = tryCheckAuth {
-        client.put<Unit>("/user") {
+        client.put<Unit>("user") {
             contentType(ContentType.Application.Json)
             body = user
         }
     }
 
     suspend fun setFavorite(favoriteSetter: FavoriteSetter) = tryCheckAuth {
-        client.post<Unit>("/user/setFavorite") {
+        client.post<Unit>("user/setFavorite") {
             contentType(ContentType.Application.Json)
             body = favoriteSetter
         }
     }
 
     suspend fun requestBecomeExpert() = tryCheckAuth {
-        client.post<Unit>("/user/requestBecomeExpert")
+        client.post<Unit>("user/requestBecomeExpert")
     }
 
     suspend fun rate(ratingRequest: RatingRequest) = tryCheckAuth {
-        client.post<Unit>("/user/rate") {
+        client.post<Unit>("user/rate") {
             contentType(ContentType.Application.Json)
             body = ratingRequest
         }

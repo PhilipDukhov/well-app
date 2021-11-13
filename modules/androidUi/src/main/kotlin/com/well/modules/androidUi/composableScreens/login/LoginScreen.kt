@@ -4,11 +4,11 @@ import com.well.modules.androidUi.R
 import com.well.modules.androidUi.customViews.Control
 import com.well.modules.androidUi.customViews.GradientView
 import com.well.modules.androidUi.customViews.InactiveOverlay
-import androidx.compose.foundation.Image
 import com.well.modules.features.login.loginFeature.LoginFeature.Msg
 import com.well.modules.features.login.loginFeature.LoginFeature.State
 import com.well.modules.features.login.loginFeature.SocialNetwork
 import com.well.modules.utils.viewUtils.Gradient
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -58,7 +58,7 @@ fun LoginScreen(
         }
     }
     if (state.processing) {
-        InactiveOverlay()
+        InactiveOverlay(showActivityIndicator = true)
     }
 }
 

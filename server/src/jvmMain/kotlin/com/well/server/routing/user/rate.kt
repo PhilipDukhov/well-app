@@ -10,7 +10,7 @@ import io.ktor.response.*
 import io.ktor.util.pipeline.*
 
 suspend fun PipelineContext<*, ApplicationCall>.rate(
-    dependencies: Dependencies
+    dependencies: Dependencies,
 ) = dependencies.run {
     val request = call.receive<RatingRequest>()
     val currentUid = call.authUid

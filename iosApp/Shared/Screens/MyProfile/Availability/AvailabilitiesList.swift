@@ -9,14 +9,14 @@
 import SwiftUI
 import SharedMobile
 
-private typealias Feature = CurrentUserAvailabilitiesListFeature
+private typealias Feature = AvailabilitiesCalendarFeature
 
 struct AvailabilitiesList: View {
-    var selectedItem: CurrentUserAvailabilitiesListFeature.StateCalendarItem?
+    var selectedItem: AvailabilitiesCalendarFeature.StateCalendarItem?
 
     let allAvailabilities: [Availability]
     let onSelect: (Availability) -> Void
-    let onCreate: (CurrentUserAvailabilitiesListFeature.StateCalendarItem) -> Void
+    let onCreate: (AvailabilitiesCalendarFeature.StateCalendarItem) -> Void
     
     private static let spacing: CGFloat = 10
     private static let cellsCount = Feature.State.companion.availabilityCellsCount.toInt()

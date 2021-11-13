@@ -28,7 +28,9 @@ sealed class Alert(
             descriptionBuilder: (Throwable) -> String?,
         ) : this(
             throwable = throwable,
-            errorDescription = descriptionBuilder(throwable) ?: "${throwable::class} $throwable"
+            errorDescription = descriptionBuilder(throwable)
+                ?: throwable.message
+                ?: "${throwable::class} $throwable"
         )
         companion object
     }

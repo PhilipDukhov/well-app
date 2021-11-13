@@ -1,13 +1,13 @@
 package com.well.sharedMobileTest
 
-import com.well.modules.models.Availability
-import com.well.modules.puerhBase.ReducerViewModel
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Eff
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Msg
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.State
-import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.CurrentUserAvailabilitiesListFeature
-import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.RequestConsultationFeature
+import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.AvailabilitiesCalendarFeature
+import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.RequestConsultationFeature
+import com.well.modules.models.Availability
+import com.well.modules.puerhBase.ReducerViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -22,10 +22,14 @@ class MyProfileTestModel(isCurrent: Boolean) : ReducerViewModel<State, Msg, Eff>
         if (state.value.isCurrent) {
             listener(
                 Msg.AvailabilityMsg(
-                    CurrentUserAvailabilitiesListFeature.Msg.SetAvailabilities(
+                    AvailabilitiesCalendarFeature.Msg.SetAvailabilities(
                         Availability.testValues
                     )
                 )
+            )
+        } else {
+            listener(
+                Msg.UpdateHasAvailableAvailabilities(true)
             )
         }
     }
@@ -74,10 +78,12 @@ class MyProfileTestModel(isCurrent: Boolean) : ReducerViewModel<State, Msg, Eff>
             }
             RequestConsultationFeature.Eff.Update -> {
                 delay(500)
+
                 listener(
                     Msg.RequestConsultationMsg(
                         RequestConsultationFeature.Msg.UpdateAvailabilities(
-                            Availability.testValues
+                            listOf()
+//                            Availability.testValues
                         )
                     )
                 )

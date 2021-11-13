@@ -1,7 +1,6 @@
 package com.well.server.routing.auth
 
 import com.well.modules.models.User
-import com.well.modules.models.UserId
 import com.well.server.utils.Dependencies
 import com.well.server.utils.append
 import com.well.server.utils.getPrimitiveContent
@@ -79,22 +78,25 @@ private fun Dependencies.getFacebookUid(
 private fun Dependencies.createFacebookUser(
     id: String,
     userInfo: JsonObject,
-): UserId = database
+): User.Id = database
     .usersQueries
     .run {
+        val firstName = userInfo.getPrimitiveContent(UserFields.FirstName)
+        val lastName = userInfo.getPrimitiveContent(UserFields.LastName)
         insertFacebook(
-            fullName = "${userInfo.getPrimitiveContent(UserFields.FirstName)} ${userInfo.getPrimitiveContent(UserFields.LastName)}",
+            fullName = "$firstName $lastName",
             type = User.Type.Doctor,
             email = userInfo.getNullablePrimitiveContent(UserFields.Email),
             facebookId = id,
         )
-        lastInsertId()
-            .executeAsOne()
-            .toInt()
+        User.Id(
+            lastInsertId()
+                .executeAsOne()
+        )
     }
 
 private suspend fun HttpClient.updateUserProfile(
-    id: UserId,
+    id: User.Id,
     facebookId: String,
     dependencies: Dependencies,
 ) = dependencies.apply {

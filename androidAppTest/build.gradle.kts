@@ -22,6 +22,7 @@ libDependencies(
 
     ":sharedMobileTest",
     ":modules:androidUi",
+    ":modules:utils:viewUtils",
     ":modules:features:more",
     ":modules:features:welcome",
     ":modules:features:myProfile:myProfileFeature",

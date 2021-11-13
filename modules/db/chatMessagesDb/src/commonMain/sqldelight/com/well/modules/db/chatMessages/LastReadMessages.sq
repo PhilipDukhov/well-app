@@ -1,7 +1,10 @@
+import com.well.modules.models.User;
+import com.well.modules.models.chat.ChatMessage;
+
 CREATE TABLE LastReadMessages (
-    fromId INTEGER AS Int NOT NULL,
-    peerId INTEGER AS Int NOT NULL,
-    messageId INTEGER AS Int NOT NULL,
+    fromId INTEGER AS User.Id NOT NULL,
+    peerId INTEGER AS User.Id NOT NULL,
+    messageId INTEGER AS ChatMessage.Id NOT NULL,
 
     PRIMARY KEY (fromId, peerId)
 );

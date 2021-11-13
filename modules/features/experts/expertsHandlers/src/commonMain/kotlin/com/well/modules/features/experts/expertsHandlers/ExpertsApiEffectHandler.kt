@@ -35,10 +35,10 @@ class ExpertsApiEffectHandler(
     init {
         services.connectionStatusFlow
             .map(Msg::OnConnectionStatusChange)
-            .collectIn(coroutineScope, ::listener)
+            .collectIn(coroutineScope, action = ::listener)
         services.usersListFlow
             .map(Msg::OnUsersUpdated)
-            .collectIn(coroutineScope, ::listener)
+            .collectIn(coroutineScope, action = ::listener)
         filterFlow
             .combineWithUnit(services.onConnectedFlow)
             .collectIn(coroutineScope) {

@@ -10,7 +10,6 @@ import com.well.modules.features.call.callFeature.webRtc.LocalDeviceState
 import com.well.modules.features.call.callFeature.webRtc.RemoteDeviceState
 import com.well.modules.models.Size
 import com.well.modules.models.User
-import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.models.date.Date
 import com.well.modules.models.date.secondsSinceNow
@@ -140,7 +139,7 @@ object CallFeature {
     }
 
     sealed interface Eff {
-        data class Initiate(val userId: UserId) : Eff
+        data class Initiate(val userId: User.Id) : Eff
         data class Accept(val incomingCall: WebSocketMsg.Back.IncomingCall) : Eff
         object End : Eff
         object ChooseViewPoint : Eff

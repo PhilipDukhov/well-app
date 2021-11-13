@@ -1,11 +1,11 @@
 package com.well.sharedMobileTest
 
-import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.CurrentUserAvailabilitiesListFeature
+import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.AvailabilitiesCalendarFeature
 import com.well.modules.models.Availability
 
-// CurrentUserAvailabilitiesListFeature unused for easy readability
+// AvailabilitiesCalendarFeature unused for easy readability
 @Suppress("unused")
-fun CurrentUserAvailabilitiesListFeature.testState() =
-    CurrentUserAvailabilitiesListFeature.State(
+fun AvailabilitiesCalendarFeature.testState() =
+    AvailabilitiesCalendarFeature.State(
         availabilities = Availability.testValues
     )

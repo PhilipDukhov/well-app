@@ -6,10 +6,9 @@ import com.well.modules.db.server.Users
 import com.well.modules.models.Rating
 import com.well.modules.models.User
 import com.well.modules.models.User.Type
-import com.well.modules.models.UserId
 
 fun Users.toUser(
-    currentUid: UserId,
+    currentUid: User.Id,
     database: Database,
 ) = (currentUid == id).let { isCurrent ->
     User(

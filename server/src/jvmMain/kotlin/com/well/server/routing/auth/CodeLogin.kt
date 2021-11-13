@@ -17,14 +17,14 @@ import io.ktor.response.*
 import io.ktor.util.pipeline.*
 
 suspend fun PipelineContext<*, ApplicationCall>.sendEmail(
-    dependencies: Dependencies
+    dependencies: Dependencies,
 ) {
     sendEmail("philip.dukhov@gmail.com", call.receive(), "Hi", "code")
     call.respond(HttpStatusCode.OK)
 }
 
 suspend fun PipelineContext<*, ApplicationCall>.sendSms(
-    dependencies: Dependencies
+    dependencies: Dependencies,
 ) {
     sendSms("Enter code", call.receive())
     call.respond(HttpStatusCode.OK)

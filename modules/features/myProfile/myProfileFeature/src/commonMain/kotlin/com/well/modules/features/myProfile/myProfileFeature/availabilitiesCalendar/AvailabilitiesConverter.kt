@@ -1,4 +1,4 @@
-package com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability
+package com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar
 
 import com.well.modules.models.Availability
 import com.well.modules.models.Repeat

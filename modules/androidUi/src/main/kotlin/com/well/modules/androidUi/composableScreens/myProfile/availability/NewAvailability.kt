@@ -4,13 +4,13 @@ import com.well.modules.androidUi.customViews.rememberAndroidDialog
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.featureListener
 import com.well.modules.androidUi.ext.toColor
-import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.CreateAvailabilityFeature.Msg
-import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.CreateAvailabilityFeature.Strings
+import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.CreateAvailabilityFeature.Msg
+import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.CreateAvailabilityFeature.Strings
 import com.well.modules.models.Availability
 import com.well.modules.models.Color
 import com.well.modules.models.Repeat
 import com.well.modules.models.date.dateTime.LocalTime
-import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.CreateAvailabilityFeature as Feature
+import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.CreateAvailabilityFeature as Feature
 import android.app.TimePickerDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

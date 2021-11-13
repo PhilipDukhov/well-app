@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="kaptClean&amp;Generate" type="GradleRunConfiguration" factoryName="Gradle">
+  <configuration default="false" name=":shared kaptClean&amp;Generate" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$/sharedMobile" />
@@ -19,7 +19,7 @@
     <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
     <DebugAllEnabled>false</DebugAllEnabled>
     <method v="2">
-      <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_cleanKaptBuildFolder" />
+      <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_:shared cleanKaptBuildFolder" />
     </method>
   </configuration>
 </component>

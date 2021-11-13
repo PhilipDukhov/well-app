@@ -6,8 +6,7 @@ import com.well.modules.db.server.LastReadMessages
 import com.well.modules.db.server.insertChatMessage
 import com.well.modules.db.server.toChatMessage
 import com.well.modules.db.server.toLastReadMessage
-import com.well.modules.models.ChatMessageId
-import com.well.modules.models.UserId
+import com.well.modules.models.User
 import com.well.modules.models.UserPresenceInfo
 import com.well.modules.models.UsersFilter
 import com.well.modules.models.WebSocketMsg
@@ -40,22 +39,22 @@ import org.joda.time.Weeks
 import java.util.*
 
 class UserSession(
-    private val currentUid: UserId,
+    private val currentUid: User.Id,
     private val webSocketSession: WebSocketSession,
     private val dependencies: Dependencies,
 ) : WebSocketSession by webSocketSession {
     private class CreatedMessageInfo(
-        val tmpId: ChatMessageId,
-        val id: ChatMessageId,
+        val tmpId: ChatMessage.Id,
+        val id: ChatMessage.Id,
     )
 
     private val expertsFilterFlow = MutableStateFlow<UsersFilter?>(null)
     private val usersPresenceInfoFlow = MutableStateFlow<List<UserPresenceInfo>?>(null)
-    private val messagesPresenceInfoFlow = MutableStateFlow<ChatMessageId?>(null)
+    private val messagesPresenceInfoFlow = MutableStateFlow<ChatMessage.Id?>(null)
     private val chatReadStatePresenceFlow = MutableStateFlow<List<LastReadMessage>>(emptyList())
     private val userCreatedChatMessageInfosFlow = MutableSetFlow<CreatedMessageInfo>()
 
-    private val expertsFlow: Flow<List<UserId>> = expertsFilterFlow
+    private val expertsFlow: Flow<List<User.Id>> = expertsFilterFlow
         .filterNotNull()
         .flatMapLatest { filter ->
             val maxLastOnlineDistance =
@@ -122,7 +121,7 @@ class UserSession(
                     }
             }
             .flatMapLatest()
-            .filter { it.isNotEmpty() }
+            .filterNotEmpty()
     private val newMessagesFlow =
         messagesPresenceInfoFlow
             .filterNotNull()
@@ -142,6 +141,7 @@ class UserSession(
                     }
             }
             .flatMapLatest()
+            .filterNotEmpty()
     private val newReadStatesFlow =
         chatReadStatePresenceFlow
             .flatMapLatest { chatReadStatePresence ->
@@ -272,7 +272,7 @@ class UserSession(
                 )
             )
         )
-        dependencies.callInfos.add(CallInfo(currentUid, msg.uid))
+        dependencies.callInfos.add(CallInfo(listOf(currentUid, msg.uid)))
     }
 
     private suspend fun insertChatMessage(message: ChatMessage) {
@@ -289,7 +289,7 @@ class UserSession(
         )
     }
 
-    private fun chatMessageRead(messageId: ChatMessageId) {
+    private fun chatMessageRead(messageId: ChatMessage.Id) {
         dependencies.database
             .run {
                 transaction {
@@ -333,7 +333,7 @@ private fun UsersFilter.Rating.toDoubleOrNull(): Double? =
         UsersFilter.Rating.One -> 1.0
     }
 
-private fun Dependencies.callPartnerId(uid: UserId) =
+private fun Dependencies.callPartnerId(uid: User.Id) =
     callInfos
         .withIndex()
         .firstOrNull { it.value.uids.contains(uid) }
@@ -347,7 +347,7 @@ private fun Dependencies.callPartnerId(uid: UserId) =
         }
 
 suspend fun Dependencies.endCall(
-    uid: UserId,
+    uid: User.Id,
     reason: WebSocketMsg.Call.EndCall.Reason,
 ) = callPartnerId(uid)
     ?.run {

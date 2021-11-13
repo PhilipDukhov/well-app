@@ -3,6 +3,7 @@ package com.well.modules.features.call.callHandlers
 import com.well.modules.atomic.AtomicMutableMap
 import com.well.modules.atomic.AtomicRef
 import com.well.modules.utils.kotlinUtils.map
+import com.well.modules.utils.kotlinUtils.mapSecond
 import kotlin.math.min
 
 private typealias ChunkId = Int
@@ -36,10 +37,7 @@ class DataChannelChunkManager {
         DataChannelMessageChunk(chunkByteArray).run {
             if (chunksCount > 1) {
                 val (neededIds, fullByteArray) = incompleteMessages[id]
-                    ?.map(
-                        transformA = { it },
-                        transformB = { it.copyOf() },
-                    )
+                    ?.mapSecond { it.copyOf() }
                     ?: (0 until chunksCount).toSet() to ByteArray(msgSize)
                 byteArray.copyInto(
                     fullByteArray,

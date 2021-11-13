@@ -3,9 +3,7 @@ package com.well.modules.features.chatList.chatListHandlers
 import com.well.modules.features.chatList.chatListFeature.ChatListFeature
 import com.well.modules.features.chatList.chatListFeature.ChatListFeature.Eff
 import com.well.modules.features.chatList.chatListFeature.ChatListFeature.Msg
-import com.well.modules.models.ChatMessageId
 import com.well.modules.models.User
-import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.models.chat.ChatMessage
 import com.well.modules.models.chat.ChatMessageWithStatus
@@ -21,17 +19,17 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 
 class ChatListEffHandler(
-    private val currentUid: UserId,
+    private val currentUid: User.Id,
     private val services: Services,
     coroutineScope: CoroutineScope,
 ) : EffectHandler<Eff, Msg>(coroutineScope) {
     data class Services(
-        val openUserChat: (id: UserId) -> Unit,
+        val openUserChat: (id: User.Id) -> Unit,
         val onConnectedFlow: Flow<Unit>,
         val lastListWithStatusFlow: Flow<List<ChatMessageWithStatus>>,
-        val unreadCountsFlow: (List<ChatMessage>) -> Flow<Map<ChatMessageId, Long>>,
-        val getUsersByIdsFlow: (List<UserId>) -> Flow<List<User>>,
-        val lastPresentMessageIdFlow: Flow<ChatMessageId>,
+        val unreadCountsFlow: (List<ChatMessage>) -> Flow<Map<ChatMessage.Id, Long>>,
+        val getUsersByIdsFlow: (List<User.Id>) -> Flow<List<User>>,
+        val lastPresentMessageIdFlow: Flow<ChatMessage.Id>,
         val lastReadPresenceFlow: Flow<List<LastReadMessage>>,
         val sendFrontWebSocketMsg: suspend (WebSocketMsg.Front) -> Unit,
     )

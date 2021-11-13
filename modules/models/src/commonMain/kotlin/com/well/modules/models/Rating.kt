@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class RatingRequest(
-    val uid: UserId,
+    val uid: User.Id,
     val rating: Rating,
 )
 

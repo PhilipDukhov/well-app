@@ -3,7 +3,7 @@ package com.well.sharedMobile.featureProvider
 import com.well.modules.db.users.getByIdFlow
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature
 import com.well.modules.features.myProfile.myProfileHandlers.MyProfileEffHandler
-import com.well.modules.models.UserId
+import com.well.modules.models.User
 import com.well.modules.puerhBase.EffectHandler
 import com.well.modules.puerhBase.Listener
 import com.well.modules.puerhBase.adapt
@@ -18,7 +18,8 @@ import com.well.sharedMobile.TopLevelFeature.State
 import kotlinx.coroutines.launch
 
 internal fun FeatureProviderImpl.createProfileEffHandler(
-    uid: UserId,
+    uid: User.Id,
+    isCurrent: Boolean = false,
     position: State.ScreenPosition,
     listener: Listener<Msg>,
 ): EffectHandler<Eff, Msg> = MyProfileEffHandler(

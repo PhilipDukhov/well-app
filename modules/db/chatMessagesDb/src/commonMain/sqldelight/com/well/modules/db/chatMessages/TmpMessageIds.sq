@@ -1,5 +1,7 @@
+import com.well.modules.models.chat.ChatMessage;
+
 CREATE TABLE TmpMessageIds (
-    id INTEGER AS Int NOT NULL PRIMARY KEY
+    id INTEGER AS ChatMessage.Id NOT NULL PRIMARY KEY
 );
 
 updateTmpId {

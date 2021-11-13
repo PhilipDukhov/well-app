@@ -1,6 +1,6 @@
 package com.well.modules.db.users
 
-import com.well.modules.models.UserId
+import com.well.modules.models.User
 import com.well.modules.models.UserPresenceInfo
 import com.well.modules.utils.flowUtils.mapIterable
 import com.squareup.sqldelight.runtime.coroutines.asFlow
@@ -17,14 +17,14 @@ fun UsersQueries.usersPresenceFlow() =
             list.map { UserPresenceInfo(id = it.id, lastEdited = it.lastEdited) }
         }
 
-fun UsersQueries.getByIdFlow(uid: UserId) =
+fun UsersQueries.getByIdFlow(uid: User.Id) =
     getById(uid)
         .asFlow()
         .mapToOneOrNull()
         .filterNotNull()
         .map(Users::toUser)
 
-fun UsersQueries.getByIdsFlow(uids: List<UserId>) =
+fun UsersQueries.getByIdsFlow(uids: List<User.Id>) =
     getByIds(uids)
         .asFlow()
         .mapToList()

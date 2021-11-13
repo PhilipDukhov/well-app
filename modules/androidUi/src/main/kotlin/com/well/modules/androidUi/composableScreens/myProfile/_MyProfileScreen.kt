@@ -281,7 +281,7 @@ private fun Content(
                 }
             }
             if (state.editingStatus == State.EditingStatus.Uploading) {
-                InactiveOverlay(showActivityIndicator = false)
+                InactiveOverlay()
             }
         }
     }

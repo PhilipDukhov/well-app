@@ -22,7 +22,7 @@ import java.io.ByteArrayInputStream
 class AwsManager(
     accessKeyId: String,
     secretAccessKey: String,
-    private val bucketName: String
+    private val bucketName: String,
 ) {
     private val s3Client = (AmazonS3Client.builder()
         .withCredentials(AWSStaticCredentialsProvider(BasicAWSCredentials(accessKeyId, secretAccessKey)))

@@ -7,12 +7,12 @@ import com.well.modules.androidUi.customViews.clickable
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.borderKMM
 import com.well.modules.androidUi.ext.toColor
-import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.RequestConsultationFeature.Msg
-import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.RequestConsultationFeature.State
+import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.RequestConsultationFeature.Msg
+import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.RequestConsultationFeature.State
 import com.well.modules.models.Availability
 import com.well.modules.models.Color
 import com.well.modules.models.date.dateTime.localizedDayAndShortMonth
-import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.RequestConsultationFeature as Feature
+import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.RequestConsultationFeature as Feature
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -62,7 +62,7 @@ fun RequestConsultationBottomSheet(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                Content(state, listener)
+                RequestConsultationView(state, listener)
             }
             Overlay(state.status)
         }
@@ -76,10 +76,10 @@ private fun BoxScope.Overlay(status: State.Status) {
         State.Status.Loaded,
         -> Unit
         State.Status.Processing -> {
-            InactiveOverlay()
+            InactiveOverlay(showActivityIndicator = true)
         }
         State.Status.Booked -> {
-            InactiveOverlay(showActivityIndicator = false) {
+            InactiveOverlay() {
                 Icon(
                     Icons.Default.Check,
                     contentDescription = null,
@@ -90,7 +90,7 @@ private fun BoxScope.Overlay(status: State.Status) {
                 )
             }
         }
-        is State.Status.BookingFailed -> InactiveOverlay(showActivityIndicator = false) {
+        is State.Status.BookingFailed -> InactiveOverlay() {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(Feature.Strings.bookingFailed, style = MaterialTheme.typography.body1)
                 Text(status.reason, textAlign = TextAlign.Center)
@@ -100,7 +100,7 @@ private fun BoxScope.Overlay(status: State.Status) {
 }
 
 @Composable
-private fun Content(
+private fun RequestConsultationView(
     state: State,
     listener: (Msg) -> Unit,
 ) {
@@ -110,20 +110,27 @@ private fun Content(
         style = MaterialTheme.typography.subtitle2,
     )
     Spacer(Modifier.height(40.dp))
-    if (state.status == State.Status.Loading) {
-        CircularProgressIndicator(
-            modifier = Modifier
-                .fillMaxWidth(0.1f)
-                .aspectRatio(1f)
-        )
-        Spacer(Modifier.height(40.dp))
-    } else {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(52.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Availabilities(state.availabilitiesByDay) {
-                listener(Msg.Book(it))
+    when {
+        state.status == State.Status.Loading -> {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .fillMaxWidth(0.1f)
+                    .aspectRatio(1f)
+            )
+            Spacer(Modifier.height(40.dp))
+        }
+        state.availabilitiesByDay.isEmpty() -> {
+            Text(Feature.Strings.hasNoConsultations, style = MaterialTheme.typography.body1)
+            Spacer(Modifier.height(40.dp))
+        }
+        else -> {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(52.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Availabilities(state.availabilitiesByDay) {
+                    listener(Msg.Book(it))
+                }
             }
         }
     }

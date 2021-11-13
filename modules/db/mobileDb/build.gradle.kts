@@ -21,6 +21,7 @@ kotlin {
                 "kotlin.stdLib",
                 "sqldelight.coroutinesExtensions",
                 "sqldelight.runtime",
+                "shared.napier",
             )
         }
         if (withAndroid) {

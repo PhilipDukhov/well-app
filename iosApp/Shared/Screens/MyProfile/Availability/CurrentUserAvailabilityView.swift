@@ -9,11 +9,11 @@
 import SwiftUI
 import SharedMobile
 
-private typealias Feature = CurrentUserAvailabilitiesListFeature
+private typealias Feature = AvailabilitiesCalendarFeature
 
 struct CurrentUserAvailabilityView: View {
-    let state: CurrentUserAvailabilitiesListFeature.State
-    let listener: (CurrentUserAvailabilitiesListFeature.Msg) -> Void
+    let state: AvailabilitiesCalendarFeature.State
+    let listener: (AvailabilitiesCalendarFeature.Msg) -> Void
 
     enum PresentingDialog: Identifiable {
         case create(LocalDate)

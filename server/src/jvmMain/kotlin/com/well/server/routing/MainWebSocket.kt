@@ -1,6 +1,6 @@
 package com.well.server.routing
 
-import com.well.modules.models.UserId
+import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
 import com.well.server.utils.Dependencies
 import com.well.server.utils.authUid
@@ -44,7 +44,7 @@ suspend fun DefaultWebSocketServerSession.mainWebSocket(dependencies: Dependenci
 }
 
 private suspend fun Dependencies.userDisconnected(
-    uid: UserId
+    uid: User.Id,
 ) {
     connectedUserSessionsFlow.remove(uid)
     database.usersQueries.updateLastOnline(uid)

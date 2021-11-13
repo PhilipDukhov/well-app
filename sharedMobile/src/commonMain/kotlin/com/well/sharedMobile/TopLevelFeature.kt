@@ -12,7 +12,6 @@ import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.features.welcome.WelcomeFeature
 import com.well.modules.models.User
-import com.well.modules.models.UserId
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
@@ -132,12 +131,12 @@ object TopLevelFeature {
         object StopImageSharing : Msg()
 
         data class ShowAlert(val alert: Alert) : Msg()
-        data class LoggedIn(val uid: UserId) : Msg()
+        data class LoggedIn(val uid: User.Id) : Msg()
         data class PushMyProfile(val myProfileState: MyProfileFeature.State) : Msg()
         data class SelectTab(val tab: Tab) : Msg()
         object OpenLoginScreen : Msg()
         object OpenWelcomeScreen : Msg()
-        data class OpenUserChat(val uid: UserId) : Msg()
+        data class OpenUserChat(val uid: User.Id) : Msg()
         object Back : Msg()
         object Pop : Msg()
     }

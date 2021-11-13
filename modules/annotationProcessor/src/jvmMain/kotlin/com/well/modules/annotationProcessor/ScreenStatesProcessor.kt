@@ -44,7 +44,7 @@ class ScreenStatesProcessor : AbstractProcessor() {
             if (element.kind != ElementKind.CLASS) {
                 processingEnv.println(
                     Kind.ERROR,
-                    "Can only be applied to functions, element: $element\n"
+                    "Can only be applied to classes, element: $element\n"
                 )
                 return false
             }
@@ -110,7 +110,7 @@ class ContainerInfo(
     val napierClassName = ClassName("io.github.aakira.napier", "Napier")
     val withEmptySetClassName = ClassName("com.well.modules.puerhBase", "withEmptySet")
     val letNamedClassName = ClassName("com.well.modules.utils.kotlinUtils", "letNamed")
-    val pairMapClassName = ClassName("com.well.modules.utils.kotlinUtils", "map")
+    val pairMapSecondClassName = ClassName("com.well.modules.utils.kotlinUtils", "mapSecond")
     val setRemovingClassName = ClassName("com.well.modules.utils.kotlinUtils", "removing")
 
     val ScreenStates.safeFeatures: List<TypeMirror>
@@ -561,13 +561,12 @@ class FeatureInfo(
                     addStatement(
                         """
                                 }
-                                return finalState.reduceScreenChanged(state).%T(
-                                    transformA = { it },
-                                    transformB = { it.%T(pushEff) }
-                                )
+                                return finalState
+                                    .reduceScreenChanged(state)
+                                    .%T { it.%T(pushEff) }
                             }
                         """.trimIndent(),
-                        containerInfo.pairMapClassName,
+                        containerInfo.pairMapSecondClassName,
                         containerInfo.setRemovingClassName,
                     )
                 }

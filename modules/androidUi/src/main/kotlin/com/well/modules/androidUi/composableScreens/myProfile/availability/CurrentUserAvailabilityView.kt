@@ -7,8 +7,8 @@ import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.thenOrNull
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.androidUi.theme.body1Light
-import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.CurrentUserAvailabilitiesListFeature.Msg
-import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.CurrentUserAvailabilitiesListFeature.State
+import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.AvailabilitiesCalendarFeature.Msg
+import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.AvailabilitiesCalendarFeature.State
 import com.well.modules.models.Availability
 import com.well.modules.models.Color
 import com.well.modules.models.date.dateTime.localizedDayAndShortMonth
@@ -83,80 +83,80 @@ fun CurrentUserAvailabilityView(
     Column(
         modifier = Modifier
             .padding(horizontal = 15.dp)
-    ) {
-        var selectedDate by rememberSaveable(state.monthOffset) {
-            mutableStateOf<LocalDate?>(null)
-        }
-        val selectedItem = remember(state.weeks, selectedDate) {
-            state.weeks.firstNotNullOfOrNull { weekDays ->
-                weekDays.firstOrNull { it.date == selectedDate }
-            }
-        }
-        val (presentingDialog, setPresentingDialog) = rememberSaveable {
-            mutableStateOf<PresentingDialog?>(null)
-        }
-        ProvideTextStyle(
-            value = TextStyle(fontSize = 15.sp, fontWeight = FontWeight.Bold)
         ) {
-            CalendarView(
-                state = state,
-                selectedDate = selectedDate,
-                onSelectDate = {
-                    selectedDate = if (selectedDate == it) null else it
+            var selectedDate by rememberSaveable(state.monthOffset) {
+                mutableStateOf<LocalDate?>(null)
+            }
+            val selectedItem = remember(state.weeks, selectedDate) {
+                state.weeks.firstNotNullOfOrNull { weekDays ->
+                    weekDays.firstOrNull { it.date == selectedDate }
+                }
+            }
+            val (presentingDialog, setPresentingDialog) = rememberSaveable {
+                mutableStateOf<PresentingDialog?>(null)
+            }
+            ProvideTextStyle(
+                value = TextStyle(fontSize = 15.sp, fontWeight = FontWeight.Bold)
+            ) {
+                CalendarView(
+                    state = state,
+                    selectedDate = selectedDate,
+                    onSelectDate = {
+                        selectedDate = if (selectedDate == it) null else it
+                    },
+                    showNextMonth = {
+                        listener(Msg.NextMonth)
+                    },
+                    showPrevMonth = {
+                        listener(Msg.PrevMonth)
+                    },
+                )
+            }
+            AvailabilitiesList(
+                selectedItem = selectedItem,
+                allAvailabilities = state.monthAvailabilities,
+                onSelect = {
+                    setPresentingDialog(PresentingDialog.Update(it))
                 },
-                showNextMonth = {
-                    listener(Msg.NextMonth)
-                },
-                showPrevMonth = {
-                    listener(Msg.PrevMonth)
+                onCreate = {
+                    setPresentingDialog(PresentingDialog.Create(it.date))
                 },
             )
-        }
-        AvailabilitiesList(
-            selectedItem = selectedItem,
-            allAvailabilities = state.monthAvailabilities,
-            onSelect = {
-                setPresentingDialog(PresentingDialog.Update(it))
-            },
-            onCreate = {
-                setPresentingDialog(PresentingDialog.Create(it.date))
-            },
-        )
-        if (presentingDialog != null) {
-            val finish = remember {
-                { msg: Msg? ->
-                    setPresentingDialog(null)
-                    msg?.let(listener)
-                }
-            }
-            ProvideTextStyle(value = MaterialTheme.typography.body1Light) {
-                when (presentingDialog) {
-                    is PresentingDialog.Create -> {
-                        CreateAvailability(
-                            startDay = presentingDialog.date,
-                            created = { availability ->
-                                finish(Msg.Add(availability))
-                            },
-                            onCancel = {
-                                finish(null)
-                            },
-                        )
-                    }
-                    is PresentingDialog.Update -> {
-                        UpdateAvailability(
-                            availability = presentingDialog.availability,
-                            onSave = { availability ->
-                                finish(Msg.Update(availability))
-                            },
-                            onCancel = {
-                                finish(null)
-                            },
-                            onDelete = {
-                                finish(Msg.Delete(presentingDialog.availability.id))
-                            },
-                        )
+            if (presentingDialog != null) {
+                val finish = remember {
+                    { msg: Msg? ->
+                        setPresentingDialog(null)
+                        msg?.let(listener)
                     }
                 }
+                ProvideTextStyle(value = MaterialTheme.typography.body1Light) {
+                    when (presentingDialog) {
+                        is PresentingDialog.Create -> {
+                            CreateAvailability(
+                                startDay = presentingDialog.date,
+                                created = { availability ->
+                                    finish(Msg.Add(availability))
+                                },
+                                onCancel = {
+                                    finish(null)
+                                },
+                            )
+                        }
+                        is PresentingDialog.Update -> {
+                            UpdateAvailability(
+                                availability = presentingDialog.availability,
+                                onSave = { availability ->
+                                    finish(Msg.Update(availability))
+                                },
+                                onCancel = {
+                                    finish(null)
+                                },
+                                onDelete = {
+                                    finish(Msg.Delete(presentingDialog.availability.id))
+                                },
+                            )
+                        }
+                    }
             }
         }
     }

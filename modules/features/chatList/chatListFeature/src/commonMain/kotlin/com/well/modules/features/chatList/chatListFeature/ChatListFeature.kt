@@ -1,7 +1,6 @@
 package com.well.modules.features.chatList.chatListFeature
 
 import com.well.modules.models.User
-import com.well.modules.models.UserId
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
 import com.well.modules.models.chat.ChatMessageWithStatus
@@ -25,12 +24,12 @@ object ChatListFeature {
     }
 
     sealed class Msg {
-        data class SelectChat(val userId: UserId) : Msg()
+        data class SelectChat(val userId: User.Id) : Msg()
         data class UpdateItems(val listItems: List<State.ListItem>) : Msg()
     }
 
     sealed interface Eff {
-        data class SelectChat(val uid: UserId) : Eff
+        data class SelectChat(val uid: User.Id) : Eff
     }
 
     fun reducer(

@@ -1,7 +1,6 @@
 package com.well.modules.db.chatMessages
 
-import com.well.modules.models.ChatMessageId
-import com.well.modules.models.UserId
+import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
 import com.well.modules.models.chat.LastReadMessage
 import com.well.modules.utils.flowUtils.flattenFlow
@@ -15,7 +14,7 @@ import kotlinx.coroutines.flow.map
 
 data class ChatPeerInfo(val lastMessage: ChatMessage, val unreadCount: Int)
 
-fun ChatMessagesQueries.chatPeerInfos(id: UserId) =
+fun ChatMessagesQueries.chatPeerInfos(id: User.Id) =
     lastList(id)
         .asFlow()
         .mapToList()
@@ -53,20 +52,20 @@ fun LastReadMessagesQueries.insert(lastReadMessage: LastReadMessage) =
         peerId = lastReadMessage.peerId
     )
 
-fun ChatMessagesQueries.chatListFlow(currentUserId: UserId, peerId: UserId) =
+fun ChatMessagesQueries.chatListFlow(currentUserId: User.Id, peerId: User.Id) =
     chatList(currentUserId, peerId)
         .asFlow()
         .mapToList()
         .mapIterable(ChatMessages::toChatMessage)
 
-fun ChatMessagesQueries.messagePresenceFlow(): Flow<ChatMessageId> =
+fun ChatMessagesQueries.messagePresenceFlow(): Flow<ChatMessage.Id> =
     newestChatMessageId()
         .asFlow()
-        .mapToOneOrDefault(-1)
+        .mapToOneOrDefault(ChatMessage.Id(-1))
 
 fun ChatMessagesDatabase.chatMessageWithStatusFlow(
-    currentUid: ChatMessageId,
-    peerUid: ChatMessageId,
+    currentUid: User.Id,
+    peerUid: User.Id,
 ) = chatMessagesQueries
     .chatList(firstId = currentUid, secondId = peerUid)
     .asFlow()
@@ -92,8 +91,8 @@ fun LastReadMessages.toLastReadMessage() = LastReadMessage(
 )
 
 fun ChatMessagesDatabase.insertTmpMessage(
-    fromId: Int,
-    peerId: Int,
+    fromId: User.Id,
+    peerId: User.Id,
     content: ChatMessage.Content,
 ) = transactionWithResult<ChatMessage> {
     chatMessagesQueries.insertTmp(
@@ -104,23 +103,23 @@ fun ChatMessagesDatabase.insertTmpMessage(
         photoAspectRatio = content.photoAspectRatio,
     )
     val message = chatMessagesQueries.getById(
-        chatMessagesQueries.lastInsertId().executeAsOne().toInt()
+        ChatMessage.Id(chatMessagesQueries.lastInsertId().executeAsOne())
     ).executeAsOne().toChatMessage()
     tmpMessageIdsQueries.updateTmpId(message.id)
     message
 }
 
-fun ChatMessagesQueries.lastListFlow(uid: UserId) =
+fun ChatMessagesQueries.lastListFlow(uid: User.Id) =
     lastList(uid)
         .asFlow()
         .mapToList()
 
-fun ChatMessagesDatabase.lastListWithStatusFlow(uid: UserId) =
+fun ChatMessagesDatabase.lastListWithStatusFlow(uid: User.Id) =
     chatMessagesQueries.lastListFlow(uid)
         .mapIterable(ChatMessages::toChatMessage)
         .toChatMessageWithStatusFlow(currentUid = uid, messagesDatabase = this)
 
-fun ChatMessagesQueries.unreadCountFlow(uid: UserId, message: ChatMessage) =
+fun ChatMessagesQueries.unreadCountFlow(uid: User.Id, message: ChatMessage) =
     unreadCount(fromId = message.secondId(uid), peerId = uid)
         .asFlow()
         .mapToOne()
@@ -128,7 +127,7 @@ fun ChatMessagesQueries.unreadCountFlow(uid: UserId, message: ChatMessage) =
             message.id to unreadCount
         }
 
-fun ChatMessagesQueries.unreadCountsFlow(uid: UserId, messages: List<ChatMessage>) =
+fun ChatMessagesQueries.unreadCountsFlow(uid: User.Id, messages: List<ChatMessage>) =
     messages
         .map { unreadCountFlow(uid, it) }
         .flattenFlow()

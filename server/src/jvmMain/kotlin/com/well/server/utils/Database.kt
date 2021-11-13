@@ -1,9 +1,16 @@
 package com.well.server.utils
 
+import com.well.modules.db.server.Availabilities
+import com.well.modules.db.server.ChatMessages
+import com.well.modules.db.server.Database
+import com.well.modules.db.server.Favourites
+import com.well.modules.db.server.LastReadMessages
+import com.well.modules.db.server.Ratings
+import com.well.modules.db.server.Users
+import com.well.modules.models.User
+import com.well.modules.models.chat.ChatMessage
 import com.well.modules.utils.dbUtils.SetEnumColumnAdapter
 import com.well.modules.utils.dbUtils.migrateIfNeeded
-import com.well.modules.db.server.Database
-import com.well.modules.db.server.Users
 import com.squareup.sqldelight.EnumColumnAdapter
 import com.squareup.sqldelight.sqlite.driver.asJdbcDriver
 import com.zaxxer.hikari.HikariConfig
@@ -74,6 +81,29 @@ fun initialiseDatabase(app: Application): Database {
             academicRankAdapter = EnumColumnAdapter(),
             languagesAdapter = SetEnumColumnAdapter(),
             skillsAdapter = SetEnumColumnAdapter(),
+            idAdapter = User.Id.ColumnAdapter,
+        ),
+        AvailabilitiesAdapter = Availabilities.Adapter(
+            repeatAdapter = EnumColumnAdapter(),
+            ownerIdAdapter = User.Id.ColumnAdapter,
+        ),
+        ChatMessagesAdapter = ChatMessages.Adapter(
+            fromIdAdapter = User.Id.ColumnAdapter,
+            peerIdAdapter = User.Id.ColumnAdapter,
+            idAdapter = ChatMessage.Id.ColumnAdapter,
+        ),
+        FavouritesAdapter = Favourites.Adapter(
+            ownerAdapter = User.Id.ColumnAdapter,
+            destinationAdapter = User.Id.ColumnAdapter,
+        ),
+        LastReadMessagesAdapter = LastReadMessages.Adapter(
+            fromIdAdapter = User.Id.ColumnAdapter,
+            peerIdAdapter = User.Id.ColumnAdapter,
+            messageIdAdapter = ChatMessage.Id.ColumnAdapter,
+        ),
+        RatingsAdapter = Ratings.Adapter(
+            ownerAdapter = User.Id.ColumnAdapter,
+            destinationAdapter = User.Id.ColumnAdapter,
         ),
     )
 

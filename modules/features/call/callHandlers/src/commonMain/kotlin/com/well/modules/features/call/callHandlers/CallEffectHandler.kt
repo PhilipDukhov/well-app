@@ -15,7 +15,7 @@ import com.well.modules.features.call.callFeature.webRtc.RtcMsg
 import com.well.modules.features.call.callFeature.webRtc.WebRtcManagerI
 import com.well.modules.features.call.callFeature.webRtc.WebRtcManagerI.Listener.DataChannelState
 import com.well.modules.models.Size
-import com.well.modules.models.UserId
+import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.puerhBase.EffectHandler
 import com.well.modules.utils.viewUtils.sharedImage.ImageContainer
@@ -213,7 +213,7 @@ class CallEffectHandler(
         }
     }
 
-    private fun initiateCall(userId: UserId) =
+    private fun initiateCall(userId: User.Id) =
         send(
             WebSocketMsg.Front.InitiateCall(
                 userId,

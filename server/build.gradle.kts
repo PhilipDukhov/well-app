@@ -21,7 +21,6 @@ kotlin {
         val jvmMain by getting {
             libDependencies(
                 ":modules:utils:dbUtils",
-                ":modules:db:chatMessagesDb",
                 ":modules:db:serverDb",
                 ":modules:utils:flowUtils",
                 ":modules:utils:ktorUtils",
@@ -30,6 +29,7 @@ kotlin {
                 "kotlin.coroutines.core",
                 "ktor.server.*",
                 "ktor.serialization",
+                "ktor.client.core",
                 "ktor.client.serialization",
                 "ktor.client.logging",
                 "ktor.client.engine.cio",
@@ -37,6 +37,7 @@ kotlin {
                 "ktor.authJwt",
                 "ktor.metrics",
                 "ktor.websockets",
+                "ktor.utils",
                 "sqldelight.coroutinesExtensions",
                 "sqldelight.jdbcDriver",
                 "google.apiClient",

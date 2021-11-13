@@ -17,7 +17,7 @@ import kotlin.time.Duration
 
 val User.Companion.testUser
     get() = User(
-        id = 1,
+        id = User.Id(1),
         initialized = true,
         lastEdited = 0.0,
         fullName = "12",
@@ -45,7 +45,9 @@ val User.Companion.testUser
             count = 0,
             average = 0.0,
         ),
-        hasAvailableAvailabilities = true
+        favorite = false,
+        email = "phil@gmail.com",
+        countryCode = "UA",
     )
 
 private val testMessages = AtomicMutableList<ChatMessage>()
@@ -56,10 +58,10 @@ fun ChatMessage.Companion.getTestMessages(count: Int): List<ChatMessage> {
     while (testMessages.count() < count) {
         testMessages.add(
             ChatMessage(
-                id = testMessages.count(),
+                id = ChatMessage.Id(testMessages.count().toLong()),
                 creation = Date().millis.toDouble() / 1000 + Random.nextDouble(-10000.0, 10000.0),
-                fromId = if (testMessages.count() % 2 == 0) 0 else 1,
-                peerId = if (testMessages.count() % 2 == 0) 1 else 0,
+                fromId = User.Id(if (testMessages.count() % 2 == 0) 0 else 1),
+                peerId = User.Id(if (testMessages.count() % 2 == 0) 1 else 0),
                 content = ChatMessage.Content.Text(
                     Random.nextInt(loremImpsum.count())
                         .let {
@@ -73,12 +75,12 @@ fun ChatMessage.Companion.getTestMessages(count: Int): List<ChatMessage> {
 }
 
 fun ChatMessageWithStatus.Companion.getTestMessagesWithStatus(count: Int): List<ChatMessageWithStatus> =
-    ChatMessage.getTestMessages(count).map { message ->
+    ChatMessage.getTestMessages(count).mapIndexed { i, message ->
         ChatMessageWithStatus(
             message,
             status = ChatMessageWithStatus.Status.values()
                 .let { values ->
-                    values[message.id % values.count()]
+                    values[i % values.count()]
                 }
         )
     }

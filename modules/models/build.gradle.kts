@@ -18,6 +18,7 @@ kotlin {
             libDependencies(
                 "kotlin.datetime",
                 "kotlin.serializationJson",
+                "sqldelight.runtime",
                 "kotlin.stdLib",
             )
         }

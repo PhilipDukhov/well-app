@@ -1,12 +1,12 @@
 package com.well.server.utils
 
-import com.well.modules.models.UserId
+import com.well.modules.models.User
 import com.auth0.jwt.interfaces.Payload
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 
-val ApplicationCall.authUid: UserId
+val ApplicationCall.authUid: User.Id
     get() = principal<JWTPrincipal>()!!.payload.authUid!!
 
 fun Payload.createPrincipal(dependencies: Dependencies) : JWTPrincipal? =
@@ -18,5 +18,5 @@ fun Payload.createPrincipal(dependencies: Dependencies) : JWTPrincipal? =
         if (userExists) JWTPrincipal(this) else null
     }
 
-private val Payload.authUid: UserId?
-    get() = claims[JwtConfig.uidKey]?.asInt()
+private val Payload.authUid: User.Id?
+    get() = claims[JwtConfig.uidKey]?.asLong()?.let(User::Id)

@@ -1,7 +1,6 @@
 package com.well.modules.features.userChat.userChatFeature
 
 import com.well.modules.models.User
-import com.well.modules.models.UserId
 import com.well.modules.models.chat.ChatMessage
 import com.well.modules.utils.viewUtils.sharedImage.LocalImage
 import com.well.modules.puerhBase.toSetOf
@@ -10,7 +9,7 @@ import com.well.modules.models.chat.ChatMessageWithStatus
 
 object UserChatFeature {
     data class State(
-        val peerId: UserId,
+        val peerId: User.Id,
         val user: User? = null,
         val backToUser: Boolean,
         val messages: List<ChatMessageWithStatus> = listOf(),
@@ -31,8 +30,8 @@ object UserChatFeature {
     sealed interface Eff {
         object ChooseImage : Eff
         data class MarkMessageRead(val message: ChatMessage) : Eff
-        data class SendMessage(val string: String, val peerId: UserId) : Eff
-        data class SendImage(val image: LocalImage, val peerId: UserId) : Eff
+        data class SendMessage(val string: String, val peerId: User.Id) : Eff
+        data class SendImage(val image: LocalImage, val peerId: User.Id) : Eff
         object Back : Eff
         data class Call(val user: User) : Eff
         data class OpenUserProfile(val user: User) : Eff

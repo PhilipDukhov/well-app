@@ -9,7 +9,7 @@ import io.ktor.response.*
 import io.ktor.util.pipeline.*
 
 suspend fun PipelineContext<*, ApplicationCall>.requestBecomeExpert(
-    dependencies: Dependencies
+    dependencies: Dependencies,
 ) = dependencies.run {
     val uid = call.authUid
     when (

@@ -1,5 +1,6 @@
 package com.well.server.routing.upload
 
+import com.well.modules.models.User
 import com.well.server.utils.Dependencies
 import io.ktor.application.*
 import io.ktor.http.content.*
@@ -14,7 +15,7 @@ suspend fun PipelineContext<*, ApplicationCall>.uploadProfilePicture(
 ) = uploadMultipartFile(
     dependencies,
     pathGenerator = { name, ext ->
-        dependencies.awsProfileImagePath(name!!.toInt(), ext)
+        dependencies.awsProfileImagePath(User.Id(name!!.toLong()), ext)
     })
 
 suspend fun PipelineContext<*, ApplicationCall>.uploadMessageMedia(

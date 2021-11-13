@@ -6,7 +6,6 @@ import com.well.modules.db.chatMessages.insertTmpMessage
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature.Eff
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature.Msg
 import com.well.modules.models.User
-import com.well.modules.models.UserId
 import com.well.modules.models.chat.ChatMessage
 import com.well.modules.puerhBase.EffectHandler
 import com.well.modules.utils.viewUtils.sharedImage.ImageContainer
@@ -18,8 +17,8 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class UserChatEffHandler(
-    private val currentUid: UserId,
-    private val peerUid: UserId,
+    private val currentUid: User.Id,
+    private val peerUid: User.Id,
     private val services: Services,
     private val messagesDatabase: ChatMessagesDatabase,
     coroutineScope: CoroutineScope,

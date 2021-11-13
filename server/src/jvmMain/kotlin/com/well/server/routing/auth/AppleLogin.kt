@@ -14,7 +14,7 @@ import io.ktor.util.*
 import io.ktor.util.pipeline.*
 
 suspend fun PipelineContext<*, ApplicationCall>.appleLoginPrincipal(
-    dependencies: Dependencies
+    dependencies: Dependencies,
 ) = dependencies.run {
     val claims = call.principal<JWTPrincipal>()!!.payload.claims
     val appleId = claims["sub"]?.asString() ?: run {
@@ -48,7 +48,7 @@ private suspend fun PipelineContext<*, ApplicationCall>.appleLoginParams(
 private fun Dependencies.getByAppleId(id: String) =
     database.usersQueries.getByAppleId(id).executeAsOneOrNull()
 
-private fun Dependencies.createWithAppleId(id: String, email: String?) =
+private fun Dependencies.createWithAppleId(id: String, email: String?): User.Id =
     database.usersQueries.run {
         insertApple(
             appleId = id,
@@ -56,15 +56,15 @@ private fun Dependencies.createWithAppleId(id: String, email: String?) =
             type = User.Type.Doctor,
             email = email,
         )
-
-        lastInsertId()
-            .executeAsOne()
-            .toInt()
+        User.Id(
+            lastInsertId()
+                .executeAsOne()
+        )
     }
 
 data class AppleUserSignInRequest(
     val code: String,
-    val nick: String
+    val nick: String,
 )
 
 data class Oauth2Parameters(
@@ -109,7 +109,7 @@ data class AppleOauthResponse(
     val expires_in: Long,
     val id_token: String,
     val refresh_token: String,
-    val token_type: String
+    val token_type: String,
 )
 
 @OptIn(InternalAPI::class)

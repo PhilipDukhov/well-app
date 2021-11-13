@@ -16,6 +16,7 @@ kotlin {
                 ":modules:atomic",
                 ":modules:features:experts:expertsFeature",
                 ":modules:models",
+                ":modules:utils:flowUtils",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",
                 "shared.napier",

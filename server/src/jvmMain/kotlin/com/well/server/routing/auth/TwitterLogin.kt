@@ -1,7 +1,6 @@
 package com.well.server.routing.auth
 
 import com.well.modules.models.User
-import com.well.modules.models.UserId
 import com.well.server.utils.Dependencies
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -33,16 +32,17 @@ suspend fun PipelineContext<*, ApplicationCall>.twitterLogin(
 
 private fun Dependencies.createTwitterUser(
     id: String,
-): UserId = database
+): User.Id = database
     .usersQueries
     .run {
         insertTwitter(
             type = User.Type.Doctor,
             twitterId = id,
         )
-        lastInsertId()
-            .executeAsOne()
-            .toInt()
+        User.Id(
+            lastInsertId()
+                .executeAsOne()
+        )
     }
 
 private val OAuthAccessTokenResponse.extraParameters: Parameters

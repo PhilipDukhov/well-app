@@ -113,7 +113,6 @@ ext.Libs = [
         server       : [
             netty            : "io.ktor:ktor-server-netty:$versions.ktor",
             core             : "io.ktor:ktor-server-core:$versions.ktor",
-            locations        : "io.ktor:ktor-locations:$versions.ktor",
             metricsMicrometer: "io.ktor:ktor-metrics-micrometer:$versions.ktor",
         ],
         client       : [
@@ -125,6 +124,7 @@ ext.Libs = [
             serialization: "io.ktor:ktor-client-serialization:$versions.ktor",
             logging      : "io.ktor:ktor-client-logging:$versions.ktor",
         ],
+        locations    : "io.ktor:ktor-locations:$versions.ktor",
         auth         : "io.ktor:ktor-auth:$versions.ktor",
         authJwt      : "io.ktor:ktor-auth-jwt:$versions.ktor",
         serialization: "io.ktor:ktor-serialization:$versions.ktor",

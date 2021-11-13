@@ -12,7 +12,11 @@ inline fun <A, B, RA, RB> Pair<A, B>.map(
     return f to s
 }
 
-fun<E> Set<E>.removing(element: E): Set<E> = toMutableSet().apply { remove(element) }
+inline fun <A, B, RB> Pair<A, B>.mapSecond(
+    transformB: (B) -> RB,
+) = map({ it }, transformB)
+
+fun <E> Set<E>.removing(element: E): Set<E> = toMutableSet().apply { remove(element) }
 
 inline fun <A, B, RA, RB> Pair<A, B>.mapNotNull(
     transformA: ((A) -> RA?),
@@ -53,4 +57,5 @@ inline fun <F, S, R> Pair<F, S>.letNamed(block: (F, S) -> R): R {
     return block(first, second)
 }
 
-fun <F, S> Collection<Pair<F, S>>.forEachNamed(block: (F, S) -> Unit) = forEach { it.letNamed(block) }
+fun <F, S> Collection<Pair<F, S>>.forEachNamed(block: (F, S) -> Unit) =
+    forEach { it.letNamed(block) }

@@ -1,6 +1,6 @@
 package com.well.server.utils
 
-import com.well.modules.models.UserId
+import com.well.modules.models.User
 import com.well.modules.utils.flowUtils.MutableMapFlow
 import com.well.modules.utils.ktorUtils.createBaseHttpClient
 import com.well.server.routing.UserSession
@@ -20,20 +20,20 @@ class Dependencies(app: Application) {
             environment.configProperty("aws.bucketName"),
         )
     }
-    val connectedUserSessionsFlow = MutableMapFlow<UserId, UserSession>()
+    val connectedUserSessionsFlow = MutableMapFlow<User.Id, UserSession>()
     val callInfos: MutableList<CallInfo> = Collections.synchronizedList(mutableListOf<CallInfo>())
     val client = createBaseHttpClient()
 
     fun awsProfileImagePath(
-        uid: UserId,
+        uid: User.Id,
         ext: String,
     ) = "profilePictures/$uid-${UUID.randomUUID()}.$ext"
 
-    fun getCurrentUser(id: UserId) = getUser(uid = id, currentUid = id)
+    fun getCurrentUser(id: User.Id) = getUser(uid = id, currentUid = id)
 
     fun getUser(
-        uid: UserId,
-        currentUid: UserId,
+        uid: User.Id,
+        currentUid: User.Id,
     ) = database
         .usersQueries
         .getById(uid)

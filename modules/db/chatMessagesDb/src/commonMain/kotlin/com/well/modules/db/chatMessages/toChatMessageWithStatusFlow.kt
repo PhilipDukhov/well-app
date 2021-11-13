@@ -1,6 +1,6 @@
 package com.well.modules.db.chatMessages
 
-import com.well.modules.models.UserId
+import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
 import com.well.modules.models.chat.ChatMessageWithStatus
 import com.well.modules.utils.flowUtils.asSingleFlow
@@ -20,14 +20,14 @@ private sealed class ChatMessageStatusContainer(open val message: ChatMessage) {
 }
 
 fun Flow<List<ChatMessage>>.toChatMessageWithStatusFlow(
-    currentUid: UserId,
+    currentUid: User.Id,
     messagesDatabase: ChatMessagesDatabase,
 ) = flatMapLatest { chatList ->
     Napier.i("toChatMessageWithStatusFlow $chatList")
     val containers = chatList
         .map { message ->
             when {
-                message.id < 0 -> {
+                message.id.isTmp -> {
                     ChatMessageStatusContainer.Status(ChatMessageWithStatus.Status.OutgoingSending, message)
                 }
                 else -> {
@@ -62,7 +62,7 @@ fun Flow<List<ChatMessage>>.toChatMessageWithStatusFlow(
                     .map { container ->
                         val key = container.message.let { it.peerId to it.fromId }
                         val lastReadMessageId = lastReadMessagesMap[key]?.messageId
-                        val read = container.message.id <= (lastReadMessageId ?: -1)
+                        val read = container.message.id <= (lastReadMessageId ?: ChatMessage.Id(-1))
                         val status = if (container.message.peerId == currentUid) {
                             if (read) ChatMessageWithStatus.Status.IncomingRead
                             else ChatMessageWithStatus.Status.IncomingUnread

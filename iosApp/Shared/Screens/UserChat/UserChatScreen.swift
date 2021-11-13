@@ -95,7 +95,7 @@ private struct ChatsList: View {
     let markRead: (ChatMessage) -> Void
 
     @State
-    private var visibleMessages = Set<Int32>()
+    private var visibleMessages = Set<Int64>()
     @State
     private var scrollToFirstNeeded = false
     @State

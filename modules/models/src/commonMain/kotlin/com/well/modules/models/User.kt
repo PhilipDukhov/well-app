@@ -1,10 +1,11 @@
 package com.well.modules.models
 
 import kotlinx.serialization.Serializable
+import kotlin.jvm.JvmInline
 
 @Serializable
 data class User(
-    val id: UserId,
+    val id: Id,
     val initialized: Boolean = true,
     val lastEdited: Double,
     val favorite: Boolean = false,
@@ -26,8 +27,21 @@ data class User(
     val publications: String? = null,
     val twitter: String? = null,
     val doximity: String? = null,
-    val hasAvailableAvailabilities: Boolean = false,
 ) {
+    @Serializable
+    @JvmInline
+    value class Id(val value: Long) {
+        override fun toString() = value.toString()
+
+        object ColumnAdapter: com.squareup.sqldelight.ColumnAdapter<Id, Long> {
+            override fun decode(databaseValue: Long): Id =
+                Id(databaseValue)
+
+            override fun encode(value: Id): Long =
+                value.value
+        }
+    }
+
     val completeness: Int
         get() = listOf(
             id,

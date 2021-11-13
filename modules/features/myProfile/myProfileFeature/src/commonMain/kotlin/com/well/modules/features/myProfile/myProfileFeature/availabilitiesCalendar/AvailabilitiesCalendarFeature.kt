@@ -1,4 +1,4 @@
-package com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability
+package com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar
 
 import com.well.modules.models.Availability
 import com.well.modules.models.AvailabilityId
@@ -9,15 +9,22 @@ import com.well.modules.models.date.dateTime.monthOffset
 import com.well.modules.models.date.dateTime.today
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
+import com.well.modules.utils.viewUtils.GlobalStringsBase
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.plus
 
-object CurrentUserAvailabilitiesListFeature {
+object AvailabilitiesCalendarFeature {
+    object Strings: GlobalStringsBase() {
+
+    }
+
     data class State(
-        internal val availabilities: List<Availability> = listOf(),
+        internal val availabilities: List<Availability>? = null,
+        val failureReason: String? = null,
+        val processing: Boolean = false,
         val monthOffset: Int = 0,
     ) {
         companion object {
@@ -33,6 +40,7 @@ object CurrentUserAvailabilitiesListFeature {
             val canCreateAvailability: Boolean,
         )
 
+        val loaded = availabilities != null
         val month: Month
         val weeks: List<List<CalendarItem>>
         val monthAvailabilities: List<Availability>
@@ -59,10 +67,12 @@ object CurrentUserAvailabilitiesListFeature {
                 days += (0 until weekDaysCount)
                     .map { loopDay.daysShift(it) }
                     .map { day ->
-                        val availabilities = AvailabilitiesConverter.mapDayAvailabilities(
-                            day = day,
-                            availabilities = availabilities,
-                        )
+                        val availabilities = availabilities?.let {
+                            AvailabilitiesConverter.mapDayAvailabilities(
+                                day = day,
+                                availabilities = availabilities,
+                            )
+                        } ?: emptyList()
                         monthAvailabilities.addAll(availabilities)
                         CalendarItem(
                             date = day,
@@ -85,10 +95,14 @@ object CurrentUserAvailabilitiesListFeature {
         data class Add(val availability: Availability) : Msg()
         data class Update(val availability: Availability) : Msg()
         data class Delete(val availabilityId: AvailabilityId) : Msg()
+        object ReloadAvailabilities : Msg()
         data class SetAvailabilities(val availabilities: List<Availability>) : Msg()
+        data class RequestFailed(val reason: String) : Msg()
+        data class SetProcessing(val processing: Boolean) : Msg()
     }
 
     sealed interface Eff {
+        object RequestAvailabilities : Eff
         data class Add(val availability: Availability) : Eff
         data class Remove(val availabilityId: AvailabilityId) : Eff
         data class Update(val availability: Availability) : Eff
@@ -98,37 +112,36 @@ object CurrentUserAvailabilitiesListFeature {
         msg: Msg,
         state: State,
     ): Pair<State, Set<Eff>> = run state@{
-        when (msg) {
-            is Msg.SetAvailabilities -> {
-                return@state state.copy(availabilities = msg.availabilities)
+        return@reducer state toSetOf (run eff@{
+            when (msg) {
+                is Msg.ReloadAvailabilities -> {
+                    return@eff Eff.RequestAvailabilities
+                }
+                is Msg.SetAvailabilities -> {
+                    return@state state.copy(availabilities = msg.availabilities)
+                }
+                is Msg.Add -> {
+                    return@eff Eff.Add(msg.availability)
+                }
+                is Msg.Delete -> {
+                    return@eff Eff.Remove(msg.availabilityId)
+                }
+                Msg.NextMonth -> {
+                    return@state state.copy(monthOffset = state.monthOffset + 1)
+                }
+                Msg.PrevMonth -> {
+                    return@state state.copy(monthOffset = state.monthOffset - 1)
+                }
+                is Msg.Update -> {
+                    return@eff Eff.Update(msg.availability)
+                }
+                is Msg.RequestFailed -> {
+                    return@state state.copy(failureReason = msg.reason)
+                }
+                is Msg.SetProcessing -> {
+                    return@state state.copy(processing = msg.processing)
+                }
             }
-            is Msg.Add -> {
-                return@reducer state.copy(
-                    availabilities = state.availabilities + msg.availability
-                ) toSetOf Eff.Add(msg.availability)
-            }
-            is Msg.Delete -> {
-                return@reducer state.copy(
-                    availabilities = state.availabilities.filter { it.id != msg.availabilityId }
-                ) toSetOf Eff.Remove(msg.availabilityId)
-            }
-            Msg.NextMonth -> {
-                return@state state.copy(monthOffset = state.monthOffset + 1)
-            }
-            Msg.PrevMonth -> {
-                return@state state.copy(monthOffset = state.monthOffset - 1)
-            }
-            is Msg.Update -> {
-                return@reducer state.copy(
-                    availabilities = state.availabilities.map { availability ->
-                        if (availability.id == msg.availability.id) {
-                            msg.availability
-                        } else {
-                            availability
-                        }
-                    }
-                ) toSetOf Eff.Update(msg.availability)
-            }
-        }
+        })
     }.withEmptySet()
 }

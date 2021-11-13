@@ -1,9 +1,9 @@
 package com.well.server.utils
 
+import com.well.modules.models.User
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
-import io.ktor.config.*
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo
 import org.bouncycastle.openssl.PEMParser
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter
@@ -27,10 +27,10 @@ class JwtConfig(secret: String) {
         .withIssuer(issuer)
         .build()
 
-    fun makeToken(id: Int): String = JWT.create()
+    fun makeToken(id: User.Id): String = JWT.create()
         .withSubject("Authentication")
         .withIssuer(issuer)
-        .withClaim(uidKey, id)
+        .withClaim(uidKey, id.value)
         .sign(algorithm)
 
     fun createAppleAuthToken(

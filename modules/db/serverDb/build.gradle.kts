@@ -17,6 +17,7 @@ kotlin {
             libDependencies(
                 ":modules:models",
                 ":modules:utils:dbUtils",
+                "kotlin.datetime",
             )
         }
     }

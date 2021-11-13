@@ -10,7 +10,7 @@ inline fun <reified T : Any> SerializableColumnAdapter() =
     SerializableColumnAdapter(Json.serializersModule.serializer<T>())
 
 class SerializableColumnAdapter<T : Any>(
-    private val serializer: KSerializer<T>
+    private val serializer: KSerializer<T>,
 ) : ColumnAdapter<T, String> {
     override fun decode(databaseValue: String): T = Json.decodeFromString(serializer, databaseValue)
     override fun encode(value: T) = Json.encodeToString(serializer, value)

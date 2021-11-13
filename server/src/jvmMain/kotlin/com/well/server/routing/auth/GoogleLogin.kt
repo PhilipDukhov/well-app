@@ -39,9 +39,10 @@ suspend fun PipelineContext<*, ApplicationCall>.googleLogin(dependencies: Depend
                             type = User.Type.Doctor,
                             googleId = googleId
                         )
-                        lastInsertId()
-                            .executeAsOne()
-                            .toInt()
+                        User.Id(
+                            lastInsertId()
+                                .executeAsOne()
+                        )
                     }
             }
         }

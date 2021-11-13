@@ -1,4 +1,4 @@
-package com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability
+package com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar
 
 import com.well.modules.models.Availability
 import com.well.modules.models.date.dateTime.daysShift
@@ -14,6 +14,7 @@ object RequestConsultationFeature {
         const val title = "Book day and time"
         const val bookNow = "Book now"
         const val bookingFailed = "Booking failed:"
+        const val hasNoConsultations = "User has no available consultations"
     }
 
     fun initial() = State(State.Status.Loading) toSetOf Eff.Update
@@ -39,7 +40,7 @@ object RequestConsultationFeature {
         object ClearFailedState : Msg()
         data class BookingFailed(
             val reason: String,
-            val newAvailabilities: List<Availability>? = null
+            val newAvailabilities: List<Availability>? = null,
         ) : Msg()
     }
 
@@ -63,10 +64,10 @@ object RequestConsultationFeature {
                     return@state state.copy(status = State.Status.Loaded)
                 }
                 is Msg.UpdateAvailabilities -> {
-                    return@state state.copy(
+                    return@reducer state.copy(
                         status = State.Status.Loaded,
                         availabilitiesByDay = convertAvailabilities(msg.availabilities),
-                    )
+                    ) toSetOf if (msg.availabilities.isEmpty()) Eff.Close(1500) else null
                 }
                 is Msg.Book -> {
                     return@reducer state.copy(
