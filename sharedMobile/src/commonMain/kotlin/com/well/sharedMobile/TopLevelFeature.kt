@@ -16,6 +16,7 @@ import com.well.modules.models.WebSocketMsg
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
 import com.well.modules.utils.kotlinUtils.map
+import com.well.modules.utils.kotlinUtils.mapSecond
 import com.well.modules.utils.kotlinUtils.spacedUppercaseName
 import com.well.modules.utils.viewUtils.Alert
 import com.well.sharedMobile.TopLevelFeature.State.ScreenPosition
@@ -145,6 +146,7 @@ object TopLevelFeature {
         data class ShowAlert(val alert: Alert) : Eff
         object SystemBack : Eff
         object Initial : Eff
+        object InitialLoggedIn : Eff
         data class TopScreenAppeared(val screen: ScreenState, val position: ScreenPosition) : Eff
     }
 
@@ -193,7 +195,9 @@ object TopLevelFeature {
                         tabs = loggedInTabs(msg.uid),
                         selectedScreenPosition = ScreenPosition(Tab.Experts, 0),
                     )
-                    return@reducer newState.reduceScreenChanged(oldState = state)
+                    return@reducer newState
+                        .reduceScreenChanged(oldState = state)
+                        .mapSecond { it + Eff.InitialLoggedIn }
                 }
                 is Msg.IncomingCall -> {
                     val (callState, effs) = CallFeature.incomingStateAndEffects(msg.incomingCall)

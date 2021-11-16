@@ -341,5 +341,6 @@ deps.txt
 
 serverDeploy/.git
 serverDeploy/server-1.0-SNAPSHOT-all.jar
+server/.database/well.trace.db
 
 *.p8

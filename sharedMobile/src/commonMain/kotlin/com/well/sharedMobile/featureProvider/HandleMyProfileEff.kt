@@ -53,11 +53,19 @@ internal fun FeatureProviderImpl.createProfileEffHandler(
                 listener(FeatureMsg.Experts(ExpertsFeature.Msg.Reload, position))
             }
         },
-        addAvailability = networkManager::addAvailability,
+        getCurrentUserAvailabilities = networkManager::listCurrentUserAvailabilities,
+        addAvailability = networkManager::putAvailability,
         removeAvailability = networkManager::removeAvailability,
-        updateAvailability = networkManager::updateAvailability,
+        updateAvailability = networkManager::putAvailability,
         book = networkManager::book,
-        getAvailabilities = { networkManager.getAvailabilities(uid) },
+        getUserAvailabilitiesToBook = { networkManager.getAvailabilities(uid) },
+        hasAvailableAvailabilities = {
+            if (isCurrent) {
+                false
+            } else {
+                networkManager.userHasAvailableAvailabilities(uid)
+            }
+        },
     ),
     contextHelper = contextHelper,
     coroutineScope = coroutineScope,

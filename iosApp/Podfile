@@ -19,6 +19,8 @@ target 'LocalTest' do
   platform :ios, ios_deployment_target
   use_frameworks!
 
+  pod 'Introspect'
+
   pod 'sharedMobileTest', :path => '../sharedMobileTest'
 end
 

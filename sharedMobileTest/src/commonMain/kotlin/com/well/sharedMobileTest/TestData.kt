@@ -104,26 +104,13 @@ private data class TestAvailabilitiesState(
         }
 }
 
-val Availability.Companion.testValues
-    get() = listOf(
-        TestAvailabilitiesState(
-            daysOffset = 0,
-            repeat = Repeat.Weekly,
-            startTime = 12,
-            hoursDuration = 1
-        ),
-        TestAvailabilitiesState(
-            daysOffset = 2,
-            repeat = Repeat.Weekends,
-            startTime = 10,
-            hoursDuration = 1
-        ),
-        TestAvailabilitiesState(
-            daysOffset = 3,
-            repeat = Repeat.None,
-            startTime = 9,
-            hoursDuration = 3
-        ),
-    ).mapIndexed { i, state ->
-        state.availability(i)
-    }
+fun Availability.Companion.testValues(count: Int) = List(count) { i ->
+    TestAvailabilitiesState(
+        daysOffset = i + Random.nextInt(4),
+        repeat = Repeat.values().random(),
+        startTime = Random.nextInt(8, 16),
+        hoursDuration = Random.nextInt(1, 5),
+    )
+}.mapIndexed { i, state ->
+    state.availability(i)
+}

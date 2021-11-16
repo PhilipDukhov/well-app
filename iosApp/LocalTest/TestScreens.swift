@@ -25,15 +25,20 @@ struct TestingScreens: View {
     let selectedScreen: Screen
     
     let messages = ChatMessageWithStatus.companion.getTestMessagesWithStatus(count: 100)
-    
+
+    @State
+    var padding: CGFloat = 0
+
     var body: some View {
         switch selectedScreen {
         case .availabilityCalendar:
             ReducerView(
-                initial: AvailabilitiesCalendarFeature().testState(),
+                initial: AvailabilitiesCalendarFeature().testState(count: 100),
                 reducer: AvailabilitiesCalendarFeature().reducer,
-                view: CurrentUserAvailabilityView.init
-            )
+                view: AvailabilitiesCalendarView.init
+            ).padding(.bottom, padding)
+                .id(padding)
+            Slider(value: $padding, in: 0...200)
         case .profile:
             ProfileTestView()
 
@@ -68,19 +73,39 @@ struct TestingScreens: View {
             }
             
         case .local:
-            EmptyView()
+            Button(action: { item += 1 }) {
+                Text("next")
+            }.onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
+                some += 1
+            }
+            PageView(selection: $item, pages: [0, 1, 2, 3]) { i in
+                Text("\(some) \(i)")
+                    .onAppear {
+                        print("onAppear \(i)")
+                    }
+                    .onDisappear {
+                        print("onDisappear \(i)")
+                    }
+            }
         }
     }
+    @State
+    var item = 1
+
+    @State
+    var some = 0
 }
 
 struct ProfileTestView: View {
+    @EnvironmentObject
+    var contextHelper: ContextHelper
     @AppStorage("ProfileTestView_isCurrent") var isCurrent = false
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack {
                 ViewModelView(
-                    MyProfileTestModel(isCurrent: isCurrent),
+                    MyProfileTestModel(isCurrent: isCurrent, contextHelper: contextHelper),
                     view: MyProfileScreen.init
                 )
                     .id(isCurrent)

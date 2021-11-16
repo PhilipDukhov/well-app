@@ -17,7 +17,7 @@ import kotlinx.datetime.Month
 import kotlinx.datetime.plus
 
 object AvailabilitiesCalendarFeature {
-    object Strings: GlobalStringsBase() {
+    object Strings : GlobalStringsBase() {
 
     }
 
@@ -39,7 +39,6 @@ object AvailabilitiesCalendarFeature {
             val availabilities: List<Availability>,
             val canCreateAvailability: Boolean,
         )
-
         val loaded = availabilities != null
         val month: Month
         val weeks: List<List<CalendarItem>>
@@ -115,7 +114,9 @@ object AvailabilitiesCalendarFeature {
         return@reducer state toSetOf (run eff@{
             when (msg) {
                 is Msg.ReloadAvailabilities -> {
-                    return@eff Eff.RequestAvailabilities
+                    return@reducer state.copy(
+                        failureReason = null,
+                    ) toSetOf Eff.RequestAvailabilities
                 }
                 is Msg.SetAvailabilities -> {
                     return@state state.copy(availabilities = msg.availabilities)

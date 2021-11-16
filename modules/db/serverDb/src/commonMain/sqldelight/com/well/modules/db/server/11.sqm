@@ -1,0 +1,8 @@
+CREATE TABLE Availabilities (
+    id INTEGER AS AvailabilityId NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    ownerId BIGINT AS UserId NOT NULL,
+    startInstantEpochMilliseconds BIGINT NOT NULL,
+    durationMinutes INTEGER NOT NULL,
+    repeat TEXT AS Repeat NOT NULL,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
+);

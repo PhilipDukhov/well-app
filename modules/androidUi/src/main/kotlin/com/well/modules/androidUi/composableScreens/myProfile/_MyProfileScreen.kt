@@ -1,7 +1,7 @@
 package com.well.modules.androidUi.composableScreens.myProfile
 
 import com.well.modules.androidUi.R
-import com.well.modules.androidUi.composableScreens.myProfile.availability.CurrentUserAvailabilityView
+import com.well.modules.androidUi.composableScreens.myProfile.availability.AvailabilitiesCalendarView
 import com.well.modules.androidUi.composableScreens.myProfile.availability.RequestConsultationBottomSheet
 import com.well.modules.androidUi.customViews.Control
 import com.well.modules.androidUi.customViews.InactiveOverlay
@@ -81,14 +81,9 @@ fun ColumnScope.MyProfileScreen(
     var selectedTab by rememberSaveable(availabilityState != null) {
         mutableStateOf(state.tabs.first())
     }
-    state.navigationBarModel?.let {
+    state.navigationBarModelForTab(selectedTab)?.let {
         ModeledNavigationBar(
-            it.copy(
-                rightItem = when (selectedTab) {
-                    Feature.ProfileTab.ProfileInformation -> it.rightItem
-                    else -> null
-                }
-            ),
+            it,
             listener,
             rightItemBeforeAction = rightItemBeforeAction,
             extraContent = {
@@ -124,7 +119,7 @@ fun ColumnScope.MyProfileScreen(
         }
         Feature.ProfileTab.Availability -> {
             availabilityState?.let {
-                CurrentUserAvailabilityView(state = availabilityState) {
+                AvailabilitiesCalendarView(state = availabilityState) {
                     listener(Msg.AvailabilityMsg(it))
                 }
             }

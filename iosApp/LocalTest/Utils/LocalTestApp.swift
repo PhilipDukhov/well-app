@@ -8,6 +8,7 @@
 
 import SwiftUI
 import SharedMobile
+import Introspect
 
 @main
 struct LocalTestApp: App {
@@ -16,9 +17,16 @@ struct LocalTestApp: App {
     
     @State
     var opened = true
-    
+
+    @State
+    var contextHelper: ContextHelper?
+
+    @State
+    var viewController: UIViewController?
+
     init() {
         NapierProxy.shared.initializeLogging()
+        UINavigationController.swizzleIsNavigationBarHiddenImplementation
     }
     
     var body: some Scene {
@@ -52,18 +60,39 @@ struct LocalTestApp: App {
                         }
                     }
                     Spacer().fillMaxHeight()
-                    NavigationLink(isActive: $opened) {
-                        AppContainer(
-                            content: TestingScreens(selectedScreen: selectedScreen)
-                                .navigationBarHidden(true)
-                        )
-                    } label: {
-                        Text("Open")
+
+                    if contextHelper != nil {
+                        NavigationLink(isActive: $opened) {
+                            AppContainer(
+                                content: TestingScreens(selectedScreen: selectedScreen)
+                                    .navigationBarHidden(true)
+                            ).environmentObject(contextHelper!)
+                            
+                        } label: {
+                            Text("Open")
+                        }
                     }
                     Spacer().fillMaxHeight()
                     Spacer().fillMaxHeight()
                 }.navigationBarHidden(true)
+            }.introspectViewController { viewController in
+                if viewController == self.viewController {
+                    return
+                }
+                self.viewController = viewController
+                contextHelper = ContextHelper(
+                    appContext: AppContext(
+                        rootController: viewController,
+                        application: UIApplication.shared,
+                        launchOptions: nil,
+                        cacheImage: { _, _ in }
+                    )
+                )
             }
         }
     }
+}
+
+extension ContextHelper: ObservableObject {
+    
 }

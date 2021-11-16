@@ -66,6 +66,7 @@ struct AvailabilityEditView: View {
                 }
             }
         ).foregroundColorKMM(.companion.DarkGrey)
+            .animation(.none)
     }
 }
 

@@ -13,7 +13,7 @@ class AtomicMutableMap<K, V>(value: Map<K, V>) : AbstractMap<K, V>() {
 
     operator fun set(
         key: K,
-        value: V
+        value: V,
     ) = put(key, value)
 
     fun remove(key: K) = update {
@@ -22,14 +22,14 @@ class AtomicMutableMap<K, V>(value: Map<K, V>) : AbstractMap<K, V>() {
 
     fun put(
         key: K,
-        value: V
+        value: V,
     ): V? = update {
         put(key, value)
     }
 
     inline fun getOrPut(
         key: K,
-        defaultValue: () -> V
+        defaultValue: () -> V,
     ): V {
         val value = get(key)
         return if (value == null) {

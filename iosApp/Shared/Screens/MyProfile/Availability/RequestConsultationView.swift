@@ -95,6 +95,8 @@ struct RequestConsultationView: View {
             .textStyle(.subtitle2)
         if state.status is Feature.StateStatusLoading {
             ProgressView()
+        } else if state.availabilitiesByDay.isEmpty {
+            Text(Feature.Strings.shared.hasNoConsultations)
         } else {
             VStack(spacing: 52) {
                 Availabilities(
@@ -209,47 +211,3 @@ private struct BookRow<T, ID: Hashable>: View {
         }
     }
 }
-
-//    itemText: (T) -> String,
-//    textStyle: TextStyle,
-//    aspectRatio: Float,
-//    fillParentMaxWidthPart: Float,
-//) {
-//    LazyRow(
-//        state = state,
-//        horizontalArrangement = Arrangement.spacedBy(8.dp),
-//        contentPadding = PaddingValues(horizontal = 16.dp),
-//        modifier = Modifier.fillMaxWidth()
-//    ) {
-//        itemsIndexed(items) { i, item ->
-//            val selected = i == selectedIndex
-//            val shape = RoundedCornerShape(14.dp)
-//            Box(
-//                contentAlignment = Alignment.Center,
-//                modifier = Modifier
-//                    .fillParentMaxWidth(fillParentMaxWidthPart)
-//                    .aspectRatio(aspectRatio)
-//                    .clip(shape)
-//                    .borderKMM(
-//                        if (selected) 0.dp else 2.dp,
-//                        color = Color.LightGray,
-//                        shape = shape,
-//                    )
-//                    .backgroundKMM(
-//                        if (selected) Color.Green else Color.Transparent,
-//                    )
-//                    .clickable {
-//                        Napier.wtf("clickable $i")
-//                        setSelectedIndex(i)
-//                    }
-//            ) {
-//                Text(
-//                    itemText(item),
-//                    color = (if (selected) Color.White else Color.DarkGrey).toColor(),
-//                    textAlign = TextAlign.Center,
-//                    style = textStyle,
-//                )
-//            }
-//        }
-//    }
-//}

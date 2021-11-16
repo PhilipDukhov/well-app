@@ -1,27 +1,29 @@
 package com.well.modules.features.myProfile.myProfileHandlers
 
 import com.well.modules.atomic.AtomicCloseableRef
+import com.well.modules.atomic.AtomicMutableList
 import com.well.modules.atomic.asCloseable
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Eff
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Msg
-import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.CurrentUserAvailabilitiesListFeature
 import com.well.modules.models.Availability
 import com.well.modules.models.AvailabilityId
 import com.well.modules.models.FavoriteSetter
 import com.well.modules.models.RatingRequest
 import com.well.modules.models.User
-import com.well.modules.models.UserId
 import com.well.modules.puerhBase.EffectHandler
+import com.well.modules.utils.flowUtils.collectIn
 import com.well.modules.utils.viewUtils.ContextHelper
 import com.well.modules.utils.viewUtils.SuspendAction
 import com.well.modules.utils.viewUtils.pickSystemImageSafe
 import com.well.modules.utils.viewUtils.sharedImage.asByteArrayOptimizedForNetwork
 import com.well.modules.utils.viewUtils.showSheetThreadSafe
+import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.AvailabilitiesCalendarFeature.Eff as AvailabilitiesCalendarEff
+import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.AvailabilitiesCalendarFeature.Msg as AvailabilitiesCalendarMsg
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
@@ -33,39 +35,49 @@ class MyProfileEffHandler(
     data class Services(
         val userFlow: Flow<User>,
         val putUser: suspend (User) -> Unit,
-        val uploadProfilePicture: suspend (UserId, ByteArray) -> String,
+        val uploadProfilePicture: suspend (User.Id, ByteArray) -> String,
         val showThrowableAlert: (Throwable) -> Unit,
         val onInitializationFinished: () -> Unit,
         val onPop: () -> Unit,
         val setFavorite: (FavoriteSetter) -> Unit,
         val onStartCall: (User) -> Unit,
-        val onOpenUserChat: (UserId) -> Unit,
+        val onOpenUserChat: (User.Id) -> Unit,
         val onLogout: () -> Unit,
         val requestBecomeExpert: () -> Unit,
         val onRatingRequest: (RatingRequest) -> Unit,
-        val addAvailability: suspend (Availability) -> Unit,
+
+        val getCurrentUserAvailabilities: suspend () -> List<Availability>,
+        val addAvailability: suspend (Availability) -> Availability,
+        val updateAvailability: suspend (Availability) -> Availability,
         val removeAvailability: suspend (AvailabilityId) -> Unit,
-        val updateAvailability: suspend (Availability) -> Unit,
+
+        val hasAvailableAvailabilities: suspend () -> Boolean,
         val book: suspend (Availability) -> Unit,
-        val getAvailabilities: suspend () -> List<Availability>,
+        val getUserAvailabilitiesToBook: suspend () -> List<Availability>,
     )
 
     private var requestConsultationEffHandler by AtomicCloseableRef<RequestConsultationEffHandler>()
 
     init {
-        Napier.d("init")
-        addCloseableChild(
+        listOf(
             coroutineScope.launch {
-                services.userFlow
-                    .map(Msg::RemoteUpdateUser)
-                    .collect(::listener)
-            }.asCloseable()
-        )
+                if (services.hasAvailableAvailabilities()) {
+                    listener(Msg.UpdateHasAvailableAvailabilities(true))
+                }
+            },
+            services.userFlow
+                .map(Msg::RemoteUpdateUser)
+                .collectIn(coroutineScope, action = ::listener),
+        ).map(Job::asCloseable).forEach(::addCloseableChild)
     }
 
     override fun listener(msg: Msg) {
         super.listener(msg)
         Napier.d("listener $msg")
+    }
+
+    private fun availabilitiesCalendarListener(msg: AvailabilitiesCalendarMsg) {
+        listener(Msg.AvailabilityMsg(msg))
     }
 
     override suspend fun processEffect(eff: Eff) {
@@ -120,34 +132,73 @@ class MyProfileEffHandler(
                 requestConsultationEffHandler = null
             }
             is Eff.RequestConsultationEff -> {
-                if (requestConsultationEffHandler == null) {
-                    requestConsultationEffHandler = RequestConsultationEffHandler(
-                        services = RequestConsultationEffHandler.Services(
-                            closeConsultationRequest = {
-                                listener(Msg.CloseConsultationRequest)
-                            },
-                            book = services.book,
-                            getAvailabilities = services.getAvailabilities
-                        ),
-                        coroutineScope = coroutineScope
-                    )
+                val handler = requestConsultationEffHandler ?: RequestConsultationEffHandler(
+                    services = RequestConsultationEffHandler.Services(
+                        closeConsultationRequest = {
+                            listener(Msg.CloseConsultationRequest)
+                        },
+                        book = services.book,
+                        getAvailabilities = services.getUserAvailabilitiesToBook,
+                        gotEmptyAvailabilities = {
+                            listener(Msg.UpdateHasAvailableAvailabilities(false))
+                        }
+                    ),
+                    coroutineScope = coroutineScope
+                ).also {
+                    it.setListener {
+                        listener(Msg.RequestConsultationMsg(it))
+                    }
+                    requestConsultationEffHandler = it
                 }
-                requestConsultationEffHandler!!.handleEffect(eff.eff)
+                handler.handleEffect(eff.eff)
             }
         }
     }
 
-    private suspend fun handleAvailabilityEff(eff: CurrentUserAvailabilitiesListFeature.Eff) {
-        when (eff) {
-            is CurrentUserAvailabilitiesListFeature.Eff.Add -> {
-                services.addAvailability(eff.availability)
+    private val currentUserAvailabilities = AtomicMutableList<Availability>()
+
+    private suspend fun handleAvailabilityEff(eff: AvailabilitiesCalendarEff) {
+        println("SetProcessing(true) $eff")
+        availabilitiesCalendarListener(AvailabilitiesCalendarMsg.SetProcessing(true))
+        try {
+            when (eff) {
+                is AvailabilitiesCalendarEff.Add -> {
+                    val newAvailability = services.addAvailability(eff.availability)
+                    currentUserAvailabilities.add(newAvailability)
+                }
+                is AvailabilitiesCalendarEff.Remove -> {
+                    services.removeAvailability(eff.availabilityId)
+                    currentUserAvailabilities.removeAll { it.id == eff.availabilityId }
+                }
+                is AvailabilitiesCalendarEff.Update -> {
+                    val newAvailability = services.updateAvailability(eff.availability)
+                    currentUserAvailabilities.apply {
+                        removeAll { it.id == eff.availability.id }
+                        add(newAvailability)
+                    }
+                }
+                is AvailabilitiesCalendarEff.RequestAvailabilities -> {
+                    val availabilities = services.getCurrentUserAvailabilities()
+                    currentUserAvailabilities.apply {
+                        clear()
+                        addAll(availabilities)
+                    }
+                }
             }
-            is CurrentUserAvailabilitiesListFeature.Eff.Remove -> {
-                services.removeAvailability(eff.availabilityId)
-            }
-            is CurrentUserAvailabilitiesListFeature.Eff.Update -> {
-                services.updateAvailability(eff.availability)
-            }
+            availabilitiesCalendarListener(
+                AvailabilitiesCalendarMsg.SetAvailabilities(
+                    currentUserAvailabilities
+                )
+            )
+        } catch (t: Throwable) {
+            availabilitiesCalendarListener(
+                AvailabilitiesCalendarMsg.RequestFailed(
+                    t.message ?: t.toString()
+                )
+            )
+        } finally {
+            println("SetProcessing(false) $eff")
+            availabilitiesCalendarListener(AvailabilitiesCalendarMsg.SetProcessing(false))
         }
     }
 

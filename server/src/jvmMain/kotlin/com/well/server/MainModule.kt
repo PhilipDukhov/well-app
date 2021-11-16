@@ -1,6 +1,7 @@
 package com.well.server
 
 import com.well.modules.models.NetworkConstants
+import com.well.modules.models.User
 import com.well.server.routing.auth.AppleOauthResponse
 import com.well.server.routing.auth.appleLoginPrincipal
 import com.well.server.routing.auth.build
@@ -9,6 +10,9 @@ import com.well.server.routing.auth.googleLogin
 import com.well.server.routing.auth.sendEmail
 import com.well.server.routing.auth.sendSms
 import com.well.server.routing.auth.twitterLogin
+import com.well.server.routing.deleteAvailability
+import com.well.server.routing.listAvailabilities
+import com.well.server.routing.putAvailability
 import com.well.server.routing.mainWebSocket
 import com.well.server.routing.upload.uploadMessageMedia
 import com.well.server.routing.upload.uploadProfilePicture
@@ -16,7 +20,9 @@ import com.well.server.routing.user.rate
 import com.well.server.routing.user.requestBecomeExpert
 import com.well.server.routing.user.setUserFavorite
 import com.well.server.routing.user.updateUser
+import com.well.server.routing.userHasAvailableAvailabilities
 import com.well.server.utils.Dependencies
+import com.well.server.utils.authUid
 import com.well.server.utils.configProperty
 import com.well.server.utils.createPrincipal
 import com.auth0.jwk.JwkProviderBuilder
@@ -59,6 +65,7 @@ fun Application.module() {
     install(StatusPages) {
         exception<Throwable> { cause ->
             println("StatusPages failed $cause")
+            println(cause.stackTraceToString())
             call.respond(HttpStatusCode.InternalServerError, cause.toString())
         }
     }
@@ -213,6 +220,24 @@ fun Application.module() {
                 }
                 post("requestBecomeExpert") {
                     requestBecomeExpert(dependencies)
+                }
+            }
+            route("availabilities") {
+                get("listCurrent") {
+                    listAvailabilities(call.authUid, dependencies)
+                }
+                get("listByUser/{id}") {
+                    listAvailabilities(User.Id(call.parameters["id"]!!.toLong()), dependencies)
+                }
+                get("userHasAvailable/{id}") {
+                    userHasAvailableAvailabilities(User.Id(call.parameters["id"]!!.toLong()), dependencies)
+                }
+                put {
+                    putAvailability(dependencies)
+                }
+                delete("{id}") {
+                    val id = call.parameters["id"]!!.toInt()
+                    deleteAvailability(id, dependencies)
                 }
             }
         }

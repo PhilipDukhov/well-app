@@ -205,20 +205,27 @@ class NetworkManager(
         return false
     }
 
-    suspend fun addAvailability(availability: Availability) {
-
-    }
+    suspend fun listCurrentUserAvailabilities(): List<Availability> =
+        client.get("availabilities/listCurrent")
+    
     suspend fun removeAvailability(availabilityId: AvailabilityId) {
-
+        client.delete<Unit>("availabilities/${availabilityId}")
     }
-    suspend fun updateAvailability(availability: Availability) {
+    suspend fun putAvailability(availability: Availability): Availability =
+        client.put("availabilities") {
+            contentType(ContentType.Application.Json)
+            body = availability
+        }
 
-    }
+    suspend fun userHasAvailableAvailabilities(userId: User.Id) : Boolean =
+        client.get("availabilities/userHasAvailable/${userId.value}")
+
     suspend fun book(availability: Availability) {
 
     }
-    suspend fun getAvailabilities(userId: UserId): List<Availability> =
-        listOf()
+
+    suspend fun getAvailabilities(userId: User.Id): List<Availability> =
+        client.get("availabilities/listByUser/${userId.value}")
 }
 
 private fun Throwable.toResponseException(): Throwable =

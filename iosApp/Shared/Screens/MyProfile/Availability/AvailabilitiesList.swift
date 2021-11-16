@@ -26,30 +26,32 @@ struct AvailabilitiesList: View {
             cellsCount: Self.cellsCount,
             spacing: Self.spacing
         ) { cellLayoutInfo in
-            LazyVGrid(
-                columns: Array(repeating: GridItem(.fixed(cellLayoutInfo.width)), count: Self.cellsCount),
-                alignment: .trailing,
-                spacing: Self.spacing
-            ) {
-                ForEach(selectedItem?.availabilities ?? allAvailabilities, id: \.self) { availability in
-                    Cell(
-                        firstRowText: selectedItem.map { _ in nil } ?? availability.startDay.localizedDayAndShortMonth(),
-                        secondRowText: availability.intervalString,
-                        layoutInfo: cellLayoutInfo,
-                        onClick: {
-                            onSelect(availability)
+            ScrollView {
+                LazyVGrid(
+                    columns: Array(repeating: GridItem(.fixed(cellLayoutInfo.width)), count: Self.cellsCount),
+                    alignment: .trailing,
+                    spacing: Self.spacing
+                ) {
+                    ForEach(selectedItem?.availabilities ?? allAvailabilities, id: \.self) { availability in
+                        Cell(
+                            firstRowText: selectedItem.map { _ in nil } ?? availability.startDay.localizedDayAndShortMonth(),
+                            secondRowText: availability.intervalString,
+                            layoutInfo: cellLayoutInfo,
+                            onClick: {
+                                onSelect(availability)
+                            }
+                        )
+                    }
+                    selectedItem.map { selectedItem in
+                        !selectedItem.canCreateAvailability ? nil :
+                        Cell(
+                            layoutInfo: cellLayoutInfo,
+                            onClick: {
+                                onCreate(selectedItem)
+                            }
+                        ) {
+                            Image(systemName: "plus")
                         }
-                    )
-                }
-                selectedItem.map { selectedItem in
-                    !selectedItem.canCreateAvailability ? nil :
-                    Cell(
-                        layoutInfo: cellLayoutInfo,
-                        onClick: {
-                            onCreate(selectedItem)
-                        }
-                    ) {
-                        Image(systemName: "plus")
                     }
                 }
             }
@@ -64,20 +66,25 @@ private struct CalculateCellLayoutInfo<Content: View>: View {
     let content: (CellLayoutInfo) -> Content
     
     @State
-    private var aspectRatio: CGFloat?
+    private var height: CGFloat?
     
     var body: some View {
         GeometryReader { geometry in
-            let width = ((geometry.size.width - spacing * (CGFloat(cellsCount) - 1)) / CGFloat(cellsCount)).rounded()
-            if let aspectRatio = aspectRatio {
-                content(.init(aspectRatio: aspectRatio, width: width))
+            let cellLayoutInfo = CellLayoutInfo(
+                width: ((geometry.size.width - spacing * (CGFloat(cellsCount) - 1)) / CGFloat(cellsCount)).roundedScreenScaled(),
+                height: height
+            )
+            if height != nil {
+                content(cellLayoutInfo)
             } else {
-                Cell(firstRowText: " ", secondRowText: " ", layoutInfo: .init(aspectRatio: nil, width: width), onClick: {})
+                Cell(firstRowText: " ", secondRowText: " ", layoutInfo: cellLayoutInfo, onClick: {})
                     .background(
                         GeometryReader { backgroundGeometry in
                             Rectangle().foregroundColor(.clear)
                                 .onAppear {
-                                    aspectRatio = backgroundGeometry.size.aspectRatio
+                                    let minHeight = backgroundGeometry.size.height
+                                    let itemsCount = ((geometry.size.height + spacing) / (minHeight + spacing) + 0.5).rounded(.down) - 0.5
+                                    height = ((geometry.size.height + spacing) / itemsCount - spacing).roundedScreenScaled()
                                 }
                         }
                     )
@@ -87,8 +94,8 @@ private struct CalculateCellLayoutInfo<Content: View>: View {
 }
 
 private struct CellLayoutInfo {
-    let aspectRatio: CGFloat?
     let width: CGFloat
+    let height: CGFloat?
 }
 
 private struct Cell<Content: View>: View {
@@ -131,8 +138,7 @@ private struct Cell<Content: View>: View {
                 .foregroundColorKMM(.companion.DarkGrey)
                 .padding(10)
                 .minimumScaleFactor(0.01)
-                .frame(width: layoutInfo.width)
-                .aspectRatio(layoutInfo.aspectRatio, contentMode: .fit)
+                .frame(width: layoutInfo.width, height: layoutInfo.height)
                 .backgroundColorKMM(.companion.LightBlue15)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
                 .onTapGesture(perform: onClick)

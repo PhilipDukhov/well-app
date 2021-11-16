@@ -41,7 +41,7 @@ struct MyProfileScreen: View {
     
     @ViewBuilder
     var content: some View {
-        state.navigationBarModel.map {
+        state.navigationBarModelForTab(tab: selectedTab).map {
             ModeledNavigationBar(
                 model: $0,
                 listener: listener,
@@ -65,38 +65,15 @@ struct MyProfileScreen: View {
         if !state.loaded {
             ProgressView()
         }
-        TabView(selection: $selectedTab.animation()) {
-            ForEach(state.tabs, id: \.self) { tab in
+        if state.tabs.count > 1 {
+            PageView(selection: $selectedTab, pages: state.tabs) {tab in
                 switch tab {
                 case .profileinformation:
-                    ZStack(alignment: .topLeading) {
-                        ScrollView {
-                            ForEach(state.groups, id: \.self) { group in
-                                groupView(group)
-                                Divider()
-                            }
-                        } // ScrollView
-                            .edgesIgnoringSafeArea(state.isCurrent ? Edge.Set() : .top)
-                        if !state.isCurrent {
-                            Control(Image(systemName: "chevron.left").foregroundColor(.white)) {
-                                listener(Feature.MsgBack())
-                            }
-                        }
-                        if state.editingStatus == .uploading {
-                            InactiveOverlay()
-                        }
-                    }.sheet(isPresented: $editingRating) {
-                        state.user.map { user in
-                            RatingScreen(user: user) { rating in
-                                listener(Feature.MsgRate(rating: rating))
-                                editingRating = false
-                            }
-                        }
-                    }
-                    
+                    profileInformation()
+
                 case .availability:
                     state.availabilityState.map {
-                        CurrentUserAvailabilityView(state: $0) {
+                        AvailabilitiesCalendarView(state: $0) {
                             listener(Feature.MsgAvailabilityMsg(msg: $0))
                         }
                     }
@@ -105,7 +82,36 @@ struct MyProfileScreen: View {
                     fatalError("Unexpected tab")
                 }
             }
-        }.tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+        } else {
+            profileInformation()
+        }
+    }
+
+    @ViewBuilder
+    func profileInformation() -> some View{
+        ZStack(alignment: .topLeading) {
+            ScrollView {
+                ForEach(state.groups, id: \.self) { group in
+                    groupView(group)
+                    Divider()
+                }
+            }.edgesIgnoringSafeArea(state.isCurrent ? Edge.Set() : .top)
+            if !state.isCurrent {
+                Control(Image(systemName: "chevron.left").foregroundColor(.white).shadow(color: .black, radius: 3.5)) {
+                    listener(Feature.MsgBack())
+                }
+            }
+            if state.editingStatus == .uploading {
+                InactiveOverlay()
+            }
+        }.sheet(isPresented: $editingRating) {
+            state.user.map { user in
+                RatingScreen(user: user) { rating in
+                    listener(Feature.MsgRate(rating: rating))
+                    editingRating = false
+                }
+            }
+        }
     }
 
     @ViewBuilder
@@ -233,7 +239,7 @@ struct MyProfileScreen: View {
     private func otherUserHeader(_ header: UIGroup.Header) -> some View {
         VStack {
             let profileImageWidth = UIScreen.main.bounds.width
-            ProfileImage(image: header.image, clipCircle: false, aspectRatio: 1.2, contentMode: .fit)
+            ProfileImage(image: header.image, clipCircle: false, aspectRatio: 1.2, contentMode: .fill)
                 .frame(size: CGSize(width: profileImageWidth, height: profileImageWidth / 1.2))
                 .clipped()
             HStack {

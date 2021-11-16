@@ -2,8 +2,9 @@
 
 package com.well.androidAppTest
 
-import com.well.modules.androidUi.customViews.rememberPreference
+import com.well.androidAppTest.Utility.LocalContextHelper
 import com.well.modules.androidUi.composableScreens.myProfile.MyProfileScreen
+import com.well.modules.androidUi.customViews.rememberPreference
 import com.well.sharedMobileTest.MyProfileTestModel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,8 +22,9 @@ import com.google.accompanist.insets.navigationBarsPadding
 @Composable
 internal fun MyProfileTest() {
     var isCurrent by rememberPreference(booleanPreferencesKey("MyProfileTest_isCurrent"), false)
-    val viewModel = remember(isCurrent) {
-        MyProfileTestModel(isCurrent)
+    val appContext = LocalContextHelper.current
+    val viewModel = remember(isCurrent, appContext) {
+        MyProfileTestModel(isCurrent, appContext)
     }
     Box {
         Column {

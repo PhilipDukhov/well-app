@@ -113,7 +113,7 @@ private struct ChatsList: View {
                                 .id(id)
                                 .onAppear {
                                     visibleMessages.insert(id)
-                                    if message.status == ChatMessageWithStatus.Status.incomingunread {
+                                    if message.status == .incomingunread {
                                         markRead(message.message)
                                     }
                                 }

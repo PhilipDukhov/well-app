@@ -1,97 +1,94 @@
 package com.well.sharedMobileTest
 
+import com.well.modules.atomic.AtomicRef
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Eff
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Msg
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.State
-import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.AvailabilitiesCalendarFeature
-import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.RequestConsultationFeature
+import com.well.modules.features.myProfile.myProfileHandlers.MyProfileEffHandler
 import com.well.modules.models.Availability
+import com.well.modules.models.User
 import com.well.modules.puerhBase.ReducerViewModel
+import com.well.modules.utils.viewUtils.ContextHelper
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
-class MyProfileTestModel(isCurrent: Boolean) : ReducerViewModel<State, Msg, Eff>(
+class MyProfileTestModel(
+    isCurrent: Boolean,
+    contextHelper: ContextHelper,
+) : ReducerViewModel<State, Msg, Eff>(
     MyProfileFeature.testState(isCurrent),
     MyProfileFeature::reducer,
 ) {
-    init {
-        if (state.value.isCurrent) {
-            listener(
-                Msg.AvailabilityMsg(
-                    AvailabilitiesCalendarFeature.Msg.SetAvailabilities(
-                        Availability.testValues
-                    )
-                )
-            )
-        } else {
-            listener(
-                Msg.UpdateHasAvailableAvailabilities(true)
-            )
-        }
+    private var setAvailabilitiesCounter by AtomicRef(0)
+    private var bookingCounter by AtomicRef(0)
+    private var updateAvailabilitiesCounter by AtomicRef(0)
+
+    private val handler by lazy {
+        MyProfileEffHandler(
+            contextHelper = contextHelper,
+            services = MyProfileEffHandler.Services(
+                userFlow = flowOf(User.testUser),
+                putUser = {},
+                uploadProfilePicture = { _, _ -> error("unimplemented") },
+                showThrowableAlert = { Napier.e(it.message ?: it.toString(), it) },
+                onInitializationFinished = {},
+                onPop = {},
+                setFavorite = {},
+                onStartCall = {},
+                onOpenUserChat = {},
+                onLogout = {},
+                requestBecomeExpert = {},
+                onRatingRequest = {},
+                getCurrentUserAvailabilities = {
+                    println("getCurrentUserAvailabilities $setAvailabilitiesCounter")
+                    delay(1000)
+                    if (setAvailabilitiesCounter++ % 2 == 0)
+                        error("load availabilities error")
+                    else
+                        Availability.testValues(20)
+                },
+                addAvailability = { it },
+                updateAvailability = { it },
+                removeAvailability = { },
+                hasAvailableAvailabilities = { !state.value.isCurrent },
+                book = {
+                    delay(3000)
+                    if (bookingCounter++ % 2 == 0) {
+                        throw IllegalStateException("some error")
+                    }
+                },
+                getUserAvailabilitiesToBook = {
+                    if (updateAvailabilitiesCounter++ % 2 == 0)
+                        listOf()
+                    else
+                        Availability.testValues(20)
+                },
+            ),
+            coroutineScope = coroutineScope
+        )
     }
 
     override fun handleEffs(effs: Set<Eff>) {
         effs.forEach { eff ->
-            when (eff) {
-                is Eff.RequestConsultationEff -> {
-                    val job = Job()
-                    CoroutineScope(Dispatchers.Main + job).launch {
-                        requestConsultationEffHandler(eff.eff)
-                    }
-                    consultationJobs += job
-                }
-                is Eff.CloseConsultationRequest -> consultationJobs.forEach { it.cancel() }
-                else -> Unit
-            }
+            handler.handleEffect(eff)
         }
     }
 
-    private val consultationJobs = mutableListOf<Job>()
+    override fun listener(msg: Msg) {
+        super.listener(msg)
+        println("listener $msg ${state.value}")
+    }
 
-    private var bookingCounter = 0
+    private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
-    private suspend fun requestConsultationEffHandler(eff: RequestConsultationFeature.Eff) {
-        when (eff) {
-            is RequestConsultationFeature.Eff.Close -> {
-                delay(eff.timeoutMillis)
-                listener(Msg.CloseConsultationRequest)
-            }
-            is RequestConsultationFeature.Eff.Book -> {
-                delay(3000)
-                if (bookingCounter % 2 == 0) {
-                    listener(
-                        Msg.RequestConsultationMsg(
-                            RequestConsultationFeature.Msg.BookingFailed(
-                                reason = "some error",
-                                newAvailabilities = null
-                            )
-                        )
-                    )
-                } else {
-                    listener(Msg.RequestConsultationMsg(RequestConsultationFeature.Msg.Booked))
-                }
-                bookingCounter += 1
-            }
-            RequestConsultationFeature.Eff.Update -> {
-                delay(500)
-
-                listener(
-                    Msg.RequestConsultationMsg(
-                        RequestConsultationFeature.Msg.UpdateAvailabilities(
-                            listOf()
-//                            Availability.testValues
-                        )
-                    )
-                )
-            }
-            is RequestConsultationFeature.Eff.ClearFailedState -> {
-                delay(eff.timeoutMillis)
-                listener(Msg.RequestConsultationMsg(RequestConsultationFeature.Msg.ClearFailedState))
-            }
+    init {
+        coroutineScope.launch {
+            handler.setListener(::listener)
         }
     }
 }

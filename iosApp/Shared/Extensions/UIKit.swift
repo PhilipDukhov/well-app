@@ -10,3 +10,9 @@ extension UIApplication {
         sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
+
+extension CGFloat {
+    func roundedScreenScaled(_ rule: FloatingPointRoundingRule = .toNearestOrAwayFromZero) -> Self {
+        (self * UIScreen.main.nativeScale).rounded(rule) / UIScreen.main.nativeScale
+    }
+}

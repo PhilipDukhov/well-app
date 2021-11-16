@@ -6,14 +6,20 @@ import com.well.modules.atomic.AtomicLateInitRef
 import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
 import com.well.modules.atomic.freeze
-import com.well.modules.db.chatMessages.ChatMessagesDatabase
 import com.well.modules.db.chatMessages.insert
-import com.well.modules.db.mobile.DatabaseManager
-import com.well.modules.db.users.UsersDatabase
+import com.well.modules.db.chatMessages.lastListWithStatusFlow
+import com.well.modules.db.chatMessages.messagePresenceFlow
+import com.well.modules.db.chatMessages.selectAllFlow
+import com.well.modules.db.chatMessages.unreadCountsFlow
+import com.well.modules.db.mobile.DatabaseProvider
+import com.well.modules.db.mobile.DatabaseProviderImpl
 import com.well.modules.db.users.getByIdFlow
+import com.well.modules.db.users.getByIdsFlow
 import com.well.modules.db.users.insertOrReplace
 import com.well.modules.features.call.callFeature.webRtc.WebRtcManagerI
+import com.well.modules.features.chatList.chatListHandlers.ChatListEffHandler
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature
+import com.well.modules.features.experts.expertsHandlers.ExpertsApiEffectHandler
 import com.well.modules.features.login.loginFeature.LoginFeature
 import com.well.modules.features.login.loginFeature.SocialNetwork
 import com.well.modules.features.login.loginHandlers.SocialNetworkService
@@ -34,6 +40,9 @@ import com.well.modules.puerhBase.Feature
 import com.well.modules.puerhBase.SyncFeature
 import com.well.modules.puerhBase.adapt
 import com.well.modules.puerhBase.wrapWithEffectHandler
+import com.well.modules.utils.flowUtils.combineWithUnit
+import com.well.modules.utils.flowUtils.mapProperty
+import com.well.modules.utils.kotlinUtils.map
 import com.well.modules.utils.viewUtils.Alert
 import com.well.modules.utils.viewUtils.AppContext
 import com.well.modules.utils.viewUtils.ContextHelper
@@ -46,6 +55,7 @@ import com.well.modules.utils.viewUtils.platform.Platform
 import com.well.modules.utils.viewUtils.platform.isDebug
 import com.well.modules.utils.viewUtils.sharedImage.asByteArrayOptimizedForNetwork
 import com.well.sharedMobile.FeatureEff
+import com.well.sharedMobile.FeatureMsg
 import com.well.sharedMobile.ScreenState
 import com.well.sharedMobile.TopLevelFeature
 import com.well.sharedMobile.TopLevelFeature.Eff
@@ -54,6 +64,8 @@ import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 
 internal class FeatureProviderImpl(
@@ -64,7 +76,7 @@ internal class FeatureProviderImpl(
     TopLevelFeature.initialState(),
     TopLevelFeature::reducer,
     Dispatchers.Default
-) {
+), DatabaseProvider by DatabaseProviderImpl(appContext) {
     var sessionInfo by AtomicCloseableRef<SessionInfo>()
     val socialNetworkService = SocialNetworkService { network ->
         when (network) {
@@ -82,11 +94,6 @@ internal class FeatureProviderImpl(
     val nonInitializedAuthInfo = AtomicLateInitRef<AuthInfo>()
     val callCloseableContainer = CloseableContainer()
     private var topScreenHandlerCloseable by AtomicCloseableRef<Closeable>()
-    val databaseManager = DatabaseManager(appContext)
-    val usersDatabase: UsersDatabase
-        get() = databaseManager.usersDatabase
-    val messagesDatabase: ChatMessagesDatabase
-        get() = databaseManager.messagesDatabase
 
     private val effectInterpreter: ExecutorEffectsInterpreter<Eff, Msg> =
         interpreter@{ eff, listener ->
@@ -96,7 +103,8 @@ internal class FeatureProviderImpl(
                 -> Unit
                 is Eff.ShowAlert -> {
                     if (eff.alert is Alert.Error) {
-                        Napier.e("", eff.alert.throwable)
+                        Napier.e("alert", eff.alert.throwable)
+                        Napier.e(eff.alert.throwable.stackTraceToString())
                     }
                     MainScope().launch {
                         contextHelper.showAlert(eff.alert)
@@ -135,6 +143,65 @@ internal class FeatureProviderImpl(
                             listener.invoke(Msg.OpenWelcomeScreen)
                         }
                     }
+                }
+                Eff.InitialLoggedIn -> {
+                    val uid = sessionInfo!!.uid
+                    listOf(
+                        createProfileEffHandler(
+                            uid = uid,
+                            isCurrent = true,
+                            position = TopLevelFeature.State.ScreenPosition(tab = TopLevelFeature.State.Tab.MyProfile,
+                                index = 0),
+                            listener = listener,
+                        ),
+                        ExpertsApiEffectHandler(
+                            services = ExpertsApiEffectHandler.Services(
+                                connectionStatusFlow = networkManager.connectionStatusFlow,
+                                usersListFlow = networkManager
+                                    .webSocketMsgSharedFlow
+                                    .filterIsInstance<WebSocketMsg.Back.ListFilteredExperts>()
+                                    .mapProperty(WebSocketMsg.Back.ListFilteredExperts::userIds)
+                                    .flatMapLatest(usersDatabase.usersQueries::getByIdsFlow)
+                                    .combineWithUnit(networkManager.onConnectedFlow),
+                                updateUsersFilter = {
+                                    networkManager.sendFront(WebSocketMsg.Front.SetExpertsFilter(it))
+                                },
+                                onConnectedFlow = networkManager.onConnectedFlow,
+                                setFavorite = networkManager::setFavorite,
+                            ),
+                            coroutineScope,
+                        ).adapt(
+                            effAdapter = { (it as? FeatureEff.Experts)?.eff },
+                            msgAdapter = {
+                                FeatureMsg.Experts(msg = it)
+                            }
+                        ),
+                        ChatListEffHandler(
+                            uid,
+                            ChatListEffHandler.Services(
+                                openUserChat = listener.map(Msg::OpenUserChat),
+                                onConnectedFlow = networkManager.onConnectedFlow,
+                                lastListWithStatusFlow = messagesDatabase.lastListWithStatusFlow(uid),
+                                unreadCountsFlow = { messages ->
+                                    messagesDatabase
+                                        .chatMessagesQueries
+                                        .unreadCountsFlow(uid, messages)
+                                },
+                                lastPresentMessageIdFlow = messagesDatabase
+                                    .chatMessagesQueries
+                                    .messagePresenceFlow(),
+                                lastReadPresenceFlow = messagesDatabase
+                                    .lastReadMessagesQueries
+                                    .selectAllFlow(),
+                                getUsersByIdsFlow = usersDatabase.usersQueries::getByIdsFlow,
+                                sendFrontWebSocketMsg = networkManager::sendFront,
+                            ),
+                            coroutineScope,
+                        ).adapt(
+                            effAdapter = { (it as? FeatureEff.ChatList)?.eff },
+                            msgAdapter = { FeatureMsg.ChatList(it) }
+                        ),
+                    ).map(::wrapWithEffectHandler).forEach(sessionInfo!!::addCloseableChild)
                 }
                 Eff.SystemBack -> {
                     appContext.systemBack()

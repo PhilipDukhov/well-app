@@ -2,7 +2,7 @@ package com.well.modules.features.myProfile.myProfileHandlers
 
 import com.well.modules.models.Availability
 import com.well.modules.puerhBase.EffectHandler
-import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.RequestConsultationFeature as Feature
+import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.RequestConsultationFeature as Feature
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 
@@ -14,6 +14,7 @@ class RequestConsultationEffHandler(
         val closeConsultationRequest: () -> Unit,
         val book: suspend (Availability) -> Unit,
         val getAvailabilities: suspend () -> List<Availability>,
+        val gotEmptyAvailabilities: () -> Unit,
     )
 
     override suspend fun processEffect(eff: Feature.Eff) {
@@ -34,7 +35,11 @@ class RequestConsultationEffHandler(
                 }
             }
             Feature.Eff.Update -> {
-                listener(Feature.Msg.UpdateAvailabilities(services.getAvailabilities()))
+                val availabilities = services.getAvailabilities()
+                listener(Feature.Msg.UpdateAvailabilities(availabilities))
+                if (availabilities.isEmpty()) {
+                    services.gotEmptyAvailabilities()
+                }
             }
             is Feature.Eff.ClearFailedState -> {
                 delay(eff.timeoutMillis)

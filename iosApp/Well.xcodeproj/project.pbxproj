@@ -29,6 +29,7 @@
 		4A0A75F92728AA4F00632E84 /* AvailabilitiesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0A75F72728AA4E00632E84 /* AvailabilitiesList.swift */; };
 		4A0A75FB2728BBB300632E84 /* AvailabilityEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0A75FA2728BBB300632E84 /* AvailabilityEditView.swift */; };
 		4A0A75FC2728BBB300632E84 /* AvailabilityEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0A75FA2728BBB300632E84 /* AvailabilityEditView.swift */; };
+		4A278EFC2743520D00A612C1 /* ForceNavControllerBarHidden.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A278EFB2743520D00A612C1 /* ForceNavControllerBarHidden.swift */; };
 		4A3A82BA26626D70003DD1F3 /* MoreScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D19F97DCC9822CBBE4C71 /* MoreScreen.swift */; };
 		4A42E2B027294D5300E839CF /* TabRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A42E2AF27294D5300E839CF /* TabRow.swift */; };
 		4A42E2B127294D5300E839CF /* TabRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A42E2AF27294D5300E839CF /* TabRow.swift */; };
@@ -68,7 +69,7 @@
 		4A8280332725EDAB004DF64E /* DrawShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96351B83B3BB91E6FE424C46 /* DrawShape.swift */; };
 		4A8280342725EDAB004DF64E /* AsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963518BB137F85C8DB28F64A /* AsyncImage.swift */; };
 		4A8280352725EDAB004DF64E /* gestures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D17517FA78646AC22A909 /* gestures.swift */; };
-		4A8280362725EDAB004DF64E /* CurrentUserAvailabilityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC263DA27229F4E002BE68B /* CurrentUserAvailabilityView.swift */; };
+		4A8280362725EDAB004DF64E /* AvailabilitiesCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC263DA27229F4E002BE68B /* AvailabilitiesCalendarView.swift */; };
 		4A8280372725EDAB004DF64E /* ViewModelObservable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D1E5F03A430E281A7B69E /* ViewModelObservable.swift */; };
 		4A8280382725EDAB004DF64E /* ProjectTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D13C627400CA9EA09C776 /* ProjectTextEditor.swift */; };
 		4A8280392725EDAB004DF64E /* CallScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5087659259A64B4000A57E5 /* CallScreen.swift */; };
@@ -114,8 +115,12 @@
 		4A82806A2725FA3C004DF64E /* detectVolumeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8280692725FA3C004DF64E /* detectVolumeButton.swift */; };
 		4A82806E272714AB004DF64E /* typealiases.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82806D272714AB004DF64E /* typealiases.swift */; };
 		4A8280722727157A004DF64E /* TestScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8280712727157A004DF64E /* TestScreens.swift */; };
+		4A9F38522741EAED004D5EF5 /* RoundedCornerRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9F38512741EAED004D5EF5 /* RoundedCornerRectangle.swift */; };
+		4A9F38532741EAED004D5EF5 /* RoundedCornerRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9F38512741EAED004D5EF5 /* RoundedCornerRectangle.swift */; };
+		4A9F386827432140004D5EF5 /* PageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9F386727432140004D5EF5 /* PageView.swift */; };
+		4A9F386927432140004D5EF5 /* PageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9F386727432140004D5EF5 /* PageView.swift */; };
 		4AC263D827229EEE002BE68B /* ReducerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC263D727229EEE002BE68B /* ReducerView.swift */; };
-		4AC263DB27229F4E002BE68B /* CurrentUserAvailabilityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC263DA27229F4E002BE68B /* CurrentUserAvailabilityView.swift */; };
+		4AC263DB27229F4E002BE68B /* AvailabilitiesCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC263DA27229F4E002BE68B /* AvailabilitiesCalendarView.swift */; };
 		4AC2640D272387E7002BE68B /* Flow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC2640C272387E7002BE68B /* Flow.swift */; };
 		4AE3A0F626443820005BB554 /* FilterScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AE3A0F526443820005BB554 /* FilterScreen.swift */; };
 		7555FF7F242A565900829871 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF7E242A565900829871 /* AppDelegate.swift */; };
@@ -196,6 +201,7 @@
 		4A0A75932727440500632E84 /* AppContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContainer.swift; sourceTree = "<group>"; };
 		4A0A75F72728AA4E00632E84 /* AvailabilitiesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailabilitiesList.swift; sourceTree = "<group>"; };
 		4A0A75FA2728BBB300632E84 /* AvailabilityEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailabilityEditView.swift; sourceTree = "<group>"; };
+		4A278EFB2743520D00A612C1 /* ForceNavControllerBarHidden.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForceNavControllerBarHidden.swift; sourceTree = "<group>"; };
 		4A42E2AF27294D5300E839CF /* TabRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabRow.swift; sourceTree = "<group>"; };
 		4A42E2BE2729DAFE00E839CF /* RequestConsultationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestConsultationView.swift; sourceTree = "<group>"; };
 		4A42E2CD272B4BCF00E839CF /* partialSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = partialSheet.swift; sourceTree = "<group>"; };
@@ -209,8 +215,10 @@
 		4A82806C2725FCA0004DF64E /* SharedMobile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SharedMobile.h; path = ../../sharedMobile/build/cocoapods/framework/SharedMobile.framework/Headers/SharedMobile.h; sourceTree = "<group>"; };
 		4A82806D272714AB004DF64E /* typealiases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = typealiases.swift; sourceTree = "<group>"; };
 		4A8280712727157A004DF64E /* TestScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScreens.swift; sourceTree = "<group>"; };
+		4A9F38512741EAED004D5EF5 /* RoundedCornerRectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCornerRectangle.swift; sourceTree = "<group>"; };
+		4A9F386727432140004D5EF5 /* PageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageView.swift; sourceTree = "<group>"; };
 		4AC263D727229EEE002BE68B /* ReducerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReducerView.swift; sourceTree = "<group>"; };
-		4AC263DA27229F4E002BE68B /* CurrentUserAvailabilityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUserAvailabilityView.swift; sourceTree = "<group>"; };
+		4AC263DA27229F4E002BE68B /* AvailabilitiesCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailabilitiesCalendarView.swift; sourceTree = "<group>"; };
 		4AC2640C272387E7002BE68B /* Flow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Flow.swift; sourceTree = "<group>"; };
 		4AE3A0F526443820005BB554 /* FilterScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterScreen.swift; sourceTree = "<group>"; };
 		4B61DAA76C7C5AEBDC61E5EF /* Pods-LocalTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LocalTest.release.xcconfig"; path = "Target Support Files/Pods-LocalTest/Pods-LocalTest.release.xcconfig"; sourceTree = "<group>"; };
@@ -384,6 +392,7 @@
 			children = (
 				4A82800D2725EBFB004DF64E /* LocalTestApp.swift */,
 				4A8280692725FA3C004DF64E /* detectVolumeButton.swift */,
+				4A278EFB2743520D00A612C1 /* ForceNavControllerBarHidden.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -399,7 +408,7 @@
 		4AC263D927229F41002BE68B /* Availability */ = {
 			isa = PBXGroup;
 			children = (
-				4AC263DA27229F4E002BE68B /* CurrentUserAvailabilityView.swift */,
+				4AC263DA27229F4E002BE68B /* AvailabilitiesCalendarView.swift */,
 				4A0A75FA2728BBB300632E84 /* AvailabilityEditView.swift */,
 				4A0A75F72728AA4E00632E84 /* AvailabilitiesList.swift */,
 				4A42E2BE2729DAFE00E839CF /* RequestConsultationView.swift */,
@@ -507,6 +516,7 @@
 			isa = PBXGroup;
 			children = (
 				D555C21E25D9013A00B4755F /* GradientKMM.swift */,
+				4A9F386727432140004D5EF5 /* PageView.swift */,
 				D5378B1A25DA211C00561199 /* InactiveOverlay.swift */,
 				D556940E25D473880012EA36 /* HVStack.swift */,
 				D555C1E825D64A9100B4755F /* Control.swift */,
@@ -558,6 +568,7 @@
 			isa = PBXGroup;
 			children = (
 				96351144717EC2152B5D829D /* PartCircleShape.swift */,
+				4A9F38512741EAED004D5EF5 /* RoundedCornerRectangle.swift */,
 			);
 			path = Shapes;
 			sourceTree = "<group>";
@@ -933,6 +944,7 @@
 				4A8280592725EDAB004DF64E /* CallBottomBar.swift in Sources */,
 				4A8280582725EDAB004DF64E /* Label.swift in Sources */,
 				4A8280292725EDAB004DF64E /* SharedImage.swift in Sources */,
+				4A9F38532741EAED004D5EF5 /* RoundedCornerRectangle.swift in Sources */,
 				4A8280222725EDAB004DF64E /* ImageSharingBottomBar.swift in Sources */,
 				4A82802D2725EDAB004DF64E /* RatingInfoView.swift in Sources */,
 				4A82804B2725EDAB004DF64E /* HostingController.swift in Sources */,
@@ -973,10 +985,12 @@
 				4A82802E2725EDAB004DF64E /* LoginScreen.swift in Sources */,
 				4A82802A2725EDAB004DF64E /* FilterScreen.swift in Sources */,
 				4A8280382725EDAB004DF64E /* ProjectTextEditor.swift in Sources */,
+				4A9F386927432140004D5EF5 /* PageView.swift in Sources */,
 				4A0A75F92728AA4F00632E84 /* AvailabilitiesList.swift in Sources */,
 				4A8280282725EDAB004DF64E /* SearchBar.swift in Sources */,
 				4A8280472725EDAB004DF64E /* MyProfileScreen.swift in Sources */,
-				4A8280362725EDAB004DF64E /* CurrentUserAvailabilityView.swift in Sources */,
+				4A278EFC2743520D00A612C1 /* ForceNavControllerBarHidden.swift in Sources */,
+				4A8280362725EDAB004DF64E /* AvailabilitiesCalendarView.swift in Sources */,
 				4A82803B2725EDAB004DF64E /* Kotlin.swift in Sources */,
 				4A82803F2725EDAB004DF64E /* ViewContainer.swift in Sources */,
 				4A82804C2725EDAB004DF64E /* CallButton.swift in Sources */,
@@ -1003,9 +1017,11 @@
 				D568033B2638322500CFE16B /* EditingField.swift in Sources */,
 				4A6ABABB270F45B900D8621E /* Napier.swift in Sources */,
 				D56803492638323700CFE16B /* LoginScreen.swift in Sources */,
+				4A9F38522741EAED004D5EF5 /* RoundedCornerRectangle.swift in Sources */,
 				D5680324263831DB00CFE16B /* SwiftUI.swift in Sources */,
 				D56803322638320400CFE16B /* OffsetCircle.swift in Sources */,
 				4A42E2CE272B4BCF00E839CF /* partialSheet.swift in Sources */,
+				4A9F386827432140004D5EF5 /* PageView.swift in Sources */,
 				4AC2640D272387E7002BE68B /* Flow.swift in Sources */,
 				D568031D263831DB00CFE16B /* EdgeInsets.swift in Sources */,
 				D568034B2638324D00CFE16B /* ExpertsScreen.swift in Sources */,
@@ -1045,7 +1061,7 @@
 				4AC263D827229EEE002BE68B /* ReducerView.swift in Sources */,
 				4A3A82BA26626D70003DD1F3 /* MoreScreen.swift in Sources */,
 				4A42E2BF2729DAFE00E839CF /* RequestConsultationView.swift in Sources */,
-				4AC263DB27229F4E002BE68B /* CurrentUserAvailabilityView.swift in Sources */,
+				4AC263DB27229F4E002BE68B /* AvailabilitiesCalendarView.swift in Sources */,
 				D56803422638322500CFE16B /* MyProfileScreen.swift in Sources */,
 				4A0A75F82728AA4E00632E84 /* AvailabilitiesList.swift in Sources */,
 				D568034E26383DA900CFE16B /* SearchBar.swift in Sources */,

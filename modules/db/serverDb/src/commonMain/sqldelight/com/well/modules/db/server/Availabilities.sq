@@ -1,0 +1,32 @@
+import com.well.modules.models.Repeat;
+import com.well.modules.models.User;
+
+CREATE TABLE Availabilities (
+    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    ownerId BIGINT AS User.Id NOT NULL,
+    startInstantEpochMilliseconds BIGINT NOT NULL,
+    durationMinutes INTEGER NOT NULL,
+    repeat TEXT AS Repeat NOT NULL,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+lastInsertId:
+SELECT LAST_INSERT_ID();
+
+getByOwnerIdQuery:
+SELECT * FROM Availabilities WHERE ownerId = ? AND deleted = FALSE;
+
+userHasAvailabilities:
+SELECT COUNT(*) > 0 FROM Availabilities WHERE ownerId = ? AND deleted = FALSE;
+
+getById:
+SELECT * FROM Availabilities WHERE id = ?;
+
+insert:
+INSERT INTO Availabilities(ownerId, startInstantEpochMilliseconds, durationMinutes ,repeat)
+VALUES (?,  ?, ?, ?);
+
+markDeleted:
+UPDATE Availabilities
+SET deleted = TRUE
+WHERE id = ?;

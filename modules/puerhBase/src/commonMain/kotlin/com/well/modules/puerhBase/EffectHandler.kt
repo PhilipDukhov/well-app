@@ -1,5 +1,6 @@
 package com.well.modules.puerhBase
 
+import com.well.modules.atomic.AtomicMutableList
 import com.well.modules.atomic.AtomicRef
 import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
@@ -12,6 +13,7 @@ import kotlinx.coroutines.plus
 abstract class EffectHandler<Eff : Any, Msg : Any>(coroutineScope: CoroutineScope) : CloseableContainer() {
     val coroutineScope: CoroutineScope
     private var listener by AtomicRef<((Msg) -> Unit)?>(null)
+    private val pendingMessages = AtomicMutableList<Msg>()
 
     init {
         val job = Job()
@@ -21,6 +23,9 @@ abstract class EffectHandler<Eff : Any, Msg : Any>(coroutineScope: CoroutineScop
 
     open fun setListener(listener: suspend (Msg) -> Unit) {
         this.listener = { msg -> coroutineScope.launch { listener(msg) } }
+        pendingMessages
+            .dropAll()
+            .forEach(::listener)
     }
 
     fun handleEffect(eff: Eff) {
@@ -33,6 +38,9 @@ abstract class EffectHandler<Eff : Any, Msg : Any>(coroutineScope: CoroutineScop
 
     open fun listener(msg: Msg) {
         listener?.invoke(msg)
+            ?: run {
+                pendingMessages.add(msg)
+            }
     }
 }
 

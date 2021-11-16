@@ -124,14 +124,15 @@ struct NavigationBar<Title: View, LV: View, RV: View, ExtraContent: View>: View 
     var body: some View {
         VStack(spacing: 0) {
             ZStack(alignment: .top) {
-                title.map(control)
-                    .textStyle(.subtitle2)
-                    .frame(height: controlMinSize)
+                title.map {
+                    control(item: $0)
+                        .textStyle(.subtitle1).frame(height: controlMinSize)
+                }
                 HStack {
                     leftItem.map(control)
                     Spacer()
                     rightItem.map(control)
-                }
+                }.textStyle(.body1)
             }.padding(.vertical, 5)
                 .frame(minHeight: max(minContentHeight ?? 0, controlMinSize))
                 .fillMaxWidth()
@@ -205,7 +206,7 @@ extension NavigationBarModelItemContent {
     func view() -> some View {
         switch self {
         case let content as NavigationBarModelItemContent.Text:
-            itemTextView(content.text)
+            SwiftUI.Text(content.text)
 
         case is NavigationBarModelItemContent.ActivityIndicator:
             ProgressView()
@@ -221,10 +222,6 @@ extension NavigationBarModelItemContent {
         default: fatalError()
         }
     }
-}
-
-private func itemTextView(_ text: String) -> Text {
-    Text(text).textStyle(.body2)
 }
 
 struct NavigationBarItem<V: View> {
@@ -258,7 +255,7 @@ struct NavigationBarItem<V: View> {
         enabled: Bool = true,
         handler: (() -> Void)? = nil
     ) where V == Text {
-        self.view = itemTextView(text)
+        self.view = Text(text)
         self.enabled = enabled
         self.handler = handler
     }

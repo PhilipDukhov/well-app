@@ -6,8 +6,8 @@ import com.well.modules.models.formatters.DateFormatter
 import com.well.modules.models.formatters.format
 import com.well.modules.utils.kotlinUtils.spacedUppercaseName
 
-internal fun User.previewGroups(isCurrent: Boolean) = listOfNotNull(
-    if (!isCurrent) {
+internal fun User.previewGroups(isCurrent: Boolean, hasAvailableAvailabilities: Boolean) = listOfNotNull(
+    if (!isCurrent && hasAvailableAvailabilities) {
         UIGroup.Preview(
             UIPreviewField(
                 content = UIPreviewField.Content.Button(

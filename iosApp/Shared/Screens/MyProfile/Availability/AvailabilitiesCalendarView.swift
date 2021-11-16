@@ -1,5 +1,5 @@
 //
-//  CurrentUserAvailabilityView.swift
+//  AvailabilitiesCalendarView.swift
 //  Well
 //
 //  Created by Phil on 22.10.2021.
@@ -11,7 +11,7 @@ import SharedMobile
 
 private typealias Feature = AvailabilitiesCalendarFeature
 
-struct CurrentUserAvailabilityView: View {
+struct AvailabilitiesCalendarView: View {
     let state: AvailabilitiesCalendarFeature.State
     let listener: (AvailabilitiesCalendarFeature.Msg) -> Void
 
@@ -34,6 +34,34 @@ struct CurrentUserAvailabilityView: View {
     private var selectedDate: LocalDate?
 
     var body: some View {
+        ZStack {
+            content
+            if !state.loaded || state.processing {
+                InactiveOverlay {
+                    if let failureReason = state.failureReason {
+                        VStack {
+                            Text(failureReason)
+                                .textStyle(.body2)
+                                .foregroundColorKMM(.companion.White)
+                            Button(action: { listener(Feature.MsgReloadAvailabilities()) }) {
+                                Text(Feature.Strings.shared.tryAgain)
+                                    .textStyle(.subtitle1)
+                            }
+                        }
+                    } else {
+                        ProgressView()
+                            .onAppear {
+                                if !state.loaded {
+                                    listener(Feature.MsgReloadAvailabilities())
+                                }
+                            }
+                    }
+                }
+            }
+        }.fillMaxSize()
+    }
+
+    var content: some View {
         VStack(spacing: 0) {
             CalendarView(
                 state: state,

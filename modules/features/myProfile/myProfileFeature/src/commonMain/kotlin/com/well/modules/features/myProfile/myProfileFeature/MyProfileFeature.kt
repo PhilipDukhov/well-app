@@ -1,12 +1,13 @@
 package com.well.modules.features.myProfile.myProfileFeature
 
+import com.well.modules.atomic.AtomicMutableMap
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.State.EditingStatus
-import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.RequestConsultationFeature
+import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.AvailabilitiesCalendarFeature
+import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.RequestConsultationFeature
 import com.well.modules.models.FavoriteSetter
 import com.well.modules.models.Rating
 import com.well.modules.models.RatingRequest
 import com.well.modules.models.User
-import com.well.modules.models.UserId
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
 import com.well.modules.utils.kotlinUtils.spacedUppercaseName
@@ -15,7 +16,6 @@ import com.well.modules.utils.viewUtils.UrlUtil
 import com.well.modules.utils.viewUtils.currentTimeZoneIdentifier
 import com.well.modules.utils.viewUtils.sharedImage.ImageContainer
 import com.well.modules.utils.viewUtils.sharedImage.profileImage
-import com.well.modules.features.myProfile.myProfileFeature.currentUserAvailability.CurrentUserAvailabilitiesListFeature as AvailabilitiesListFeature
 import io.github.aakira.napier.Napier
 
 object MyProfileFeature {
@@ -29,7 +29,7 @@ object MyProfileFeature {
 
     fun initialState(
         isCurrent: Boolean,
-        uid: UserId,
+        uid: User.Id,
     ) = initialState(
         isCurrent = isCurrent,
         uid = uid,
@@ -47,7 +47,7 @@ object MyProfileFeature {
 
     private fun initialState(
         isCurrent: Boolean,
-        uid: UserId,
+        uid: User.Id,
         user: User?,
     ) = user?.run {
         if (user.initialized)
@@ -63,19 +63,20 @@ object MyProfileFeature {
             originalUser = it,
             user = it,
             editingStatus = if (!isCurrent || user?.initialized != false) EditingStatus.Preview else EditingStatus.Editing,
-            availabilityState = if (isCurrent && user?.initialized != false) AvailabilitiesListFeature.State() else null,
+            availabilityState = if (isCurrent && user?.initialized != false) AvailabilitiesCalendarFeature.State() else null,
         )
     }
 
     data class State internal constructor(
         val isCurrent: Boolean,
-        val uid: UserId,
+        val uid: User.Id,
         internal val originalUser: User? = null,
         val user: User? = null,
         internal val newImage: ImageContainer? = null,
         val editingStatus: EditingStatus = EditingStatus.Preview,
-        val availabilityState: AvailabilitiesListFeature.State? = null,
+        val availabilityState: AvailabilitiesCalendarFeature.State? = null,
         val requestConsultationState: RequestConsultationFeature.State? = null,
+        val hasAvailableAvailabilities: Boolean = false,
     ) {
         val tabs =
             if (editingStatus != EditingStatus.Preview || availabilityState == null)
@@ -100,7 +101,7 @@ object MyProfileFeature {
                     doximityLink = user.doximity?.let { if (!UrlUtil.isValidUrl(it)) null else it },
                 ),
             ) + when (editingStatus) {
-                EditingStatus.Preview -> user.previewGroups(isCurrent = isCurrent)
+                EditingStatus.Preview -> user.previewGroups(isCurrent, hasAvailableAvailabilities)
                 EditingStatus.Editing,
                 EditingStatus.Uploading,
                 -> user.editingGroups()
@@ -112,48 +113,65 @@ object MyProfileFeature {
             .mapNotNull { it as? UIGroup.Editing }
             .flatMap { it.fields }
             .all { it.content.valid() }
-        val navigationBarModel = if (!isCurrent) null else NavigationBarModel(
-            title = if (user?.initialized == false) "Create new profile" else "My profile",
-            leftItem = (if (user?.initialized == true) when (editingStatus) {
-                EditingStatus.Preview -> {
-                    NavigationBarModel.Item(
-                        text = Strings.logout,
-                        msg = Msg.OnLogout,
-                    )
-                }
-                EditingStatus.Editing,
-                EditingStatus.Uploading,
-                -> {
-                    NavigationBarModel.Item(
-                        text = Strings.cancel,
-                        enabled = editingStatus == EditingStatus.Editing,
-                        msg = Msg.Back,
-                    )
-                }
-            } else null) ?: NavigationBarModel.Item(
-                icon = NavigationBarModel.Item.Content.Icon.Icon.Back,
-                enabled = editingStatus != EditingStatus.Uploading,
-                msg = Msg.Back,
-            ),
-            rightItem = when (editingStatus) {
-                EditingStatus.Preview -> {
-                    NavigationBarModel.Item(
-                        text = "Edit",
-                        msg = Msg.StartEditing
-                    )
-                }
-                EditingStatus.Editing -> {
-                    NavigationBarModel.Item(
-                        text = if (user?.initialized == true) "Save" else "Create",
-                        enabled = valid && editingStatus == EditingStatus.Editing,
-                        msg = Msg.FinishEditing
-                    )
-                }
-                EditingStatus.Uploading -> {
-                    NavigationBarModel.Item.activityIndicator()
-                }
-            },
-        )
+
+        private val cachedNavigationBarModels = AtomicMutableMap<ProfileTab, NavigationBarModel<Msg>?>()
+        fun navigationBarModelForTab(tab: ProfileTab): NavigationBarModel<Msg>? {
+            if (!isCurrent) return null
+            if (cachedNavigationBarModels.containsKey(tab)) {
+                return cachedNavigationBarModels[tab]
+            }
+            val result = NavigationBarModel(
+                title = if (user?.initialized == false) "Create new profile" else "My profile",
+                leftItem = (if (user?.initialized == true) when (editingStatus) {
+                    EditingStatus.Preview -> {
+                        NavigationBarModel.Item(
+                            text = Strings.logout,
+                            msg = Msg.OnLogout,
+                        )
+                    }
+                    EditingStatus.Editing,
+                    EditingStatus.Uploading,
+                    -> {
+                        NavigationBarModel.Item(
+                            text = Strings.cancel,
+                            enabled = editingStatus == EditingStatus.Editing,
+                            msg = Msg.Back,
+                        )
+                    }
+                } else null) ?: NavigationBarModel.Item(
+                    icon = NavigationBarModel.Item.Content.Icon.Icon.Back,
+                    enabled = editingStatus != EditingStatus.Uploading,
+                    msg = Msg.Back,
+                ),
+                rightItem = when (tab) {
+                    ProfileTab.ProfileInformation -> {
+                        when (editingStatus) {
+                            EditingStatus.Preview -> {
+                                NavigationBarModel.Item(
+                                    text = "Edit",
+                                    msg = Msg.StartEditing
+                                )
+                            }
+                            EditingStatus.Editing -> {
+                                NavigationBarModel.Item(
+                                    text = if (user?.initialized == true) "Save" else "Create",
+                                    enabled = valid && editingStatus == EditingStatus.Editing,
+                                    msg = Msg.FinishEditing
+                                )
+                            }
+                            EditingStatus.Uploading -> {
+                                NavigationBarModel.Item.activityIndicator()
+                            }
+                        }
+                    }
+                    ProfileTab.Availability -> {
+                        null
+                    }
+                },
+            )
+            cachedNavigationBarModels[tab] = result
+            return result
+        }
 
         enum class EditingStatus {
             Preview,
@@ -176,9 +194,10 @@ object MyProfileFeature {
         data class UpdateUser(val user: User) : Msg()
         data class UpdateImage(val imageContainer: ImageContainer?) : Msg()
         data class UserUploadFinished(val throwable: Throwable?) : Msg()
+        data class UpdateHasAvailableAvailabilities(val hasAvailableAvailabilities: Boolean) : Msg()
         data class Rate(val rating: Rating) : Msg()
         object OnLogout : Msg()
-        data class AvailabilityMsg(val msg: AvailabilitiesListFeature.Msg) : Msg()
+        data class AvailabilityMsg(val msg: AvailabilitiesCalendarFeature.Msg) : Msg()
         object RequestConsultation : Msg()
         object CloseConsultationRequest : Msg()
         data class RequestConsultationMsg(val msg: RequestConsultationFeature.Msg) : Msg()
@@ -194,7 +213,7 @@ object MyProfileFeature {
 
         data class ShowError(val throwable: Throwable) : Eff
         data class Call(val user: User) : Eff
-        data class Message(val uid: UserId) : Eff
+        data class Message(val uid: User.Id) : Eff
         data class RatingRequest(val ratingRequest: com.well.modules.models.RatingRequest) : Eff
 
         object Back : Eff
@@ -202,7 +221,7 @@ object MyProfileFeature {
         object Logout : Eff
         object BecomeExpert : Eff
         data class SetUserFavorite(val setter: FavoriteSetter) : Eff
-        data class AvailabilityEff(val eff: AvailabilitiesListFeature.Eff) : Eff
+        data class AvailabilityEff(val eff: AvailabilitiesCalendarFeature.Eff) : Eff
         data class RequestConsultationEff(val eff: RequestConsultationFeature.Eff) : Eff
         object CloseConsultationRequest : Eff
     }
@@ -297,7 +316,9 @@ object MyProfileFeature {
                 is Msg.Rate -> {
                     return@reducer state.copy(
                         user = state.user!!.copy(
-                            ratingInfo = state.user.ratingInfo.copy(currentUserRating = msg.rating),
+                            ratingInfo = state.user.ratingInfo.copy(
+                                currentUserRating = msg.rating,
+                            ),
                         )
                     ) toSetOf Eff.RatingRequest(
                         ratingRequest = RatingRequest(
@@ -311,7 +332,7 @@ object MyProfileFeature {
                         Napier.wtf("AvailabilityMsg ${msg.msg} unexpected: $state")
                         return@state state
                     }
-                    val (childState, effs) = AvailabilitiesListFeature.reducer(
+                    val (childState, effs) = AvailabilitiesCalendarFeature.reducer(
                         msg = msg.msg,
                         state = state.availabilityState,
                     )
@@ -341,7 +362,14 @@ object MyProfileFeature {
                     )
                 }
                 Msg.CloseConsultationRequest -> {
-                    return@reducer state.copy(requestConsultationState = null) toSetOf Eff.CloseConsultationRequest
+                    return@reducer state.copy(
+                        requestConsultationState = null,
+                    ) toSetOf Eff.CloseConsultationRequest
+                }
+                is Msg.UpdateHasAvailableAvailabilities -> {
+                    return@state state.copy(
+                        hasAvailableAvailabilities = msg.hasAvailableAvailabilities,
+                    )
                 }
             }
         })

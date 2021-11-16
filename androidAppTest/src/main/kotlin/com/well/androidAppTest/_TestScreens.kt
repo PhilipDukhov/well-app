@@ -1,7 +1,15 @@
 package com.well.androidAppTest
 
+import com.well.androidAppTest.TestScreen.AvailabilityCalendar
+import com.well.androidAppTest.TestScreen.Call
+import com.well.androidAppTest.TestScreen.Local
+import com.well.androidAppTest.TestScreen.MyProfile
+import com.well.androidAppTest.TestScreen.Slider
+import com.well.androidAppTest.TestScreen.UserChat
+import com.well.androidAppTest.TestScreen.UserRating
+import com.well.androidAppTest.TestScreen.Welcome
+import com.well.androidAppTest.TestScreen.values
 import com.well.modules.androidUi.composableScreens.welcome.WelcomeScreen
-import com.well.androidAppTest.TestScreen.*
 import com.well.modules.features.welcome.WelcomeFeature
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
@@ -15,7 +23,6 @@ import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
-import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

@@ -34,6 +34,7 @@ kotlin {
             libDependencies(
                 ":modules:atomic",
                 ":modules:models",
+                ":modules:features:myProfile:myProfileHandlers",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",
                 "shared.napier",

@@ -23,7 +23,7 @@ fun <S> AnimatedOptionalContent(
         fadeIn() with fadeOut()
     },
     contentAlignment: Alignment = Alignment.TopStart,
-    content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit
+    content: @Composable AnimatedVisibilityScope.(targetState: S) -> Unit,
 ) {
     AnimatedContent(
         targetState = targetState,

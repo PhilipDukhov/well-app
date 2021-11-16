@@ -36,4 +36,8 @@ data class NavigationBarModel<Msg>(
             }
         }
     }
+
+    fun copy(hideRightItem: Boolean) = copy(
+        rightItem = if (hideRightItem) null else rightItem,
+    )
 }

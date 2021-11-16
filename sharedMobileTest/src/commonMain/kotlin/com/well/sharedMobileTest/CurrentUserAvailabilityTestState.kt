@@ -5,7 +5,7 @@ import com.well.modules.models.Availability
 
 // AvailabilitiesCalendarFeature unused for easy readability
 @Suppress("unused")
-fun AvailabilitiesCalendarFeature.testState() =
+fun AvailabilitiesCalendarFeature.testState(count: Int = 100) =
     AvailabilitiesCalendarFeature.State(
-        availabilities = Availability.testValues
+        availabilities = Availability.testValues(count)
     )

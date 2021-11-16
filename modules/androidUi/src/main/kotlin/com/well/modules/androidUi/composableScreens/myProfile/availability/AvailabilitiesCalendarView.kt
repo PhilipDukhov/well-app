@@ -2,6 +2,7 @@ package com.well.modules.androidUi.composableScreens.myProfile.availability
 
 import com.well.modules.androidUi.customViews.AutoSizeText
 import com.well.modules.androidUi.customViews.GradientView
+import com.well.modules.androidUi.customViews.InactiveOverlay
 import com.well.modules.androidUi.customViews.swipeableLeftRight
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.thenOrNull
@@ -14,6 +15,7 @@ import com.well.modules.models.Color
 import com.well.modules.models.date.dateTime.localizedDayAndShortMonth
 import com.well.modules.models.date.dateTime.localizedVeryShortSymbol
 import com.well.modules.utils.viewUtils.Gradient
+import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.AvailabilitiesCalendarFeature as Feature
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,7 +29,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -45,11 +47,13 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,14 +65,17 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.accompanist.insets.navigationBarsPadding
 import kotlinx.datetime.LocalDate
+import kotlin.math.floor
+import kotlin.math.roundToInt
 
 private sealed interface PresentingDialog {
     data class Create(val date: LocalDate) : PresentingDialog
@@ -76,13 +83,14 @@ private sealed interface PresentingDialog {
 }
 
 @Composable
-fun CurrentUserAvailabilityView(
+fun AvailabilitiesCalendarView(
     state: State,
     listener: (Msg) -> Unit,
 ) {
-    Column(
-        modifier = Modifier
-            .padding(horizontal = 15.dp)
+    Box(Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 15.dp)
         ) {
             var selectedDate by rememberSaveable(state.monthOffset) {
                 mutableStateOf<LocalDate?>(null)
@@ -157,6 +165,32 @@ fun CurrentUserAvailabilityView(
                             )
                         }
                     }
+                }
+            }
+        }
+        if (!state.loaded || state.processing) {
+            InactiveOverlay(showActivityIndicator = state.failureReason == null) {
+                state.failureReason?.let { failureReason ->
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(failureReason)
+                        TextButton(
+                            onClick = { listener(Msg.ReloadAvailabilities) },
+                        ) {
+                            Text(
+                                Feature.Strings.tryAgain,
+                                color = Color.MediumBlue.toColor(),
+                                style = MaterialTheme.typography.subtitle1,
+                            )
+                        }
+                    }
+                } ?: if (!state.loaded) {
+                    LaunchedEffect(Unit) {
+                        listener(Msg.ReloadAvailabilities)
+                    }
+                }
             }
         }
     }
@@ -223,17 +257,16 @@ private fun AvailabilitiesList(
     onSelect: (Availability) -> Unit,
     onCreate: (State.CalendarItem) -> Unit,
 ) {
-    val padding = 10.dp
-    CalculateAspectRatio(
+    val spacing = 10.dp
+    CalculateSize(
         cellsCount = State.availabilityCellsCount,
-        padding = padding,
-    ) { aspectRatio ->
+        spacing = spacing,
+    ) { size ->
         LazyVerticalGrid(
             cells = GridCells.Fixed(State.availabilityCellsCount),
-            verticalArrangement = Arrangement.spacedBy(padding),
-            horizontalArrangement = Arrangement.spacedBy(padding),
-            contentPadding = PaddingValues(vertical = padding),
-            modifier = Modifier.navigationBarsPadding()
+            verticalArrangement = Arrangement.spacedBy(spacing),
+            horizontalArrangement = Arrangement.spacedBy(spacing),
+            contentPadding = PaddingValues(vertical = spacing),
         ) {
             items(selectedItem?.availabilities ?: allAvailabilities) { availability ->
                 AvailabilityCell(
@@ -243,7 +276,7 @@ private fun AvailabilitiesList(
                     onClick = {
                         onSelect(availability)
                     },
-                    aspectRatio = aspectRatio,
+                    size = size,
                 )
             }
             selectedItem?.let { selectedItem ->
@@ -253,7 +286,7 @@ private fun AvailabilitiesList(
                             onClick = {
                                 onCreate(selectedItem)
                             },
-                            aspectRatio = aspectRatio,
+                            size = size,
                         ) {
                             Icon(Icons.Default.Add, contentDescription = null)
                         }
@@ -273,13 +306,13 @@ private fun AvailabilitiesList(
 private fun AvailabilityCell(
     firstRowText: String?,
     secondRowText: String,
-    aspectRatio: Float?,
+    size: DpSize?,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
 ) {
     AvailabilityCell(
         onClick = onClick,
-        aspectRatio = aspectRatio,
+        size = size,
         modifier = modifier,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -295,7 +328,7 @@ private fun AvailabilityCell(
 private fun AvailabilityCell(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    aspectRatio: Float?,
+    size: DpSize?,
     content: @Composable BoxScope.() -> Unit,
 ) {
     val shape = RoundedCornerShape(14.dp)
@@ -311,7 +344,7 @@ private fun AvailabilityCell(
         },
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .thenOrNull(aspectRatio?.let(Modifier::aspectRatio))
+            .thenOrNull(size?.let(Modifier::size))
             .clip(shape)
             .clickable(onClick = onClick)
             .backgroundKMM(Color.LightBlue15, shape = shape)
@@ -426,28 +459,37 @@ private fun RowScope.DayView(
 }
 
 @Composable
-private fun CalculateAspectRatio(
+private fun CalculateSize(
     @Suppress("SameParameterValue")
     cellsCount: Int,
-    padding: Dp,
-    content: @Composable (Float) -> Unit,
+    spacing: Dp,
+    content: @Composable (DpSize) -> Unit,
 ) {
-    BoxWithConstraints {
-        val (aspectRatio, setAspectRatio) = remember { mutableStateOf<Float?>(null) }
-        if (aspectRatio == null) {
+    val (size, setSize) = remember { mutableStateOf<DpSize?>(null) }
+    if (size == null) {
+        BoxWithConstraints {
+            val width = ((maxWidth - spacing * (cellsCount - 1)) / cellsCount).value.roundToInt().dp
+            val density = LocalDensity.current
             AvailabilityCell(
                 firstRowText = "",
                 secondRowText = "",
-                aspectRatio = null,
+                size = null,
                 modifier = Modifier
                     .drawWithContent { }
-                    .width((maxWidth - padding * (cellsCount - 1)) / cellsCount)
+                    .width(width)
                     .onSizeChanged {
-                        setAspectRatio(it.width.toFloat() / it.height)
+                        val minCellHeight = with(density) { it.height.toDp() }
+                        val availableContainerHeight = maxHeight - spacing
+                        val itemsCount =
+                            floor((availableContainerHeight / (minCellHeight + spacing)) + 0.5f) - 0.5f
+                        val height = (availableContainerHeight / itemsCount - spacing)
+                        setSize(DpSize(width, height))
                     }
             )
-        } else {
-            content(aspectRatio)
+        }
+    } else {
+        Box {
+            content(size)
         }
     }
 }
