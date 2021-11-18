@@ -1,11 +1,12 @@
 package com.well.modules.androidUi.composableScreens.chatList
 
-import com.well.modules.androidUi.theme.captionLight
 import com.well.modules.androidUi.customViews.ProfileImage
+import com.well.modules.androidUi.customViews.badgeLayout
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.toColor
-import com.well.modules.models.Color
+import com.well.modules.androidUi.theme.captionLight
 import com.well.modules.features.chatList.chatListFeature.ChatListFeature
+import com.well.modules.models.Color
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,12 +25,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.LayoutModifier
-import androidx.compose.ui.layout.Measurable
-import androidx.compose.ui.layout.MeasureResult
-import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 
 private val padding = 16.dp
@@ -89,9 +85,8 @@ fun ChatListCell(
                     color = Color.White.toColor(),
                     modifier = Modifier
                         .background(Color.Green.toColor(), shape = RoundedCornerShape(100))
-                        .widthGreaterOrEqualThanHeight()
+                        .badgeLayout()
                         .requiredWidth(IntrinsicSize.Min)
-                        .padding(horizontal = 5.dp)
                 )
             }
         }
@@ -99,16 +94,3 @@ fun ChatListCell(
         Divider()
     }
 }
-
-private fun Modifier.widthGreaterOrEqualThanHeight() = this.then(object : LayoutModifier {
-    override fun MeasureScope.measure(
-        measurable: Measurable,
-        constraints: Constraints
-    ): MeasureResult {
-        val textPlaceable = measurable.measure(constraints)
-        val width = maxOf(textPlaceable.width, textPlaceable.height)
-        return layout(width, textPlaceable.height) {
-            textPlaceable.place((width - textPlaceable.width) / 2, 0)
-        }
-    }
-})

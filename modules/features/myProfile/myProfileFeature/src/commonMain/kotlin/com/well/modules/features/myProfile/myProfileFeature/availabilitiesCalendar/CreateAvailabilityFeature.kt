@@ -28,7 +28,7 @@ object CreateAvailabilityFeature {
     fun initialStateCreate(startDate: LocalDate) =
         State(
             availability = Availability(
-                id = -1,
+                id = Availability.Id(-1),
                 startDay = startDate,
                 startTime = LocalTime.now() + Duration.hours(1),
                 durationMinutes = 30,
@@ -63,7 +63,7 @@ object CreateAvailabilityFeature {
         }
         val startTimeValid = availability.startInstant >= Clock.System.now()
         val endTimeValid = availability.durationMinutes > 0
-        val valid = (availability.id >= 0 || startTimeValid) && endTimeValid
+        val valid = (availability.id.value >= 0 || startTimeValid) && endTimeValid
 
         fun copy(startTime: LocalTime) = copyAvailability {
             copy(

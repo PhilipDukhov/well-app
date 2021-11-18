@@ -14,6 +14,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
+import kotlin.jvm.JvmInline
 import kotlin.time.Duration
 
 enum class Repeat {
@@ -30,17 +31,15 @@ enum class Repeat {
     }
 }
 
-typealias AvailabilityId = Int
-
 @Serializable
 data class Availability(
-    val id: AvailabilityId,
+    val id: Id,
     val startInstant: Instant,
     val durationMinutes: Int,
     val repeat: Repeat,
 ) {
     constructor(
-        id: AvailabilityId,
+        id: Id,
         startDay: LocalDate,
         startTime: LocalTime,
         durationMinutes: Int,
@@ -51,6 +50,20 @@ data class Availability(
         durationMinutes,
         repeat
     )
+
+    @Serializable
+    @JvmInline
+    value class Id(val value: Long) {
+        override fun toString() = value.toString()
+
+        object ColumnAdapter: com.squareup.sqldelight.ColumnAdapter<Id, Long> {
+            override fun decode(databaseValue: Long): Id =
+                Id(databaseValue)
+
+            override fun encode(value: Id): Long =
+                value.value
+        }
+    }
 
     fun copy(startTime: LocalTime) = copy(
         startInstant = startDay.atTime(startTime).toInstant(TimeZone.currentSystemDefault())

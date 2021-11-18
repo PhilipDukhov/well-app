@@ -7,7 +7,7 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.features.logging.*
 import io.ktor.client.statement.*
 
-fun createBaseHttpClient() = HttpClient {
+fun createBaseHttpClient(): HttpClient = HttpClient {
     install(JsonFeature) {
         serializer = KotlinxSerializer(
             kotlinx.serialization.json.Json {

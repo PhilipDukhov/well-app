@@ -1,3 +1,4 @@
+
 import org.codehaus.groovy.runtime.GStringImpl
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.Project
@@ -8,7 +9,6 @@ import org.gradle.kotlin.dsl.add
 import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.getting
-import org.gradle.kotlin.dsl.support.delegates.ProjectDelegate
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
@@ -269,8 +269,8 @@ val composeOptIns = listOf(
 )
 
 enum class ResolutionStrategy {
+    Kotlin,
     Compose,
-    Reflect,
     Coroutines,
 }
 
@@ -285,17 +285,20 @@ fun Project.subprojectsConfigurationsResolutionStrategy(strategies: Set<Resoluti
                                 useVersion(project.version("compose"))
                             }
                         }
-                        ResolutionStrategy.Reflect -> {
-                            when (requested.groupToName()) {
-                                "org.jetbrains.kotlin" to "kotlin-reflect" -> {
-                                    useVersion(project.version("kotlin"))
-                                }
-                            }
-                        }
                         ResolutionStrategy.Coroutines -> {
                             when (requested.groupToName()) {
                                 "org.jetbrains.kotlinx" to "kotlinx-coroutines-core" -> {
                                     useVersion(project.version("kotlinCoroutines"))
+                                }
+                            }
+                        }
+                        ResolutionStrategy.Kotlin -> {
+                            when (requested.groupToName()) {
+                                "org.jetbrains.kotlin" to "kotlin-reflect" -> {
+                                    useVersion(project.version("kotlin"))
+                                }
+                                "org.jetbrains.kotlin" to "kotlin-stdlib" -> {
+                                    useVersion(project.version("kotlin"))
                                 }
                             }
                         }

@@ -1,7 +1,6 @@
 package com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar
 
 import com.well.modules.models.Availability
-import com.well.modules.models.AvailabilityId
 import com.well.modules.models.date.dateTime.daysShift
 import com.well.modules.models.date.dateTime.firstDayOfWeek
 import com.well.modules.models.date.dateTime.localizedName
@@ -93,7 +92,7 @@ object AvailabilitiesCalendarFeature {
         object NextMonth : Msg()
         data class Add(val availability: Availability) : Msg()
         data class Update(val availability: Availability) : Msg()
-        data class Delete(val availabilityId: AvailabilityId) : Msg()
+        data class Delete(val availabilityId: Availability.Id) : Msg()
         object ReloadAvailabilities : Msg()
         data class SetAvailabilities(val availabilities: List<Availability>) : Msg()
         data class RequestFailed(val reason: String) : Msg()
@@ -103,7 +102,7 @@ object AvailabilitiesCalendarFeature {
     sealed interface Eff {
         object RequestAvailabilities : Eff
         data class Add(val availability: Availability) : Eff
-        data class Remove(val availabilityId: AvailabilityId) : Eff
+        data class Remove(val availabilityId: Availability.Id) : Eff
         data class Update(val availability: Availability) : Eff
     }
 

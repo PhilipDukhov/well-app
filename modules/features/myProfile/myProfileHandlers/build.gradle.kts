@@ -16,6 +16,7 @@ kotlin {
                 ":modules:features:myProfile:myProfileFeature",
                 ":modules:models",
                 ":modules:utils:viewUtils",
+                ":modules:utils:kotlinUtils",
                 ":modules:utils:flowUtils",
                 "kotlin.coroutines.core",
                 "shared.napier",

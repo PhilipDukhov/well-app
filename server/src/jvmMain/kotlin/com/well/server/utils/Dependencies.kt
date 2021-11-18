@@ -5,6 +5,7 @@ import com.well.modules.utils.flowUtils.MutableMapFlow
 import com.well.modules.utils.ktorUtils.createBaseHttpClient
 import com.well.server.routing.UserSession
 import io.ktor.application.*
+import io.ktor.client.*
 import java.util.*
 
 class Dependencies(app: Application) {
@@ -22,7 +23,7 @@ class Dependencies(app: Application) {
     }
     val connectedUserSessionsFlow = MutableMapFlow<User.Id, UserSession>()
     val callInfos: MutableList<CallInfo> = Collections.synchronizedList(mutableListOf<CallInfo>())
-    val client = createBaseHttpClient()
+    val client: HttpClient = createBaseHttpClient()
 
     fun awsProfileImagePath(
         uid: User.Id,

@@ -13,6 +13,7 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalFocusManager
 import com.google.accompanist.insets.LocalWindowInsets
 
@@ -57,3 +58,16 @@ fun Modifier.gesturesDisabled(disabled: Boolean = true) =
 
 fun Modifier.clickable(onClick: (() -> Unit)?): Modifier =
     this.clickable(onClick = { onClick?.invoke() }, enabled = onClick != null)
+
+fun Modifier.badgeLayout() =
+    layout { measurable, constraints ->
+        val placeable = measurable.measure(constraints)
+
+        // based on the expectation of only one line of text
+        val minPadding = placeable.height / 4
+
+        val width = maxOf(placeable.width + minPadding, placeable.height)
+        layout(width, placeable.height) {
+            placeable.place((width - placeable.width) / 2, 0)
+        }
+    }

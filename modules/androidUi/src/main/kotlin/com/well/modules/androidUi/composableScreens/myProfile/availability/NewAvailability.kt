@@ -272,7 +272,7 @@ private val StateSaver = Saver<MutableState<Feature.State>, Any>(
         mutableStateOf(
             Feature.State(
                 availability = Availability(
-                    id = iterator.next().toInt(),
+                    id = Availability.Id(iterator.next().toLong()),
                     startInstant = Instant.parse(iterator.next()),
                     durationMinutes = iterator.next().toInt(),
                     repeat = Repeat.values()[iterator.next().toInt()]

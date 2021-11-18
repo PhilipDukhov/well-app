@@ -4,7 +4,6 @@ import com.well.modules.atomic.AtomicRef
 import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
 import com.well.modules.models.Availability
-import com.well.modules.models.AvailabilityId
 import com.well.modules.models.ConnectionStatus.Connected
 import com.well.modules.models.ConnectionStatus.Connecting
 import com.well.modules.models.ConnectionStatus.Disconnected
@@ -208,8 +207,8 @@ class NetworkManager(
     suspend fun listCurrentUserAvailabilities(): List<Availability> =
         client.get("availabilities/listCurrent")
     
-    suspend fun removeAvailability(availabilityId: AvailabilityId) {
-        client.delete<Unit>("availabilities/${availabilityId}")
+    suspend fun removeAvailability(availabilityId: Availability.Id) {
+        client.delete<Unit>("availabilities/${availabilityId.value}")
     }
     suspend fun putAvailability(availability: Availability): Availability =
         client.put("availabilities") {

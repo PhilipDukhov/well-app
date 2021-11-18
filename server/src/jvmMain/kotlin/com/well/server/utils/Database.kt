@@ -7,6 +7,7 @@ import com.well.modules.db.server.Favourites
 import com.well.modules.db.server.LastReadMessages
 import com.well.modules.db.server.Ratings
 import com.well.modules.db.server.Users
+import com.well.modules.models.Availability
 import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
 import com.well.modules.utils.dbUtils.SetEnumColumnAdapter
@@ -86,6 +87,7 @@ fun initialiseDatabase(app: Application): Database {
         AvailabilitiesAdapter = Availabilities.Adapter(
             repeatAdapter = EnumColumnAdapter(),
             ownerIdAdapter = User.Id.ColumnAdapter,
+            idAdapter = Availability.Id.ColumnAdapter,
         ),
         ChatMessagesAdapter = ChatMessages.Adapter(
             fromIdAdapter = User.Id.ColumnAdapter,

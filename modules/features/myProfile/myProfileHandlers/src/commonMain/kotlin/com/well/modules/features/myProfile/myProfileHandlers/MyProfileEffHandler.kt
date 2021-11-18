@@ -6,12 +6,12 @@ import com.well.modules.atomic.asCloseable
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Eff
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Msg
 import com.well.modules.models.Availability
-import com.well.modules.models.AvailabilityId
 import com.well.modules.models.FavoriteSetter
 import com.well.modules.models.RatingRequest
 import com.well.modules.models.User
 import com.well.modules.puerhBase.EffectHandler
 import com.well.modules.utils.flowUtils.collectIn
+import com.well.modules.utils.kotlinUtils.getOrFill
 import com.well.modules.utils.viewUtils.ContextHelper
 import com.well.modules.utils.viewUtils.SuspendAction
 import com.well.modules.utils.viewUtils.pickSystemImageSafe
@@ -49,7 +49,7 @@ class MyProfileEffHandler(
         val getCurrentUserAvailabilities: suspend () -> List<Availability>,
         val addAvailability: suspend (Availability) -> Availability,
         val updateAvailability: suspend (Availability) -> Availability,
-        val removeAvailability: suspend (AvailabilityId) -> Unit,
+        val removeAvailability: suspend (Availability.Id) -> Unit,
 
         val hasAvailableAvailabilities: suspend () -> Boolean,
         val book: suspend (Availability) -> Unit,
@@ -132,25 +132,23 @@ class MyProfileEffHandler(
                 requestConsultationEffHandler = null
             }
             is Eff.RequestConsultationEff -> {
-                val handler = requestConsultationEffHandler ?: RequestConsultationEffHandler(
-                    services = RequestConsultationEffHandler.Services(
-                        closeConsultationRequest = {
-                            listener(Msg.CloseConsultationRequest)
-                        },
-                        book = services.book,
-                        getAvailabilities = services.getUserAvailabilitiesToBook,
-                        gotEmptyAvailabilities = {
-                            listener(Msg.UpdateHasAvailableAvailabilities(false))
-                        }
-                    ),
-                    coroutineScope = coroutineScope
-                ).also {
-                    it.setListener {
-                        listener(Msg.RequestConsultationMsg(it))
+                ::requestConsultationEffHandler
+                    .getOrFill {
+                        RequestConsultationEffHandler(
+                            services = RequestConsultationEffHandler.Services(
+                                closeConsultationRequest = {
+                                    listener(Msg.CloseConsultationRequest)
+                                },
+                                book = services.book,
+                                getAvailabilities = services.getUserAvailabilitiesToBook,
+                                gotEmptyAvailabilities = {
+                                    listener(Msg.UpdateHasAvailableAvailabilities(false))
+                                }
+                            ),
+                            coroutineScope = coroutineScope
+                        )
                     }
-                    requestConsultationEffHandler = it
-                }
-                handler.handleEffect(eff.eff)
+                    .handleEffect(eff.eff)
             }
         }
     }

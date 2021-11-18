@@ -81,8 +81,9 @@ fun AvailabilitiesQueries.insert(ownerId: User.Id, availability: Availability): 
             repeat = availability.repeat,
         )
         getById(
-            lastInsertId()
-                .executeAsOne()
-                .toInt()
+            Availability.Id(
+                lastInsertId()
+                    .executeAsOne()
+            )
         ).executeAsOne().toAvailability()
     }

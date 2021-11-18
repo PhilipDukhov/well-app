@@ -1,5 +1,6 @@
 package com.well.server
 
+import com.well.modules.models.Availability
 import com.well.modules.models.NetworkConstants
 import com.well.modules.models.User
 import com.well.server.routing.auth.AppleOauthResponse
@@ -12,8 +13,8 @@ import com.well.server.routing.auth.sendSms
 import com.well.server.routing.auth.twitterLogin
 import com.well.server.routing.deleteAvailability
 import com.well.server.routing.listAvailabilities
-import com.well.server.routing.putAvailability
 import com.well.server.routing.mainWebSocket
+import com.well.server.routing.putAvailability
 import com.well.server.routing.upload.uploadMessageMedia
 import com.well.server.routing.upload.uploadProfilePicture
 import com.well.server.routing.user.rate
@@ -227,19 +228,21 @@ fun Application.module() {
                     listAvailabilities(call.authUid, dependencies)
                 }
                 get("listByUser/{id}") {
-                    listAvailabilities(User.Id(call.parameters["id"]!!.toLong()), dependencies)
+                    listAvailabilities(call.idParameter(User::Id), dependencies)
                 }
                 get("userHasAvailable/{id}") {
-                    userHasAvailableAvailabilities(User.Id(call.parameters["id"]!!.toLong()), dependencies)
+                    userHasAvailableAvailabilities(call.idParameter(User::Id), dependencies)
                 }
                 put {
                     putAvailability(dependencies)
                 }
                 delete("{id}") {
-                    val id = call.parameters["id"]!!.toInt()
-                    deleteAvailability(id, dependencies)
+                    deleteAvailability(call.idParameter(Availability::Id), dependencies)
                 }
             }
         }
     }
 }
+
+private fun<Id> ApplicationCall.idParameter(builder: (Long) -> Id) : Id =
+    builder(parameters["id"]!!.toLong())

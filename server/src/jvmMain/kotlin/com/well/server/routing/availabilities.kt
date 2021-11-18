@@ -3,7 +3,6 @@ package com.well.server.routing
 import com.well.modules.db.server.getByOwnerId
 import com.well.modules.db.server.insert
 import com.well.modules.models.Availability
-import com.well.modules.models.AvailabilityId
 import com.well.modules.models.User
 import com.well.server.utils.Dependencies
 import com.well.server.utils.authUid
@@ -40,7 +39,7 @@ suspend fun PipelineContext<*, ApplicationCall>.putAvailability(
     val userId = call.authUid
     val newAvailability: Availability = database.availabilitiesQueries.run {
         transactionWithResult {
-            if (availability.id >= 0) {
+            if (availability.id.value >= 0) {
                 markDeleted(availability.id)
             }
             insert(
@@ -53,7 +52,7 @@ suspend fun PipelineContext<*, ApplicationCall>.putAvailability(
 }
 
 suspend fun PipelineContext<*, ApplicationCall>.deleteAvailability(
-    id: AvailabilityId,
+    id: Availability.Id,
     dependencies: Dependencies,
 ) = dependencies.run {
     database.availabilitiesQueries.markDeleted(id)
