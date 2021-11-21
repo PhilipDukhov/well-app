@@ -1,10 +1,11 @@
 package com.well.modules.db.mobile
 
+import com.well.modules.db.mobile.helper.DatabaseDriverFactory
 import com.well.modules.utils.viewUtils.platform.Platform
 import com.well.modules.utils.viewUtils.platform.isDebug
 import com.squareup.sqldelight.db.SqlDriver
 
-internal class DatabaseContainer<T> (
+internal class DatabaseContainer<T>(
     schema: SqlDriver.Schema,
     val driverFactory: DatabaseDriverFactory,
     createDatabase: (SqlDriver) -> T,

@@ -20,13 +20,15 @@ kotlin {
         optIns(optIns = setOf(OptIn.Coroutines))
         val jvmMain by getting {
             libDependencies(
-                ":modules:utils:dbUtils",
                 ":modules:db:serverDb",
+                ":modules:utils:dbUtils",
                 ":modules:utils:flowUtils",
                 ":modules:utils:ktorUtils",
+                ":modules:utils:kotlinUtils",
                 ":modules:models",
                 "server.*",
                 "kotlin.coroutines.core",
+                "kotlin.datetime",
                 "ktor.server.*",
                 "ktor.serialization",
                 "ktor.client.core",

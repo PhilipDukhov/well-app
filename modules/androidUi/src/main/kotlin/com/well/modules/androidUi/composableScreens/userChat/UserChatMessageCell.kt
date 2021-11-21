@@ -1,11 +1,10 @@
 package com.well.modules.androidUi.composableScreens.userChat
 
-import com.well.modules.androidUi.theme.body2Light
 import com.well.modules.androidUi.customViews.LoadingCoilImage
 import com.well.modules.androidUi.ext.backgroundKMM
-import com.well.modules.androidUi.ext.thenOrNull
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.androidUi.ext.widthDp
+import com.well.modules.androidUi.theme.body2Light
 import com.well.modules.models.Color
 import com.well.modules.models.chat.ChatMessage
 import com.well.modules.models.chat.ChatMessageWithStatus
@@ -131,11 +130,7 @@ private fun ContentView(
                     successProgressIndicatorNeeded = !content.url.startsWith("http"),
                     modifier = Modifier
                         .width(width)
-                        .thenOrNull(
-                            content.aspectRatio?.let { aspectRatio ->
-                                Modifier.height(width / aspectRatio)
-                            }
-                        )
+                        .height(width / content.aspectRatio)
                 )
 
             }

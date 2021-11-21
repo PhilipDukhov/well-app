@@ -5,8 +5,8 @@ import com.well.modules.androidUi.customViews.badgeLayout
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.androidUi.theme.captionLight
-import com.well.modules.features.chatList.chatListFeature.ChatListFeature
 import com.well.modules.models.Color
+import com.well.modules.features.chatList.chatListFeature.ChatListFeature as Feature
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,7 +32,7 @@ private val padding = 16.dp
 
 @Composable
 fun ChatListCell(
-    item: ChatListFeature.State.ListItem
+    item: Feature.State.ListItem,
 ) = Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = Modifier
@@ -69,7 +69,7 @@ fun ChatListCell(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = item.lastMessage.message.contentDescription(),
+                text = Feature.State.messageContentDescription(item.lastMessage.message),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.captionLight,

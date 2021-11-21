@@ -1,0 +1,36 @@
+import com.well.modules.models.Meeting;
+import com.well.modules.models.Availability;
+import com.well.modules.models.User;
+import kotlinx.datetime.Instant;
+
+CREATE TABLE Meetings (
+    id BIGINT AS Meeting.Id NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    availabilityId BIGINT AS Availability.Id NOT NULL,
+    hostId BIGINT AS User.Id NOT NULL,
+    attendeeId BIGINT AS User.Id NOT NULL,
+    startInstant BIGINT AS Instant NOT NULL,
+    durationMinutes INTEGER NOT NULL,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+isTaken:
+SELECT COUNT(*) != 0 FROM Meetings
+WHERE availabilityId = ? AND startInstant = ?;
+
+lastInsertId:
+SELECT LAST_INSERT_ID();
+
+insert:
+INSERT INTO Meetings(availabilityId, hostId, attendeeId, startInstant, durationMinutes)
+VALUES (?,  ?, ?, ?, ?);
+
+getById:
+SELECT * FROM Meetings WHERE id = ?;
+
+getByUserId:
+SELECT * FROM Meetings WHERE hostId = :id OR attendeeId = :id;
+
+markDeleted:
+UPDATE Meetings
+SET deleted = TRUE
+WHERE id = ?;

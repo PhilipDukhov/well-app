@@ -293,13 +293,8 @@ fun Project.subprojectsConfigurationsResolutionStrategy(strategies: Set<Resoluti
                             }
                         }
                         ResolutionStrategy.Kotlin -> {
-                            when (requested.groupToName()) {
-                                "org.jetbrains.kotlin" to "kotlin-reflect" -> {
-                                    useVersion(project.version("kotlin"))
-                                }
-                                "org.jetbrains.kotlin" to "kotlin-stdlib" -> {
-                                    useVersion(project.version("kotlin"))
-                                }
+                            if (requested.group == "org.jetbrains.kotlin") {
+                                useVersion(project.version("kotlin"))
                             }
                         }
                     }

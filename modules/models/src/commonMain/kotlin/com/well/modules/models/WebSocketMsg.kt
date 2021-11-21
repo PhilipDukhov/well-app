@@ -34,6 +34,11 @@ sealed class WebSocketMsg {
         ) : Front()
 
         @Serializable
+        data class SetMeetingsPresence(
+            val meetingsPresence: List<Meeting.Id>,
+        ) : Front()
+
+        @Serializable
         data class ChatMessageRead(
             val messageId: ChatMessage.Id,
         ) : Front()
@@ -75,6 +80,16 @@ sealed class WebSocketMsg {
         @Serializable
         data class UpdateCharReadPresence(
             val lastReadMessages: List<LastReadMessage>,
+        ) : Back()
+
+        @Serializable
+        data class AddMeetings(
+            val meetings: List<Meeting>,
+        ) : Back()
+
+        @Serializable
+        data class RemovedMeetings(
+            val ids: List<Meeting.Id>,
         ) : Back()
     }
 

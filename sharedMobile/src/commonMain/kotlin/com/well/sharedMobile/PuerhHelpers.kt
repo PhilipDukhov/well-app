@@ -131,7 +131,7 @@ internal fun <T : ScreenState> Map<Tab, List<ScreenState>>.copy(
         }
 }
 
-internal fun State.reduceScreenChanged(oldState: State) = this to setOf(
+internal fun State.reduceScreenChanged() = this to setOf(
 //    Eff.TopScreenDisappeared(oldState.topScreen, oldState.selectedScreenPosition),
     Eff.TopScreenAppeared(topScreen, selectedScreenPosition),
 )

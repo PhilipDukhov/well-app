@@ -1,18 +1,8 @@
 package com.well.server.utils
 
-import com.well.modules.db.server.Availabilities
-import com.well.modules.db.server.ChatMessages
 import com.well.modules.db.server.Database
-import com.well.modules.db.server.Favourites
-import com.well.modules.db.server.LastReadMessages
-import com.well.modules.db.server.Ratings
-import com.well.modules.db.server.Users
-import com.well.modules.models.Availability
-import com.well.modules.models.User
-import com.well.modules.models.chat.ChatMessage
-import com.well.modules.utils.dbUtils.SetEnumColumnAdapter
-import com.well.modules.utils.dbUtils.migrateIfNeeded
-import com.squareup.sqldelight.EnumColumnAdapter
+import com.well.modules.db.server.invoke
+import com.well.modules.utils.dbUtils.migrateIfNeededMySql
 import com.squareup.sqldelight.sqlite.driver.asJdbcDriver
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -73,42 +63,8 @@ fun initialiseDatabase(app: Application): Database {
 
     val dataSource = HikariDataSource(datasourceConfig)
     val driver = dataSource.asJdbcDriver()
-    driver.migrateIfNeeded(Database.Schema)
-    val db = Database(
-        driver = driver,
-        UsersAdapter = Users.Adapter(
-            typeAdapter = EnumColumnAdapter(),
-            credentialsAdapter = EnumColumnAdapter(),
-            academicRankAdapter = EnumColumnAdapter(),
-            languagesAdapter = SetEnumColumnAdapter(),
-            skillsAdapter = SetEnumColumnAdapter(),
-            idAdapter = User.Id.ColumnAdapter,
-        ),
-        AvailabilitiesAdapter = Availabilities.Adapter(
-            repeatAdapter = EnumColumnAdapter(),
-            ownerIdAdapter = User.Id.ColumnAdapter,
-            idAdapter = Availability.Id.ColumnAdapter,
-        ),
-        ChatMessagesAdapter = ChatMessages.Adapter(
-            fromIdAdapter = User.Id.ColumnAdapter,
-            peerIdAdapter = User.Id.ColumnAdapter,
-            idAdapter = ChatMessage.Id.ColumnAdapter,
-        ),
-        FavouritesAdapter = Favourites.Adapter(
-            ownerAdapter = User.Id.ColumnAdapter,
-            destinationAdapter = User.Id.ColumnAdapter,
-        ),
-        LastReadMessagesAdapter = LastReadMessages.Adapter(
-            fromIdAdapter = User.Id.ColumnAdapter,
-            peerIdAdapter = User.Id.ColumnAdapter,
-            messageIdAdapter = ChatMessage.Id.ColumnAdapter,
-        ),
-        RatingsAdapter = Ratings.Adapter(
-            ownerAdapter = User.Id.ColumnAdapter,
-            destinationAdapter = User.Id.ColumnAdapter,
-        ),
-    )
-
+    driver.migrateIfNeededMySql(Database.Schema)
+    val db = Database(driver = driver)
     app.environment.monitor.subscribe(ApplicationStopped) { driver.close() }
     db.usersQueries
         .selectUninitialized()

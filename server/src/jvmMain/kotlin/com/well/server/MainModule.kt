@@ -11,8 +11,10 @@ import com.well.server.routing.auth.googleLogin
 import com.well.server.routing.auth.sendEmail
 import com.well.server.routing.auth.sendSms
 import com.well.server.routing.auth.twitterLogin
+import com.well.server.routing.bookAvailability
 import com.well.server.routing.deleteAvailability
-import com.well.server.routing.listAvailabilities
+import com.well.server.routing.listBookingAvailabilities
+import com.well.server.routing.listCurrentAvailabilities
 import com.well.server.routing.mainWebSocket
 import com.well.server.routing.putAvailability
 import com.well.server.routing.upload.uploadMessageMedia
@@ -23,7 +25,6 @@ import com.well.server.routing.user.setUserFavorite
 import com.well.server.routing.user.updateUser
 import com.well.server.routing.userHasAvailableAvailabilities
 import com.well.server.utils.Dependencies
-import com.well.server.utils.authUid
 import com.well.server.utils.configProperty
 import com.well.server.utils.createPrincipal
 import com.auth0.jwk.JwkProviderBuilder
@@ -225,10 +226,10 @@ fun Application.module() {
             }
             route("availabilities") {
                 get("listCurrent") {
-                    listAvailabilities(call.authUid, dependencies)
+                    listCurrentAvailabilities(dependencies)
                 }
                 get("listByUser/{id}") {
-                    listAvailabilities(call.idParameter(User::Id), dependencies)
+                    listBookingAvailabilities(call.idParameter(User::Id), dependencies)
                 }
                 get("userHasAvailable/{id}") {
                     userHasAvailableAvailabilities(call.idParameter(User::Id), dependencies)
@@ -238,6 +239,9 @@ fun Application.module() {
                 }
                 delete("{id}") {
                     deleteAvailability(call.idParameter(Availability::Id), dependencies)
+                }
+                post("book") {
+                    bookAvailability(dependencies)
                 }
             }
         }

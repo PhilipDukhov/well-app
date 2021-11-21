@@ -255,7 +255,7 @@ class ContainerInfo(
                 """
                 val screen = state.tabs[position.tab]?.getOrNull(position.index)
                     ?: run {
-                        %T.e("reduceScreen ${'$'}msg | ${'$'}state")
+                        %T.e("reduceScreen screen not found at ${'$'}position  ${'$'}msg | ${'$'}state")
                         return state.%T()
                     }
                 val (newScreenState, effs) = reducer(msg, screen.baseState as S)
@@ -562,7 +562,7 @@ class FeatureInfo(
                         """
                                 }
                                 return finalState
-                                    .reduceScreenChanged(state)
+                                    .reduceScreenChanged()
                                     .%T { it.%T(pushEff) }
                             }
                         """.trimIndent(),

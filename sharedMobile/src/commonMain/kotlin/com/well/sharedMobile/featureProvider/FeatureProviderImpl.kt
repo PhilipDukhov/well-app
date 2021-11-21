@@ -6,13 +6,17 @@ import com.well.modules.atomic.AtomicLateInitRef
 import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
 import com.well.modules.atomic.freeze
+import com.well.modules.db.chatMessages.delete
 import com.well.modules.db.chatMessages.insert
 import com.well.modules.db.chatMessages.lastListWithStatusFlow
 import com.well.modules.db.chatMessages.messagePresenceFlow
 import com.well.modules.db.chatMessages.selectAllFlow
 import com.well.modules.db.chatMessages.unreadCountsFlow
+import com.well.modules.db.meetings.insertAll
+import com.well.modules.db.meetings.listIdsFlow
+import com.well.modules.db.meetings.removeAll
 import com.well.modules.db.mobile.DatabaseProvider
-import com.well.modules.db.mobile.DatabaseProviderImpl
+import com.well.modules.db.mobile.createDatabaseProvider
 import com.well.modules.db.users.getByIdFlow
 import com.well.modules.db.users.getByIdsFlow
 import com.well.modules.db.users.insertOrReplace
@@ -40,6 +44,7 @@ import com.well.modules.puerhBase.Feature
 import com.well.modules.puerhBase.SyncFeature
 import com.well.modules.puerhBase.adapt
 import com.well.modules.puerhBase.wrapWithEffectHandler
+import com.well.modules.utils.flowUtils.collectIn
 import com.well.modules.utils.flowUtils.combineWithUnit
 import com.well.modules.utils.flowUtils.mapProperty
 import com.well.modules.utils.kotlinUtils.map
@@ -66,6 +71,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 internal class FeatureProviderImpl(
@@ -76,7 +82,7 @@ internal class FeatureProviderImpl(
     TopLevelFeature.initialState(),
     TopLevelFeature::reducer,
     Dispatchers.Default
-), DatabaseProvider by DatabaseProviderImpl(appContext) {
+), DatabaseProvider by createDatabaseProvider(appContext) {
     var sessionInfo by AtomicCloseableRef<SessionInfo>()
     val socialNetworkService = SocialNetworkService { network ->
         when (network) {
@@ -161,7 +167,7 @@ internal class FeatureProviderImpl(
                                     .webSocketMsgSharedFlow
                                     .filterIsInstance<WebSocketMsg.Back.ListFilteredExperts>()
                                     .mapProperty(WebSocketMsg.Back.ListFilteredExperts::userIds)
-                                    .flatMapLatest(usersDatabase.usersQueries::getByIdsFlow)
+                                    .flatMapLatest(usersQueries::getByIdsFlow)
                                     .combineWithUnit(networkManager.onConnectedFlow),
                                 updateUsersFilter = {
                                     networkManager.sendFront(WebSocketMsg.Front.SetExpertsFilter(it))
@@ -193,7 +199,7 @@ internal class FeatureProviderImpl(
                                 lastReadPresenceFlow = messagesDatabase
                                     .lastReadMessagesQueries
                                     .selectAllFlow(),
-                                getUsersByIdsFlow = usersDatabase.usersQueries::getByIdsFlow,
+                                getUsersByIdsFlow = usersQueries::getByIdsFlow,
                                 sendFrontWebSocketMsg = networkManager::sendFront,
                             ),
                             coroutineScope,
@@ -311,9 +317,7 @@ internal class FeatureProviderImpl(
                                                 .uploadMessagePicture(it.asByteArrayOptimizedForNetwork())
                                         },
                                         peerUserFlow = {
-                                            usersDatabase
-                                                .usersQueries
-                                                .getByIdFlow(peerId)
+                                            usersQueries.getByIdFlow(peerId)
                                         },
                                         pickSystemImage = contextHelper::pickSystemImage,
                                         cacheImage = contextHelper.appContext::cacheImage,
@@ -344,6 +348,7 @@ internal class FeatureProviderImpl(
             handler
         )
         handler.freeze()
+
         accept(Msg.Initial)
     }
 
@@ -368,7 +373,7 @@ internal class FeatureProviderImpl(
             }
             is WebSocketMsg.Back.ListFilteredExperts -> Unit
             is WebSocketMsg.Back.UpdateUsers -> {
-                usersDatabase.usersQueries.run {
+                usersQueries.run {
                     transaction {
                         msg.users.forEach(::insertOrReplace)
                     }
@@ -382,7 +387,7 @@ internal class FeatureProviderImpl(
                 }
             }
             is WebSocketMsg.Back.UpdateMessages -> {
-                messagesDatabase.chatMessagesQueries.run {
+                messagesDatabase.run {
                     transaction {
                         msg.messages.forEach { messageInfo ->
                             messageInfo.tmpId?.let { tmpId ->
@@ -392,6 +397,14 @@ internal class FeatureProviderImpl(
                         }
                     }
                 }
+            }
+            is WebSocketMsg.Back.AddMeetings -> {
+                meetingsQueries
+                    .insertAll(msg.meetings)
+            }
+            is WebSocketMsg.Back.RemovedMeetings -> {
+                meetingsQueries
+                    .removeAll(msg.ids)
             }
         }
     }

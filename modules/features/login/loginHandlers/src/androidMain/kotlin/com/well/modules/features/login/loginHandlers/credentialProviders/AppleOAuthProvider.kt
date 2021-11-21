@@ -6,6 +6,7 @@ import com.well.modules.utils.viewUtils.AppContext
 import com.well.modules.utils.viewUtils.WebAuthenticator
 import com.well.modules.utils.viewUtils.platform.Platform
 import com.well.modules.utils.viewUtils.platform.isDebug
+import com.well.sharedMobile.BuildKonfig
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
@@ -16,7 +17,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import com.well.sharedMobile.BuildKonfig
 
 class AppleOAuthProvider(
     appContext: AppContext,
@@ -61,7 +61,7 @@ class AppleOAuthProvider(
                             oauthCallbackPath.length
                         )
                     )
-                    true
+//                    true
                 }
                 else -> false
             }

@@ -1,7 +1,7 @@
 package com.well.server.routing.upload
 
-import com.well.modules.models.User
 import com.well.server.utils.Dependencies
+import com.well.server.utils.authUid
 import io.ktor.application.*
 import io.ktor.http.content.*
 import io.ktor.request.*
@@ -11,25 +11,26 @@ import java.io.File
 import java.util.*
 
 suspend fun PipelineContext<*, ApplicationCall>.uploadProfilePicture(
-    dependencies: Dependencies
+    dependencies: Dependencies,
 ) = uploadMultipartFile(
     dependencies,
-    pathGenerator = { name, ext ->
-        dependencies.awsProfileImagePath(User.Id(name!!.toLong()), ext)
-    })
+    pathGenerator = { ext ->
+        dependencies.awsProfileImagePath(this@uploadProfilePicture.call.authUid, ext)
+    }
+)
 
 suspend fun PipelineContext<*, ApplicationCall>.uploadMessageMedia(
-    dependencies: Dependencies
+    dependencies: Dependencies,
 ) = uploadMultipartFile(
     dependencies,
-    pathGenerator = { _, ext ->
+    pathGenerator = { ext ->
         "messagePictures/${UUID.randomUUID()}.$ext"
     }
 )
 
 private suspend fun PipelineContext<*, ApplicationCall>.uploadMultipartFile(
     dependencies: Dependencies,
-    pathGenerator: (String?, String) -> String,
+    pathGenerator: (String) -> String,
 ) {
     call.receiveMultipart()
         .forEachPart { part ->
@@ -39,7 +40,7 @@ private suspend fun PipelineContext<*, ApplicationCall>.uploadMultipartFile(
                 var path: String
                 val ext = File(part.originalFileName!!).extension
                 do {
-                    path = pathGenerator(part.name, ext)
+                    path = pathGenerator(ext)
                 } while (exists(path))
                 upload(fileBytes, path)
             }

@@ -6,6 +6,8 @@ import com.well.modules.atomic.asCloseable
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Eff
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Msg
 import com.well.modules.models.Availability
+import com.well.modules.models.BookingAvailabilitiesListByDay
+import com.well.modules.models.BookingAvailability
 import com.well.modules.models.FavoriteSetter
 import com.well.modules.models.RatingRequest
 import com.well.modules.models.User
@@ -35,7 +37,7 @@ class MyProfileEffHandler(
     data class Services(
         val userFlow: Flow<User>,
         val putUser: suspend (User) -> Unit,
-        val uploadProfilePicture: suspend (User.Id, ByteArray) -> String,
+        val uploadProfilePicture: suspend (ByteArray) -> String,
         val showThrowableAlert: (Throwable) -> Unit,
         val onInitializationFinished: () -> Unit,
         val onPop: () -> Unit,
@@ -52,8 +54,8 @@ class MyProfileEffHandler(
         val removeAvailability: suspend (Availability.Id) -> Unit,
 
         val hasAvailableAvailabilities: suspend () -> Boolean,
-        val book: suspend (Availability) -> Unit,
-        val getUserAvailabilitiesToBook: suspend () -> List<Availability>,
+        val book: suspend (BookingAvailability) -> Unit,
+        val getUserAvailabilitiesToBook: suspend () -> BookingAvailabilitiesListByDay,
     )
 
     private var requestConsultationEffHandler by AtomicCloseableRef<RequestConsultationEffHandler>()
@@ -98,39 +100,17 @@ class MyProfileEffHandler(
                     uploadUser(eff)
                 }
             }
-            is Eff.SetUserFavorite -> {
-                services.setFavorite(eff.setter)
-            }
-            is Eff.ShowError -> {
-                services.showThrowableAlert(eff.throwable)
-            }
-            is Eff.Back -> {
-                services.onPop()
-            }
-            is Eff.InitializationFinished -> {
-                services.onInitializationFinished
-            }
-            is Eff.Call -> {
-                services.onStartCall(eff.user)
-            }
-            is Eff.Message -> {
-                services.onOpenUserChat(eff.uid)
-            }
-            is Eff.Logout -> {
-                services.onLogout()
-            }
-            is Eff.BecomeExpert -> {
-                services.requestBecomeExpert()
-            }
-            is Eff.RatingRequest -> {
-                services.onRatingRequest(eff.ratingRequest)
-            }
-            is Eff.AvailabilityEff -> {
-                handleAvailabilityEff(eff.eff)
-            }
-            is Eff.CloseConsultationRequest -> {
-                requestConsultationEffHandler = null
-            }
+            is Eff.SetUserFavorite -> services.setFavorite(eff.setter)
+            is Eff.ShowError -> services.showThrowableAlert(eff.throwable)
+            is Eff.Back -> services.onPop()
+            is Eff.InitializationFinished -> services.onInitializationFinished
+            is Eff.Call -> services.onStartCall(eff.user)
+            is Eff.Message -> services.onOpenUserChat(eff.uid)
+            is Eff.Logout -> services.onLogout()
+            is Eff.BecomeExpert -> services.requestBecomeExpert()
+            is Eff.RatingRequest -> services.onRatingRequest(eff.ratingRequest)
+            is Eff.AvailabilityEff -> handleAvailabilityEff(eff.eff)
+            is Eff.CloseConsultationRequest -> requestConsultationEffHandler = null
             is Eff.RequestConsultationEff -> {
                 ::requestConsultationEffHandler
                     .getOrFill {
@@ -140,13 +120,17 @@ class MyProfileEffHandler(
                                     listener(Msg.CloseConsultationRequest)
                                 },
                                 book = services.book,
-                                getAvailabilities = services.getUserAvailabilitiesToBook,
+                                getAvailabilitiesByDay = services.getUserAvailabilitiesToBook,
                                 gotEmptyAvailabilities = {
                                     listener(Msg.UpdateHasAvailableAvailabilities(false))
                                 }
                             ),
                             coroutineScope = coroutineScope
-                        )
+                        ).apply {
+                            setListener {
+                                listener(Msg.RequestConsultationMsg(it))
+                            }
+                        }
                     }
                     .handleEffect(eff.eff)
             }
@@ -156,7 +140,7 @@ class MyProfileEffHandler(
     private val currentUserAvailabilities = AtomicMutableList<Availability>()
 
     private suspend fun handleAvailabilityEff(eff: AvailabilitiesCalendarEff) {
-        println("SetProcessing(true) $eff")
+        Napier.d("SetProcessing(true) $eff")
         availabilitiesCalendarListener(AvailabilitiesCalendarMsg.SetProcessing(true))
         try {
             when (eff) {
@@ -195,7 +179,7 @@ class MyProfileEffHandler(
                 )
             )
         } finally {
-            println("SetProcessing(false) $eff")
+            Napier.d("SetProcessing(false) $eff")
             availabilitiesCalendarListener(AvailabilitiesCalendarMsg.SetProcessing(false))
         }
     }
@@ -204,7 +188,6 @@ class MyProfileEffHandler(
         val user = eff.user.let { user ->
             eff.newProfileImage?.let { newProfileImage ->
                 val profileImageUrl = services.uploadProfilePicture(
-                    user.id,
                     newProfileImage.asByteArrayOptimizedForNetwork()
                 )
                 user.copy(profileImageUrl = profileImageUrl)

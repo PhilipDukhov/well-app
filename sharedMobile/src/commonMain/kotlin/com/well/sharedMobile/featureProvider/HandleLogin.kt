@@ -1,6 +1,7 @@
 package com.well.sharedMobile.featureProvider
 
 import com.well.modules.atomic.asCloseable
+import com.well.modules.db.meetings.listIdsFlow
 import com.well.modules.db.users.insertOrReplace
 import com.well.modules.db.users.usersPresenceFlow
 import com.well.modules.features.chatList.chatListFeature.ChatListFeature
@@ -87,7 +88,7 @@ internal fun FeatureProviderImpl.loggedIn(
     val uid = authInfo.id
     sessionInfo = SessionInfo(uid)
     openDatabase()
-    user?.let(usersDatabase.usersQueries::insertOrReplace)
+    user?.let(usersQueries::insertOrReplace)
     networkManager = NetworkManager(authInfo.token, startWebSocket = true, unauthorizedHandler = {
         logOut(listener)
     })
@@ -98,10 +99,16 @@ internal fun FeatureProviderImpl.loggedIn(
             webSocketMessageHandler(it, listener)
         }
         .asCloseable()
+    val meetingsPresenceCloseable =  meetingsQueries
+        .listIdsFlow()
+        .map(WebSocketMsg.Front::SetMeetingsPresence)
+        .collectIn(coroutineScope, networkManager::sendFront)
+        .asCloseable()
     listOf(
         webSocketListenerCloseable,
         notifyUsersDBPresenceCloseable(),
         networkManager,
+        meetingsPresenceCloseable,
     ).forEach(sessionInfo!!::addCloseableChild)
     platform.dataStore.authInfo = authInfo
 }
@@ -143,7 +150,7 @@ private fun AuthResponse.toAuthInfo() = AuthInfo(token = token, id = user.id)
 
 private fun FeatureProviderImpl.notifyUsersDBPresenceCloseable() =
     coroutineScope.launch {
-        usersDatabase.usersQueries.usersPresenceFlow()
+        usersQueries.usersPresenceFlow()
             .combineWithUnit(networkManager.onConnectedFlow)
             .map(WebSocketMsg.Front::SetUsersPresence)
             .collect(networkManager::sendFront)

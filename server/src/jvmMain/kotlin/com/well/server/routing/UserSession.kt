@@ -1,19 +1,28 @@
 package com.well.server.routing
 
-import com.well.modules.utils.dbUtils.adaptedIntersectionRegex
-import com.well.modules.utils.dbUtils.adaptedOneOfRegex
 import com.well.modules.db.server.LastReadMessages
+import com.well.modules.db.server.Meetings
+import com.well.modules.db.server.filterFlow
+import com.well.modules.db.server.getAllForUserFlow
+import com.well.modules.db.server.getByIdsFlow
+import com.well.modules.db.server.getByUserIdFlow
 import com.well.modules.db.server.insertChatMessage
+import com.well.modules.db.server.peerIdsListFlow
+import com.well.modules.db.server.selectByPeerIdFlow
 import com.well.modules.db.server.toChatMessage
 import com.well.modules.db.server.toLastReadMessage
+import com.well.modules.db.server.toMeetings
+import com.well.modules.models.Meeting
 import com.well.modules.models.User
 import com.well.modules.models.UserPresenceInfo
 import com.well.modules.models.UsersFilter
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.models.chat.ChatMessage
 import com.well.modules.models.chat.LastReadMessage
+import com.well.modules.utils.dbUtils.adaptedOneOfRegex
 import com.well.modules.utils.flowUtils.MutableSetFlow
 import com.well.modules.utils.flowUtils.asSingleFlow
+import com.well.modules.utils.flowUtils.collectIn
 import com.well.modules.utils.flowUtils.filterIterable
 import com.well.modules.utils.flowUtils.filterNotEmpty
 import com.well.modules.utils.flowUtils.flatMapLatest
@@ -21,20 +30,14 @@ import com.well.modules.utils.flowUtils.mapIterable
 import com.well.server.utils.CallInfo
 import com.well.server.utils.Dependencies
 import com.well.server.utils.send
-import com.well.server.utils.toLong
 import com.well.server.utils.toUser
-import com.squareup.sqldelight.runtime.coroutines.asFlow
-import com.squareup.sqldelight.runtime.coroutines.mapToList
 import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import org.joda.time.Weeks
 import java.util.*
 
@@ -51,6 +54,7 @@ class UserSession(
     private val expertsFilterFlow = MutableStateFlow<UsersFilter?>(null)
     private val usersPresenceInfoFlow = MutableStateFlow<List<UserPresenceInfo>?>(null)
     private val messagesPresenceInfoFlow = MutableStateFlow<ChatMessage.Id?>(null)
+    private val meetingIdsPresenceFlow = MutableStateFlow<List<Meeting.Id>>(emptyList())
     private val chatReadStatePresenceFlow = MutableStateFlow<List<LastReadMessage>>(emptyList())
     private val userCreatedChatMessageInfosFlow = MutableSetFlow<CreatedMessageInfo>()
 
@@ -72,29 +76,18 @@ class UserSession(
 
             specificIdsRegexpFlow.flatMapLatest { specificIdsRegexp ->
                 dependencies.database.usersQueries
-                    .filter(
-                        nameFilter = filter.searchString,
-                        favorites = filter.favorite.toLong(),
+                    .filterFlow(
                         uid = currentUid,
                         maxLastOnlineDistance = maxLastOnlineDistance,
                         specificIdsRegexp = specificIdsRegexp,
-                        skillsRegexp = filter.skills.adaptedIntersectionRegex(),
-                        academicRankRegexp = filter.academicRanks.adaptedIntersectionRegex(),
-                        languagesRegexp = filter.languages.adaptedIntersectionRegex(),
-                        countryCode = filter.countryCode ?: "",
-                        withReviews = filter.withReviews.toLong(),
-                        rating = filter.rating.toDoubleOrNull(),
+                        filter = filter
                     )
-                    .asFlow()
-                    .mapToList()
             }
         }
     private val neededUsersFlow = expertsFlow
         .combine(
             dependencies.database.chatMessagesQueries
-                .peerIdsList(id = currentUid)
-                .asFlow()
-                .mapToList()
+                .peerIdsListFlow(id = currentUid)
         ) { users, peerIdsList ->
             users.toMutableSet().apply {
                 add(currentUid)
@@ -107,9 +100,7 @@ class UserSession(
             .combine(neededUsersFlow) { usersPresenceInfo, neededUsers ->
                 dependencies.database
                     .usersQueries
-                    .getByIds(neededUsers)
-                    .asFlow()
-                    .mapToList()
+                    .getByIdsFlow(neededUsers)
                     .map { users ->
                         users.filter { user ->
                             usersPresenceInfo
@@ -127,15 +118,13 @@ class UserSession(
             .filterNotNull()
             .combine(userCreatedChatMessageInfosFlow) { messagesPresenceInfo, userCreatedChatMessageInfos ->
                 dependencies.database.chatMessagesQueries
-                    .getAllForUser(
+                    .getAllForUserFlow(
                         id = currentUid,
                         lastPresentedId = messagesPresenceInfo,
                     )
-                    .asFlow()
-                    .mapToList()
                     .mapIterable { message ->
                         WebSocketMsg.Back.UpdateMessages.UpdateMessageInfo(
-                            message.toChatMessage(),
+                            message.toChatMessage(dependencies.database),
                             tmpId = userCreatedChatMessageInfos.firstOrNull { it.id == message.id }?.tmpId,
                         )
                     }
@@ -149,17 +138,31 @@ class UserSession(
                     .groupBy { it.fromId to it.peerId }
                     .mapValues { it.value.first() }
                 dependencies.database.lastReadMessagesQueries
-                    .selectByPeerId(currentUid)
-                    .asFlow()
-                    .mapToList()
+                    .selectByPeerIdFlow(currentUid)
                     .filterIterable { databaseLRM ->
-                        val currentReadState = chatReadStatePresenceMap[databaseLRM.fromId to databaseLRM.peerId]
-                            ?: return@filterIterable true
+                        val currentReadState =
+                            chatReadStatePresenceMap[databaseLRM.fromId to databaseLRM.peerId]
+                                ?: return@filterIterable true
                         databaseLRM.messageId > currentReadState.messageId
                     }
                     .mapIterable(LastReadMessages::toLastReadMessage)
             }
             .filterNotEmpty()
+
+    private val meetingsPresenceFlow: Flow<List<Meetings>> = meetingIdsPresenceFlow
+        .filterNotNull()
+        .combine(
+            dependencies.database.meetingsQueries
+                .getByUserIdFlow(currentUid)
+        ) { ids, meetings ->
+            meetings.filter { ids.contains(it.id) }
+        }
+    private val newMeetingsFlow: Flow<List<Meeting>> = meetingsPresenceFlow
+        .filterIterable { !it.deleted }
+        .mapIterable(Meetings::toMeetings)
+    private val removedMeetingIdsFlow: Flow<List<Meeting.Id>> = meetingsPresenceFlow
+        .filterIterable { it.deleted }
+        .mapIterable { it.id }
 
     init {
         listOf(
@@ -167,12 +170,12 @@ class UserSession(
             notUpToDateUsersFlow.map(WebSocketMsg.Back::UpdateUsers),
             newMessagesFlow.map(WebSocketMsg.Back::UpdateMessages),
             newReadStatesFlow.map(WebSocketMsg.Back::UpdateCharReadPresence),
-        ).forEach {
-            launch {
-                it.collect {
-                    println("$currentUid send $it")
-                    send(it)
-                }
+            newMeetingsFlow.map(WebSocketMsg.Back::AddMeetings),
+            removedMeetingIdsFlow.map(WebSocketMsg.Back::RemovedMeetings),
+        ).forEach { flow ->
+            flow.collectIn(this) {
+                println("$currentUid send $it")
+                send(it)
             }
         }
     }
@@ -202,10 +205,10 @@ class UserSession(
         println("handleFrontMsg $currentUid $msg")
         when (msg) {
             is WebSocketMsg.Front.SetExpertsFilter -> {
-                expertsFilterFlow.emit(msg.filter)
+                expertsFilterFlow.value = msg.filter
             }
             is WebSocketMsg.Front.SetUsersPresence -> {
-                usersPresenceInfoFlow.emit(msg.usersPresence)
+                usersPresenceInfoFlow.value = msg.usersPresence
             }
             is WebSocketMsg.Front.InitiateCall -> {
                 initiateCall(msg)
@@ -214,7 +217,7 @@ class UserSession(
                 insertChatMessage(msg.message)
             }
             is WebSocketMsg.Front.SetChatMessagePresence -> {
-                messagesPresenceInfoFlow.emit(msg.messagePresenceId)
+                messagesPresenceInfoFlow.value = msg.messagePresenceId
             }
             is WebSocketMsg.Front.ChatMessageRead -> {
                 chatMessageRead(msg.messageId)
@@ -249,7 +252,10 @@ class UserSession(
                         }
                     }
                 }
-                chatReadStatePresenceFlow.emit(msg.lastReadMessages)
+                chatReadStatePresenceFlow.value = msg.lastReadMessages
+            }
+            is WebSocketMsg.Front.SetMeetingsPresence -> {
+                meetingIdsPresenceFlow.value = msg.meetingsPresence
             }
         }
     }
@@ -276,15 +282,12 @@ class UserSession(
     }
 
     private suspend fun insertChatMessage(message: ChatMessage) {
-        val finalMessage =
-            dependencies.database
-                .chatMessagesQueries
-                .insertChatMessage(message)
-        println("insertChatMessage ${Date().time.toDouble() / 1000} ${message.id} $finalMessage")
+        val finalMessageId = dependencies.database.insertChatMessage(message)
+        println("insertChatMessage ${Date().time.toDouble() / 1000} ${message.id} $finalMessageId")
         userCreatedChatMessageInfosFlow.add(
             CreatedMessageInfo(
                 tmpId = message.id,
-                id = finalMessage.id
+                id = finalMessageId
             )
         )
     }
@@ -322,16 +325,6 @@ class UserSession(
             }
     }
 }
-
-private fun UsersFilter.Rating.toDoubleOrNull(): Double? =
-    when (this) {
-        UsersFilter.Rating.All -> null
-        UsersFilter.Rating.Five -> 5.0
-        UsersFilter.Rating.Four -> 4.0
-        UsersFilter.Rating.Three -> 3.0
-        UsersFilter.Rating.Two -> 2.0
-        UsersFilter.Rating.One -> 1.0
-    }
 
 private fun Dependencies.callPartnerId(uid: User.Id) =
     callInfos

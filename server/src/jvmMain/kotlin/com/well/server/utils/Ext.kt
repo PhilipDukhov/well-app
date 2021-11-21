@@ -13,5 +13,3 @@ fun ParametersBuilder.append(vararg map: Pair<String, Any>) =
     map.forEach {
         append(it.first, it.second.toString())
     }
-
-fun Boolean.toLong(): Long = if (this) 1 else 0

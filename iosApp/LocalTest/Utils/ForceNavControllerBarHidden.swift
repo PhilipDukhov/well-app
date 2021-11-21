@@ -28,12 +28,12 @@ extension UINavigationController {
     }()
 
     @objc var swizzledIsNavigationBarHidden: Bool {
-        set {
-            print("swizzledIsNavigationBarHidden set")
-            self.swizzledIsNavigationBarHidden = true
-        }
         get {
             self.swizzledIsNavigationBarHidden
+        }
+        // swiftlint:disable:next unused_setter_value
+        set {
+            self.swizzledIsNavigationBarHidden = true
         }
     }
 

@@ -1,9 +1,10 @@
 package com.well.modules.features.chatList.chatListFeature
 
 import com.well.modules.models.User
+import com.well.modules.models.chat.ChatMessage
+import com.well.modules.models.chat.ChatMessageWithStatus
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
-import com.well.modules.models.chat.ChatMessageWithStatus
 
 object ChatListFeature {
     data class State(
@@ -21,6 +22,14 @@ object ChatListFeature {
             allListItems.filter {
                 it.user.fullName.contains(filter, ignoreCase = true)
             }
+
+        companion object {
+            fun messageContentDescription(message: ChatMessage) = when (val content = message.content) {
+                is ChatMessage.Content.Image -> "photo"
+                is ChatMessage.Content.Text -> content.string
+                is ChatMessage.Content.Meeting -> "new meeting"
+            }
+        }
     }
 
     sealed class Msg {

@@ -112,7 +112,7 @@ struct RequestConsultationView: View {
 
 private struct Availabilities: View {
     let availabilities: [KotlinPair<LocalDate, NSArray>]
-    let onBookNow: (Availability) -> Void
+    let onBookNow: (BookingAvailability) -> Void
     
     @State
     private var selectedDayIndex = 0
@@ -141,7 +141,7 @@ private struct Availabilities: View {
             }
             Divider().padding(.horizontal)
             BookRow(
-                items: availabilities[selectedDayIndex].second as! [Availability],
+                items: availabilities[selectedDayIndex].second as! [BookingAvailability],
                 id: \.startTime,
                 selectedIndex: $selectedTimeIndex,
                 itemText: { $0.startTime.toString() },
@@ -154,7 +154,7 @@ private struct Availabilities: View {
             item: selectedTimeIndex,
             disabled: { $0 < 0 },
             action: { unwrappedSelectedTimeIndex in
-                onBookNow(availabilities[selectedDayIndex].second![unwrappedSelectedTimeIndex] as! Availability)
+                onBookNow(availabilities[selectedDayIndex].second![unwrappedSelectedTimeIndex] as! BookingAvailability)
             }
         ) {
             Text(Feature.Strings.shared.bookNow)

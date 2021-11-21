@@ -72,6 +72,7 @@ include(
     ":modules:utils:flowUtils",
     ":modules:db:usersDb",
     ":modules:db:chatMessagesDb",
+    ":modules:db:meetingsDb",
     ":modules:utils:dbUtils",
     ":modules:utils:flowUtils",
 )

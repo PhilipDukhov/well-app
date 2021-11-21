@@ -9,14 +9,13 @@ import com.well.modules.models.chat.ChatMessage
 import com.well.modules.models.chat.ChatMessageWithStatus
 import com.well.modules.models.chat.LastReadMessage
 import com.well.modules.puerhBase.EffectHandler
+import com.well.modules.utils.flowUtils.collectIn
 import com.well.modules.utils.flowUtils.combineWithUnit
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.launch
 
 class ChatListEffHandler(
     private val currentUid: User.Id,
@@ -37,7 +36,8 @@ class ChatListEffHandler(
     private val chatListItemsFlow = services
         .lastListWithStatusFlow
         .flatMapLatest { chatMessagesWithStatus ->
-            val unreadCountsFlow = services.unreadCountsFlow(chatMessagesWithStatus.map { it.message })
+            val unreadCountsFlow =
+                services.unreadCountsFlow(chatMessagesWithStatus.map { it.message })
             services.getUsersByIdsFlow(chatMessagesWithStatus.map { it.message.secondId(currentUid) })
                 .combine(unreadCountsFlow) { users, unreadCounts ->
                     chatMessagesWithStatus.mapNotNull { messageWithStatus ->
@@ -54,35 +54,29 @@ class ChatListEffHandler(
         }
 
     init {
-        coroutineScope.launch {
-            chatListItemsFlow
-                .combineWithUnit(services.onConnectedFlow)
-                .collect { chatList ->
-                    listener(Msg.UpdateItems(chatList))
-                }
-        }
-        coroutineScope.launch {
-            services.lastPresentMessageIdFlow
-                .combineWithUnit(services.onConnectedFlow)
-                .collect { lastPresentMessageId ->
-                    Napier.i("WebSocketMsg.Front.SetChatMessagePresence $lastPresentMessageId")
-                    services.sendFrontWebSocketMsg(
-                        WebSocketMsg.Front.SetChatMessagePresence(
-                            messagePresenceId = lastPresentMessageId
-                        )
+        chatListItemsFlow
+            .collectIn(coroutineScope) { chatList ->
+                listener(Msg.UpdateItems(chatList))
+            }
+        services.lastPresentMessageIdFlow
+            .combineWithUnit(services.onConnectedFlow)
+            .collectIn(coroutineScope) { lastPresentMessageId ->
+                Napier.i("WebSocketMsg.Front.SetChatMessagePresence $lastPresentMessageId")
+                services.sendFrontWebSocketMsg(
+                    WebSocketMsg.Front.SetChatMessagePresence(
+                        messagePresenceId = lastPresentMessageId
                     )
-                }
-        }
-        coroutineScope.launch {
-            services.lastReadPresenceFlow
-                .combineWithUnit(services.onConnectedFlow)
-                .collect { lastReadPresence ->
-                    services.sendFrontWebSocketMsg(
-                        WebSocketMsg.Front.UpdateChatReadStatePresence(
-                            lastReadPresence
-                        )
+                )
+            }
+        services.lastReadPresenceFlow
+            .combineWithUnit(services.onConnectedFlow)
+            .collectIn(coroutineScope) { lastReadPresence ->
+                services.sendFrontWebSocketMsg(
+                    WebSocketMsg.Front.UpdateChatReadStatePresence(
+                        lastReadPresence
                     )
-                }
+                )
+            }
 //            networkManager.onConnectedFlow
 //                .collect {
 //                    val lastReadMessages = messagesDatabase.lastReadMessagesQueries
@@ -96,7 +90,6 @@ class ChatListEffHandler(
 //                        )
 //                    )
 //                }
-        }
     }
 
     override suspend fun processEffect(eff: Eff) {

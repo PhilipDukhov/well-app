@@ -177,18 +177,18 @@ object TopLevelFeature {
                     return@reducer state.copyPush(
                         state = msg.myProfileState,
                         createScreen = ScreenState::MyProfile,
-                    ).reduceScreenChanged(oldState = state)
+                    ).reduceScreenChanged()
                 }
                 is Msg.SelectTab -> {
                     return@reducer if (state.selectedScreenPosition.tab == msg.tab)
-                        state.copyPopToRoot().reduceScreenChanged(oldState = state)
+                        state.copyPopToRoot().reduceScreenChanged()
                     else
                         state.copy(
                             selectedScreenPosition = ScreenPosition(
                                 tab = msg.tab,
                                 index = state.tabs[msg.tab]!!.indices.last
                             ),
-                        ).reduceScreenChanged(oldState = state)
+                        ).reduceScreenChanged()
                 }
                 is Msg.LoggedIn -> {
                     val newState = state.copy(
@@ -196,7 +196,7 @@ object TopLevelFeature {
                         selectedScreenPosition = ScreenPosition(Tab.Experts, 0),
                     )
                     return@reducer newState
-                        .reduceScreenChanged(oldState = state)
+                        .reduceScreenChanged()
                         .mapSecond { it + Eff.InitialLoggedIn }
                 }
                 is Msg.IncomingCall -> {
@@ -223,10 +223,10 @@ object TopLevelFeature {
                     return@reducer reduceScreenMsg(msg, state)
                 }
                 is Msg.StopImageSharing -> {
-                    return@reducer state.copyPop(Tab.Overlay).reduceScreenChanged(oldState = state)
+                    return@reducer state.copyPop(Tab.Overlay).reduceScreenChanged()
                 }
                 is Msg.EndCall -> {
-                    return@reducer state.copyHideOverlay().reduceScreenChanged(oldState = state)
+                    return@reducer state.copyHideOverlay().reduceScreenChanged()
                 }
                 Msg.OpenLoginScreen -> {
                     return@state state.copy(
@@ -251,7 +251,7 @@ object TopLevelFeature {
                             ),
                             createScreen = ScreenState::UserChat,
                         )
-                        .reduceScreenChanged(oldState = state)
+                        .reduceScreenChanged()
                 }
             }
         })
@@ -273,6 +273,6 @@ object TopLevelFeature {
         if (selectedTab.isTabBar() && selectedScreenPosition.index == 0) {
             this toSetOf Eff.SystemBack
         } else {
-            copyPop().reduceScreenChanged(oldState = this)
+            copyPop().reduceScreenChanged()
         }
 }

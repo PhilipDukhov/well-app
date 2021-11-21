@@ -24,7 +24,7 @@ internal fun FeatureProviderImpl.createProfileEffHandler(
     listener: Listener<Msg>,
 ): EffectHandler<Eff, Msg> = MyProfileEffHandler(
     services = MyProfileEffHandler.Services(
-        userFlow = usersDatabase.usersQueries.getByIdFlow(uid),
+        userFlow = usersQueries.getByIdFlow(uid),
         putUser = networkManager::putUser,
         uploadProfilePicture = networkManager::uploadProfilePicture,
         showThrowableAlert = {

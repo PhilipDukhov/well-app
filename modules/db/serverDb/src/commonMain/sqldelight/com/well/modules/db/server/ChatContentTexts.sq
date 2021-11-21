@@ -1,0 +1,13 @@
+import com.well.modules.models.chat.ChatMessage;
+
+CREATE TABLE ChatContentTexts (
+    messageId BIGINT AS ChatMessage.Id NOT NULL PRIMARY KEY,
+    text TEXT NOT NULL
+);
+
+insert:
+INSERT INTO ChatContentTexts(messageId, text)
+VALUES (?, ?);
+
+getById:
+SELECT * FROM ChatContentTexts WHERE messageId = ?;

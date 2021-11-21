@@ -1,0 +1,51 @@
+import com.well.modules.models.Meeting;
+import com.well.modules.models.Availability;
+import com.well.modules.models.User;
+import kotlinx.datetime.Instant;
+
+ALTER TABLE Availabilities RENAME COLUMN startInstantEpochMilliseconds TO startInstant;
+
+CREATE TABLE Meetings (
+    id BIGINT AS Meeting.Id NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    availabilityId BIGINT AS Availability.Id NOT NULL,
+    hostId BIGINT AS User.Id NOT NULL,
+    attendeeId BIGINT AS User.Id NOT NULL,
+    startInstant BIGINT AS Instant NOT NULL,
+    durationMinutes INTEGER NOT NULL,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE ChatContentImages (
+    messageId BIGINT NOT NULL PRIMARY KEY,
+    url TEXT NOT NULL,
+    aspectRatio REAL NOT NULL
+);
+
+INSERT INTO ChatContentImages(messageId, url, aspectRatio)
+SELECT id, photoUrl, CASE WHEN photoAspectRatio IS NULL THEN 1 ELSE photoAspectRatio END
+FROM ChatMessages WHERE photoUrl IS NOT NULL;
+
+CREATE TABLE ChatContentTexts (
+    messageId BIGINT NOT NULL PRIMARY KEY,
+    text TEXT NOT NULL
+);
+
+INSERT INTO ChatContentTexts(messageId, text)
+SELECT id, text
+FROM ChatMessages WHERE photoUrl IS NULL;
+
+CREATE TABLE ChatContentMeetings (
+    messageId BIGINT NOT NULL PRIMARY KEY,
+    meetingId BIGINT NOT NULL
+);
+
+ALTER TABLE ChatMessages
+ADD COLUMN contentType TEXT AFTER peerId;
+
+UPDATE ChatMessages
+SET contentType = CASE WHEN photoUrl IS NOT NULL THEN 'Image' ELSE 'Text' END;
+
+ALTER TABLE ChatMessages
+DROP COLUMN photoAspectRatio, photoUrl, text;
+
+

@@ -38,7 +38,7 @@ struct ChatMessageCell: View {
             SharedImage(
                 url: NSURL(string: fullscreenImage.url)!,
                 placeholder: ProgressView(),
-                aspectRatio: fullscreenImage.aspectRatio?.toCGFloat(),
+                aspectRatio: fullscreenImage.aspectRatio.toCGFloat(),
                 contentMode: .fit
             )
         }
@@ -55,9 +55,8 @@ struct ChatMessageCell: View {
             )
                 .frame(
                     width: width,
-                    height: content.aspectRatio.map { aspectRatio in
-                        width / aspectRatio.toCGFloat()
-                    })
+                    height: width / content.aspectRatio.toCGFloat()
+                )
                 .onTapGesture {
                     fullscreenImage = content
                 }
@@ -66,7 +65,7 @@ struct ChatMessageCell: View {
             ZStack(alignment: .bottomTrailing) {
                 // two dateAndStatus hack to align text left and date right
                 VStack(alignment: .leading, spacing: 0) {
-                    Text(content.text)
+                    Text(content.string)
                         .textStyle(.body2Light)
                     dateAndStatus()
                         .foregroundColor(.clear)

@@ -3,7 +3,7 @@ package com.well.modules.utils.kotlinUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-inline fun<I> kotlin.reflect.KSuspendFunction1<I, Unit>.launchedIn(
+fun<I> kotlin.reflect.KSuspendFunction1<I, Unit>.launchedIn(
     coroutineScope: CoroutineScope,
 ): (I) -> Unit = { arg ->
     coroutineScope.launch {
@@ -17,7 +17,7 @@ inline fun<T, R> kotlin.reflect.KFunction1<R, Unit>.map(
     invoke(transform(arg))
 }
 
-inline fun kotlin.reflect.KSuspendFunction0<Unit>.launchedIn(
+fun kotlin.reflect.KSuspendFunction0<Unit>.launchedIn(
     coroutineScope: CoroutineScope,
 ): () -> Unit = {
     coroutineScope.launch {

@@ -6,21 +6,19 @@ CREATE TABLE ChatMessages (
     creation REAL NOT NULL,
     fromId INTEGER AS User.Id NOT NULL,
     peerId INTEGER AS User.Id NOT NULL,
-    text TEXT NOT NULL,
-    photoUrl TEXT,
-    photoAspectRatio REAL AS Float
+    contentType TEXT AS ChatMessage.Content.SimpleType NOT NULL
 );
 
 lastInsertId:
 SELECT last_insert_rowid();
 
 insert:
-INSERT OR REPLACE INTO ChatMessages (id, creation, fromId, peerId, text, photoUrl, photoAspectRatio)
-VALUES (?, ?, ?, ?, ?, ?, ?);
+INSERT OR REPLACE INTO ChatMessages (id, creation, fromId, peerId, contentType)
+VALUES (?, ?, ?, ?, ?);
 
 insertTmp:
-INSERT INTO ChatMessages (id, creation, fromId, peerId, text, photoUrl, photoAspectRatio)
-SELECT id, (SELECT (julianday('now') - 2440587.5) * 86400.0), ?, ?, ?, ?, ?
+INSERT INTO ChatMessages (id, creation, fromId, peerId, contentType)
+SELECT id, (SELECT (julianday('now') - 2440587.5) * 86400.0), ?, ?, ?
     FROM (
         SELECT
             CASE WHEN id IS NULL

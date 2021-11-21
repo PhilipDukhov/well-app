@@ -27,22 +27,30 @@ data class ChatMessage(
 
             override fun encode(value: Id) = value.value
         }
+
+        companion object {
+            val undefined = Id(Long.MIN_VALUE)
+        }
     }
 
     @Serializable
     sealed class Content {
-        val text: String
-            get() = (this as? Text)?.string ?: ""
-        val photoUrl: String?
-            get() = (this as? Image)?.url
-        open val photoAspectRatio: Float?
-            get() = (this as? Image)?.aspectRatio
+        enum class SimpleType {
+            Image,
+            Meeting,
+            Text,
+        }
+
+        val simpleType: SimpleType = SimpleType.valueOf(this::class.simpleName!!)
 
         @Serializable
         data class Text(val string: String) : Content()
 
         @Serializable
-        data class Image(val url: String, val aspectRatio: Float? = null) : Content()
+        data class Meeting(val meetingId: com.well.modules.models.Meeting.Id) : Content()
+
+        @Serializable
+        data class Image(val url: String, val aspectRatio: Float) : Content()
     }
 
     fun secondId(currentId: User.Id) = when (currentId) {
@@ -55,10 +63,5 @@ data class ChatMessage(
         else -> {
             error("ChatMessage secondId failure: currentId=$currentId, this=$this")
         }
-    }
-
-    fun contentDescription() = when (content) {
-        is Content.Image -> "photo"
-        is Content.Text -> content.text
     }
 }

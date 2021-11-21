@@ -169,8 +169,9 @@ fun AvailabilitiesCalendarView(
             }
         }
         if (!state.loaded || state.processing) {
-            InactiveOverlay(showActivityIndicator = state.failureReason == null) {
-                state.failureReason?.let { failureReason ->
+            val failureReason = state.failureReason
+            InactiveOverlay(showActivityIndicator = failureReason == null) {
+                if (failureReason != null) {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -186,7 +187,7 @@ fun AvailabilitiesCalendarView(
                             )
                         }
                     }
-                } ?: if (!state.loaded) {
+                } else if (!state.loaded) {
                     LaunchedEffect(Unit) {
                         listener(Msg.ReloadAvailabilities)
                     }

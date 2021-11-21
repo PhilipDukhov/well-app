@@ -4,6 +4,8 @@ import com.well.modules.atomic.AtomicRef
 import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
 import com.well.modules.models.Availability
+import com.well.modules.models.BookingAvailabilitiesListByDay
+import com.well.modules.models.BookingAvailability
 import com.well.modules.models.ConnectionStatus.Connected
 import com.well.modules.models.ConnectionStatus.Connecting
 import com.well.modules.models.ConnectionStatus.Disconnected
@@ -127,11 +129,10 @@ class NetworkManager(
     }
 
     suspend fun uploadProfilePicture(
-        userId: User.Id,
         data: ByteArray,
     ) = tryCheckAuth {
         client.post<String>("user/uploadProfilePicture") {
-            body = data.toMultiPartFormDataContent(userId.toString())
+            body = data.toMultiPartFormDataContent()
         }
     }
 
@@ -219,11 +220,13 @@ class NetworkManager(
     suspend fun userHasAvailableAvailabilities(userId: User.Id) : Boolean =
         client.get("availabilities/userHasAvailable/${userId.value}")
 
-    suspend fun book(availability: Availability) {
+    suspend fun book(availability: BookingAvailability): Unit =
+        client.post("availabilities/book"){
+            contentType(ContentType.Application.Json)
+            body = availability
+        }
 
-    }
-
-    suspend fun getAvailabilities(userId: User.Id): List<Availability> =
+    suspend fun getAvailabilities(userId: User.Id): BookingAvailabilitiesListByDay =
         client.get("availabilities/listByUser/${userId.value}")
 }
 

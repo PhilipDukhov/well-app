@@ -20,24 +20,13 @@ import androidx.core.view.WindowCompat
 import com.google.accompanist.insets.ProvideWindowInsets
 
 class MainActivity : AppCompatActivity() {
-    init {
-        NapierProxy.initializeLogging()
-    }
-
     private lateinit var featureProvider: FeatureProvider<TopLevelFeature.Msg, TopLevelFeature.State>
-
-    init {
-        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                featureProvider.accept(TopLevelFeature.Msg.Back)
-            }
-        })
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        NapierProxy.initializeLogging()
         featureProvider = createFeatureProvider(
             AppContext(this),
             webRtcManagerGenerator = { iceServers, listener ->
@@ -49,6 +38,11 @@ class MainActivity : AppCompatActivity() {
             },
             providerGenerator = ::providerGenerator
         )
+        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                featureProvider.accept(TopLevelFeature.Msg.Back)
+            }
+        })
         featureProvider
             .listenState {
                 setContent {

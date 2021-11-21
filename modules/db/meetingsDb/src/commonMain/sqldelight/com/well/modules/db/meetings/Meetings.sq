@@ -1,0 +1,24 @@
+import com.well.modules.models.Meeting;
+import com.well.modules.models.User;
+import kotlinx.datetime.Instant;
+
+CREATE TABLE Meetings (
+    id INTEGER AS Meeting.Id NOT NULL,
+    hostId INTEGER AS User.Id NOT NULL,
+    attendeeId INTEGER AS User.Id NOT NULL,
+    startInstant INTEGER AS Instant NOT NULL,
+    durationMinutes INTEGER AS Int NOT NULL
+);
+
+insert:
+INSERT INTO Meetings(id, hostId, attendeeId, startInstant, durationMinutes)
+VALUES (?,  ?, ?, ?, ?);
+
+delete:
+DELETE FROM Meetings WHERE id = ?;
+
+list:
+SELECT * FROM Meetings;
+
+listIds:
+SELECT id FROM Meetings;

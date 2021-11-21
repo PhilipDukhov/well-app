@@ -15,6 +15,7 @@ kotlin {
         val commonMain by getting {
             libDependencies(
                 "sqldelight.runtime",
+                "kotlin.datetime",
                 "kotlin.serializationJson",
             )
         }

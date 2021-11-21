@@ -43,6 +43,7 @@ kotlin {
                 ":modules:db:mobileDb",
                 ":modules:db:chatMessagesDb",
                 ":modules:db:usersDb",
+                ":modules:db:meetingsDb",
                 ":modules:utils:flowUtils",
                 ":modules:utils:kotlinUtils",
                 ":modules:networking",

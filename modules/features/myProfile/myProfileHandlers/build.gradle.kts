@@ -18,6 +18,7 @@ kotlin {
                 ":modules:utils:viewUtils",
                 ":modules:utils:kotlinUtils",
                 ":modules:utils:flowUtils",
+                ":modules:utils:kotlinUtils",
                 "kotlin.coroutines.core",
                 "shared.napier",
             )

@@ -9,7 +9,7 @@ import com.well.modules.androidUi.ext.borderKMM
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.RequestConsultationFeature.Msg
 import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.RequestConsultationFeature.State
-import com.well.modules.models.Availability
+import com.well.modules.models.BookingAvailability
 import com.well.modules.models.Color
 import com.well.modules.models.date.dateTime.localizedDayAndShortMonth
 import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.RequestConsultationFeature as Feature
@@ -138,8 +138,8 @@ private fun RequestConsultationView(
 
 @Composable
 private fun Availabilities(
-    availabilities: List<Pair<LocalDate, List<Availability>>>,
-    onBookNow: (Availability) -> Unit,
+    availabilities: List<Pair<LocalDate, List<BookingAvailability>>>,
+    onBookNow: (BookingAvailability) -> Unit,
 ) {
     val (selectedDayIndex, setSelectedDayIndex) = rememberSaveable(availabilities) {
         mutableStateOf(0)

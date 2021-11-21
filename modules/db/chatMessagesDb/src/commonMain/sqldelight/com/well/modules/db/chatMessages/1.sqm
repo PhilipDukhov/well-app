@@ -1,0 +1,43 @@
+import com.well.modules.models.chat.ChatMessage;
+import com.well.modules.models.User;
+import com.well.modules.models.chat.ChatMessage;
+
+CREATE TABLE ChatContentImages (
+    messageId INTEGER NOT NULL PRIMARY KEY,
+    url TEXT NOT NULL,
+    aspectRatio REAL AS Float NOT NULL
+);
+
+INSERT INTO ChatContentImages(messageId, url, aspectRatio)
+SELECT id, photoUrl, CASE WHEN photoAspectRatio IS NULL THEN 1 ELSE photoAspectRatio END
+FROM ChatMessages WHERE photoUrl IS NOT NULL;
+
+CREATE TABLE ChatContentTexts (
+    messageId INTEGER NOT NULL PRIMARY KEY,
+    text TEXT NOT NULL
+);
+
+INSERT INTO ChatContentTexts(messageId, text)
+SELECT id, text
+FROM ChatMessages WHERE photoUrl IS NULL;
+
+CREATE TABLE ChatContentMeetings (
+    messageId INTEGER NOT NULL PRIMARY KEY,
+    meetingId INTEGER NOT NULL
+);
+
+ALTER TABLE ChatMessages
+RENAME TO ChatMessages_tmp;
+
+CREATE TABLE ChatMessages (
+    id INTEGER AS ChatMessage.Id NOT NULL PRIMARY KEY,
+    creation REAL NOT NULL,
+    fromId INTEGER AS User.Id NOT NULL,
+    peerId INTEGER AS User.Id NOT NULL,
+    contentType TEXT AS ChatMessage.Content.SimpleType NOT NULL
+);
+
+INSERT INTO ChatMessages(id, creation, fromId, peerId, contentType)
+SELECT id, creation, fromId, peerId, CASE WHEN photoUrl IS NOT NULL THEN 'Image' ELSE 'Text' END FROM ChatMessages_tmp;
+
+DROP TABLE ChatMessages_tmp;

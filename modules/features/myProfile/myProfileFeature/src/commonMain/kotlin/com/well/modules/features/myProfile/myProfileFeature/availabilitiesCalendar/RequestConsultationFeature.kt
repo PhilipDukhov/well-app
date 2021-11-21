@@ -1,13 +1,10 @@
 package com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar
 
-import com.well.modules.models.Availability
-import com.well.modules.models.date.dateTime.daysShift
-import com.well.modules.models.date.dateTime.today
+import com.well.modules.models.BookingAvailabilitiesListByDay
+import com.well.modules.models.BookingAvailability
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
 import com.well.modules.utils.viewUtils.GlobalStringsBase
-import kotlinx.datetime.LocalDate
-import kotlin.time.Duration
 
 object RequestConsultationFeature {
     object Strings : GlobalStringsBase() {
@@ -21,7 +18,7 @@ object RequestConsultationFeature {
 
     data class State(
         val status: Status,
-        val availabilitiesByDay: List<Pair<LocalDate, List<Availability>>> = listOf(),
+        val availabilitiesByDay: BookingAvailabilitiesListByDay = listOf(),
     ) {
         sealed class Status {
             object Loading : Status()
@@ -33,20 +30,20 @@ object RequestConsultationFeature {
     }
 
     sealed class Msg {
-        data class UpdateAvailabilities(val availabilities: List<Availability>) : Msg()
-        data class Book(val availability: Availability) : Msg()
+        data class UpdateAvailabilitiesByDay(val availabilitiesByDay: BookingAvailabilitiesListByDay) : Msg()
+        data class Book(val availability: BookingAvailability) : Msg()
         object Booked : Msg()
         object Close : Msg()
         object ClearFailedState : Msg()
         data class BookingFailed(
             val reason: String,
-            val newAvailabilities: List<Availability>? = null,
+            val newAvailabilities: BookingAvailabilitiesListByDay? = null,
         ) : Msg()
     }
 
     sealed interface Eff {
         object Update : Eff
-        data class Book(val availability: Availability) : Eff
+        data class Book(val availability: BookingAvailability) : Eff
         data class Close(val timeoutMillis: Long = 0) : Eff
         data class ClearFailedState(val timeoutMillis: Long = 2000) : Eff
     }
@@ -63,11 +60,11 @@ object RequestConsultationFeature {
                 Msg.ClearFailedState -> {
                     return@state state.copy(status = State.Status.Loaded)
                 }
-                is Msg.UpdateAvailabilities -> {
+                is Msg.UpdateAvailabilitiesByDay -> {
                     return@reducer state.copy(
                         status = State.Status.Loaded,
-                        availabilitiesByDay = convertAvailabilities(msg.availabilities),
-                    ) toSetOf if (msg.availabilities.isEmpty()) Eff.Close(1500) else null
+                        availabilitiesByDay = msg.availabilitiesByDay,
+                    ) toSetOf if (msg.availabilitiesByDay.isEmpty()) Eff.Close(1500) else null
                 }
                 is Msg.Book -> {
                     return@reducer state.copy(
@@ -82,25 +79,10 @@ object RequestConsultationFeature {
                 is Msg.BookingFailed -> {
                     return@reducer state.copy(
                         status = State.Status.BookingFailed(msg.reason),
-                        availabilitiesByDay = msg.newAvailabilities?.let { newAvailabilities ->
-                            convertAvailabilities(newAvailabilities)
-                        } ?: state.availabilitiesByDay
+                        availabilitiesByDay = msg.newAvailabilities ?: state.availabilitiesByDay
                     ) toSetOf Eff.ClearFailedState()
                 }
             }
         })
     }.withEmptySet()
-
-    private fun convertAvailabilities(availabilities: List<Availability>) =
-        LocalDate.today().let { today ->
-            List(30) {
-                today.daysShift(it)
-            }.map { day ->
-                day to AvailabilitiesConverter.mapDayAvailabilities(
-                    day,
-                    minInterval = Duration.hours(1),
-                    availabilities
-                )
-            }.filter { it.second.isNotEmpty() }
-        }
 }

@@ -38,5 +38,5 @@ inline fun <T> Flow<T>.collectIn(
     collect(action)
 }
 
-inline fun <T, R> Flow<T>.mapProperty(property: kotlin.reflect.KProperty1<T, R>): Flow<R> =
+fun <T, R> Flow<T>.mapProperty(property: kotlin.reflect.KProperty1<T, R>): Flow<R> =
     map { it.let(property) }

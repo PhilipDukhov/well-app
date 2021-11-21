@@ -14,6 +14,7 @@ kotlin {
                 ":modules:models",
                 ":modules:db:usersDb",
                 ":modules:db:chatMessagesDb",
+                ":modules:db:meetingsDb",
                 ":modules:utils:dbUtils",
                 ":modules:atomic",
                 ":modules:utils:viewUtils",

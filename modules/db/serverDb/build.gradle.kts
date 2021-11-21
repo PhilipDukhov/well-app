@@ -17,6 +17,8 @@ kotlin {
             libDependencies(
                 ":modules:models",
                 ":modules:utils:dbUtils",
+                ":modules:utils:flowUtils",
+                "sqldelight.coroutinesExtensions",
                 "kotlin.datetime",
             )
         }
