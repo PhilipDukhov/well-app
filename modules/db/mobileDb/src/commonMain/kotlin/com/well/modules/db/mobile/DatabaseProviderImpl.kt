@@ -39,7 +39,6 @@ class DatabaseProviderImpl(appContext: AppContext) : DatabaseProvider {
     override fun openDatabase() {
         Napier.d("open")
         usersDatabaseContainer = DatabaseContainer(
-            name = "usersDatabase",
             schema = UsersDatabase.Schema,
             driverFactory = driverFactory,
             createDatabase = { driver ->
@@ -58,7 +57,6 @@ class DatabaseProviderImpl(appContext: AppContext) : DatabaseProvider {
             }
         )
         messagesDatabaseContainer = DatabaseContainer(
-            name = "chatMessagesDatabase",
             schema = ChatMessagesDatabase.Schema,
             driverFactory = driverFactory,
             createDatabase = { driver ->
