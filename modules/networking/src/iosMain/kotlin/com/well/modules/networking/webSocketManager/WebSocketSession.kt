@@ -25,9 +25,6 @@ actual class WebSocketSession(
     actual suspend fun send(text: String) =
         send(NSURLSessionWebSocketMessage(text))
 
-    actual suspend fun send(data: ByteArray) =
-        send(NSURLSessionWebSocketMessage(data.toNSData()))
-
     private suspend fun send(message: NSURLSessionWebSocketMessage) =
         suspendCancellableCoroutine<Unit> { continuation ->
             webSocket.sendMessage(message, { error: NSError? ->

@@ -1,7 +1,7 @@
 package com.well.modules.networking.webSocketManager
 
 import io.ktor.client.features.websocket.*
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
 
 internal actual suspend fun WebSocketClient.ws(
     path: String,
@@ -11,7 +11,10 @@ internal actual suspend fun WebSocketClient.ws(
         url.protocol = config.webSocketProtocol
     }) {
         try {
-            block(WebSocketSession(this, CoroutineScope(coroutineContext)))
+            val session = this
+            coroutineScope {
+                block(WebSocketSession(session, this))
+            }
         } catch (t: Throwable) {
             throw t
         }

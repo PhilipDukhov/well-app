@@ -26,7 +26,9 @@ internal class WebSocketClient(val config: Config) {
                     header(first, second)
                 }
             }
-            install(WebSockets)
+            install(WebSockets) {
+                pingInterval = 5_000
+            }
             install(Logging) {
                 level = LogLevel.ALL
             }
