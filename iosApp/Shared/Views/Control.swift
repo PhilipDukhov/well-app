@@ -22,6 +22,16 @@ struct Control<T>: View where T: View {
         self.enabled = enabled
         self.onTap = onTap
     }
+
+    init(
+        onTap: @escaping () -> Void,
+        enabled: Bool = true,
+        @ViewBuilder _ container: () -> T
+    ) {
+        self.container = container()
+        self.enabled = enabled
+        self.onTap = onTap
+    }
     
     var body: some View {
         Button(action: onTap) {

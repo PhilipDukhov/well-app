@@ -42,7 +42,13 @@ internal class TopUserChatEffHandler(
         )
     }
 
+    override fun listener(msg: UserChatFeature.Msg) {
+        super.listener(msg)
+        Napier.d("listener $msg")
+    }
+
     init {
+        Napier.d("handler.setListener(::listener)")
         handler.setListener(::listener)
     }
 

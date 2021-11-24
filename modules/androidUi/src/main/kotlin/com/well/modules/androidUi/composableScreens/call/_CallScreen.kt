@@ -5,16 +5,16 @@ import com.well.modules.androidUi.composableScreens.call.drawing.DrawingContent
 import com.well.modules.androidUi.composableScreens.call.drawing.DrawingPanel
 import com.well.modules.androidUi.customViews.ProfileImage
 import com.well.modules.androidUi.customViews.controlMinSize
-import androidx.compose.foundation.Image
 import com.well.modules.androidUi.ext.visibility
 import com.well.modules.androidUi.ext.widthDp
-import com.well.modules.models.User
 import com.well.modules.features.call.callFeature.CallFeature.Msg
 import com.well.modules.features.call.callFeature.CallFeature.State
 import com.well.modules.features.call.callFeature.CallFeature.State.Status
+import com.well.modules.models.User
 import com.well.modules.utils.viewUtils.ViewConstants.CallScreen.BottomBar.CallButtonOffset
 import com.well.modules.utils.viewUtils.ViewConstants.CallScreen.CallButtonRadius
 import com.well.modules.features.call.callFeature.drawing.DrawingFeature.Msg as DrawingMsg
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -62,8 +62,8 @@ fun CallScreen(
                 end.linkTo(parent.end)
             }
         }
-    }.run {
-        padding(
+    }
+        .padding(
             when (position) {
                 State.VideoView.Position.FullScreen -> {
                     0.dp
@@ -72,7 +72,8 @@ fun CallScreen(
                     minimizedVideoContainerPadding
                 }
             }
-        ).offset(
+        )
+        .offset(
             y = when (position) {
                 State.VideoView.Position.FullScreen -> {
                     0.dp
@@ -82,7 +83,7 @@ fun CallScreen(
                 }
             }
         )
-    }
+
     val (localVideoView, remoteVideoView, profileImage, nameContainer, bottomView) = createRefs()
 
 //    CallBackground ?

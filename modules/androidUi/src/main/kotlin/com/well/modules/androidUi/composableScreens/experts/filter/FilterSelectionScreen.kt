@@ -1,8 +1,8 @@
 package com.well.modules.androidUi.composableScreens.experts.filter
 
 import com.well.modules.androidUi.composableScreens.myProfile.SelectionScreen
-import com.well.modules.androidUi.customViews.ControlItem
 import com.well.modules.androidUi.customViews.NavigationBar
+import com.well.modules.androidUi.customViews.rememberControlItem
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,12 +28,12 @@ fun FilterSelectionScreen(
         rightItem = if (!multipleSelection) null else {
             val allVariants = variants.indices.toSet()
             val allVariantsSelected = selection == allVariants
-            ControlItem(
+            rememberControlItem(
+                allVariantsSelected, allVariants,
                 text = if (allVariantsSelected) "Deselect all" else "Select all",
-                handler = {
-                    selection = if (allVariantsSelected) setOf() else allVariants
-                },
-            )
+            ) {
+                selection = if (allVariantsSelected) setOf() else allVariants
+            }
         }
     )
     SelectionScreen(

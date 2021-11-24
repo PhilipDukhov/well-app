@@ -47,19 +47,14 @@ fun initialiseDatabase(app: Application): Database {
     listOf(
         HikariDataSource::class.java,
         com.zaxxer.hikari.pool.HikariPool::class.java,
+        com.zaxxer.hikari.pool.HikariPool::class.java.superclass,
         DriverDataSource::class.java,
         HikariConfig::class.java,
-        "com.zaxxer.hikari.pool.PoolBase::class.java",
-    ).forEach {
-        (when (it) {
-            is String -> LoggerFactory.getLogger(it)
-            is Class<out Any> -> LoggerFactory.getLogger(it)
-            else -> throw IllegalStateException()
-        } as ch.qos.logback.classic.Logger)
-            .apply {
-                level = ch.qos.logback.classic.Level.WARN
-            }
-    }
+    )
+        .map { LoggerFactory.getLogger(it) as ch.qos.logback.classic.Logger }
+        .forEach {
+            it.level = ch.qos.logback.classic.Level.WARN
+        }
 
     val dataSource = HikariDataSource(datasourceConfig)
     val driver = dataSource.asJdbcDriver()

@@ -142,8 +142,13 @@ struct NavigationBar<Title: View, LV: View, RV: View, ExtraContent: View>: View 
             .background(GradientView(gradient: .main).edgesIgnoringSafeArea(.top))
     }
 
+    @ViewBuilder
     private func control<V>(item: NavigationBarItem<V>) -> some View {
-        Control(item.view, enabled: item.enabled, onTap: item.handler ?? {})
+        if let handler = item.handler {
+            Control(item.view, enabled: item.enabled, onTap: handler)
+        } else {
+            item.view
+        }
     }
 }
 

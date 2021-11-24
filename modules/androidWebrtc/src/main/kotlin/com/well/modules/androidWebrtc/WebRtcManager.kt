@@ -153,7 +153,7 @@ class WebRtcManager(
         .createPeerConnectionFactory()!!
     private val localVideoTrack = factory.createVideoTrack(
         "ARDAMSv0",
-        videoCapturer.run {
+        with(videoCapturer) {
             val videoSource = factory.createVideoSource(isScreencast)
             initialize(
                 SurfaceTextureHelper.create("WebRTC", rootEglBase.eglBaseContext),

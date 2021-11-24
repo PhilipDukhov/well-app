@@ -124,6 +124,7 @@ suspend fun PipelineContext<*, ApplicationCall>.bookAvailability(
         val newMeetingId = database.meetingsQueries
             .insert(
                 availability = availability,
+                bookingAvailability = bookingRequest,
                 attendeeId = attendeeId,
             )
         database.insertChatMessage(

@@ -61,8 +61,8 @@ data class User(
             publications,
             twitter,
             doximity,
-        ).run {
-            100 * count { it != null && (it as? Collection<*>)?.isEmpty() != true } / count()
+        ).let { list ->
+            100 * list.count { it != null && (it as? Collection<*>)?.isEmpty() != true } / list.count()
         }
 
     @Serializable

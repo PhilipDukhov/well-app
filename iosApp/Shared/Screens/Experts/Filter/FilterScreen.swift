@@ -9,6 +9,8 @@
 import SharedMobile
 import SwiftUI
 
+private typealias Feature = FilterFeature
+
 struct FilterScreen: View {
     let state: FilterFeature.State
     let listener: (FilterFeature.Msg) -> Void
@@ -17,17 +19,17 @@ struct FilterScreen: View {
     var body: some View {
         NavigationBar(title: HStack {
             Image(systemName: "line.horizontal.3.decrease.circle")
-            Text("Filter")
+            Text(Feature.Strings.shared.filter)
         })
         ScrollView {
             HStack {
-                Text("Sort by")
+                Text(Feature.Strings.shared.sortBy)
                 SelectableHVStack(
                     items: UsersFilter.SortByCompanion().allCases,
                     selectedIndex: .init(get: {
                         Int(state.sortByIndex)
                     }, set: {
-                        listener(FilterFeature.MsgSetSortByIndex(index: Int32($0)))
+                        listener(Feature.MsgSetSortByIndex(index: Int32($0)))
                     })
                 ) { item, _ in
                     Text("\(item.name)")
@@ -42,7 +44,7 @@ struct FilterScreen: View {
                 Divider()
             }
             HStack {
-                Text("Rating")
+                Text(Feature.Strings.shared.rating)
                     .textStyle(.body1).padding()
                 Spacer()
             }
@@ -51,7 +53,7 @@ struct FilterScreen: View {
                 selectedIndex: .init(get: {
                     Int(state.ratingIndex)
                 }, set: {
-                    listener(FilterFeature.MsgSetRatingIndex(index: Int32($0)))
+                    listener(Feature.MsgSetRatingIndex(index: Int32($0)))
                 })
             ) { item, selected in
                 HStack {
@@ -69,21 +71,21 @@ struct FilterScreen: View {
                 Toggle(isOn: .init(get: {
                     state.filter.withReviews
                 }, set: { _ in
-                    listener(FilterFeature.MsgToggleWithReviews())
+                    listener(Feature.MsgToggleWithReviews())
                 })) {
-                    Text("With reviews")
+                    Text(Feature.Strings.shared.withReviews)
                 }
             }.padding()
             Button {
-                listener(FilterFeature.MsgShow())
+                listener(Feature.MsgShow())
                 hide()
             } label: {
-                Text("Show")
+                Text(Feature.Strings.shared.show)
             }.buttonStyle(ActionButtonStyle(style: .onWhite))
             Button {
-                listener(FilterFeature.MsgClear())
+                listener(Feature.MsgClear())
             } label: {
-                Text("clear all")
+                Text(Feature.Strings.shared.clearAll)
             }.buttonStyle(ActionButtonStyle(style: .white))
         }
     }

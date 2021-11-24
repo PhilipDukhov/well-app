@@ -254,7 +254,7 @@ private fun Cell(
 private val StateSaver = Saver<MutableState<Feature.State>, Any>(
     save = { mutableState ->
         mutableState.value.let { state ->
-            state.availability.run {
+            with(state.availability) {
                 listOf(
                     id.toString(),
                     startInstant.toString(),

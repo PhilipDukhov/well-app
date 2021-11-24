@@ -1,7 +1,7 @@
 package com.well.modules.androidUi.customViews
 
-import androidx.compose.foundation.Image
 import com.well.modules.androidUi.ext.thenOrNull
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -21,15 +21,33 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+@Composable
+fun rememberControlItem(
+    vararg keys: Any?,
+    handler: (() -> Unit)? = null,
+    view: @Composable BoxScope.() -> Unit,
+) = remember(*keys) {
+    ControlItem(handler = handler, view = view)
+}
+
+@Composable
+fun rememberControlItem(
+    vararg keys: Any?,
+    text: String,
+    handler: (() -> Unit)? = null,
+) = remember(*keys) {
+    ControlItem(handler = handler, text = text)
+}
+
 data class ControlItem(
     val enabled: Boolean = true,
-    val handler: () -> Unit = {},
-    val view: @Composable BoxScope.() -> Unit
+    val handler: (() -> Unit)? = null,
+    val view: @Composable BoxScope.() -> Unit,
 ) {
     constructor(
         enabled: Boolean = true,
         text: String,
-        handler: () -> Unit,
+        handler: (() -> Unit)?,
     ) : this(
         enabled,
         handler,
@@ -39,12 +57,17 @@ data class ControlItem(
 
 @Composable
 fun Control(item: ControlItem, modifier: Modifier = Modifier) {
-    Control(
-        enabled = item.enabled,
-        onClick = item.handler,
-        content = item.view,
-        modifier = modifier,
-    )
+    val handler = item.handler
+    if (handler != null) {
+        Control(
+            enabled = item.enabled,
+            onClick = handler,
+            content = item.view,
+            modifier = modifier,
+        )
+    } else {
+        Box(content = item.view)
+    }
 }
 
 @Composable
@@ -65,7 +88,6 @@ fun Control(
         modifier = Modifier
             .padding(5.dp)
             .thenOrNull(size?.let { Modifier.size(size) })
-            .alpha(if (enabled) 1F else 0.4F)
     )
 }
 
@@ -78,14 +100,14 @@ fun Control(
 ) = Box(
     contentAlignment = Alignment.Center,
     modifier = modifier
+        .sizeIn(minHeight = controlMinSize, minWidth = controlMinSize)
+        .alpha(if (enabled) 1f else com.well.modules.models.Color.inactiveAlpha)
         .clickable(
             enabled = enabled,
             interactionSource = remember { MutableInteractionSource() },
             indication = rememberRipple(bounded = false),
             onClick = onClick,
         )
-        .sizeIn(minHeight = controlMinSize, minWidth = controlMinSize)
-        .alpha(if (enabled) 1f else 0.4f)
 ) {
     content()
 }

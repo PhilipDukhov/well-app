@@ -21,7 +21,7 @@ import com.well.modules.models.WebSocketMsg
 import com.well.modules.models.chat.ChatMessage
 import com.well.modules.models.chat.LastReadMessage
 import com.well.modules.utils.dbUtils.adaptedOneOfRegex
-import com.well.modules.utils.flowUtils.MutableSetFlow
+import com.well.modules.utils.flowUtils.MutableSetStateFlow
 import com.well.modules.utils.flowUtils.asSingleFlow
 import com.well.modules.utils.flowUtils.collectIn
 import com.well.modules.utils.flowUtils.filterIterable
@@ -39,6 +39,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import org.joda.time.Weeks
 import java.util.*
 
@@ -57,7 +58,7 @@ class UserSession(
     private val messagesPresenceInfoFlow = MutableStateFlow<ChatMessage.Id?>(null)
     private val meetingIdsPresenceFlow = MutableStateFlow<List<Meeting.Id>?>(null)
     private val chatReadStatePresenceFlow = MutableStateFlow<List<LastReadMessage>>(emptyList())
-    private val userCreatedChatMessageInfosFlow = MutableSetFlow<CreatedMessageInfo>()
+    private val userCreatedChatMessageInfosFlow = MutableSetStateFlow<CreatedMessageInfo>()
 
     private val expertsFlow: Flow<List<User.Id>> = expertsFilterFlow
         .filterNotNull()
@@ -160,7 +161,7 @@ class UserSession(
                 ids to meetings
             }
     private val newMeetingsFlow: Flow<List<Meeting>> = meetingsPresenceFlow
-        .mapPair { presenceIds, dbMeetings  ->
+        .mapPair { presenceIds, dbMeetings ->
             dbMeetings.filter {
                 !presenceIds.contains(it.id) && !it.deleted
             }
@@ -168,7 +169,7 @@ class UserSession(
         .mapIterable(Meetings::toMeetings)
         .filterNotEmpty()
     private val removedMeetingIdsFlow: Flow<List<Meeting.Id>> = meetingsPresenceFlow
-        .mapPair { presenceIds, dbMeetings  ->
+        .mapPair { presenceIds, dbMeetings ->
             dbMeetings.filter {
                 presenceIds.contains(it.id) && it.deleted
             }
@@ -185,10 +186,11 @@ class UserSession(
             newMeetingsFlow.map(WebSocketMsg.Back::AddMeetings),
             removedMeetingIdsFlow.map(WebSocketMsg.Back::RemovedMeetings),
         ).forEach { flow ->
-            flow.collectIn(this) {
-                println("$currentUid send $it")
-                send(it)
-            }
+            flow
+                .onEach {
+                    println("$currentUid send $it")
+                }
+                .collectIn(this, ::send)
         }
     }
 
@@ -293,15 +295,19 @@ class UserSession(
         dependencies.callInfos.add(CallInfo(listOf(currentUid, msg.uid)))
     }
 
-    private suspend fun insertChatMessage(message: ChatMessage) {
-        val finalMessageId = dependencies.database.insertChatMessage(message)
-        println("insertChatMessage ${Date().time.toDouble() / 1000} ${message.id} $finalMessageId")
-        userCreatedChatMessageInfosFlow.add(
-            CreatedMessageInfo(
-                tmpId = message.id,
-                id = finalMessageId
-            )
-        )
+    private fun insertChatMessage(message: ChatMessage) {
+        with(dependencies.database) {
+            transaction {
+                val finalMessageId = insertChatMessage(message)
+                userCreatedChatMessageInfosFlow.add(
+                    CreatedMessageInfo(
+                        tmpId = message.id,
+                        id = finalMessageId
+                    )
+                )
+                println("insertChatMessage ${Date().time.toDouble() / 1000} ${message.id} $finalMessageId")
+            }
+        }
     }
 
     private fun chatMessageRead(messageId: ChatMessage.Id) {

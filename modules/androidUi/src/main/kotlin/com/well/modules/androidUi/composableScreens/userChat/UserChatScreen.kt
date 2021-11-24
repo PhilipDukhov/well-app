@@ -4,6 +4,7 @@ import com.well.modules.androidUi.customViews.Control
 import com.well.modules.androidUi.customViews.ControlItem
 import com.well.modules.androidUi.customViews.NavigationBar
 import com.well.modules.androidUi.customViews.ProfileImage
+import com.well.modules.androidUi.customViews.rememberControlItem
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature.Msg
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature.State
@@ -42,6 +43,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.rounded.AddPhotoAlternate
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -66,26 +68,26 @@ fun ColumnScope.UserChatScreen(
     listener: (Msg) -> Unit,
 ) {
     NavigationBar(
-        leftItem = state.user?.let { user ->
-            ControlItem(
-                handler = {
-                    listener(Msg.OpenUserProfile)
-                }, view = {
-                    UserInfo(user)
-                }
-            )
-        },
-        rightItem = ControlItem(
-            handler = {
-                listener(Msg.Call)
-            }, view = {
-                Icon(
-                    Icons.Default.Call,
-                    contentDescription = null,
-                    tint = Color.White.toColor(),
+        leftItem = remember(state.user) {
+            state.user?.let { user ->
+                ControlItem(
+                    handler = {
+                        listener(Msg.OpenUserProfile)
+                    }, view = {
+                        UserInfo(user)
+                    }
                 )
             }
-        ),
+        },
+        rightItem = rememberControlItem(
+            handler = { listener(Msg.Call) },
+        ) {
+            Icon(
+                Icons.Default.Call,
+                contentDescription = null,
+                tint = Color.White.toColor(),
+            )
+        },
     )
 
     val scrollState = rememberLazyListState()
@@ -189,10 +191,12 @@ private fun Messages(
             }
         }
     }
-    visibleIndices.forEach { index ->
-        val message = messages[index]
-        if (message.status == ChatMessageViewModel.Status.IncomingUnread) {
-            markRead(message.id)
+    LaunchedEffect(visibleIndices) {
+        visibleIndices.forEach { index ->
+            val message = messages[index]
+            if (message.status == ChatMessageViewModel.Status.IncomingUnread) {
+                markRead(message.id)
+            }
         }
     }
 }

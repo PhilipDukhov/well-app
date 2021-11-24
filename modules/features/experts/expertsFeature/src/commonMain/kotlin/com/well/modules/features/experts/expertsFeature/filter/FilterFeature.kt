@@ -3,9 +3,19 @@ package com.well.modules.features.experts.expertsFeature.filter
 import com.well.modules.models.UsersFilter
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
+import com.well.modules.utils.viewUtils.GlobalStringsBase
 import com.well.modules.utils.viewUtils.UIEditingField
 
 object FilterFeature {
+    object Strings : GlobalStringsBase() {
+        const val activity = "Activity"
+        const val sortBy = "Sort by"
+        const val withReviews = "With reviews"
+        const val clearAll = "clear all"
+        const val show = "Show"
+        const val rating = "Rating"
+    }
+
     data class State(
         val filter: UsersFilter,
     ) {
@@ -56,7 +66,7 @@ object FilterFeature {
 
     fun reducer(
         msg: Msg,
-        state: State
+        state: State,
     ): Pair<State, Set<Eff>> = run state@{
         return@reducer state toSetOf (run eff@{
             when (msg) {

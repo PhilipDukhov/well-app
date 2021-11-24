@@ -15,7 +15,7 @@ fun ToggleFavoriteButton(
 ) {
     Control(onClick = toggle) {
         Icon(
-            Icons.Rounded.run {
+            with(Icons.Rounded) {
                 if (favorite) Favorite else FavoriteBorder
             },
             contentDescription = null,

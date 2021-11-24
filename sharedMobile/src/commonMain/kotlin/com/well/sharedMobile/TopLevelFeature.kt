@@ -243,15 +243,25 @@ object TopLevelFeature {
                     )
                 }
                 is Msg.OpenUserChat -> {
-                    return@reducer state
-                        .copyPush(
+                    val popNeeded = state.selectedScreenPosition.let { position ->
+                        if (position.index == 0) return@let false
+                        val chatScreen = state.tabs[position.tab]
+                            ?.get(position.index - 1) as? ScreenState.UserChat
+                            ?: return@let false
+                        chatScreen.state.peerId == msg.uid
+                    }
+                    val newState = if (popNeeded) {
+                        state.copyPop()
+                    } else {
+                        state.copyPush(
                             state = UserChatFeature.State(
                                 peerId = msg.uid,
                                 backToUser = state.topScreen is ScreenState.UserChat,
                             ),
                             createScreen = ScreenState::UserChat,
                         )
-                        .reduceScreenChanged()
+                    }
+                    return@reducer newState.reduceScreenChanged()
                 }
             }
         })

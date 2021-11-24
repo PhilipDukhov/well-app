@@ -11,4 +11,5 @@ open class GlobalStringsBase {
     val academicRank = "Academic Rank"
     val skillsExpertise = "Skills/Expertise"
     val tryAgain = "Try again"
+    val filter = "Filter"
 }

@@ -49,12 +49,12 @@ object MyProfileFeature {
         isCurrent: Boolean,
         uid: User.Id,
         user: User?,
-    ) = user?.run {
+    ) = user?.let {
         if (user.initialized)
-            this
+            user
         else
-            copy(
-                timeZoneIdentifier = timeZoneIdentifier ?: currentTimeZoneIdentifier(),
+            user.copy(
+                timeZoneIdentifier = user.timeZoneIdentifier ?: currentTimeZoneIdentifier(),
             )
     }.let {
         State(

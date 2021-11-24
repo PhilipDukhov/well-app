@@ -10,6 +10,8 @@ import SwiftUI
 import SharedMobile
 import Combine
 
+private typealias Feature = ExpertsFeature
+
 struct ExpertsScreen: View {
     let state: ExpertsFeature.State
     let listener: (ExpertsFeature.Msg) -> Void
@@ -26,7 +28,7 @@ struct ExpertsScreen: View {
             leftItem: NavigationBarItem(
                 view: HStack {
                     Image(systemName: "line.horizontal.3.decrease.circle")
-                    Text("Filter")
+                    Text(Feature.Strings.shared.filter)
                 }.textStyle(.subtitle2),
                 handler: {
                     filterPresented = true
@@ -37,11 +39,11 @@ struct ExpertsScreen: View {
                     .font(.system(size: 25))
                     .foregroundColorKMM(.companion.White)
             ) {
-                listener(ExpertsFeature.MsgToggleFilterFavorite())
+                listener(Feature.MsgToggleFilterFavorite())
             }
         ).sheet(isPresented: $filterPresented) {
             FilterScreen(state: state.filterState) { msg in
-                listener(ExpertsFeature.MsgFilterMsg(msg: msg))
+                listener(Feature.MsgFilterMsg(msg: msg))
             } hide: {
                 filterPresented = false
             }
@@ -50,7 +52,7 @@ struct ExpertsScreen: View {
             .fillMaxWidth()
             .padding()
             .onChange(of: searchText) { searchText in
-                listener(ExpertsFeature.MsgSetSearchString(searchString: searchText))
+                listener(Feature.MsgSetSearchString(searchString: searchText))
             }
         if state.updating {
             ProgressView()
@@ -69,9 +71,9 @@ struct ExpertsScreen: View {
                 VStack {
                     ForEach(state.users, id: \.id) { user in
                         UserCell(user: user) {
-                            listener(ExpertsFeature.MsgOnUserFavorite(user: user))
+                            listener(Feature.MsgOnUserFavorite(user: user))
                         }.onTapGesture {
-                            listener(ExpertsFeature.MsgOnUserSelected(user: user))
+                            listener(Feature.MsgOnUserSelected(user: user))
                         }
                         Divider()
                     }

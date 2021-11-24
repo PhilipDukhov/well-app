@@ -6,8 +6,11 @@ CREATE TABLE ChatContentTexts (
 );
 
 insert:
-INSERT INTO ChatContentTexts(messageId, text)
+INSERT OR REPLACE INTO ChatContentTexts(messageId, text)
 VALUES (?, ?);
 
 getById:
 SELECT * FROM ChatContentTexts WHERE messageId = ?;
+
+delete:
+DELETE FROM ChatContentTexts WHERE messageId = ?;

@@ -20,7 +20,7 @@ fun Database.insertChatMessage(
     content: ChatMessage.Content,
 ): ChatMessage.Id =
     transactionWithResult {
-        val messageId = chatMessagesQueries.run {
+        val messageId = with(chatMessagesQueries) {
             insert(
                 creation = Date().time.toDouble() / 1000,
                 fromId = fromId,
@@ -31,29 +31,26 @@ fun Database.insertChatMessage(
         }
         when (content) {
             is ChatMessage.Content.Image -> {
-                chatContentImagesQueries.run {
-                    insert(
+                chatContentImagesQueries
+                    .insert(
                         messageId = messageId,
                         url = content.url,
                         aspectRatio = content.aspectRatio,
                     )
-                }
             }
             is ChatMessage.Content.Meeting -> {
-                chatContentMeetingsQueries.run {
-                    insert(
+                chatContentMeetingsQueries
+                    .insert(
                         messageId = messageId,
                         meetingId = content.meetingId,
                     )
-                }
             }
             is ChatMessage.Content.Text -> {
-                chatContentTextsQueries.run {
-                    insert(
+                chatContentTextsQueries
+                    .insert(
                         messageId = messageId,
                         text = content.string,
                     )
-                }
             }
         }
         messageId

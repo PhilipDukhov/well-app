@@ -1,21 +1,21 @@
 package com.well.modules.androidUi.composableScreens.experts.filter
 
-import com.well.modules.androidUi.theme.body1Light
 import com.well.modules.androidUi.customViews.ActionButton
 import com.well.modules.androidUi.customViews.ActionButtonStyle
 import com.well.modules.androidUi.customViews.Control
-import com.well.modules.androidUi.customViews.ControlItem
 import com.well.modules.androidUi.customViews.NavigationBar
+import com.well.modules.androidUi.customViews.rememberControlItem
 import com.well.modules.androidUi.customViews.toNavigationTitleText
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.borderKMM
 import com.well.modules.androidUi.ext.toColor
-import com.well.modules.models.Color
-import com.well.modules.models.UsersFilter
+import com.well.modules.androidUi.theme.body1Light
 import com.well.modules.features.experts.expertsFeature.filter.FilterFeature.Msg
 import com.well.modules.features.experts.expertsFeature.filter.FilterFeature.State
+import com.well.modules.models.Color
+import com.well.modules.models.UsersFilter
 import com.well.modules.utils.viewUtils.UIEditingField
-import android.annotation.SuppressLint
+import com.well.modules.features.experts.expertsFeature.filter.FilterFeature as Feature
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -84,21 +84,19 @@ private fun FilterScreenContent(
     state: State,
     listener: (Msg) -> Unit,
     hide: () -> Unit,
-    selectField: (EditingField) -> Unit
+    selectField: (EditingField) -> Unit,
 ) {
     NavigationBar(
-        title = ControlItem(
-            view = {
-                Row {
-                    Icon(
-                        Icons.Default.FilterList,
-                        contentDescription = null,
-                        tint = Color.White.toColor(),
-                    )
-                    "Filter".toNavigationTitleText()
-                }
+        title = rememberControlItem {
+            Row {
+                Icon(
+                    Icons.Default.FilterList,
+                    contentDescription = null,
+                    tint = Color.White.toColor(),
+                )
+                Feature.Strings.filter.toNavigationTitleText()
             }
-        ),
+        },
     )
     LazyColumn {
         item {
@@ -108,7 +106,7 @@ private fun FilterScreenContent(
                     .padding(horizontal = 20.dp, vertical = 10.dp)
             ) {
                 Text(
-                    "Sort by",
+                    Feature.Strings.sortBy,
                     style = MaterialTheme.typography.body1Light,
                 )
                 Spacer(modifier = Modifier.size(10.dp))
@@ -160,7 +158,7 @@ private fun FilterScreenContent(
                 Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
             ) {
                 Text(
-                    "Rating",
+                    Feature.Strings.rating,
                     style = MaterialTheme.typography.body1
                 )
                 SelectableRowColumnGrid(
@@ -200,7 +198,7 @@ private fun FilterScreenContent(
                     .padding(horizontal = 20.dp, vertical = 10.dp)
                     .fillMaxWidth()
             ) {
-                Text("With reviews")
+                Text(Feature.Strings.withReviews)
                 Switch(
                     checked = state.filter.withReviews,
                     onCheckedChange = {
@@ -215,12 +213,12 @@ private fun FilterScreenContent(
                 onClick = {
                     listener(Msg.Clear)
                 }) {
-                Text("clear all")
+                Text(Feature.Strings.clearAll)
             }
         }
         item {
             ActionButton(onClick = hide) {
-                Text("Show")
+                Text(Feature.Strings.show)
             }
         }
     }
@@ -254,8 +252,6 @@ fun <Item> SelectableRowColumnGrid(
     }
 }
 
-@SuppressLint("ComposableModifierFactory")
-@Composable
 private fun Modifier.selectableRowColumnItemBackground(selected: Boolean) =
     RoundedCornerShape(100).let { shape ->
         borderKMM(

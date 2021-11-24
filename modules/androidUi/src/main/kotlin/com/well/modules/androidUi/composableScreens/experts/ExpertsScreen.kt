@@ -1,12 +1,12 @@
 package com.well.modules.androidUi.composableScreens.experts
 
 import com.well.modules.androidUi.composableScreens.experts.filter.FilterScreen
-import com.well.modules.androidUi.customViews.ControlItem
 import com.well.modules.androidUi.customViews.NavigationBar
+import com.well.modules.androidUi.customViews.rememberControlItem
 import com.well.modules.androidUi.ext.toColor
-import com.well.modules.features.experts.expertsFeature.ExpertsFeature
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature.Msg
 import com.well.modules.models.Color
+import com.well.modules.features.experts.expertsFeature.ExpertsFeature as Feature
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,7 +29,7 @@ import com.google.accompanist.insets.navigationBarsPadding
 
 @Composable
 fun ColumnScope.ExpertsScreen(
-    state: ExpertsFeature.State,
+    state: Feature.State,
     listener: (Msg) -> Unit,
 ) {
     var filterScreenVisible by remember { mutableStateOf(false) }
@@ -56,41 +56,38 @@ fun ColumnScope.ExpertsScreen(
 
 @Composable
 private fun ExpertsScreenContent(
-    state: ExpertsFeature.State,
+    state: Feature.State,
     listener: (Msg) -> Unit,
     showFilterScreen: () -> Unit,
 ) {
     NavigationBar(
         title = state.connectionStatusDescription,
-        leftItem = ControlItem(
-            view = {
-                Row {
-                    Icon(
-                        Icons.Default.FilterList,
-                        contentDescription = null,
-                        tint = Color.White.toColor(),
-                    )
-                    Text(
-                        "Filter",
-                        style = MaterialTheme.typography.subtitle2,
-                        color = Color.White.toColor(),
-                    )
-                }
-            },
-            handler = showFilterScreen,
-        ),
-        rightItem = ControlItem(
-            view = {
+        leftItem = rememberControlItem(handler = showFilterScreen) {
+            Row {
                 Icon(
-                    Icons.Rounded.run {
-                        if (state.filterState.filter.favorite) Favorite else FavoriteBorder
-                    },
+                    Icons.Default.FilterList,
                     contentDescription = null,
                     tint = Color.White.toColor(),
                 )
-            },
+                Text(
+                    Feature.Strings.filter,
+                    style = MaterialTheme.typography.subtitle2,
+                    color = Color.White.toColor(),
+                )
+            }
+        },
+        rightItem = rememberControlItem(
+            state.filterState.filter.favorite,
             handler = { listener.invoke(Msg.ToggleFilterFavorite) },
-        ),
+        ) {
+            Icon(
+                with(Icons.Rounded) {
+                    if (state.filterState.filter.favorite) Favorite else FavoriteBorder
+                },
+                contentDescription = null,
+                tint = Color.White.toColor(),
+            )
+        },
     )
     LazyColumn(modifier = Modifier.navigationBarsPadding()) {
         if (state.users.isNotEmpty()) {

@@ -9,6 +9,7 @@ import com.well.modules.puerhBase.EffectHandler
 import com.well.modules.utils.flowUtils.collectIn
 import com.well.modules.utils.flowUtils.mapIterable
 import com.well.modules.utils.viewUtils.sharedImage.LocalImage
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -40,6 +41,7 @@ class UserChatEffHandler(
     }
 
     override suspend fun processEffect(eff: Eff) {
+        Napier.d("processEffect $eff")
         when (eff) {
             Eff.Back,
             is Eff.Call,

@@ -1,12 +1,12 @@
 package com.well.modules.androidUi.customViews
 
-import com.well.modules.utils.viewUtils.NavigationBarModel
 import com.well.modules.utils.viewUtils.Gradient
+import com.well.modules.utils.viewUtils.NavigationBarModel
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
@@ -40,7 +40,7 @@ fun NavigationBar(
             ConstraintLayout(
                 modifier = Modifier
                     .statusBarsPadding()
-                    .height(contentHeight)
+                    .heightIn(min = contentHeight)
                     .padding(10.dp)
                     .fillMaxWidth()
             ) {
@@ -130,17 +130,20 @@ fun String.toNavigationTitleText() =
     )
 
 @Composable
-private fun String.toTitleControlItem() = ControlItem(view = remember(this) { { toNavigationTitleText() } })
+private fun String.toTitleControlItem() =
+    ControlItem(view = remember(this) { { toNavigationTitleText() } })
 
 @Composable
 fun <Msg> NavigationBarModel.Item<Msg>.toControlItem(
     listener: (Msg) -> Unit,
-    beforeAction: (() -> Unit)? = null
+    beforeAction: (() -> Unit)? = null,
 ) =
     if ((content as? NavigationBarModel.Item.Content.Icon)?.icon != NavigationBarModel.Item.Content.Icon.Icon.Back) {
         ControlItem(
             enabled = enabled,
-            handler = remember(msg, beforeAction) { { beforeAction?.invoke(); msg?.let { listener(it) } } },
+            handler = remember(msg, beforeAction) {
+                { beforeAction?.invoke(); msg?.let { listener(it) } }
+            },
             view = remember(content) { { ItemContentView(content) } },
         )
     } else null

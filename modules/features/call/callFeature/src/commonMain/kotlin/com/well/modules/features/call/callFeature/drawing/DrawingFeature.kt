@@ -232,9 +232,8 @@ object DrawingFeature {
 
     private fun State.reduceLocalImageContainerSizeUpdate(size: Size) =
         if (localImageContainerSize != size) {
-            copy(localImageContainerSize = size).run {
-                this toSetOf notifyViewSizeUpdateEff()
-            }
+            val updatedState = copy(localImageContainerSize = size)
+            updatedState toSetOf updatedState.notifyViewSizeUpdateEff()
         } else {
             this.withEmptySet()
         }

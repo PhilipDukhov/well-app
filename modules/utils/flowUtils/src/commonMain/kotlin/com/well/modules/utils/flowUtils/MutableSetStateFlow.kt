@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class MutableSetFlow<T>(value: Set<T> = emptySet()): Flow<Set<T>> {
+class MutableSetStateFlow<T>(value: Set<T> = emptySet()): Flow<Set<T>> {
     private val flow = MutableStateFlow(value)
     val value: Set<T>
         get() = flow.value
@@ -16,18 +16,18 @@ class MutableSetFlow<T>(value: Set<T> = emptySet()): Flow<Set<T>> {
         flow.collect(collector)
     }
 
-    suspend fun add(element: T): Boolean =
+    fun add(element: T): Boolean =
         modify {
             add(element)
         }
 
-    private suspend fun modify(modification: MutableSet<T>.() -> Boolean): Boolean =
+    private fun modify(modification: MutableSet<T>.() -> Boolean): Boolean =
         flow.value.toMutableSet()
             .let { value ->
                 value.modification()
                     .also { changed ->
                         if (changed) {
-                            flow.emit(value)
+                            flow.value = value
                         }
                     }
             }

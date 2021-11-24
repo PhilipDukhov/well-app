@@ -300,7 +300,7 @@ internal class FeatureProviderImpl(
                                     peerUid = eff.screen.state.peerId,
                                     currentUid = sessionInfo!!.uid,
                                     featureProviderImpl = this@FeatureProviderImpl,
-                                    parentCoroutineScope = CoroutineScope(coroutineContext),
+                                    parentCoroutineScope = coroutineScope,
                                 ).adapt(
                                     effAdapter = { (it as? FeatureEff.UserChat)?.eff },
                                     msgAdapter = { eff.screen.mapMsgToTopLevel(it) }
@@ -308,6 +308,7 @@ internal class FeatureProviderImpl(
                             )
                         }
                         else -> {
+                            Napier.d("topScreenHandlerCloseable = null $eff")
                             topScreenHandlerCloseable = null
                         }
                     }

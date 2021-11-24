@@ -7,8 +7,11 @@ CREATE TABLE ChatContentMeetings (
 );
 
 insert:
-INSERT INTO ChatContentMeetings(messageId, meetingId)
+INSERT OR REPLACE INTO ChatContentMeetings(messageId, meetingId)
 VALUES (?, ?);
 
 getById:
 SELECT * FROM ChatContentMeetings WHERE messageId = ?;
+
+delete:
+DELETE FROM ChatContentMeetings WHERE messageId = ?;

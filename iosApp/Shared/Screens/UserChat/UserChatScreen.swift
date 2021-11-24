@@ -15,10 +15,7 @@ struct UserChatScreen: View {
     var body: some View {
         NavigationBar(
             leftItem: NavigationBarItem(
-                view: leftItem(),
-                handler: {
-                    listener(UserChatFeature.MsgBack())
-                }
+                view: leftItem()
             ),
             rightItem: NavigationBarItem(
                 view: Image(systemName: "phone.fill")
@@ -71,15 +68,25 @@ struct UserChatScreen: View {
     @ViewBuilder
     func leftItem() -> some View {
         HStack {
-            Image(systemName: "chevron.left")
-                .font(.system(size: 20))
-                .foregroundColorKMM(.companion.White)
-                .padding()
+            Control(onTap: {
+                listener(UserChatFeature.MsgBack())
+            }) {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 20))
+                    .foregroundColorKMM(.companion.White)
+                    .padding()
+            }
             if let user = state.user {
-                ProfileImage(user)
-                    .frame(size: 40)
-                Text(user.fullName)
-                    .textStyle(.subtitle2)
+                Control(onTap: {
+                    listener(UserChatFeature.MsgOpenUserProfile())
+                }) {
+                    HStack {
+                        ProfileImage(user)
+                            .frame(size: 40)
+                        Text(user.fullName)
+                            .textStyle(.subtitle2)
+                    }
+                }
             }
         }
     }

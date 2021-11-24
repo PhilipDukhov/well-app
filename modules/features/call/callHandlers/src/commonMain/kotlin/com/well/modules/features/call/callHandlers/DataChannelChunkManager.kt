@@ -2,7 +2,6 @@ package com.well.modules.features.call.callHandlers
 
 import com.well.modules.atomic.AtomicMutableMap
 import com.well.modules.atomic.AtomicRef
-import com.well.modules.utils.kotlinUtils.map
 import com.well.modules.utils.kotlinUtils.mapSecond
 import kotlin.math.min
 
@@ -34,7 +33,7 @@ class DataChannelChunkManager {
     }
 
     fun processByteArrayChunk(chunkByteArray: ByteArray): ByteArray? =
-        DataChannelMessageChunk(chunkByteArray).run {
+        with(DataChannelMessageChunk(chunkByteArray)) {
             if (chunksCount > 1) {
                 val (neededIds, fullByteArray) = incompleteMessages[id]
                     ?.mapSecond { it.copyOf() }

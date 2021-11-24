@@ -9,6 +9,7 @@ import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import com.squareup.sqldelight.runtime.coroutines.mapToOne
 import com.squareup.sqldelight.runtime.coroutines.mapToOneOrDefault
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -41,7 +42,7 @@ fun ChatMessagesDatabase.chatPeerInfos(id: User.Id) =
 
 fun ChatMessagesDatabase.insert(message: ChatMessage) =
     transaction {
-        message.run {
+        with(message) {
             chatMessagesQueries.insert(
                 id = id,
                 creation = creation,
@@ -53,9 +54,24 @@ fun ChatMessagesDatabase.insert(message: ChatMessage) =
         insertContent(id = message.id, content = message.content)
     }
 
-fun ChatMessagesDatabase.delete(messageId: ChatMessage.Id) =
+fun ChatMessagesDatabase.delete(id: ChatMessage.Id) =
     transaction {
-        chatMessagesQueries.delete(messageId)
+        val message = chatMessagesQueries
+            .getById(id)
+            .executeAsOneOrNull() ?: return@transaction
+        chatMessagesQueries.delete(id)
+        Napier.d("deleteContent $id")
+        when (message.contentType) {
+            ChatMessage.Content.SimpleType.Image -> {
+                chatContentImagesQueries.delete(id)
+            }
+            ChatMessage.Content.SimpleType.Meeting -> {
+                chatContentMeetingsQueries.delete(id)
+            }
+            ChatMessage.Content.SimpleType.Text -> {
+                chatContentTextsQueries.delete(id)
+            }
+        }
     }
 
 fun LastReadMessagesQueries.insert(lastReadMessage: LastReadMessage) =
@@ -184,11 +200,12 @@ fun LastReadMessagesQueries.selectAllFlow() =
 
 fun ChatMessagesDatabase.markRead(id: ChatMessage.Id) {
     val message = chatMessagesQueries.getById(id).executeAsOneOrNull() ?: return
+
     val currentLast = lastReadMessagesQueries.selectSingle(
         fromId = message.fromId,
         peerId = message.peerId,
-    ).executeAsOneOrNull() ?: return
-    if (currentLast.messageId >= message.id) return
+    ).executeAsOneOrNull()
+    if (currentLast != null && currentLast.messageId >= message.id) return
     lastReadMessagesQueries.insert(
         fromId = message.fromId,
         peerId = message.peerId,
@@ -202,34 +219,27 @@ private fun ChatMessagesDatabase.insertContent(
 ) {
     when (content) {
         is ChatMessage.Content.Image -> {
-            chatContentImagesQueries.run {
-                insert(
+            chatContentImagesQueries
+                .insert(
                     messageId = id,
                     url = content.url,
                     aspectRatio = content.aspectRatio,
                 )
-            }
-            println("inserted ${
-                chatContentImagesQueries
-                    .getById(id)
-                    .executeAsOne()
-            }")
         }
         is ChatMessage.Content.Meeting -> {
-            chatContentMeetingsQueries.run {
-                insert(
+            chatContentMeetingsQueries
+                .insert(
                     messageId = id,
                     meetingId = content.meetingId,
                 )
-            }
         }
         is ChatMessage.Content.Text -> {
-            chatContentTextsQueries.run {
-                insert(
+            Napier.d("insertContent $id, $content")
+            chatContentTextsQueries
+                .insert(
                     messageId = id,
                     text = content.string,
                 )
-            }
         }
     }
 }

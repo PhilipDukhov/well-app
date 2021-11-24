@@ -10,8 +10,11 @@ import com.well.modules.models.UsersFilter
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
 import com.well.modules.utils.kotlinUtils.map
+import com.well.modules.utils.viewUtils.GlobalStringsBase
 
 object ExpertsFeature {
+    object Strings: GlobalStringsBase()
+
     fun initialState(): State = State(
         listOf(),
         Disconnected,
@@ -82,12 +85,12 @@ object ExpertsFeature {
                 is Msg.OnUserFavorite -> {
                     val newUser = msg.user.copy(favorite = !msg.user.favorite)
                     return@reducer state.copy(
-                        users = state.users.run {
-                            val result = this.toMutableList()
-                            val index = result.indexOfFirst { it.id == newUser.id }
-                            result[index] = newUser
-                            result
-                        }
+                        users = state.users
+                            .toMutableList()
+                            .also { users ->
+                                val index = users.indexOfFirst { it.id == newUser.id }
+                                users[index] = newUser
+                            }
                     ) toSetOf Eff.SetUserFavorite(FavoriteSetter(newUser.favorite, newUser.id))
                 }
                 is Msg.FilterMsg -> {
