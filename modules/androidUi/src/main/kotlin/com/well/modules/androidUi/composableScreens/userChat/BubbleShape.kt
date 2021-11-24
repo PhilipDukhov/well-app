@@ -13,18 +13,16 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 
-class BubbleShape: Shape {
-    companion object {
-        private const val dxPart = 0.34f
+object BubbleShape : Shape {
+    private const val dxPart = 0.34f
 
-        val radius = 17f.dp
-        val tailDx = radius * dxPart
-    }
+    val radius = 17f.dp
+    val tailDx = radius * dxPart
 
     override fun createOutline(
         size: Size,
         layoutDirection: LayoutDirection,
-        density: Density
+        density: Density,
     ) = Outline.Generic(Path().apply {
         fillType = PathFillType.NonZero
         val radius = radius.toPx(density)
@@ -109,13 +107,20 @@ class BubbleShape: Shape {
         close()
     })
 
-    private fun Path.relativeCubicTo(multiplier: Float, dx1: Float, dy1: Float, dx2: Float, dy2: Float, dx3: Float, dy3: Float) =
-        relativeCubicTo(
-            dx1 = dx1 * multiplier,
-            dy1 = dy1 * multiplier,
-            dx2 = dx2 * multiplier,
-            dy2 = dy2 * multiplier,
-            dx3 = dx3 * multiplier,
-            dy3 = dy3 * multiplier,
-        )
+    private fun Path.relativeCubicTo(
+        multiplier: Float,
+        dx1: Float,
+        dy1: Float,
+        dx2: Float,
+        dy2: Float,
+        dx3: Float,
+        dy3: Float,
+    ) = relativeCubicTo(
+        dx1 = dx1 * multiplier,
+        dy1 = dy1 * multiplier,
+        dx2 = dx2 * multiplier,
+        dy2 = dy2 * multiplier,
+        dx3 = dx3 * multiplier,
+        dy3 = dy3 * multiplier,
+    )
 }

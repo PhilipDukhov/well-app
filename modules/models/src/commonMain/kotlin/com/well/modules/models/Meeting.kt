@@ -7,11 +7,11 @@ import kotlin.jvm.JvmInline
 @Serializable
 data class Meeting(
     val id: Id,
-    val startInstant: Instant,
-    val durationMinutes: Int,
+    override val startInstant: Instant,
+    override val durationMinutes: Int,
     val hostId: User.Id,
     val attendeeId: User.Id,
-) {
+): AvailabilityInfo {
     @Serializable
     @JvmInline
     value class Id(val value: Long) {

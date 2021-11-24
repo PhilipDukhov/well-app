@@ -7,6 +7,7 @@ import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Msg
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.State
 import com.well.modules.features.myProfile.myProfileHandlers.MyProfileEffHandler
 import com.well.modules.models.Availability
+import com.well.modules.models.BookingAvailability
 import com.well.modules.models.User
 import com.well.modules.puerhBase.ReducerViewModel
 import com.well.modules.utils.viewUtils.ContextHelper
@@ -16,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlin.time.Duration
 
 class MyProfileTestModel(
     isCurrent: Boolean,
@@ -34,7 +36,7 @@ class MyProfileTestModel(
             services = MyProfileEffHandler.Services(
                 userFlow = flowOf(User.testUser),
                 putUser = {},
-                uploadProfilePicture = { _, _ -> error("unimplemented") },
+                uploadProfilePicture = { _ -> error("unimplemented") },
                 showThrowableAlert = { Napier.e(it.message ?: it.toString(), it) },
                 onInitializationFinished = {},
                 onPop = {},
@@ -66,10 +68,14 @@ class MyProfileTestModel(
                     if (updateAvailabilitiesCounter++ % 2 == 0)
                         listOf()
                     else
-                        Availability.testValues(20)
+                        BookingAvailability.createWithAvailabilities(
+                            Availability.testValues(10),
+                            days = 30,
+                            minInterval = Duration.hours(1),
+                        )
                 },
             ),
-            coroutineScope = coroutineScope
+            parentCoroutineScope = coroutineScope
         )
     }
 

@@ -14,6 +14,8 @@ kotlin {
             libDependencies(
                 ":modules:models",
                 ":modules:puerhBase",
+                ":modules:utils:viewUtils",
+                "kotlin.datetime",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",
                 "shared.napier",

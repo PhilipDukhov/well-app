@@ -18,13 +18,13 @@ enum Screen: String, CaseIterable {
     
     case local
     
-    static let initial: Screen = .profile
+    static let initial: Screen = .local
 }
 
 struct TestingScreens: View {
     let selectedScreen: Screen
     
-    let messages = ChatMessageWithStatus.companion.getTestMessagesWithStatus(count: 100)
+    let messages = ChatMessageViewModel.companion.getTestMessagesWithStatus(count: 100)
 
     @State
     var padding: CGFloat = 0
@@ -73,27 +73,10 @@ struct TestingScreens: View {
             }
             
         case .local:
-            Button(action: { item += 1 }) {
-                Text("next")
-            }.onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
-                some += 1
-            }
-            PageView(selection: $item, pages: [0, 1, 2, 3]) { i in
-                Text("\(some) \(i)")
-                    .onAppear {
-                        print("onAppear \(i)")
-                    }
-                    .onDisappear {
-                        print("onDisappear \(i)")
-                    }
-            }
+            Image("bubble")
+                .frame(width: 200, height: 100)
         }
     }
-    @State
-    var item = 1
-
-    @State
-    var some = 0
 }
 
 struct ProfileTestView: View {

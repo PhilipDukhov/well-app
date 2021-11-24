@@ -41,7 +41,7 @@ data class ChatMessage(
             Text,
         }
 
-        val simpleType: SimpleType = SimpleType.valueOf(this::class.simpleName!!)
+        val simpleType get() = SimpleType.valueOf(this::class.simpleName!!)
 
         @Serializable
         data class Text(val string: String) : Content()

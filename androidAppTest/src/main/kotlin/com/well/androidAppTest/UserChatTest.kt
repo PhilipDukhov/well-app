@@ -4,7 +4,7 @@ import com.well.modules.androidUi.composableScreens.userChat.UserChatScreen
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
-import com.well.modules.models.chat.ChatMessageWithStatus
+import com.well.modules.models.chat.ChatMessageViewModel
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -17,14 +17,11 @@ internal fun UserChatTest() {
             UserChatFeature.State(
                 peerId = User.Id(0), user = null, backToUser = false,
                 messages = List(100) {
-                    ChatMessageWithStatus(
-                        message = ChatMessage(
-                            id = ChatMessage.Id(it.toLong()),
-                            creation = 0.0,
-                            fromId = User.Id(0),
-                            peerId = User.Id(1),
-                            content = ChatMessage.Content.Text("akjsdnasjk"),
-                        ), status = ChatMessageWithStatus.Status.IncomingRead
+                    ChatMessageViewModel(
+                        id = ChatMessage.Id(it.toLong()),
+                        creation = 0.0,
+                        content = ChatMessageViewModel.Content.Text("akjsdnasjk"),
+                        status = ChatMessageViewModel.Status.IncomingRead,
                     )
                 }
             )
@@ -35,7 +32,7 @@ internal fun UserChatTest() {
             state = state.value,
             listener = {
                 println("msg $it")
-//                state.value = UserChatFeature.reducer(it, state.value).first
+                state.value = UserChatFeature.reducer(it, state.value).first
             })
     }
 }

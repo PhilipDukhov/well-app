@@ -65,3 +65,49 @@ private fun UsersFilter.Rating.toDoubleOrNull(): Double? =
         UsersFilter.Rating.Two -> 2.0
         UsersFilter.Rating.One -> 1.0
     }
+
+fun Users.toUser(
+    currentUid: User.Id,
+    database: Database,
+) = (currentUid == id).let { isCurrent ->
+    User(
+        id = id,
+        initialized = initialized,
+        lastEdited = lastEdited,
+        favorite = if (isCurrent) false else
+            database.favoritesQueries.isFavorite(currentUid, id).executeAsOne(),
+        fullName = fullName,
+        type = if (isCurrent) type else when (type) {
+            User.Type.Doctor,
+            User.Type.Expert,
+            -> type
+            User.Type.PendingExpert,
+            User.Type.DeclinedExpert,
+            -> User.Type.Doctor
+        },
+        email = email,
+        ratingInfo = User.RatingInfo(
+            count = ratingsCount,
+            average = averageRating,
+            currentUserRating = if (isCurrent) null else
+                database.ratingQueries.get(
+                    owner = currentUid,
+                    destination = id,
+                ).executeAsOneOrNull()?.toRating()
+        ),
+        profileImageUrl = profileImageUrl,
+        phoneNumber = phoneNumber,
+        countryCode = countryCode,
+        timeZoneIdentifier = timeZoneIdentifier,
+        credentials = credentials,
+        academicRank = academicRank,
+        languages = languages,
+        skills = skills,
+        bio = bio,
+        education = education,
+        professionalMemberships = professionalMemberships,
+        publications = publications,
+        twitter = twitter,
+        doximity = doximity,
+    )
+}

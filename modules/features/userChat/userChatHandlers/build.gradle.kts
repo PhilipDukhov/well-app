@@ -13,7 +13,6 @@ kotlin {
         val commonMain by getting {
             libDependencies(
                 ":modules:atomic",
-                ":modules:db:chatMessagesDb",
                 ":modules:features:userChat:userChatFeature",
                 ":modules:utils:flowUtils",
                 ":modules:utils:viewUtils",

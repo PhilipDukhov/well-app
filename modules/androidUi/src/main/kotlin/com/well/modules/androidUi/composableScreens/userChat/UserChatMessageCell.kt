@@ -4,10 +4,11 @@ import com.well.modules.androidUi.customViews.LoadingCoilImage
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.androidUi.ext.widthDp
+import com.well.modules.androidUi.theme.body1Light
 import com.well.modules.androidUi.theme.body2Light
+import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.models.Color
-import com.well.modules.models.chat.ChatMessage
-import com.well.modules.models.chat.ChatMessageWithStatus
+import com.well.modules.models.chat.ChatMessageViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,7 +34,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun UserChatMessageCell(
-    message: ChatMessageWithStatus,
+    message: ChatMessageViewModel,
 ) {
     val incoming = message.status.isIncoming
     Row(
@@ -61,7 +62,7 @@ fun UserChatMessageCell(
                     )
                     .backgroundKMM(
                         color = if (incoming) Color.LightBlue else Color.LightGray,
-                        shape = BubbleShape()
+                        shape = BubbleShape
                     )
                     .matchParentSize()
             )
@@ -87,7 +88,7 @@ fun UserChatMessageCell(
                             ),
                     )
             ) {
-                ContentView(message.message.content)
+                ContentView(message.content)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.align(Alignment.End)
@@ -119,10 +120,10 @@ fun UserChatMessageCell(
 
 @Composable
 private fun ContentView(
-    content: ChatMessage.Content,
+    content: ChatMessageViewModel.Content,
 ) {
     when (content) {
-        is ChatMessage.Content.Image -> {
+        is ChatMessageViewModel.Content.Image -> {
             val width = LocalContext.current.resources.displayMetrics.widthDp / 2.5f
             Box(contentAlignment = Alignment.Center) {
                 LoadingCoilImage(
@@ -135,21 +136,35 @@ private fun ContentView(
 
             }
         }
-        is ChatMessage.Content.Text -> {
+        is ChatMessageViewModel.Content.Text -> {
             Text(
                 content.string,
                 style = MaterialTheme.typography.body2Light,
                 color = Color.White.toColor(),
             )
         }
+        is ChatMessageViewModel.Content.Meeting -> {
+            Text(
+                UserChatFeature.Strings.meetingScheduled,
+                style = MaterialTheme.typography.body1Light,
+                color = Color.White.toColor(),
+            )
+            content.meeting?.let { meeting ->
+                Text(
+                    UserChatFeature.Strings.meetingStars(meeting),
+                    style = MaterialTheme.typography.body2Light,
+                    color = Color.White.toColor(),
+                )
+            }
+        }
     }
 }
 
-private fun ChatMessageWithStatus.Status.icon() = when (this) {
-    ChatMessageWithStatus.Status.IncomingUnread,
-    ChatMessageWithStatus.Status.IncomingRead,
+private fun ChatMessageViewModel.Status.icon() = when (this) {
+    ChatMessageViewModel.Status.IncomingUnread,
+    ChatMessageViewModel.Status.IncomingRead,
     -> null
-    ChatMessageWithStatus.Status.OutgoingSending -> Icons.Default.Timer
-    ChatMessageWithStatus.Status.OutgoingSent -> Icons.Default.Check
-    ChatMessageWithStatus.Status.OutgoingRead -> Icons.Default.DoubleCheck
+    ChatMessageViewModel.Status.OutgoingSending -> Icons.Default.Timer
+    ChatMessageViewModel.Status.OutgoingSent -> Icons.Default.Check
+    ChatMessageViewModel.Status.OutgoingRead -> Icons.Default.DoubleCheck
 }

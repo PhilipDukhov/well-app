@@ -1,24 +1,34 @@
 package com.well.modules.features.userChat.userChatFeature
 
+import com.well.modules.models.Meeting
 import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
-import com.well.modules.utils.viewUtils.sharedImage.LocalImage
+import com.well.modules.models.chat.ChatMessageViewModel
+import com.well.modules.models.date.dateTime.localizedDayAndShortMonth
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
-import com.well.modules.models.chat.ChatMessageWithStatus
+import com.well.modules.utils.viewUtils.GlobalStringsBase
+import com.well.modules.utils.viewUtils.sharedImage.LocalImage
 
 object UserChatFeature {
+    object Strings: GlobalStringsBase() {
+        const val meetingScheduled = "Meeting scheduled"
+
+        fun meetingStars(meeting: Meeting) =
+            "on ${meeting.startDay.localizedDayAndShortMonth()} at ${meeting.startTime}"
+    }
+
     data class State(
         val peerId: User.Id,
         val user: User? = null,
         val backToUser: Boolean,
-        val messages: List<ChatMessageWithStatus> = listOf(),
+        val messages: List<ChatMessageViewModel> = listOf(),
     )
 
     sealed class Msg {
         data class UpdateUser(val user: User) : Msg()
-        data class UpdateMessages(val messages: List<ChatMessageWithStatus>) : Msg()
-        data class MarkMessageRead(val message: ChatMessage) : Msg()
+        data class UpdateMessages(val messages: List<ChatMessageViewModel>) : Msg()
+        data class MarkMessageRead(val messageId: ChatMessage.Id) : Msg()
         data class SendMessage(val string: String) : Msg()
         object ChooseImage : Msg()
         data class SendImage(val image: LocalImage) : Msg()
@@ -29,7 +39,7 @@ object UserChatFeature {
 
     sealed interface Eff {
         object ChooseImage : Eff
-        data class MarkMessageRead(val message: ChatMessage) : Eff
+        data class MarkMessageRead(val messageId: ChatMessage.Id) : Eff
         data class SendMessage(val string: String, val peerId: User.Id) : Eff
         data class SendImage(val image: LocalImage, val peerId: User.Id) : Eff
         object Back : Eff
@@ -47,7 +57,7 @@ object UserChatFeature {
                     return@eff Eff.ChooseImage
                 }
                 is Msg.MarkMessageRead -> {
-                    return@eff Eff.MarkMessageRead(msg.message)
+                    return@eff Eff.MarkMessageRead(msg.messageId)
                 }
                 is Msg.SendImage -> {
                     return@eff Eff.SendImage(image = msg.image, peerId = state.peerId)

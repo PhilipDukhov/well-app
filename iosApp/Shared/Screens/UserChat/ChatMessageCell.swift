@@ -5,17 +5,17 @@
 import SwiftUI
 import SharedMobile
 
-extension ChatMessage.ContentImage: Identifiable {
+extension ChatMessageViewModel.ContentImage: Identifiable {
     public var id: String {
         url
     }
 }
 
 struct ChatMessageCell: View {
-    let message: ChatMessageWithStatus
+    let message: ChatMessageViewModel
 
     @State
-    private var fullscreenImage: ChatMessage.ContentImage?
+    private var fullscreenImage: ChatMessageViewModel.ContentImage?
 
     var body: some View {
         let incoming = message.status.isIncoming
@@ -23,7 +23,7 @@ struct ChatMessageCell: View {
             if !incoming {
                 Spacer(minLength: .minSpacerWidth)
             }
-            contentView(content: message.message.content)
+            contentView(content: message.content)
                 .foregroundColor(.white)
                 .padding(EdgeInsets(top: 5, leading: incoming ? 22 : 17, bottom: 5, trailing: incoming ? 17 : 22))
                 .background(
@@ -45,23 +45,26 @@ struct ChatMessageCell: View {
     }
 
     @ViewBuilder
-    private func contentView(content: ChatMessage.Content) -> some View {
-        switch message.message.content {
-        case let content as ChatMessage.ContentImage:
+    private func contentView(content: ChatMessageViewModel.Content) -> some View {
+        switch message.content {
+        case let content as ChatMessageViewModel.ContentImage:
             let width = UIScreen.main.bounds.width / 2.5
-            SharedImage(
-                url: NSURL(string: content.url)!,
-                placeholder: ProgressView()
-            )
-                .frame(
-                    width: width,
-                    height: width / content.aspectRatio.toCGFloat()
+            VStack(alignment: .trailing) {
+                SharedImage(
+                    url: NSURL(string: content.url)!,
+                    placeholder: ProgressView()
                 )
-                .onTapGesture {
-                    fullscreenImage = content
-                }
+                    .frame(
+                        width: width,
+                        height: width / content.aspectRatio.toCGFloat()
+                    )
+                    .onTapGesture {
+                        fullscreenImage = content
+                    }
+                dateAndStatus()
+            }
 
-        case let content as ChatMessage.ContentText:
+        case let content as ChatMessageViewModel.ContentText:
             ZStack(alignment: .bottomTrailing) {
                 // two dateAndStatus hack to align text left and date right
                 VStack(alignment: .leading, spacing: 0) {
@@ -71,7 +74,19 @@ struct ChatMessageCell: View {
                         .foregroundColor(.clear)
                 }
                 dateAndStatus()
-                    .foregroundColor(.white)
+            }
+
+        case let content as ChatMessageViewModel.ContentMeeting:
+            VStack(alignment: .trailing) {
+                VStack(alignment: .leading) {
+                    Text(UserChatFeature.Strings.shared.meetingScheduled)
+                        .textStyle(.body1Light)
+                    content.meeting.map { meeting in
+                        Text(UserChatFeature.Strings.shared.meetingStars(meeting: meeting))
+                            .textStyle(.body2Light)
+                    }
+                }
+                dateAndStatus()
             }
 
         default: fatalError("ChatMessage.Content unexpected: \(content)")
@@ -86,7 +101,7 @@ struct ChatMessageCell: View {
     }
 }
 
-private extension ChatMessageWithStatus.Status {
+private extension ChatMessageViewModel.Status {
     @ViewBuilder
     func icon() -> some View {
         switch self {

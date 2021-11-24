@@ -68,7 +68,7 @@ internal fun FeatureProviderImpl.createProfileEffHandler(
         },
     ),
     contextHelper = contextHelper,
-    coroutineScope = coroutineScope,
+    parentCoroutineScope = coroutineScope,
 ).adapt(
     effAdapter = { eff ->
         if (eff is FeatureEff.MyProfile && eff.position == position) {

@@ -32,7 +32,7 @@ struct UserChatScreen: View {
             )
         )
         ChatsList(messages: state.messages) { message in
-            listener(UserChatFeature.MsgMarkMessageRead(message: message))
+            listener(UserChatFeature.MsgMarkMessageRead(messageId: message.id))
         }
         Spacer(minLength: 0)
         userInput()
@@ -91,8 +91,8 @@ struct UserChatScreen: View {
 }
 
 private struct ChatsList: View {
-    let messages: [ChatMessageWithStatus]
-    let markRead: (ChatMessage) -> Void
+    let messages: [ChatMessageViewModel]
+    let markRead: (ChatMessageViewModel) -> Void
 
     @State
     private var visibleMessages = Set<Int64>()
@@ -102,19 +102,19 @@ private struct ChatsList: View {
     private var scrollToBottomButtonVisible = false
 
     var body: some View {
-        let firstId = messages.first?.message.id
+        let firstId = messages.first?.id
         ZStack(alignment: .bottomTrailing) {
             ScrollView {
                 ScrollViewReader { scrollView in
                     LazyVStack(spacing: 8) {
-                        ForEach(messages, id: \.message.id) { message in
-                            let id = message.message.id
+                        ForEach(messages, id: \.id) { message in
+                            let id = message.id
                             ChatMessageCell(message: message)
                                 .id(id)
                                 .onAppear {
                                     visibleMessages.insert(id)
                                     if message.status == .incomingunread {
-                                        markRead(message.message)
+                                        markRead(message)
                                     }
                                 }
                                 .onDisappear {

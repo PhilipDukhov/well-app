@@ -20,5 +20,8 @@ DELETE FROM Meetings WHERE id = ?;
 list:
 SELECT * FROM Meetings;
 
+getByIds:
+SELECT * FROM Meetings WHERE id IN ?;
+
 listIds:
 SELECT id FROM Meetings;

@@ -5,7 +5,7 @@ import com.well.modules.models.Availability
 import com.well.modules.models.Repeat
 import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
-import com.well.modules.models.chat.ChatMessageWithStatus
+import com.well.modules.models.chat.ChatMessageViewModel
 import com.well.modules.models.date.Date
 import com.well.modules.models.date.dateTime.daysShift
 import com.well.modules.models.date.dateTime.time
@@ -74,14 +74,19 @@ fun ChatMessage.Companion.getTestMessages(count: Int): List<ChatMessage> {
     return testMessages.subList(0, count)
 }
 
-fun ChatMessageWithStatus.Companion.getTestMessagesWithStatus(count: Int): List<ChatMessageWithStatus> =
+fun ChatMessageViewModel.Companion.getTestMessagesWithStatus(count: Int): List<ChatMessageViewModel> =
     ChatMessage.getTestMessages(count).mapIndexed { i, message ->
-        ChatMessageWithStatus(
-            message,
-            status = ChatMessageWithStatus.Status.values()
+        ChatMessageViewModel(
+            id = message.id,
+            status = ChatMessageViewModel.Status.values()
                 .let { values ->
                     values[i % values.count()]
-                }
+                }, 
+            creation = message.creation,
+            content = ChatMessageViewModel.Content.create(
+                content = message.content,
+                getMeeting = { null },
+            ),
         )
     }
 
@@ -95,7 +100,7 @@ private data class TestAvailabilitiesState(
     fun availability(i: Int) =
         Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).let { now ->
             Availability(
-                id = i,
+                id = Availability.Id(i.toLong()),
                 startDay = now.date.daysShift(i),
                 startTime = now.time,
                 durationMinutes = Duration.hours(hoursDuration).inWholeMinutes.toInt(),

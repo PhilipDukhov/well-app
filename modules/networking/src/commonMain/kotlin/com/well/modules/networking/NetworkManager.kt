@@ -117,6 +117,9 @@ class NetworkManager(
     private suspend fun send(msg: WebSocketMsg) {
         try {
             Napier.i("send WebSocketMsg: $msg")
+            if (webSocketSession == null) {
+                Napier.e("webSocketSession is null $msg")
+            }
             webSocketSession?.send(
                 Json.encodeToString(
                     WebSocketMsg.serializer(),

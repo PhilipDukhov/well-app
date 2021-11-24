@@ -10,6 +10,7 @@ import com.squareup.sqldelight.runtime.coroutines.mapToList
 import com.squareup.sqldelight.runtime.coroutines.mapToOne
 import com.squareup.sqldelight.runtime.coroutines.mapToOneOrDefault
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 data class ChatPeerInfo(val lastMessage: ChatMessage, val unreadCount: Int)
@@ -76,7 +77,7 @@ fun ChatMessagesQueries.messagePresenceFlow(): Flow<ChatMessage.Id> =
         .asFlow()
         .mapToOneOrDefault(ChatMessage.Id.undefined)
 
-fun ChatMessagesDatabase.chatMessageWithStatusFlow(
+fun ChatMessagesDatabase.chatMessagesFlow(
     currentUid: User.Id,
     peerUid: User.Id,
 ) = chatMessagesQueries
@@ -86,7 +87,6 @@ fun ChatMessagesDatabase.chatMessageWithStatusFlow(
     .mapIterable {
         it.toChatMessage(database = this)
     }
-    .toChatMessageWithStatusFlow(currentUid = currentUid, messagesDatabase = this)
 
 fun ChatMessages.toChatMessage(database: ChatMessagesDatabase) = ChatMessage(
     id = id,
@@ -142,17 +142,25 @@ fun ChatMessagesDatabase.insertTmpMessage(
         .toChatMessage(database = this@insertTmpMessage)
 }
 
-fun ChatMessagesQueries.lastListFlow(uid: User.Id) =
-    lastList(uid)
+fun ChatMessagesDatabase.lastListFlow(uid: User.Id) =
+    chatMessagesQueries
+        .lastList(uid)
         .asFlow()
         .mapToList()
-
-fun ChatMessagesDatabase.lastListWithStatusFlow(uid: User.Id) =
-    chatMessagesQueries.lastListFlow(uid)
         .mapIterable {
             it.toChatMessage(database = this)
         }
-        .toChatMessageWithStatusFlow(currentUid = uid, messagesDatabase = this)
+
+fun LastReadMessagesQueries.select(
+    fromAndPeerIds: Collection<Pair<User.Id, User.Id>>,
+): Flow<List<LastReadMessages>> =
+    if (fromAndPeerIds.isEmpty())
+        flowOf(emptyList())
+    else
+        select(
+            fromAndPeerIds = fromAndPeerIds
+                .map { "${it.first}|${it.second}" }
+        ).asFlow().mapToList()
 
 fun ChatMessagesQueries.unreadCountFlow(uid: User.Id, message: ChatMessage) =
     unreadCount(fromId = message.secondId(uid), peerId = uid)
@@ -174,6 +182,20 @@ fun LastReadMessagesQueries.selectAllFlow() =
         .mapToList()
         .mapIterable(LastReadMessages::toLastReadMessage)
 
+fun ChatMessagesDatabase.markRead(id: ChatMessage.Id) {
+    val message = chatMessagesQueries.getById(id).executeAsOneOrNull() ?: return
+    val currentLast = lastReadMessagesQueries.selectSingle(
+        fromId = message.fromId,
+        peerId = message.peerId,
+    ).executeAsOneOrNull() ?: return
+    if (currentLast.messageId >= message.id) return
+    lastReadMessagesQueries.insert(
+        fromId = message.fromId,
+        peerId = message.peerId,
+        messageId = message.id
+    )
+}
+
 private fun ChatMessagesDatabase.insertContent(
     id: ChatMessage.Id,
     content: ChatMessage.Content,
@@ -187,9 +209,10 @@ private fun ChatMessagesDatabase.insertContent(
                     aspectRatio = content.aspectRatio,
                 )
             }
-            println("inserted ${chatContentImagesQueries
-                .getById(id)
-                .executeAsOne()
+            println("inserted ${
+                chatContentImagesQueries
+                    .getById(id)
+                    .executeAsOne()
             }")
         }
         is ChatMessage.Content.Meeting -> {

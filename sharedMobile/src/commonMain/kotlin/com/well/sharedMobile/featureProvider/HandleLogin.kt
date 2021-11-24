@@ -99,8 +99,9 @@ internal fun FeatureProviderImpl.loggedIn(
             webSocketMessageHandler(it, listener)
         }
         .asCloseable()
-    val meetingsPresenceCloseable =  meetingsQueries
+    val meetingsPresenceCloseable = meetingsQueries
         .listIdsFlow()
+        .combineWithUnit(networkManager.onConnectedFlow)
         .map(WebSocketMsg.Front::SetMeetingsPresence)
         .collectIn(coroutineScope, networkManager::sendFront)
         .asCloseable()

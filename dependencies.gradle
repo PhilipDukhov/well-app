@@ -23,16 +23,13 @@ def versions = [
     coil               : "1.4.0",
     kotlinCoroutines   : "1.5.2-native-mt",
     ktor               : "1.6.5",
-    sqldelight         : "1.5.2",
+    sqldelight         : "1.5.3",
     bouncycastle       : "1.69",
     aws                : "1.12.60",
     kotlin             : "1.5.31",
     napier             : "2.1.0",
 ]
 
-if (iPhoneSimulator) {
-    versions["sqldelight"] = "1.6.0-SNAPSHOT"
-}
 if (ext.properties["kotlin.native.binary.memoryModel"] == "experimental") {
     versions["kotlin"] = "1.6.0"
     versions["napier"] = "2.2.0"

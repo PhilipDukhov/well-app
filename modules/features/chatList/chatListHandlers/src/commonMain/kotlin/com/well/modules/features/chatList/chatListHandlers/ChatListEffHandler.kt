@@ -6,7 +6,7 @@ import com.well.modules.features.chatList.chatListFeature.ChatListFeature.Msg
 import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.models.chat.ChatMessage
-import com.well.modules.models.chat.ChatMessageWithStatus
+import com.well.modules.models.chat.ChatMessageContainer
 import com.well.modules.models.chat.LastReadMessage
 import com.well.modules.puerhBase.EffectHandler
 import com.well.modules.utils.flowUtils.collectIn
@@ -20,12 +20,12 @@ import kotlinx.coroutines.flow.flatMapLatest
 class ChatListEffHandler(
     private val currentUid: User.Id,
     private val services: Services,
-    coroutineScope: CoroutineScope,
-) : EffectHandler<Eff, Msg>(coroutineScope) {
+    parentCoroutineScope: CoroutineScope,
+) : EffectHandler<Eff, Msg>(parentCoroutineScope) {
     data class Services(
         val openUserChat: (id: User.Id) -> Unit,
         val onConnectedFlow: Flow<Unit>,
-        val lastListWithStatusFlow: Flow<List<ChatMessageWithStatus>>,
+        val lastListViewModelFlow: Flow<List<ChatMessageContainer>>,
         val unreadCountsFlow: (List<ChatMessage>) -> Flow<Map<ChatMessage.Id, Long>>,
         val getUsersByIdsFlow: (List<User.Id>) -> Flow<List<User>>,
         val lastPresentMessageIdFlow: Flow<ChatMessage.Id>,
@@ -34,19 +34,19 @@ class ChatListEffHandler(
     )
 
     private val chatListItemsFlow = services
-        .lastListWithStatusFlow
+        .lastListViewModelFlow
         .flatMapLatest { chatMessagesWithStatus ->
             val unreadCountsFlow =
                 services.unreadCountsFlow(chatMessagesWithStatus.map { it.message })
             services.getUsersByIdsFlow(chatMessagesWithStatus.map { it.message.secondId(currentUid) })
                 .combine(unreadCountsFlow) { users, unreadCounts ->
-                    chatMessagesWithStatus.mapNotNull { messageWithStatus ->
+                    chatMessagesWithStatus.mapNotNull { messageContainer ->
                         ChatListFeature.State.ListItem(
                             user = users.firstOrNull {
-                                it.id == messageWithStatus.message.secondId(currentUid)
+                                it.id == messageContainer.message.secondId(currentUid)
                             } ?: return@mapNotNull null,
-                            lastMessage = messageWithStatus,
-                            unreadCount = unreadCounts[messageWithStatus.message.id]?.toInt()
+                            lastMessage = messageContainer.viewModel,
+                            unreadCount = unreadCounts[messageContainer.message.id]?.toInt()
                                 ?: 0,
                         )
                     }

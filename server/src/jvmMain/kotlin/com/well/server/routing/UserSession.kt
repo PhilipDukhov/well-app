@@ -12,6 +12,7 @@ import com.well.modules.db.server.selectByPeerIdFlow
 import com.well.modules.db.server.toChatMessage
 import com.well.modules.db.server.toLastReadMessage
 import com.well.modules.db.server.toMeetings
+import com.well.modules.db.server.toUser
 import com.well.modules.models.Meeting
 import com.well.modules.models.User
 import com.well.modules.models.UserPresenceInfo
@@ -27,10 +28,10 @@ import com.well.modules.utils.flowUtils.filterIterable
 import com.well.modules.utils.flowUtils.filterNotEmpty
 import com.well.modules.utils.flowUtils.flatMapLatest
 import com.well.modules.utils.flowUtils.mapIterable
+import com.well.modules.utils.flowUtils.mapPair
 import com.well.server.utils.CallInfo
 import com.well.server.utils.Dependencies
 import com.well.server.utils.send
-import com.well.server.utils.toUser
 import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,7 +55,7 @@ class UserSession(
     private val expertsFilterFlow = MutableStateFlow<UsersFilter?>(null)
     private val usersPresenceInfoFlow = MutableStateFlow<List<UserPresenceInfo>?>(null)
     private val messagesPresenceInfoFlow = MutableStateFlow<ChatMessage.Id?>(null)
-    private val meetingIdsPresenceFlow = MutableStateFlow<List<Meeting.Id>>(emptyList())
+    private val meetingIdsPresenceFlow = MutableStateFlow<List<Meeting.Id>?>(null)
     private val chatReadStatePresenceFlow = MutableStateFlow<List<LastReadMessage>>(emptyList())
     private val userCreatedChatMessageInfosFlow = MutableSetFlow<CreatedMessageInfo>()
 
@@ -149,20 +150,31 @@ class UserSession(
             }
             .filterNotEmpty()
 
-    private val meetingsPresenceFlow: Flow<List<Meetings>> = meetingIdsPresenceFlow
-        .filterNotNull()
-        .combine(
-            dependencies.database.meetingsQueries
-                .getByUserIdFlow(currentUid)
-        ) { ids, meetings ->
-            meetings.filter { ids.contains(it.id) }
-        }
+    private val meetingsPresenceFlow: Flow<Pair<List<Meeting.Id>, List<Meetings>>> =
+        meetingIdsPresenceFlow
+            .filterNotNull()
+            .combine(
+                dependencies.database.meetingsQueries
+                    .getByUserIdFlow(currentUid)
+            ) { ids, meetings ->
+                ids to meetings
+            }
     private val newMeetingsFlow: Flow<List<Meeting>> = meetingsPresenceFlow
-        .filterIterable { !it.deleted }
+        .mapPair { presenceIds, dbMeetings  ->
+            dbMeetings.filter {
+                !presenceIds.contains(it.id) && !it.deleted
+            }
+        }
         .mapIterable(Meetings::toMeetings)
+        .filterNotEmpty()
     private val removedMeetingIdsFlow: Flow<List<Meeting.Id>> = meetingsPresenceFlow
-        .filterIterable { it.deleted }
-        .mapIterable { it.id }
+        .mapPair { presenceIds, dbMeetings  ->
+            dbMeetings.filter {
+                presenceIds.contains(it.id) && it.deleted
+            }
+        }
+        .mapIterable(Meetings::id)
+        .filterNotEmpty()
 
     init {
         listOf(

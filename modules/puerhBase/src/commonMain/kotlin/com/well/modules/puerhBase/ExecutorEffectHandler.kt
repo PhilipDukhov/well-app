@@ -7,8 +7,8 @@ typealias ExecutorEffectsInterpreter<Eff, Msg> = suspend CoroutineScope.(eff: Ef
 
 class ExecutorEffectHandler<Msg : Any, Eff : Any>(
     private val effectsInterpreter: ExecutorEffectsInterpreter<Eff, Msg>,
-    coroutineScope: CoroutineScope,
-) : EffectHandler<Eff, Msg>(coroutineScope) {
+    parentCoroutineScope: CoroutineScope,
+) : EffectHandler<Eff, Msg>(parentCoroutineScope) {
 
     override suspend fun processEffect(eff: Eff) {
         coroutineScope.launch {

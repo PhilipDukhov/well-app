@@ -9,8 +9,8 @@ import kotlinx.coroutines.delay
 
 internal class RequestConsultationEffHandler(
     private val services: Services,
-    coroutineScope: CoroutineScope,
-) : EffectHandler<Feature.Eff, Feature.Msg>(coroutineScope) {
+    parentCoroutineScope: CoroutineScope,
+) : EffectHandler<Feature.Eff, Feature.Msg>(parentCoroutineScope) {
     data class Services(
         val closeConsultationRequest: () -> Unit,
         val book: suspend (BookingAvailability) -> Unit,

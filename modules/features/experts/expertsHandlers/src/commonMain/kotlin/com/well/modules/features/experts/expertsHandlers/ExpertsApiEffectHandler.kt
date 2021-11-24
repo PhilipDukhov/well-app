@@ -19,8 +19,8 @@ import kotlinx.coroutines.launch
 
 class ExpertsApiEffectHandler(
     private val services: Services,
-    coroutineScopeArg: CoroutineScope,
-) : EffectHandler<Eff, Msg>(coroutineScopeArg) {
+    parentCoroutineScope: CoroutineScope,
+) : EffectHandler<Eff, Msg>(parentCoroutineScope) {
     data class Services(
         val connectionStatusFlow: Flow<ConnectionStatus>,
         val usersListFlow: Flow<List<User>>,

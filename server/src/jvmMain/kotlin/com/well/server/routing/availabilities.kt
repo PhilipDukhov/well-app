@@ -8,9 +8,6 @@ import com.well.modules.models.BookingAvailabilitiesListByDay
 import com.well.modules.models.BookingAvailability
 import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
-import com.well.modules.models.date.dateTime.daysShift
-import com.well.modules.models.date.dateTime.today
-import com.well.modules.models.mapDayAvailabilities
 import com.well.modules.utils.kotlinUtils.mapSecond
 import com.well.server.utils.Dependencies
 import com.well.server.utils.authUid
@@ -19,7 +16,6 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.util.pipeline.*
-import kotlinx.datetime.LocalDate
 import kotlin.time.Duration
 
 suspend fun PipelineContext<*, ApplicationCall>.listCurrentAvailabilities(
@@ -55,21 +51,12 @@ private fun getBookingAvailabilities(
 ): BookingAvailabilitiesListByDay = dependencies.run {
     val allAvailabilities = database.availabilitiesQueries.getByOwnerId(id)
 
-    val possibleAvailabilities = LocalDate.today().let { today ->
-        List(30) {
-            today.daysShift(it)
-        }.map { day ->
-            day to allAvailabilities
-                .mapDayAvailabilities(day, minInterval = Duration.hours(1))
-                .map { availability ->
-                    BookingAvailability(
-                        availabilityId = availability.id,
-                        startInstant = availability.startInstant,
-                        durationMinutes = availability.durationMinutes,
-                    )
-                }
-        }.filter { it.second.isNotEmpty() }
-    }
+    val possibleAvailabilities = BookingAvailability
+        .createWithAvailabilities(
+            availabilities = allAvailabilities,
+            days = 30,
+            minInterval = Duration.hours(1)
+        )
     database.meetingsQueries.run {
         transactionWithResult {
             possibleAvailabilities
@@ -79,10 +66,8 @@ private fun getBookingAvailabilities(
                             database.meetingsQueries.isTaken(
                                 availabilityId = bookingAvailability.availabilityId,
                                 startInstant = bookingAvailability.startInstant,
-                            ).executeAsOne().also {
-                            }
+                            ).executeAsOne()
                         }
-                    }.also {
                     }
                 }
                 .filter { it.second.isNotEmpty() }

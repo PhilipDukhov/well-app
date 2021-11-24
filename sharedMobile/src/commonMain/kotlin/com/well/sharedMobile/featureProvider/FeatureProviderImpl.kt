@@ -8,16 +8,14 @@ import com.well.modules.atomic.CloseableContainer
 import com.well.modules.atomic.freeze
 import com.well.modules.db.chatMessages.delete
 import com.well.modules.db.chatMessages.insert
-import com.well.modules.db.chatMessages.lastListWithStatusFlow
+import com.well.modules.db.chatMessages.lastListFlow
 import com.well.modules.db.chatMessages.messagePresenceFlow
 import com.well.modules.db.chatMessages.selectAllFlow
 import com.well.modules.db.chatMessages.unreadCountsFlow
 import com.well.modules.db.meetings.insertAll
-import com.well.modules.db.meetings.listIdsFlow
 import com.well.modules.db.meetings.removeAll
 import com.well.modules.db.mobile.DatabaseProvider
 import com.well.modules.db.mobile.createDatabaseProvider
-import com.well.modules.db.users.getByIdFlow
 import com.well.modules.db.users.getByIdsFlow
 import com.well.modules.db.users.insertOrReplace
 import com.well.modules.features.call.callFeature.webRtc.WebRtcManagerI
@@ -34,7 +32,6 @@ import com.well.modules.features.more.about.AboutFeature
 import com.well.modules.features.more.support.SupportFeature
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
-import com.well.modules.features.userChat.userChatHandlers.UserChatEffHandler
 import com.well.modules.features.welcome.WelcomeFeature
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.networking.NetworkManager
@@ -44,7 +41,6 @@ import com.well.modules.puerhBase.Feature
 import com.well.modules.puerhBase.SyncFeature
 import com.well.modules.puerhBase.adapt
 import com.well.modules.puerhBase.wrapWithEffectHandler
-import com.well.modules.utils.flowUtils.collectIn
 import com.well.modules.utils.flowUtils.combineWithUnit
 import com.well.modules.utils.flowUtils.mapProperty
 import com.well.modules.utils.kotlinUtils.map
@@ -58,7 +54,6 @@ import com.well.modules.utils.viewUtils.dataStore.welcomeShowed
 import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler
 import com.well.modules.utils.viewUtils.platform.Platform
 import com.well.modules.utils.viewUtils.platform.isDebug
-import com.well.modules.utils.viewUtils.sharedImage.asByteArrayOptimizedForNetwork
 import com.well.sharedMobile.FeatureEff
 import com.well.sharedMobile.FeatureMsg
 import com.well.sharedMobile.ScreenState
@@ -71,7 +66,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 internal class FeatureProviderImpl(
@@ -187,7 +181,9 @@ internal class FeatureProviderImpl(
                             ChatListEffHandler.Services(
                                 openUserChat = listener.map(Msg::OpenUserChat),
                                 onConnectedFlow = networkManager.onConnectedFlow,
-                                lastListWithStatusFlow = messagesDatabase.lastListWithStatusFlow(uid),
+                                lastListViewModelFlow = messagesDatabase
+                                    .lastListFlow(uid)
+                                    .toChatMessageContainerFlow(uid, this@FeatureProviderImpl),
                                 unreadCountsFlow = { messages ->
                                     messagesDatabase
                                         .chatMessagesQueries
@@ -299,31 +295,12 @@ internal class FeatureProviderImpl(
                             }
                         }
                         is ScreenState.UserChat -> {
-                            val peerId = eff.screen.state.peerId
                             topScreenHandlerCloseable = wrapWithEffectHandler(
-                                UserChatEffHandler(
+                                TopUserChatEffHandler(
+                                    peerUid = eff.screen.state.peerId,
                                     currentUid = sessionInfo!!.uid,
-                                    peerUid = peerId,
-                                    services = UserChatEffHandler.Services(
-                                        createChatMessage = {
-                                            networkManager.sendFront(
-                                                WebSocketMsg.Front.CreateChatMessage(
-                                                    it
-                                                )
-                                            )
-                                        },
-                                        uploadMessagePicture = {
-                                            networkManager
-                                                .uploadMessagePicture(it.asByteArrayOptimizedForNetwork())
-                                        },
-                                        peerUserFlow = {
-                                            usersQueries.getByIdFlow(peerId)
-                                        },
-                                        pickSystemImage = contextHelper::pickSystemImage,
-                                        cacheImage = contextHelper.appContext::cacheImage,
-                                    ),
-                                    messagesDatabase = messagesDatabase,
-                                    coroutineScope = CoroutineScope(coroutineContext),
+                                    featureProviderImpl = this@FeatureProviderImpl,
+                                    parentCoroutineScope = CoroutineScope(coroutineContext),
                                 ).adapt(
                                     effAdapter = { (it as? FeatureEff.UserChat)?.eff },
                                     msgAdapter = { eff.screen.mapMsgToTopLevel(it) }

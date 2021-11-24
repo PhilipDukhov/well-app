@@ -1,5 +1,6 @@
 package com.well.server.utils
 
+import com.well.modules.db.server.toUser
 import com.well.modules.models.User
 import com.well.modules.utils.flowUtils.MutableMapFlow
 import com.well.modules.utils.ktorUtils.createBaseHttpClient

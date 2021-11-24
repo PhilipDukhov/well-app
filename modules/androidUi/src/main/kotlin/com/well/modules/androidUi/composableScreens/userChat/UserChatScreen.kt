@@ -10,7 +10,7 @@ import com.well.modules.features.userChat.userChatFeature.UserChatFeature.State
 import com.well.modules.models.Color
 import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
-import com.well.modules.models.chat.ChatMessageWithStatus
+import com.well.modules.models.chat.ChatMessageViewModel
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -92,8 +92,8 @@ fun ColumnScope.UserChatScreen(
     val scope = rememberCoroutineScope()
     Messages(
         messages = state.messages,
-        markRead = { message ->
-            listener(Msg.MarkMessageRead(message))
+        markRead = { messageId ->
+            listener(Msg.MarkMessageRead(messageId))
         },
         scrollState = scrollState,
         modifier = Modifier.weight(1f)
@@ -136,8 +136,8 @@ private fun UserInfo(
 
 @Composable
 private fun Messages(
-    messages: List<ChatMessageWithStatus>,
-    markRead: (ChatMessage) -> Unit,
+    messages: List<ChatMessageViewModel>,
+    markRead: (ChatMessage.Id) -> Unit,
     scrollState: LazyListState,
     modifier: Modifier = Modifier,
 ) {
@@ -191,8 +191,8 @@ private fun Messages(
     }
     visibleIndices.forEach { index ->
         val message = messages[index]
-        if (message.status == ChatMessageWithStatus.Status.IncomingUnread) {
-            markRead(message.message)
+        if (message.status == ChatMessageViewModel.Status.IncomingUnread) {
+            markRead(message.id)
         }
     }
 }

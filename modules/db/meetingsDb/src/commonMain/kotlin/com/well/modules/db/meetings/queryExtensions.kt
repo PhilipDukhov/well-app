@@ -3,6 +3,7 @@ package com.well.modules.db.meetings
 import com.well.modules.models.Meeting
 import com.well.modules.models.User
 import com.well.modules.utils.dbUtils.InstantColumnAdapter
+import com.well.modules.utils.flowUtils.mapIterable
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
@@ -32,6 +33,20 @@ fun MeetingsQueries.removeAll(ids: List<Meeting.Id>) =
             delete(id)
         }
     }
+
+fun MeetingsQueries.getByIdsFlow(ids: Collection<Meeting.Id>) =
+    getByIds(ids)
+        .asFlow()
+        .mapToList()
+        .mapIterable(Meetings::toMeetings)
+
+fun Meetings.toMeetings() = Meeting(
+    id = id,
+    startInstant = startInstant,
+    durationMinutes = durationMinutes,
+    hostId = hostId,
+    attendeeId = attendeeId,
+)
 
 fun MeetingsDatabase.Companion.create(driver: SqlDriver) =
     MeetingsDatabase(

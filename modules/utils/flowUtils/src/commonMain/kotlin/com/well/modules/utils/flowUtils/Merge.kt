@@ -26,6 +26,9 @@ fun <T, C: Collection<T>> Flow<C>.filterNotEmpty(): Flow<C> = flow flow@{
     }
 }
 
+inline fun<A, B, R> Flow<Pair<A, B>>.mapPair(crossinline transform: suspend (A, B) -> R) =
+    map { transform(it.first, it.second) }
+
 fun <T> Flow<T>.combineWithUnit(flow: Flow<Unit>): Flow<T> =
     combine(flow) { value, _ ->
         value

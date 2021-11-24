@@ -32,8 +32,8 @@ import kotlinx.coroutines.launch
 class MyProfileEffHandler(
     private val contextHelper: ContextHelper,
     private val services: Services,
-    coroutineScope: CoroutineScope,
-) : EffectHandler<Eff, Msg>(coroutineScope) {
+    parentCoroutineScope: CoroutineScope,
+) : EffectHandler<Eff, Msg>(parentCoroutineScope) {
     data class Services(
         val userFlow: Flow<User>,
         val putUser: suspend (User) -> Unit,
@@ -125,7 +125,7 @@ class MyProfileEffHandler(
                                     listener(Msg.UpdateHasAvailableAvailabilities(false))
                                 }
                             ),
-                            coroutineScope = coroutineScope
+                            parentCoroutineScope = coroutineScope
                         ).apply {
                             setListener {
                                 listener(Msg.RequestConsultationMsg(it))

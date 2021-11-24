@@ -9,11 +9,11 @@ import com.well.modules.features.call.callFeature.CallFeature.Eff
 import com.well.modules.features.call.callFeature.CallFeature.Msg
 import com.well.modules.features.call.callFeature.CallFeature.State
 import com.well.modules.features.call.callFeature.VideoViewContext
-import com.well.modules.features.call.callHandlers.drawing.DrawingEffectHandler
 import com.well.modules.features.call.callFeature.drawing.DrawingFeature
 import com.well.modules.features.call.callFeature.webRtc.RtcMsg
 import com.well.modules.features.call.callFeature.webRtc.WebRtcManagerI
 import com.well.modules.features.call.callFeature.webRtc.WebRtcManagerI.Listener.DataChannelState
+import com.well.modules.features.call.callHandlers.drawing.DrawingEffectHandler
 import com.well.modules.models.Size
 import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
@@ -32,8 +32,8 @@ import kotlinx.serialization.json.Json
 class CallEffectHandler(
     private val services: Services,
     webRtcManagerGenerator: (List<String>, WebRtcManagerI.Listener) -> WebRtcManagerI,
-    coroutineScope: CoroutineScope,
-) : EffectHandler<Eff, Msg>(coroutineScope) {
+    parentCoroutineScope: CoroutineScope,
+) : EffectHandler<Eff, Msg>(parentCoroutineScope) {
     data class Services(
         val isConnectedFlow: Flow<Boolean>,
         val callWebSocketMsgFlow: Flow<WebSocketMsg.Call>,

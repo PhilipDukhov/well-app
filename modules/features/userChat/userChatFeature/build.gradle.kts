@@ -15,6 +15,7 @@ kotlin {
                 ":modules:models",
                 ":modules:utils:viewUtils",
                 ":modules:puerhBase",
+                "kotlin.datetime",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",
                 "shared.napier",
