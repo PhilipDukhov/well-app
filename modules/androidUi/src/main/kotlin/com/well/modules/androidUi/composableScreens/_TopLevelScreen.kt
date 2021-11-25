@@ -19,23 +19,21 @@ import com.well.sharedMobile.TopLevelFeature as Feature
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Badge
+import androidx.compose.material.BadgedBox
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.rounded.ChatBubble
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import com.google.accompanist.insets.navigationBarsPadding
-import io.github.aakira.napier.Napier
 
 @Composable
 fun TopLevelScreen(
@@ -64,24 +62,34 @@ fun TopLevelScreen(
                         .navigationBarsPadding()
                 ) {
                     screen.tabs.forEach { tabScreen ->
+                        val unreadCount = (tabScreen.screen as? ScreenState.ChatList)
+                            ?.state?.unreadCount
+                            ?: 0
                         BottomNavigationItem(
                             selected = state.selectedTab == tabScreen.tab,
                             onClick = {
                                 listener(Feature.Msg.SelectTab(tabScreen.tab))
                             },
                             icon = {
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                BadgedBox(
+                                    badge = {
+                                        if (unreadCount > 0) {
+                                            Badge {
+                                                Text("$unreadCount")
+                                            }
+                                        }
+                                    }
+                                ) {
                                     Icon(
                                         painter = tabScreen.tab.iconPainter(),
                                         contentDescription = null,
-                                        tint = LocalContentColor.current,
-                                    )
-                                    Text(
-                                        text = tabScreen.tab.spacedName(),
-                                        color = LocalContentColor.current,
-                                        style = MaterialTheme.typography.caption,
                                     )
                                 }
+                            },
+                            label = {
+                                Text(
+                                    text = tabScreen.tab.spacedName(),
+                                )
                             },
                             selectedContentColor = Color.DarkBlue.toColor(),
                             unselectedContentColor = Color.LightGray.toColor(),

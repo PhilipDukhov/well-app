@@ -30,6 +30,7 @@ struct TopLevelView: View {
                 listener(TopLevelFeature.MsgSelectTab(tab: tab))
             })) {
                 ForEach(tabsScreen.tabs, id: \.tab) { tabScreen in
+                    let unreadCount = (tabScreen.screen as? ScreenState.ChatList)?.state.unreadCount.toInt() ?? 0
                     VStack(spacing: 0) {
                         screenView(screen: tabScreen.screen)
                     }
@@ -38,9 +39,10 @@ struct TopLevelView: View {
                         Text(tabScreen.tab.spacedName())
                     }
                     .tag(tabScreen.tab)
+                    .badgeIfAvailable(unreadCount)
                 }
             }.accentColor(SwiftUI.Color(hex: 0x1B3D6D))
-            
+
         default:
             fatalError("state.currentScreen unexpected \(state.currentScreen)")
         }

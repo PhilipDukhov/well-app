@@ -114,6 +114,15 @@ extension View {
         return self
     }
 #endif
+
+    @ViewBuilder
+    func badgeIfAvailable(_ count: Int) -> some View {
+        if #available(iOS 15.0, *) {
+            badge(count)
+        } else {
+            self
+        }
+    }
 }
 
 // swiftlint:disable:next identifier_name
