@@ -349,10 +349,10 @@ private fun OtherUserHeader(
 ) {
     ProfileImage(
         header.image,
+        squareCircleShaped = false,
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(1.2f),
-        squareCircleShaped = false
+            .aspectRatio(1.2f)
     )
     Column(modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {

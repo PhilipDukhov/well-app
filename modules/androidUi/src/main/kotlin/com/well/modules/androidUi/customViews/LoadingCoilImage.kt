@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 
@@ -31,6 +30,7 @@ fun LoadingCoilImage(
             painter,
             contentDescription = null,
             contentScale = contentScale,
+            modifier = Modifier.matchParentSize()
         )
         if (
             painter.state is ImagePainter.State.Loading
