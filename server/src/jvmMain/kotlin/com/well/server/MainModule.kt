@@ -25,6 +25,7 @@ import com.well.server.routing.user.setUserFavorite
 import com.well.server.routing.user.updateUser
 import com.well.server.routing.userHasAvailableAvailabilities
 import com.well.server.utils.Dependencies
+import com.well.server.utils.ForbiddenException
 import com.well.server.utils.configProperty
 import com.well.server.utils.createPrincipal
 import com.auth0.jwk.JwkProviderBuilder
@@ -65,6 +66,9 @@ fun Application.module() {
     }
 
     install(StatusPages) {
+        exception<ForbiddenException> {
+            call.respond(HttpStatusCode.Forbidden)
+        }
         exception<Throwable> { cause ->
             println("StatusPages failed $cause")
             println(cause.stackTraceToString())

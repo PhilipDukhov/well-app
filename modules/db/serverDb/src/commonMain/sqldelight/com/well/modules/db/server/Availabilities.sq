@@ -28,6 +28,18 @@ insert:
 INSERT INTO Availabilities(ownerId, startInstant, durationMinutes ,repeat)
 VALUES (?, ?, ?, ?);
 
+intersects:
+SELECT COUNT(*) > 0
+FROM Availabilities
+WHERE
+    ownerId = :ownerId AND deleted = FALSE
+    AND startInstant + durationMinutes * 1000 < :startInstant
+    AND startInstant > :endInstant
+;
+
+isOwnerEquals:
+SELECT ownerId = :ownerId FROM Availabilities WHERE id = :id;
+
 markDeleted:
 UPDATE Availabilities
 SET deleted = TRUE

@@ -42,6 +42,7 @@ interface AvailabilityInfo {
     val startDay get() = startInstant.toLocalDate(TimeZone.currentSystemDefault())
     val startTime get() = startInstant.toLocalTime(TimeZone.currentSystemDefault())
     val endTime get() = startTime.plus(Duration.minutes(durationMinutes))
+    val endInstant get() = startInstant.plus(Duration.minutes(durationMinutes))
 
     val intervalString: String
         get() = "$startTime-$endTime"

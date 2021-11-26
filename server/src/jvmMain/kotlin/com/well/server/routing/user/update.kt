@@ -3,6 +3,7 @@ package com.well.server.routing.user
 import com.well.modules.db.server.updateUser
 import com.well.modules.models.User
 import com.well.server.utils.Dependencies
+import com.well.server.utils.ForbiddenException
 import com.well.server.utils.authUid
 import io.ktor.application.*
 import io.ktor.http.*
@@ -15,8 +16,7 @@ suspend fun PipelineContext<*, ApplicationCall>.updateUser(
 ) = dependencies.run {
     val user = call.receive<User>()
     if (call.authUid != user.id) {
-        call.respond(HttpStatusCode.Forbidden)
-        return@run
+        throw ForbiddenException()
     }
     database
         .usersQueries

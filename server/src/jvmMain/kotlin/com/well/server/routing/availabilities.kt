@@ -1,5 +1,6 @@
 package com.well.server.routing
 
+import com.well.modules.db.server.AvailabilitiesQueries
 import com.well.modules.db.server.getByOwnerId
 import com.well.modules.db.server.insert
 import com.well.modules.db.server.insertChatMessage
@@ -10,6 +11,7 @@ import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
 import com.well.modules.utils.kotlinUtils.mapSecond
 import com.well.server.utils.Dependencies
+import com.well.server.utils.ForbiddenException
 import com.well.server.utils.authUid
 import io.ktor.application.*
 import io.ktor.http.*
@@ -20,7 +22,7 @@ import kotlin.time.Duration
 
 suspend fun PipelineContext<*, ApplicationCall>.listCurrentAvailabilities(
     dependencies: Dependencies,
-) = dependencies.run {
+) = with(dependencies) {
     val availabilities = database.availabilitiesQueries.getByOwnerId(call.authUid)
     call.respond(HttpStatusCode.OK, availabilities)
 }
@@ -28,27 +30,23 @@ suspend fun PipelineContext<*, ApplicationCall>.listCurrentAvailabilities(
 suspend fun PipelineContext<*, ApplicationCall>.listBookingAvailabilities(
     id: User.Id,
     dependencies: Dependencies,
-) = dependencies.run {
-    call.respond(
-        HttpStatusCode.OK,
-        getBookingAvailabilities(id, dependencies)
-    )
-}
+) = call.respond(
+    HttpStatusCode.OK,
+    getBookingAvailabilities(id, dependencies)
+)
 
 suspend fun PipelineContext<*, ApplicationCall>.userHasAvailableAvailabilities(
     id: User.Id,
     dependencies: Dependencies,
-) = dependencies.run {
-    call.respond(
-        HttpStatusCode.OK,
-        getBookingAvailabilities(id, dependencies).isNotEmpty()
-    )
-}
+) = call.respond(
+    HttpStatusCode.OK,
+    getBookingAvailabilities(id, dependencies).isNotEmpty()
+)
 
 private fun getBookingAvailabilities(
     id: User.Id,
     dependencies: Dependencies,
-): BookingAvailabilitiesListByDay = dependencies.run {
+): BookingAvailabilitiesListByDay = with(dependencies) {
     val allAvailabilities = database.availabilitiesQueries.getByOwnerId(id)
 
     val possibleAvailabilities = BookingAvailability
@@ -57,7 +55,7 @@ private fun getBookingAvailabilities(
             days = 30,
             minInterval = Duration.hours(1)
         )
-    database.meetingsQueries.run {
+    with(database.meetingsQueries) {
         transactionWithResult {
             possibleAvailabilities
                 .map {
@@ -77,14 +75,20 @@ private fun getBookingAvailabilities(
 
 suspend fun PipelineContext<*, ApplicationCall>.putAvailability(
     dependencies: Dependencies,
-) = dependencies.run {
+) = with(dependencies) {
     val availability = call.receive<Availability>()
     val userId = call.authUid
-    val newAvailability: Availability = database.availabilitiesQueries.run {
+    val newAvailability: Availability = with(database.availabilitiesQueries) {
         transactionWithResult {
             if (availability.id.value >= 0) {
+                verityOwner(availabilityId = availability.id, ownerId = userId)
                 markDeleted(availability.id)
             }
+            intersects(
+                ownerId = userId,
+                startInstant = availability.startInstant.toEpochMilliseconds(),
+                endInstant = availability.endInstant
+            )
             insert(
                 ownerId = userId,
                 availability = availability,
@@ -97,14 +101,17 @@ suspend fun PipelineContext<*, ApplicationCall>.putAvailability(
 suspend fun PipelineContext<*, ApplicationCall>.deleteAvailability(
     id: Availability.Id,
     dependencies: Dependencies,
-) = dependencies.run {
-    database.availabilitiesQueries.markDeleted(id)
+) = with(dependencies) {
+    with(database.availabilitiesQueries) {
+        verityOwner(availabilityId = id, ownerId = call.authUid)
+        database.availabilitiesQueries.markDeleted(id)
+    }
     call.respond(HttpStatusCode.OK)
 }
 
 suspend fun PipelineContext<*, ApplicationCall>.bookAvailability(
     dependencies: Dependencies,
-) = dependencies.run {
+) = with(dependencies) {
     val bookingRequest = call.receive<BookingAvailability>()
     val success = database.transactionWithResult<Boolean> {
         val availability = database.availabilitiesQueries
@@ -135,4 +142,10 @@ suspend fun PipelineContext<*, ApplicationCall>.bookAvailability(
         return@transactionWithResult true
     }
     call.respond(if (success) HttpStatusCode.Created else HttpStatusCode.NotFound)
+}
+
+private fun AvailabilitiesQueries.verityOwner(availabilityId: Availability.Id, ownerId: User.Id) {
+    if (!isOwnerEquals(ownerId = ownerId, id = availabilityId).executeAsOne()) {
+        throw ForbiddenException()
+    }
 }
