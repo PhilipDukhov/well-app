@@ -1,21 +1,23 @@
 package com.well.modules.androidUi.composableScreens.call.drawing
 
+import com.well.modules.androidUi.ext.toColor
+import com.well.modules.features.call.callFeature.drawing.DrawingFeature.Msg
+import com.well.modules.features.call.callFeature.drawing.DrawingFeature.State
+import com.well.modules.models.Point
+import com.well.modules.models.Size
 import android.view.MotionEvent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.onSizeChanged
-import com.well.modules.androidUi.ext.toColor
-import com.well.modules.models.Path
-import com.well.modules.models.Point
-import com.well.modules.models.Size
-import com.well.modules.features.call.callFeature.drawing.DrawingFeature.Msg
-import com.well.modules.features.call.callFeature.drawing.DrawingFeature.State
 import kotlin.math.hypot
 
 @Composable
@@ -45,9 +47,9 @@ fun DrawingContent(
             .onSizeChanged {
                 onSizeChanged?.invoke(Size(it.width, it.height))
             }) {
-        state.canvasPaths.forEach {
+        state.canvasPaths.forEach { path ->
             PathCanvas(
-                it,
+                path = path,
                 cap = state.nativeStrokeStyle.lineCap.toStrokeCap(),
                 join = state.nativeStrokeStyle.lineJoin.toStrokeJoin(),
             )
@@ -57,7 +59,7 @@ fun DrawingContent(
 
 @Composable
 private fun PathCanvas(
-    path: Path,
+    path: com.well.modules.models.Path,
     cap: StrokeCap,
     join: StrokeJoin,
 ) {

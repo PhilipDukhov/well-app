@@ -18,7 +18,7 @@ data class Color(
 
     constructor(
         colorRGB: Long,
-        alpha: Float = 1F
+        alpha: Float = 1F,
     ) : this(
         red = (colorRGB.shr(16) and 0xFF).toInt(),
         green = (colorRGB.shr(8) and 0xFF).toInt(),

@@ -18,7 +18,7 @@ enum Screen: String, CaseIterable {
     
     case local
     
-    static let initial: Screen = .local
+    static let initial: Screen = .call
 }
 
 struct TestingScreens: View {

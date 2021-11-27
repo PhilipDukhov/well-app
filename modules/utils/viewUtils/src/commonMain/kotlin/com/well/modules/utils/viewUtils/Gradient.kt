@@ -15,7 +15,7 @@ data class Gradient internal constructor(
             Stop(color = Color(colorRGB = 0x000000, alpha = 0.35f), location = 0f),
             Stop(color = Color(colorRGB = 0x0B121B, alpha = 0.53f), location = 1f),
         )
-        
+
         val Login = linearVertical(
             Stop(color = Color(colorRGB = 0x000000, alpha = 0.26f), location = 0f),
             Stop(color = Color(colorRGB = 0x000000, alpha = 0.058f), location = 0.0729f),
@@ -23,7 +23,43 @@ data class Gradient internal constructor(
             Stop(color = Color(colorRGB = 0x111D2D, alpha = 0.65f), location = 1f),
         )
 
+        val ActionButton = backgroundOverlay(
+            backgroundColor = Color(colorRGB = 0x94C83D),
+            overlayOpacity = 0.4f,
+            stops = listOf(
+                Stop(color = Color(colorRGB = 0x85D6F5, alpha = 0.35f), location = 0.0f),
+                Stop(color = Color(colorRGB = 0x009BFF), location = 1f),
+            ),
+            startPoint = Point(
+                x = 2.75387f,
+                y = 2.43233f,
+            ),
+            endPoint = Point(
+                x = 1.51096f,
+                y = 3.01681f,
+            ),
+        )
+
         val Main = backgroundOverlay(
+            backgroundColor = Color(colorRGB = 0x94C83D),
+            overlayOpacity = 0.5f,
+            stops = listOf(
+                Stop(color = Color(colorRGB = 0x1BFFE4, alpha = 0.812f), location = 0.0f),
+                Stop(color = Color(colorRGB = 0x009BFF), location = 0.672f),
+            ),
+            startPoint = Point(
+                x = 0.04440333f,
+                y = -0.20859465f,
+            ),
+            endPoint = Point(
+                x = 0.72710454f,
+                y = 1.2629647f,
+            ),
+        )
+
+
+
+        val NavBar = backgroundOverlay(
             backgroundColor = Color(colorRGB = 0x94C83D),
             overlayOpacity = 0.5f,
             stops = listOf(
@@ -37,7 +73,7 @@ data class Gradient internal constructor(
             endPoint = Point(
                 x = 0.7983896522706257f,
                 y = 0.9809522356305803f,
-            )
+            ),
         )
 
         val CallBackground = backgroundOverlay(
@@ -47,12 +83,12 @@ data class Gradient internal constructor(
                 Stop(color = Color(colorRGB = 0x1BFFE4, alpha = 0.8f), location = 0.984375f),
             ),
             startPoint = Point(
-                x = 1.1673333333333331f,
-                y = 0.8408037094281299f,
+                x = 1.1673f,
+                y = 0.841f,
             ),
             endPoint = Point(
-                x = -0.3820000000000002f,
-                y = -0.3898763523956724f,
+                x = -0.382f,
+                y = -0.39f,
             )
         )
 
@@ -105,6 +141,6 @@ data class Gradient internal constructor(
 
     data class Stop(
         val color: Color,
-        val location: Float
+        val location: Float,
     )
 }

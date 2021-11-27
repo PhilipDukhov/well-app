@@ -47,13 +47,13 @@ fun Offset.denormalize(constraints: Constraints): Offset =
 
 fun Modifier.backgroundKMM(
     color: Color,
-    shape: Shape = RectangleShape
+    shape: Shape = RectangleShape,
 ) = background(color.toColor(), shape)
 
 fun Modifier.borderKMM(
     width: Dp,
     color: Color,
-    shape: Shape = RectangleShape
+    shape: Shape = RectangleShape,
 ) = border(width, color.toColor(), shape)
 
 @Composable
@@ -73,7 +73,7 @@ fun TextKMM(
     softWrap: Boolean = true,
     maxLines: Int = Int.MAX_VALUE,
     onTextLayout: (TextLayoutResult) -> Unit = {},
-    style: TextStyle = LocalTextStyle.current
+    style: TextStyle = LocalTextStyle.current,
 ) = Text(
     text = text,
     modifier = modifier,
@@ -92,16 +92,6 @@ fun TextKMM(
     onTextLayout = onTextLayout,
     style = style,
 )
-
-fun Modifier.heightPlusTopSystemBars(height: Dp) =
-    composed {
-        height(
-            height + rememberInsetsPaddingValues(
-                insets = LocalWindowInsets.current.systemBars
-            )
-                .calculateTopPadding()
-        )
-    }
 
 fun Modifier.heightPlusBottomSystemBars(height: Dp) =
     composed {

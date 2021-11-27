@@ -80,7 +80,7 @@ fun ActionButton(
             ) {
                 if (style == OnWhite) {
                     GradientView(
-                        gradient = Gradient.Main,
+                        gradient = Gradient.ActionButton,
                         modifier = Modifier
                             .alpha(alpha)
                             .matchParentSize()

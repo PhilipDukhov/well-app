@@ -33,7 +33,7 @@ fun NavigationBar(
 ) {
     Box(modifier = modifier) {
         GradientView(
-            gradient = Gradient.Main,
+            gradient = Gradient.NavBar,
             modifier = Modifier.matchParentSize(),
         )
         Column {

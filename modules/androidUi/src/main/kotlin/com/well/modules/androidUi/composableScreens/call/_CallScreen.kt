@@ -1,8 +1,8 @@
 package com.well.modules.androidUi.composableScreens.call
 
-import com.well.modules.androidUi.R
 import com.well.modules.androidUi.composableScreens.call.drawing.DrawingContent
 import com.well.modules.androidUi.composableScreens.call.drawing.DrawingPanel
+import com.well.modules.androidUi.customViews.GradientView
 import com.well.modules.androidUi.customViews.ProfileImage
 import com.well.modules.androidUi.customViews.controlMinSize
 import com.well.modules.androidUi.ext.visibility
@@ -11,10 +11,10 @@ import com.well.modules.features.call.callFeature.CallFeature.Msg
 import com.well.modules.features.call.callFeature.CallFeature.State
 import com.well.modules.features.call.callFeature.CallFeature.State.Status
 import com.well.modules.models.User
+import com.well.modules.utils.viewUtils.Gradient
 import com.well.modules.utils.viewUtils.ViewConstants.CallScreen.BottomBar.CallButtonOffset
 import com.well.modules.utils.viewUtils.ViewConstants.CallScreen.CallButtonRadius
 import com.well.modules.features.call.callFeature.drawing.DrawingFeature.Msg as DrawingMsg
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,9 +28,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstrainedLayoutReference
@@ -86,11 +84,8 @@ fun CallScreen(
 
     val (localVideoView, remoteVideoView, profileImage, nameContainer, bottomView) = createRefs()
 
-//    CallBackground ?
-    Image(
-        painterResource(R.drawable.ic_call_background),
-        contentDescription = null,
-        contentScale = ContentScale.FillBounds,
+    GradientView(
+        gradient = Gradient.CallBackground,
         modifier = Modifier
             .fillMaxSize()
     )

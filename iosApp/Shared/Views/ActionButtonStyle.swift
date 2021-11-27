@@ -40,7 +40,7 @@ struct ActionButtonStyle: ButtonStyle {
     private var background: some View {
         switch style {
         case .onWhite:
-            GradientView(gradient: .main)
+            GradientView(gradient: .actionButton)
 
         case .white:
             ColorConstants.White.toColor()

@@ -2,12 +2,14 @@ package com.well.modules.androidUi.composableScreens.welcome
 
 import com.well.modules.androidUi.customViews.ActionButton
 import com.well.modules.androidUi.customViews.ActionButtonStyle
+import com.well.modules.androidUi.customViews.GradientView
 import com.well.modules.androidUi.customViews.gesturesDisabled
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.features.welcome.WelcomeFeature.Msg
 import com.well.modules.features.welcome.WelcomeFeature.State
 import com.well.modules.models.Color
+import com.well.modules.utils.viewUtils.Gradient
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -61,48 +63,55 @@ fun WelcomeScreen(
         .fillMaxSize()
         .backgroundKMM(Color.DarkBlue)
 ) {
-    val (imagesRef, textsRef) = createRefs()
+    val (backgroundRef, imagesRef, textsRef) = createRefs()
     val context = LocalContext.current
     val lazyRowState = rememberLazyListState()
     var rowWidth by remember { mutableStateOf(0) }
     val cornerRadius = 20.dp
-    LazyRow(
-        state = lazyRowState,
-        modifier = Modifier
-            .fillMaxWidth()
-            .onSizeChanged { rowWidth = it.width }
-            .constrainAs(imagesRef) {
-                top.linkTo(parent.top)
-                absoluteLeft.linkTo(parent.absoluteLeft)
-                absoluteRight.linkTo(parent.absoluteRight)
-                bottom.linkTo(textsRef.top, margin = -cornerRadius)
-                height = Dimension.fillToConstraints
-            }
-            .background(Color.RadicalRed.toColor())
-            .gesturesDisabled()
+    Box(
+        Modifier.constrainAs(imagesRef) {
+            top.linkTo(parent.top)
+            absoluteLeft.linkTo(parent.absoluteLeft)
+            absoluteRight.linkTo(parent.absoluteRight)
+            bottom.linkTo(textsRef.top, margin = -cornerRadius)
+            height = Dimension.fillToConstraints
+        }
     ) {
-        itemsIndexed(state.descriptions) { i, _ ->
-            val drawableId = remember {
-                context.resources.getIdentifier(
-                    "welcome_${i + 1}",
-                    "drawable",
-                    context.packageName
-                )
-            }
-            val painter = painterResource(id = drawableId)
-            Box {
-                Image(
-                    painter,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillParentMaxWidth()
-                        .fillMaxHeight()
-                )
+        LazyRow(
+            state = lazyRowState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .onSizeChanged { rowWidth = it.width }
+                .background(Color.RadicalRed.toColor())
+                .gesturesDisabled()
+        ) {
+            itemsIndexed(state.descriptions) { i, _ ->
+                val drawableId = remember {
+                    context.resources.getIdentifier(
+                        "welcome_${i + 1}",
+                        "drawable",
+                        context.packageName
+                    )
+                }
+                val painter = painterResource(id = drawableId)
+                Box {
+                    Image(
+                        painter,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillParentMaxWidth()
+                            .fillMaxHeight()
+                    )
+                }
             }
         }
+        GradientView(
+            gradient = Gradient.Welcome,
+            modifier = Modifier
+                .matchParentSize()
+        )
     }
-
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier

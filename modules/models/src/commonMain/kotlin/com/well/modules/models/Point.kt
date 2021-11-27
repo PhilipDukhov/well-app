@@ -2,8 +2,6 @@ package com.well.modules.models
 
 import kotlinx.serialization.Serializable
 import kotlin.math.hypot
-import kotlin.math.pow
-import kotlin.math.sqrt
 
 @Serializable
 data class Point(
@@ -12,6 +10,6 @@ data class Point(
 ) {
     fun intersects(
         point: Point,
-        offset: Float
+        offset: Float,
     ): Boolean = hypot(x - point.x, y - point.y) <= offset
 }

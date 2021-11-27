@@ -1,14 +1,5 @@
 package com.well.androidAppTest
 
-import com.well.androidAppTest.TestScreen.AvailabilityCalendar
-import com.well.androidAppTest.TestScreen.Call
-import com.well.androidAppTest.TestScreen.Local
-import com.well.androidAppTest.TestScreen.MyProfile
-import com.well.androidAppTest.TestScreen.Slider
-import com.well.androidAppTest.TestScreen.UserChat
-import com.well.androidAppTest.TestScreen.UserRating
-import com.well.androidAppTest.TestScreen.Welcome
-import com.well.androidAppTest.TestScreen.values
 import com.well.modules.androidUi.composableScreens.welcome.WelcomeScreen
 import com.well.modules.androidUi.customViews.ProfileImage
 import com.well.modules.features.welcome.WelcomeFeature
@@ -46,12 +37,13 @@ enum class TestScreen {
     UserChat,
     UserRating,
     AvailabilityCalendar,
+    GradientView,
 }
 
 @Composable
 fun TestComposeScreen() {
     var selectedScreen: TestScreen by rememberSaveable(Unit) {
-        mutableStateOf(Local)
+        mutableStateOf(TestScreen.GradientView)
     }
     var opened by remember {
         mutableStateOf(true)
@@ -62,27 +54,29 @@ fun TestComposeScreen() {
         }
         Column {
             when (selectedScreen) {
-                Local -> LocalTestScreen()
-                Welcome -> WelcomeScreen(WelcomeFeature.State()) {}
-                Call -> CallTest()
-                MyProfile -> MyProfileTest()
-                Slider -> SliderTest()
-                UserChat -> UserChatTest()
-                UserRating -> UserRatingTest()
-                AvailabilityCalendar -> AvailabilityCalendarTest()
+                TestScreen.Local -> LocalTestScreen()
+                TestScreen.Welcome -> WelcomeScreen(WelcomeFeature.State()) {}
+                TestScreen.Call -> CallTest()
+                TestScreen.MyProfile -> MyProfileTest()
+                TestScreen.Slider -> SliderTest()
+                TestScreen.UserChat -> UserChatTest()
+                TestScreen.UserRating -> UserRatingTest()
+                TestScreen.AvailabilityCalendar -> AvailabilityCalendarTest()
+                TestScreen.GradientView -> GradientViewTest()
             }
         }
     } else {
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .statusBarsPadding()
         ) {
             ScrollableTabRow(
-                selectedTabIndex = values().indexOf(selectedScreen),
+                selectedTabIndex = TestScreen.values().indexOf(selectedScreen),
                 modifier = Modifier.align(Alignment.TopCenter)
             ) {
-                values().forEach { screen ->
+                TestScreen.values().forEach { screen ->
                     Tab(selected = screen == selectedScreen, onClick = {
                         selectedScreen = screen
                         opened = true

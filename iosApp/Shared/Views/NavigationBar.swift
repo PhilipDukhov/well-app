@@ -139,7 +139,7 @@ struct NavigationBar<Title: View, LV: View, RV: View, ExtraContent: View>: View 
             extraContent
         }.padding(.horizontal)
             .foregroundColor(.white)
-            .background(GradientView(gradient: .main).edgesIgnoringSafeArea(.top))
+            .background(GradientView(gradient: .navBar).edgesIgnoringSafeArea(.top))
     }
 
     @ViewBuilder

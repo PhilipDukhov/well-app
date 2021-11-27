@@ -14,18 +14,20 @@ struct GradientView: View {
     
     var body: some View {
         gradient.backgroundColor.toColor()
-            .overlay(LinearGradient(
-                gradient: SwiftUI.Gradient(
-                    stops: gradient.stops.map {
-                        SwiftUI.Gradient.Stop(
-                            color: $0.color.toColor(),
-                            location: $0.location.toCGFloat()
-                        )
-                    }
-                ),
-                startPoint: gradient.startPoint.toUnitPoint(),
-                endPoint: gradient.endPoint.toUnitPoint()
-            ).opacity(gradient.overlayOpacity.toDouble()))
+            .overlay(
+                LinearGradient(
+                    gradient: SwiftUI.Gradient(
+                        stops: gradient.stops.map {
+                            SwiftUI.Gradient.Stop(
+                                color: $0.color.toColor(),
+                                location: $0.location.toCGFloat()
+                            )
+                        }
+                    ),
+                    startPoint: gradient.startPoint.toUnitPoint(),
+                    endPoint: gradient.endPoint.toUnitPoint()
+                ).opacity(gradient.overlayOpacity.toDouble())
+            )
     }
 }
 
@@ -35,4 +37,6 @@ extension SharedMobile.Gradient {
     static let login = SharedMobile.Gradient.companion.Login
     static let callBackground = SharedMobile.Gradient.companion.CallBackground
     static let callBottomBar = SharedMobile.Gradient.companion.CallBottomBar
+    static let navBar = SharedMobile.Gradient.companion.NavBar
+    static let actionButton = SharedMobile.Gradient.companion.ActionButton
 }

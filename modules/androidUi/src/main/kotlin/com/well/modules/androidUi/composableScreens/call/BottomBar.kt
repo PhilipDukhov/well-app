@@ -1,19 +1,21 @@
 package com.well.modules.androidUi.composableScreens.call
 
 import com.well.modules.androidUi.R
+import com.well.modules.androidUi.customViews.GradientView
 import com.well.modules.androidUi.ext.Size
 import com.well.modules.androidUi.ext.heightPlusBottomSystemBars
 import com.well.modules.androidUi.ext.toPx
 import com.well.modules.features.call.callFeature.CallFeature.Msg
 import com.well.modules.features.call.callFeature.CallFeature.State
+import com.well.modules.utils.viewUtils.Gradient
 import com.well.modules.utils.viewUtils.ViewConstants.CallScreen.BottomBar.CallButtonOffset
 import com.well.modules.utils.viewUtils.ViewConstants.CallScreen.BottomBar.CallButtonPadding
 import com.well.modules.utils.viewUtils.ViewConstants.CallScreen.BottomBar.Height
 import com.well.modules.utils.viewUtils.ViewConstants.CallScreen.CallButtonRadius
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
@@ -27,8 +29,6 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -49,10 +49,10 @@ fun BottomBar(
             )
         )
 ) {
-    Image(
-        painterResource(R.drawable.ic_call_background),
-        contentDescription = null,
-        contentScale = ContentScale.FillBounds,
+    GradientView(
+        gradient = Gradient.CallBottomBar,
+        modifier = Modifier
+            .fillMaxSize()
     )
     Row(
         horizontalArrangement = Arrangement.SpaceEvenly,
