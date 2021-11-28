@@ -6,7 +6,7 @@ target 'Well' do
   platform :ios, ios_deployment_target
   use_frameworks!
 
-  pod 'sharedMobile', :path => '../sharedMobile'
+  pod 'topLevelHandlers', :path => '../modules/features/_topLevel/topLevelHandlers'
 #  pod 'GoogleWebRTC'
   pod "WebRTC-lib"
   

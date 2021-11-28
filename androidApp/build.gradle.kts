@@ -25,10 +25,11 @@ libDependencies(
     "kotlin.coroutines.core",
     "kotlin.reflect",
 
-    ":sharedMobile",
     ":modules:androidUi",
     ":modules:androidWebrtc",
     ":modules:utils:viewUtils",
+    ":modules:features:_topLevel:topLevelFeature",
+    ":modules:features:_topLevel:topLevelHandlers",
     ":modules:features:login:loginFeature",
     ":modules:features:login:loginHandlers",
     ":modules:features:call:callFeature",

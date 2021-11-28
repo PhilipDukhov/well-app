@@ -12,10 +12,10 @@ import com.well.modules.androidUi.composableScreens.myProfile.MyProfileScreen
 import com.well.modules.androidUi.composableScreens.userChat.UserChatScreen
 import com.well.modules.androidUi.composableScreens.welcome.WelcomeScreen
 import com.well.modules.androidUi.ext.toColor
+import com.well.modules.features.topLevel.topLevelFeature.ScreenState
+import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State.Tab
 import com.well.modules.models.Color
-import com.well.sharedMobile.ScreenState
-import com.well.sharedMobile.TopLevelFeature.State.Tab
-import com.well.sharedMobile.TopLevelFeature as Feature
+import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature as Feature
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize

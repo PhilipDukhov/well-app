@@ -162,8 +162,11 @@ ext.Libs = [
     ],
 ]
 ext.iosExportItems = [
-    "shared.napier",
-    "kotlin.datetime",
+    ":modules:models",
+    ":modules:puerhBase",
+    ":modules:utils:flowUtils",
+    ":modules:utils:viewUtils",
+    ":modules:features:_topLevel:topLevelFeature",
     ":modules:features:more",
     ":modules:features:welcome",
     ":modules:features:myProfile:myProfileFeature",
@@ -172,10 +175,8 @@ ext.iosExportItems = [
     ":modules:features:chatList:chatListFeature",
     ":modules:features:experts:expertsFeature",
     ":modules:features:userChat:userChatFeature",
-    ":modules:models",
-    ":modules:puerhBase",
-    ":modules:utils:flowUtils",
-    ":modules:utils:viewUtils",
+    "shared.napier",
+    "kotlin.datetime",
 ]
 ext.forceApiModules = [
     ":modules:atomic",

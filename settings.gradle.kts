@@ -39,7 +39,6 @@ if (includeServer) {
 }
 if (includeSharedMobile) {
     include(
-        ":sharedMobile",
         ":sharedMobileTest",
         ":modules:atomic",
         ":modules:utils:viewUtils",
@@ -48,6 +47,8 @@ if (includeSharedMobile) {
         ":modules:puerhBase",
         ":modules:features:welcome",
         ":modules:features:more",
+        ":modules:features:_topLevel:topLevelFeature",
+        ":modules:features:_topLevel:topLevelHandlers",
         ":modules:features:myProfile:myProfileFeature",
         ":modules:features:myProfile:myProfileHandlers",
         ":modules:features:login:loginFeature",

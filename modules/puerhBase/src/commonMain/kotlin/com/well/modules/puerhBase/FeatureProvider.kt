@@ -1,9 +1,9 @@
 package com.well.modules.puerhBase
 
-import com.well.modules.atomic.Closeable
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.StateFlow
 
 interface FeatureProvider<Msg : Any, State : Any> : CoroutineScope {
     fun accept(msg: Msg)
-    fun listenState(listener: (model: State) -> Unit): Closeable
+    val state: StateFlow<State>
 }

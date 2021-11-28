@@ -278,7 +278,7 @@ class ContainerInfo(
     fun featureEffInterface() =
         TypeSpec
             .interfaceBuilder(featureEffContainerName)
-            .addModifiers(KModifier.SEALED, KModifier.INTERNAL)
+            .addModifiers(KModifier.SEALED)
             .addSuperinterface(containerFeatureEffClassName)
             .apply {
                 val sealedSubclasses = featureInfos.map { it.featureEffContainer() }
@@ -289,7 +289,7 @@ class ContainerInfo(
     fun featureMsgInterface() =
         TypeSpec
             .classBuilder(featureMsgContainerName)
-            .addModifiers(KModifier.SEALED, KModifier.INTERNAL)
+            .addModifiers(KModifier.SEALED)
             .superclass(containerFeatureMsgClassName)
             .apply {
                 val sealedSubclasses = featureInfos.map { it.featureMsgContainer() }
@@ -318,7 +318,7 @@ class ContainerInfo(
             )
             .addProperty(
                 PropertySpec.builder("position", containerFeatureScreenPositionClassName)
-                    .addModifiers(KModifier.INTERNAL, KModifier.ABSTRACT)
+                    .addModifiers(KModifier.ABSTRACT)
                     .build()
             )
             .addFunction(
@@ -346,7 +346,7 @@ class ContainerInfo(
                 name = "position",
                 type = containerFeatureScreenPositionClassName
             )
-                .addModifiers(KModifier.OVERRIDE, KModifier.INTERNAL)
+                .addModifiers(KModifier.OVERRIDE)
                 .getter(
                     FunSpec.getterBuilder()
                         .addStatement(
@@ -450,7 +450,7 @@ class FeatureInfo(
                 PropertyInfo(
                     name = "position",
                     className = containerInfo.containerFeatureScreenPositionClassName,
-                    KModifier.OVERRIDE, KModifier.INTERNAL,
+                    KModifier.OVERRIDE,
                 ),
                 PropertyInfo(
                     name = "state",

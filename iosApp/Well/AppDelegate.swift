@@ -13,6 +13,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private var featureProvider: FeatureProvider!
     
     var window: UIWindow?
+
+    var featureStateCloseable: AtomicCloseable?
     
     func application(
         _ application: UIApplication,
@@ -58,14 +60,16 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func startListening() {
-        featureProvider.listenState { [self] state in
-            rootViewController.updateWrapperView(
-                TopLevelView(
-                    state: state as! TopLevelFeature.State,
-                    listener: featureProvider.accept
+        featureStateCloseable = featureProvider
+            .state
+            .onChange {  [self] (state: TopLevelFeature.State) in
+                rootViewController.updateWrapperView(
+                    TopLevelView(
+                        state: state,
+                        listener: featureProvider.accept
+                    )
                 )
-            )
-        }
+            }
     }
     
     func application(

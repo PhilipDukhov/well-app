@@ -4,18 +4,20 @@ import com.well.modules.androidUi.composableScreens.TopLevelScreen
 import com.well.modules.androidUi.theme.Theme
 import com.well.modules.androidWebrtc.WebRtcManager
 import com.well.modules.features.login.loginHandlers.credentialProviders.providerGenerator
+import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature
+import com.well.modules.features.topLevel.topLevelHandlers.createFeatureProvider
+import com.well.modules.features.topLevel.topLevelHandlers.handleActivityResult
+import com.well.modules.features.topLevel.topLevelHandlers.handleOnNewIntent
 import com.well.modules.puerhBase.FeatureProvider
 import com.well.modules.utils.viewUtils.AppContext
 import com.well.modules.utils.viewUtils.napier.NapierProxy
-import com.well.sharedMobile.TopLevelFeature
-import com.well.sharedMobile.featureProvider.createFeatureProvider
-import com.well.sharedMobile.handleActivityResult
-import com.well.sharedMobile.handleOnNewIntent
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.core.view.WindowCompat
 import com.google.accompanist.insets.ProvideWindowInsets
 
@@ -43,16 +45,14 @@ class MainActivity : AppCompatActivity() {
                 featureProvider.accept(TopLevelFeature.Msg.Back)
             }
         })
-        featureProvider
-            .listenState {
-                setContent {
-                    Theme {
-                        ProvideWindowInsets {
-                            TopLevelScreen(it, featureProvider::accept)
-                        }
-                    }
+        setContent {
+            Theme {
+                ProvideWindowInsets {
+                    val state by featureProvider.state.collectAsState()
+                    TopLevelScreen(state, featureProvider::accept)
                 }
             }
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {

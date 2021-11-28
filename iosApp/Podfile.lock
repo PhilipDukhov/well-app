@@ -21,8 +21,8 @@ PODS:
     - GTMSessionFetcher/Core (~> 1.5)
   - GTMSessionFetcher/Core (1.7.0)
   - Introspect (0.1.3)
-  - sharedMobile (1.0-SNAPSHOT)
   - sharedMobileTest (1.0-SNAPSHOT)
+  - topLevelHandlers (1.0-SNAPSHOT)
   - WebRTC-lib (95.0.0)
 
 DEPENDENCIES:
@@ -30,8 +30,8 @@ DEPENDENCIES:
   - FBSDKLoginKit
   - GoogleSignIn
   - Introspect
-  - sharedMobile (from `../sharedMobile`)
   - sharedMobileTest (from `../sharedMobileTest`)
+  - topLevelHandlers (from `../modules/features/_topLevel/topLevelHandlers`)
   - WebRTC-lib
 
 SPEC REPOS:
@@ -48,10 +48,10 @@ SPEC REPOS:
     - WebRTC-lib
 
 EXTERNAL SOURCES:
-  sharedMobile:
-    :path: "../sharedMobile"
   sharedMobileTest:
     :path: "../sharedMobileTest"
+  topLevelHandlers:
+    :path: "../modules/features/_topLevel/topLevelHandlers"
 
 SPEC CHECKSUMS:
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
@@ -63,10 +63,10 @@ SPEC CHECKSUMS:
   GTMAppAuth: ad5c2b70b9a8689e1a04033c9369c4915bfcbe89
   GTMSessionFetcher: 43748f93435c2aa068b1cbe39655aaf600652e91
   Introspect: 2be020f30f084ada52bb4387fff83fa52c5c400e
-  sharedMobile: 8d0123e34f310e8cc25e1a7c57ccad5ed81d2c38
   sharedMobileTest: b907a9ceacae9ede3246230b4c7ef7e56a0d8578
+  topLevelHandlers: 17cdaa65cb8c71874dbbc83a019d23e16303f104
   WebRTC-lib: 66d9177b90d16aab9dc78a607295c3e0cd88940d
 
-PODFILE CHECKSUM: dc9517aeb4dfeab109d9a30c4054f0a4557bef96
+PODFILE CHECKSUM: 41123ff72bdebda42e55a0a8ac8688df5acad865
 
 COCOAPODS: 1.11.2
