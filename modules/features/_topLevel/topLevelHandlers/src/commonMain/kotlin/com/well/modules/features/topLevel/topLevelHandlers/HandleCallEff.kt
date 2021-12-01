@@ -25,7 +25,7 @@ import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.Msg as
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 
-internal suspend fun FeatureProviderImpl.handleCallEff(
+internal suspend fun TopLevelFeatureProviderImpl.handleCallEff(
     eff: CallFeature.Eff,
     listener: (TopLevelMsg) -> Unit,
     position: TopLevelFeature.State.ScreenPosition,
@@ -78,7 +78,7 @@ internal suspend fun FeatureProviderImpl.handleCallEff(
     }
 }
 
-private fun FeatureProviderImpl.createWebRtcManagerHandler(
+private fun TopLevelFeatureProviderImpl.createWebRtcManagerHandler(
     initiateEffect: CallFeature.Eff? = null,
     position: TopLevelFeature.State.ScreenPosition,
 ) = CloseableFuture(coroutineScope) {
@@ -106,7 +106,7 @@ private fun FeatureProviderImpl.createWebRtcManagerHandler(
     )
 }
 
-private suspend fun FeatureProviderImpl.handleRequestImageUpdate(
+private suspend fun TopLevelFeatureProviderImpl.handleRequestImageUpdate(
     eff: DrawingFeature.Eff.RequestImageUpdate,
     updateImage: (ImageContainer?) -> Unit,
 ) {
@@ -124,21 +124,21 @@ private suspend fun FeatureProviderImpl.handleRequestImageUpdate(
     }
 }
 
-internal suspend fun FeatureProviderImpl.handleCall(
+internal suspend fun TopLevelFeatureProviderImpl.handleCall(
     user: User,
     listener: (TopLevelMsg) -> Unit,
 ) = handleCallPermissions()?.also {
     listener(TopLevelMsg.ShowAlert(it.first.alert))
 } ?: listener(TopLevelMsg.StartCall(user))
 
-internal fun FeatureProviderImpl.endCall(
+internal fun TopLevelFeatureProviderImpl.endCall(
     listener: (TopLevelMsg) -> Unit,
 ) {
     listener.invoke(TopLevelMsg.EndCall)
     callCloseableContainer.close()
 }
 
-internal suspend fun FeatureProviderImpl.handleCallPermissions() =
+internal suspend fun TopLevelFeatureProviderImpl.handleCallPermissions() =
     permissionsHandler
         .requestPermissions(
             PermissionsHandler.Type.Camera,

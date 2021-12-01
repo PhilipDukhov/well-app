@@ -12,4 +12,4 @@ fun createFeatureProvider(
     appContext: AppContext,
     webRtcManagerGenerator: (List<String>, WebRtcManagerI.Listener) -> WebRtcManagerI,
     providerGenerator: (SocialNetwork, AppContext, WebAuthenticator) -> CredentialProvider,
-) : FeatureProvider<TopLevelFeature.Msg, TopLevelFeature.State> = FeatureProviderImpl(appContext, webRtcManagerGenerator, providerGenerator)
+) : FeatureProvider<TopLevelFeature.Msg, TopLevelFeature.State> = TopLevelFeatureProviderImpl(appContext, webRtcManagerGenerator, providerGenerator)

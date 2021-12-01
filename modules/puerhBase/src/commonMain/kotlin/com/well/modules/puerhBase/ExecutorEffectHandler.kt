@@ -11,7 +11,7 @@ class ExecutorEffectHandler<Msg : Any, Eff : Any>(
 ) : EffectHandler<Eff, Msg>(parentCoroutineScope) {
 
     override suspend fun processEffect(eff: Eff) {
-        coroutineScope.launch {
+        effHandlerScope.launch {
             effectsInterpreter(eff, ::listenerWrapper)
         }
     }

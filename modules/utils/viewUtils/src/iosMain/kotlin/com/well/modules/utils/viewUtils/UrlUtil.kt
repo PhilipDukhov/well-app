@@ -7,15 +7,13 @@ import platform.Foundation.NSTextCheckingTypeLink
 import platform.Foundation.firstMatchInString
 import platform.darwin.NSUInteger
 
-actual class UrlUtil {
-    actual companion object {
-        actual fun isValidUrl(url: String) : Boolean {
-            val detector = NSDataDetector(types = NSTextCheckingTypeLink, error = null)
-            val range = NSMakeRange(0,
-                url.length.toNSUInteger()
-            )
-            return detector.firstMatchInString(url, options = 0, range = range)?.range == range
-        }
+actual object UrlUtil {
+    actual fun isValidUrl(url: String): Boolean {
+        val detector = NSDataDetector(types = NSTextCheckingTypeLink, error = null)
+        val range = NSMakeRange(0,
+            url.length.toNSUInteger()
+        )
+        return detector.firstMatchInString(url, options = 0, range = range)?.range == range
     }
 }
 

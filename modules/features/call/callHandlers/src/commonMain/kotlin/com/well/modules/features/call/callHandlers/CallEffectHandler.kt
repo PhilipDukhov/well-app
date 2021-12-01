@@ -104,7 +104,7 @@ class CallEffectHandler(
             }
 
             override fun addCandidate(candidate: WebSocketMsg.Call.Candidate) {
-                coroutineScope.launch {
+                effHandlerScope.launch {
                     handler?.candidates?.emit(candidate)
                 }
             }
@@ -147,7 +147,7 @@ class CallEffectHandler(
         webRtcManagerListener.freeze()
         listOf(
             webRtcManagerListener,
-            coroutineScope.launch {
+            effHandlerScope.launch {
                 services.isConnectedFlow
                     .collect { shouldSend ->
                         candidatesSendCloseable.value =
@@ -160,7 +160,7 @@ class CallEffectHandler(
                             else null
                     }
             }.asCloseable(),
-            coroutineScope.launch {
+            effHandlerScope.launch {
                 services.callWebSocketMsgFlow
                     .collect(::listenWebSocketMessage)
             }.asCloseable(),
@@ -229,7 +229,7 @@ class CallEffectHandler(
         perform: suspend (M) -> Unit
     ) = msg.freeze()
         .let {
-            coroutineScope.launch {
+            effHandlerScope.launch {
                 perform(msg)
             }
         }
@@ -327,7 +327,7 @@ class CallEffectHandler(
     }
 
     private fun runWebRtcManager(block: suspend WebRtcManagerI.() -> Unit) =
-        coroutineScope.launch {
+        effHandlerScope.launch {
             block(webRtcManager)
         }
 }

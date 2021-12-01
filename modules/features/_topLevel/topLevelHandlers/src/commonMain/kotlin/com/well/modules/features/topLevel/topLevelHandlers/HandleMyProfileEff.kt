@@ -3,10 +3,6 @@ package com.well.modules.features.topLevel.topLevelHandlers
 import com.well.modules.db.users.getByIdFlow
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature
 import com.well.modules.features.myProfile.myProfileHandlers.MyProfileEffHandler
-import com.well.modules.features.topLevel.topLevelHandlers.FeatureProviderImpl
-import com.well.modules.features.topLevel.topLevelHandlers.fixDescription
-import com.well.modules.features.topLevel.topLevelHandlers.logOut
-import com.well.modules.features.topLevel.topLevelHandlers.loggedIn
 import com.well.modules.models.User
 import com.well.modules.puerhBase.EffectHandler
 import com.well.modules.puerhBase.Listener
@@ -21,7 +17,7 @@ import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.Msg
 import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State
 import kotlinx.coroutines.launch
 
-internal fun FeatureProviderImpl.createProfileEffHandler(
+internal fun TopLevelFeatureProviderImpl.createProfileEffHandler(
     uid: User.Id,
     isCurrent: Boolean = false,
     position: State.ScreenPosition,

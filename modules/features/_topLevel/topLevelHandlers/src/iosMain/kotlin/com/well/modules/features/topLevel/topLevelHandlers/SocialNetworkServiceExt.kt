@@ -10,7 +10,7 @@ fun FeatureProvider<TopLevelFeature.Msg, TopLevelFeature.State>.application(
     app: UIApplication,
     openURL: NSURL,
     options: Map<Any?, *>,
-) = (this as FeatureProviderImpl).run {
+) = (this as TopLevelFeatureProviderImpl).run {
     socialNetworkService.credentialProviders.values
         .any { it.application(app, openURL, options) }
 }

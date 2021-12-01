@@ -3,6 +3,7 @@ package com.well.modules.androidUi.composableScreens.experts.filter
 import com.well.modules.androidUi.composableScreens.myProfile.SelectionScreen
 import com.well.modules.androidUi.customViews.NavigationBar
 import com.well.modules.androidUi.customViews.rememberControlItem
+import com.well.modules.utils.kotlinUtils.ifTrueOrNull
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,7 +26,7 @@ fun FilterSelectionScreen(
     }
     NavigationBar(
         title = title,
-        rightItem = if (!multipleSelection) null else {
+        rightItem = ifTrueOrNull(multipleSelection) {
             val allVariants = variants.indices.toSet()
             val allVariantsSelected = selection == allVariants
             rememberControlItem(

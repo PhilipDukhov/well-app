@@ -13,11 +13,14 @@ import com.well.modules.db.chatMessages.messagePresenceFlow
 import com.well.modules.db.chatMessages.selectAllFlow
 import com.well.modules.db.chatMessages.unreadCountsFlow
 import com.well.modules.db.meetings.insertAll
+import com.well.modules.db.meetings.listFlow
 import com.well.modules.db.meetings.removeAll
 import com.well.modules.db.mobile.DatabaseProvider
 import com.well.modules.db.mobile.createDatabaseProvider
 import com.well.modules.db.users.getByIdsFlow
 import com.well.modules.db.users.insertOrReplace
+import com.well.modules.db.users.toUser
+import com.well.modules.features.calendar.calendarHandlers.CalendarEffHandler
 import com.well.modules.features.call.callFeature.webRtc.WebRtcManagerI
 import com.well.modules.features.chatList.chatListHandlers.ChatListEffHandler
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature
@@ -68,7 +71,7 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 
-internal class FeatureProviderImpl(
+internal class TopLevelFeatureProviderImpl(
     private val appContext: AppContext,
     val webRtcManagerGenerator: (List<String>, WebRtcManagerI.Listener) -> WebRtcManagerI,
     providerGenerator: (SocialNetwork, AppContext, WebAuthenticator) -> CredentialProvider,
@@ -184,7 +187,7 @@ internal class FeatureProviderImpl(
                                 onConnectedFlow = networkManager.onConnectedFlow,
                                 lastListViewModelFlow = messagesDatabase
                                     .lastListFlow(uid)
-                                    .toChatMessageContainerFlow(uid, this@FeatureProviderImpl),
+                                    .toChatMessageContainerFlow(uid, this@TopLevelFeatureProviderImpl),
                                 unreadCountsFlow = { messages ->
                                     messagesDatabase
                                         .chatMessagesQueries
@@ -300,7 +303,7 @@ internal class FeatureProviderImpl(
                                 TopUserChatEffHandler(
                                     peerUid = screen.state.peerId,
                                     currentUid = sessionInfo!!.uid,
-                                    featureProviderImpl = this@FeatureProviderImpl,
+                                    featureProviderImpl = this@TopLevelFeatureProviderImpl,
                                     parentCoroutineScope = coroutineScope,
                                 ).adapt(
                                     effAdapter = { (it as? FeatureEff.UserChat)?.eff },

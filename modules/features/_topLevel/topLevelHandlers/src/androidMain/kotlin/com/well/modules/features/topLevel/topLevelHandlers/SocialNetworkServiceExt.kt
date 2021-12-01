@@ -8,7 +8,7 @@ fun FeatureProvider<TopLevelFeature.Msg, TopLevelFeature.State>.handleActivityRe
     requestCode: Int,
     resultCode: Int,
     data: Intent?,
-) = (this as FeatureProviderImpl).run {
+) = (this as TopLevelFeatureProviderImpl).run {
     socialNetworkService
         .credentialProviders
         .values
@@ -17,7 +17,7 @@ fun FeatureProvider<TopLevelFeature.Msg, TopLevelFeature.State>.handleActivityRe
 
 fun FeatureProvider<TopLevelFeature.Msg, TopLevelFeature.State>.handleOnNewIntent(
     data: Intent?,
-) = (this as FeatureProviderImpl).run {
+) = (this as TopLevelFeatureProviderImpl).run {
     socialNetworkService
         .credentialProviders
         .values

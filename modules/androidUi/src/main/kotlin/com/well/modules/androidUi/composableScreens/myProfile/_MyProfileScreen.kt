@@ -395,15 +395,6 @@ private fun OtherUserHeader(
             }
         }
         header.nameWithCredentials?.let { Text(it, style = MaterialTheme.typography.h4) }
-        Control(onClick = {
-            listener.invoke(Msg.Call)
-        }) {
-            Icon(
-                Icons.Rounded.Call,
-                contentDescription = null,
-                tint = Color.Green.toColor(),
-            )
-        }
         RatingInfoView(header.ratingInfo, viewAll = editRating)
     }
 }

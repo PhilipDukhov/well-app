@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-internal suspend fun FeatureProviderImpl.socialNetworkLogin(
+internal suspend fun TopLevelFeatureProviderImpl.socialNetworkLogin(
     socialNetwork: SocialNetwork,
     listener: Listener<TopLevelFeature.Msg>,
 ) {
@@ -49,7 +49,7 @@ internal suspend fun FeatureProviderImpl.socialNetworkLogin(
     }
 }
 
-internal fun FeatureProviderImpl.gotAuthResponse(
+internal fun TopLevelFeatureProviderImpl.gotAuthResponse(
     authResponse: AuthResponse,
     listener: Listener<TopLevelFeature.Msg>,
 ) {
@@ -75,7 +75,7 @@ internal fun FeatureProviderImpl.gotAuthResponse(
     }
 }
 
-internal fun FeatureProviderImpl.loggedIn(
+internal fun TopLevelFeatureProviderImpl.loggedIn(
     authInfo: AuthInfo,
     user: User? = null,
     listener: Listener<TopLevelFeature.Msg>,
@@ -109,7 +109,7 @@ internal fun FeatureProviderImpl.loggedIn(
     platform.dataStore.authInfo = authInfo
 }
 
-internal fun FeatureProviderImpl.logOut(listener: (TopLevelFeature.Msg) -> Unit) {
+internal fun TopLevelFeatureProviderImpl.logOut(listener: (TopLevelFeature.Msg) -> Unit) {
     sessionInfo = null
     platform.dataStore.authInfo = null
     clearDatabase()
@@ -118,7 +118,7 @@ internal fun FeatureProviderImpl.logOut(listener: (TopLevelFeature.Msg) -> Unit)
 
 private fun AuthResponse.toAuthInfo() = AuthInfo(token = token, id = user.id)
 
-private fun FeatureProviderImpl.notifyUsersDBPresenceCloseable() =
+private fun TopLevelFeatureProviderImpl.notifyUsersDBPresenceCloseable() =
     coroutineScope.launch {
         usersQueries.usersPresenceFlow()
             .combineWithUnit(networkManager.onConnectedFlow)

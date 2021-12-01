@@ -17,7 +17,7 @@ kotlin {
     iosWithSimulator(project = project)
     jvm()
     sourceSets {
-        optIns(optIns = setOf(OptIn.Coroutines))
+        optIns(OptIn.Coroutines)
         val commonMain by getting {
             libDependencies(
                 ":modules:models",

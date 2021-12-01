@@ -62,14 +62,14 @@ class MyProfileEffHandler(
 
     init {
         listOf(
-            coroutineScope.launch {
+            effHandlerScope.launch {
                 if (services.hasAvailableAvailabilities()) {
                     listener(Msg.UpdateHasAvailableAvailabilities(true))
                 }
             },
             services.userFlow
                 .map(Msg::RemoteUpdateUser)
-                .collectIn(coroutineScope, action = ::listener),
+                .collectIn(effHandlerScope, action = ::listener),
         ).map(Job::asCloseable).forEach(::addCloseableChild)
     }
 
@@ -86,7 +86,7 @@ class MyProfileEffHandler(
         Napier.d("processEffect $this $eff")
         when (eff) {
             is Eff.InitiateImageUpdate -> {
-                coroutineScope.launch {
+                effHandlerScope.launch {
                     initiateImageUpdate(eff)
                 }
             }
@@ -96,7 +96,7 @@ class MyProfileEffHandler(
                 }
             }
             is Eff.UploadUser -> {
-                coroutineScope.launch {
+                effHandlerScope.launch {
                     uploadUser(eff)
                 }
             }
@@ -125,7 +125,7 @@ class MyProfileEffHandler(
                                     listener(Msg.UpdateHasAvailableAvailabilities(false))
                                 }
                             ),
-                            parentCoroutineScope = coroutineScope
+                            parentCoroutineScope = effHandlerScope
                         ).apply {
                             setListener {
                                 listener(Msg.RequestConsultationMsg(it))

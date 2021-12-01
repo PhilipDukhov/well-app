@@ -1,4 +1,3 @@
-
 import org.codehaus.groovy.runtime.GStringImpl
 import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.Project
@@ -10,6 +9,7 @@ import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.getting
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultKotlinDependencyHandler
@@ -120,7 +120,15 @@ enum class OptIn(val deps: List<String>) {
         "io.ktor.utils.io.core.ExperimentalIoApi",
     ),
     Serialization(
-        "io.ktor.utils.io.core.ExperimentalIoApi",
+        "kotlinx.serialization.ExperimentalSerializationApi"
+    ),
+    Compose(
+        "androidx.compose.ui.ExperimentalComposeUiApi",
+        "androidx.compose.foundation.ExperimentalFoundationApi",
+        "com.google.accompanist.pager.ExperimentalPagerApi",
+        "androidx.compose.material.ExperimentalMaterialApi",
+        "androidx.compose.animation.ExperimentalAnimationApi",
+        "coil.annotation.ExperimentalCoilApi",
     ),
     ;
 
@@ -128,18 +136,24 @@ enum class OptIn(val deps: List<String>) {
 }
 
 fun NamedDomainObjectCollection<KotlinSourceSet>.optIns(
-    vararg annotations: String,
-    optIns: Set<OptIn> = emptySet(),
+    vararg optIns: OptIn,
 ) {
     all {
-        (optIns.plus(OptIn.Basic)
-            .flatMap(OptIn::deps)
-                + annotations.toList()
-                ).forEach {
+        optIns.mapToStrings()
+            .forEach {
                 languageSettings.optIn(it)
             }
     }
 }
+
+fun KotlinJvmOptions.optIns(
+    vararg optIns: OptIn,
+) {
+    freeCompilerArgs = freeCompilerArgs + optIns.mapToStrings().map { "-Xopt-in=$it" }
+}
+
+private fun Array<out OptIn>.mapToStrings() =
+    toList().plus(OptIn.Basic).flatMap(OptIn::deps).toSet()
 
 fun Project.libDependencies(vararg libs: String) =
     customDependencies(libs.asList())
@@ -257,16 +271,6 @@ fun KotlinMultiplatformExtension.exportIosModules(project: Project) {
         }
     }
 }
-
-val composeOptIns = listOf(
-    "androidx.compose.ui.ExperimentalComposeUiApi",
-    "androidx.compose.foundation.ExperimentalFoundationApi",
-    "com.google.accompanist.pager.ExperimentalPagerApi",
-    "androidx.compose.material.ExperimentalMaterialApi",
-    "androidx.compose.animation.ExperimentalAnimationApi",
-    "coil.annotation.ExperimentalCoilApi",
-    "kotlin.RequiresOptIn",
-)
 
 enum class ResolutionStrategy {
     Kotlin,

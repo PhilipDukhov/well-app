@@ -59,3 +59,17 @@ inline fun <F, S, R> Pair<F, S>.letNamed(block: (F, S) -> R): R {
 
 fun <F, S> Collection<Pair<F, S>>.forEachNamed(block: (F, S) -> Unit) =
     forEach { it.letNamed(block) }
+
+inline fun <T> ifTrueOrNull(condition: Boolean, block: () -> T): T? {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    return if (condition) block() else null
+}
+
+inline fun <T, R> T.letIfTrueOrNull(condition: Boolean, block: (T) -> R): R? {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    return if (condition) block(this) else null
+}

@@ -51,21 +51,25 @@ object CallFeature {
         val controlSet = if (drawingState.image != null) ControlSet.Drawing else controlSetSaved
         internal val localCameraEnabled = localDeviceState.cameraEnabled
         internal val remoteCameraEnabled = remoteDeviceState?.cameraEnabled != false
-        val localVideoView = if (localVideoContext == null) null else VideoView(
-            context = localVideoContext,
-            hidden = !localCameraEnabled || viewPoint == ViewPoint.Partner,
-            position = when (viewPoint) {
-                ViewPoint.Partner,
-                ViewPoint.Both,
-                -> VideoView.Position.Minimized
-                ViewPoint.Mine -> VideoView.Position.FullScreen
-            }
-        )
-        val remoteVideoView = if (remoteVideoContext == null) null else VideoView(
-            context = remoteVideoContext,
-            hidden = !remoteCameraEnabled || viewPoint == ViewPoint.Mine,
-            position = VideoView.Position.FullScreen
-        )
+        val localVideoView = localVideoContext?.let {
+            VideoView(
+                context = localVideoContext,
+                hidden = !localCameraEnabled || viewPoint == ViewPoint.Partner,
+                position = when (viewPoint) {
+                    ViewPoint.Partner,
+                    ViewPoint.Both,
+                    -> VideoView.Position.Minimized
+                    ViewPoint.Mine -> VideoView.Position.FullScreen
+                }
+            )
+        }
+        val remoteVideoView = remoteVideoContext?.let {
+            VideoView(
+                context = remoteVideoContext,
+                hidden = !remoteCameraEnabled || viewPoint == ViewPoint.Mine,
+                position = VideoView.Position.FullScreen
+            )
+        }
 
         data class CallStartedDateInfo(val date: Date) {
             val secondsPassedFormatted: String

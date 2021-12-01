@@ -11,25 +11,25 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 
 abstract class EffectHandler<Eff : Any, Msg : Any>(coroutineScope: CoroutineScope) : CloseableContainer() {
-    val coroutineScope: CoroutineScope
+    val effHandlerScope: CoroutineScope
     private var listener by AtomicRef<((Msg) -> Unit)?>(null)
     private val pendingMessages = AtomicMutableList<Msg>()
 
     init {
         val job = Job()
-        this.coroutineScope = coroutineScope + job
+        this.effHandlerScope = coroutineScope + job
         addCloseableChild(job.asCloseable())
     }
 
     open fun setListener(listener: suspend (Msg) -> Unit) {
-        this.listener = { msg -> coroutineScope.launch { listener(msg) } }
+        this.listener = { msg -> effHandlerScope.launch { listener(msg) } }
         pendingMessages
             .dropAll()
             .forEach(::listener)
     }
 
     fun handleEffect(eff: Eff) {
-        coroutineScope.launch {
+        effHandlerScope.launch {
             processEffect(eff)
         }
     }
@@ -47,7 +47,7 @@ abstract class EffectHandler<Eff : Any, Msg : Any>(coroutineScope: CoroutineScop
 fun <Eff1 : Any, Msg1 : Any, Eff2 : Any, Msg2 : Any> EffectHandler<Eff1, Msg1>.adapt(
     effAdapter: (Eff2) -> Eff1?,
     msgAdapter: (Msg1) -> Msg2?,
-): EffectHandler<Eff2, Msg2> = object : EffectHandler<Eff2, Msg2>(coroutineScope) {
+): EffectHandler<Eff2, Msg2> = object : EffectHandler<Eff2, Msg2>(effHandlerScope) {
     override fun setListener(listener: suspend (Msg2) -> Unit) =
         setListener { msg: Msg1 -> msgAdapter(msg)?.let { listener(it) } }
 

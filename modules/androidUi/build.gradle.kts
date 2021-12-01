@@ -28,6 +28,7 @@ libDependencies(
     ":modules:annotations",
     ":modules:models",
     ":modules:utils:viewUtils",
+    ":modules:utils:kotlinUtils",
     ":modules:features:_topLevel:topLevelFeature",
     ":modules:features:more",
     ":modules:features:welcome",
@@ -37,6 +38,7 @@ libDependencies(
     ":modules:features:chatList:chatListFeature",
     ":modules:features:experts:expertsFeature",
     ":modules:features:userChat:userChatFeature",
+    ":modules:features:calendar:calendarFeature",
 )
 
 android {
@@ -44,7 +46,7 @@ android {
         compose = true
     }
     kotlinOptions {
-        freeCompilerArgs = freeCompilerArgs + composeOptIns.map { "-Xopt-in=$it" }
+        optIns(OptIn.Compose)
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true

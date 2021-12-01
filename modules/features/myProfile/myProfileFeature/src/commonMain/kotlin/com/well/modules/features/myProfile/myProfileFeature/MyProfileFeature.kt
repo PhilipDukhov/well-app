@@ -10,12 +10,14 @@ import com.well.modules.models.RatingRequest
 import com.well.modules.models.User
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
+import com.well.modules.utils.kotlinUtils.ifTrueOrNull
 import com.well.modules.utils.kotlinUtils.spacedUppercaseName
 import com.well.modules.utils.viewUtils.NavigationBarModel
 import com.well.modules.utils.viewUtils.UrlUtil
 import com.well.modules.utils.viewUtils.currentTimeZoneIdentifier
 import com.well.modules.utils.viewUtils.sharedImage.ImageContainer
 import com.well.modules.utils.viewUtils.sharedImage.profileImage
+import com.well.modules.utils.viewUtils.urlIfValidOrNull
 import io.github.aakira.napier.Napier
 
 object MyProfileFeature {
@@ -48,7 +50,7 @@ object MyProfileFeature {
     private fun initialState(
         isCurrent: Boolean,
         uid: User.Id,
-        user: User?,
+        user: User? = null,
     ) = user?.let {
         if (user.initialized)
             user
@@ -91,14 +93,14 @@ object MyProfileFeature {
             listOf(
                 UIGroup.Header(
                     image = image,
-                    name = if (!user.initialized || editingStatus != EditingStatus.Preview) null else user.fullName,
+                    name = ifTrueOrNull(user.initialized && editingStatus == EditingStatus.Preview) { user.fullName },
                     credentials = user.credentials,
                     favorite = user.favorite,
                     ratingInfo = user.ratingInfo,
                     completeness = if (user.initialized) user.completeness else null,
                     accountType = if (user.initialized) user.type else null,
-                    twitterLink = user.twitter?.let { if (!UrlUtil.isValidUrl(it)) null else it },
-                    doximityLink = user.doximity?.let { if (!UrlUtil.isValidUrl(it)) null else it },
+                    twitterLink = user.twitter?.let(UrlUtil::urlIfValidOrNull),
+                    doximityLink = user.doximity?.let(UrlUtil::urlIfValidOrNull),
                 ),
             ) + when (editingStatus) {
                 EditingStatus.Preview -> user.previewGroups(isCurrent, hasAvailableAvailabilities)

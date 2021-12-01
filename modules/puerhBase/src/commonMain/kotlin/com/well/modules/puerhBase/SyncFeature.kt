@@ -20,7 +20,7 @@ class SyncFeature<Msg : Any, State : Any, Eff : Any>(
     private val effectScope = CoroutineScope(Dispatchers.Default)
     private val reducerMutex = Mutex()
 
-    override val state: MutableStateFlow<State> = MutableStateFlow(initialState)
+    override val state = MutableStateFlow(initialState)
 
     private val effListeners = AtomicMutableList<(eff: Eff) -> Unit>()
 

@@ -18,7 +18,7 @@ kotlin {
     androidWithAndroid()
     iosWithSimulator(project = project)
     sourceSets {
-        optIns(optIns = setOf(OptIn.Coroutines))
+        optIns(OptIn.Coroutines)
         val commonMain by getting {
             libDependencies(
                 ":modules:annotations",

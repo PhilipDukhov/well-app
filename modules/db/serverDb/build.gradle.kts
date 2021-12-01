@@ -18,6 +18,7 @@ kotlin {
                 ":modules:models",
                 ":modules:utils:dbUtils",
                 ":modules:utils:flowUtils",
+                ":modules:utils:kotlinUtils",
                 "sqldelight.coroutinesExtensions",
                 "kotlin.datetime",
             )

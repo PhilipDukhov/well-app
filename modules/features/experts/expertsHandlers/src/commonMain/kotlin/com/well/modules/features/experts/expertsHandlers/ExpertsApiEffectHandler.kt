@@ -35,20 +35,20 @@ class ExpertsApiEffectHandler(
     init {
         services.connectionStatusFlow
             .map(Msg::OnConnectionStatusChange)
-            .collectIn(coroutineScope, action = ::listener)
+            .collectIn(effHandlerScope, action = ::listener)
         services.usersListFlow
             .map(Msg::OnUsersUpdated)
-            .collectIn(coroutineScope, action = ::listener)
+            .collectIn(effHandlerScope, action = ::listener)
         filterFlow
             .combineWithUnit(services.onConnectedFlow)
-            .collectIn(coroutineScope) {
+            .collectIn(effHandlerScope) {
                 services.updateUsersFilter(it)
             }
     }
 
     override suspend fun processEffect(eff: Eff) {
         addCloseableChild(
-            coroutineScope.launch {
+            effHandlerScope.launch {
                 when (eff) {
                     is Eff.UpdateList -> {
                         inputFilterFlow.emit(eff.filter)

@@ -1,7 +1,7 @@
 package com.well.modules.utils.dbUtils
 
 inline fun <reified T : Enum<T>> Set<Enum<T>>.adaptedIntersectionRegex() =
-    map { it.name }.adaptedIntersectionRegex()
+    adaptedIntersectionRegex { it.name }
 
 fun Collection<String>.adaptedIntersectionRegex() =
     if (isEmpty())

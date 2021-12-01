@@ -43,7 +43,7 @@ android {
         compose = true
     }
     kotlinOptions {
-        freeCompilerArgs += composeOptIns.map { "-Xopt-in=$it" }
+        optIns(OptIn.Compose)
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true

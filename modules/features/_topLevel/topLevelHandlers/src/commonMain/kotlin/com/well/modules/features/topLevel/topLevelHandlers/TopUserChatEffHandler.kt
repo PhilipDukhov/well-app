@@ -19,7 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 internal class TopUserChatEffHandler(
     private val peerUid: User.Id,
     private val currentUid: User.Id,
-    private val featureProviderImpl: FeatureProviderImpl,
+    private val featureProviderImpl: TopLevelFeatureProviderImpl,
     parentCoroutineScope: CoroutineScope,
 ) : EffectHandler<UserChatFeature.Eff, UserChatFeature.Msg>(parentCoroutineScope) {
 

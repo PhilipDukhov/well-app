@@ -17,7 +17,7 @@ kotlin {
         withJava()
     }
     sourceSets {
-        optIns(optIns = setOf(OptIn.Coroutines))
+        optIns(OptIn.Coroutines)
         val jvmMain by getting {
             libDependencies(
                 ":modules:db:serverDb",

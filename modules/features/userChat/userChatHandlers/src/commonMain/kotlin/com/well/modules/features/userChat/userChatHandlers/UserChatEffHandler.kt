@@ -32,12 +32,12 @@ class UserChatEffHandler(
         services
             .peerUserFlow
             .map(Msg::UpdateUser)
-            .collectIn(coroutineScope, ::listener)
+            .collectIn(effHandlerScope, ::listener)
         services
             .messagesFlow
             .mapIterable { it.viewModel }
             .map(Msg::UpdateMessages)
-            .collectIn(coroutineScope, ::listener)
+            .collectIn(effHandlerScope, ::listener)
     }
 
     override suspend fun processEffect(eff: Eff) {
@@ -48,7 +48,7 @@ class UserChatEffHandler(
             is Eff.OpenUserProfile,
             -> Unit
             Eff.ChooseImage -> {
-                coroutineScope.launch {
+                effHandlerScope.launch {
                     listener(Msg.SendImage(services.pickSystemImage()))
                 }
             }

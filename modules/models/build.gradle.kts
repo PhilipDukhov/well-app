@@ -13,9 +13,10 @@ kotlin {
     androidWithAndroid()
     jvm()
     sourceSets {
-        optIns("kotlinx.serialization.ExperimentalSerializationApi")
+        optIns(OptIn.Serialization)
         val commonMain by getting {
             libDependencies(
+                ":modules:utils:dbUtils",
                 "kotlin.datetime",
                 "kotlin.serializationJson",
                 "sqldelight.runtime",

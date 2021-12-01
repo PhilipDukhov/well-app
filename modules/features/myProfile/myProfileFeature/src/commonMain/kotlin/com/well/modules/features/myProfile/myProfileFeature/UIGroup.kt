@@ -1,6 +1,7 @@
 package com.well.modules.features.myProfile.myProfileFeature
 
 import com.well.modules.models.User
+import com.well.modules.utils.kotlinUtils.ifTrueOrNull
 import com.well.modules.utils.viewUtils.UIEditingField
 import com.well.modules.utils.viewUtils.sharedImage.SharedImage
 
@@ -8,8 +9,7 @@ sealed class UIGroup {
     companion object {
         fun Preview(vararg fields: UIPreviewField?) =
             fields.filterNotNull().let {
-                if (it.isEmpty()) null else
-                    Preview(it)
+                ifTrueOrNull(it.isNotEmpty()) { Preview(it) }
             }
     }
 
@@ -32,7 +32,7 @@ sealed class UIGroup {
         val accountType: User.Type?,
         val twitterLink: String?,
         val doximityLink: String?,
-    ): UIGroup() {
+    ) : UIGroup() {
         val initiateImageUpdateText = name ?: if (image != null) "Update image" else "Select image"
         val nameWithCredentials = name?.let {
             "$name${credentials?.let { ", $it" } ?: ""}"
