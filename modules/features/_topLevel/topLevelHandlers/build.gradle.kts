@@ -43,6 +43,7 @@ kotlin {
                 ":modules:features:chatList:chatListHandlers",
                 ":modules:features:experts:expertsHandlers",
                 ":modules:features:userChat:userChatHandlers",
+                ":modules:features:calendar:calendarHandlers",
 
                 "kotlin.serializationJson",
                 "kotlin.coroutines.core",

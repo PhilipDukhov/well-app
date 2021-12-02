@@ -183,7 +183,6 @@ private struct BookRow<T, ID: Hashable>: View {
         let itemSize = CGSize(width: width, height: (width / aspectRatio).rounded())
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                let shape = RoundedRectangle(cornerRadius: 14)
                 ForEachIndexed(items, id: id) { i, item in
                     let selected = i == selectedIndex
                     Button(action: {
@@ -198,6 +197,7 @@ private struct BookRow<T, ID: Hashable>: View {
                             .foregroundColorKMM(selected ? .companion.White : .companion.DarkGrey)
                     }
                     .background {
+                        let shape = Shapes.medium
                         if selected {
                             shape.foregroundColorKMM(.companion.Green)
                         } else {

@@ -63,7 +63,7 @@ fun WelcomeScreen(
         .fillMaxSize()
         .backgroundKMM(Color.DarkBlue)
 ) {
-    val (backgroundRef, imagesRef, textsRef) = createRefs()
+    val (imagesRef, textsRef) = createRefs()
     val context = LocalContext.current
     val lazyRowState = rememberLazyListState()
     var rowWidth by remember { mutableStateOf(0) }

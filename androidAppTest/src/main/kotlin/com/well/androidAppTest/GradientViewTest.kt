@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -166,7 +167,7 @@ fun GradientViewCalibrator(initial: Gradient, modifier: Modifier) {
                 }
         ) {
             fun Point.denormalize(): Offset =
-                toOffset().denormalize(constraints)
+                toOffset().denormalize(Size(constraints.minWidth.toFloat(), constraints.minHeight.toFloat()))
             GradientView(
                 gradient,
                 modifier = Modifier.matchParentSize()

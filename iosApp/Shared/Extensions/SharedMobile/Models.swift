@@ -82,3 +82,7 @@ extension CircularProgressViewStyle {
 
 // swiftlint:disable:next identifier_name
 let ColorConstants = SharedMobile.Color.companion
+
+extension MeetingViewModel: Identifiable {
+
+}

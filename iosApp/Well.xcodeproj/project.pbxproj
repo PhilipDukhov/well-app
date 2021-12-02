@@ -39,6 +39,8 @@
 		4A42E2CF272B4BCF00E839CF /* partialSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A42E2CD272B4BCF00E839CF /* partialSheet.swift */; };
 		4A4E3E8F267A469300BF34EC /* ChatListScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D1C3DE2A7916F73A72D11 /* ChatListScreen.swift */; };
 		4A4E3E90267A469300BF34EC /* UserChatScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D1E65EC96D4AE332C928E /* UserChatScreen.swift */; };
+		4A5475332758B0DC0023D006 /* Shapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5475322758B0DC0023D006 /* Shapes.swift */; };
+		4A5475342758B0DC0023D006 /* Shapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5475322758B0DC0023D006 /* Shapes.swift */; };
 		4A6ABABB270F45B900D8621E /* Napier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6ABABA270F45B900D8621E /* Napier.swift */; };
 		4A6ABABF270F544D00D8621E /* HorizontalCapsule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6ABABE270F544D00D8621E /* HorizontalCapsule.swift */; };
 		4A82800E2725EBFB004DF64E /* LocalTestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82800D2725EBFB004DF64E /* LocalTestApp.swift */; };
@@ -115,6 +117,10 @@
 		4A82806A2725FA3C004DF64E /* detectVolumeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8280692725FA3C004DF64E /* detectVolumeButton.swift */; };
 		4A82806E272714AB004DF64E /* typealiases.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82806D272714AB004DF64E /* typealiases.swift */; };
 		4A8280722727157A004DF64E /* TestScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8280712727157A004DF64E /* TestScreens.swift */; };
+		4A98B2F827578B0600E62B8D /* CalendarScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A98B2F727578B0600E62B8D /* CalendarScreen.swift */; };
+		4A98B2F927578C5500E62B8D /* CalendarScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A98B2F727578B0600E62B8D /* CalendarScreen.swift */; };
+		4A98B2FB2757910800E62B8D /* CalendarMonthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A98B2FA2757910800E62B8D /* CalendarMonthView.swift */; };
+		4A98B2FC2757910800E62B8D /* CalendarMonthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A98B2FA2757910800E62B8D /* CalendarMonthView.swift */; };
 		4A9F38522741EAED004D5EF5 /* RoundedCornerRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9F38512741EAED004D5EF5 /* RoundedCornerRectangle.swift */; };
 		4A9F38532741EAED004D5EF5 /* RoundedCornerRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9F38512741EAED004D5EF5 /* RoundedCornerRectangle.swift */; };
 		4A9F386827432140004D5EF5 /* PageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9F386727432140004D5EF5 /* PageView.swift */; };
@@ -205,6 +211,7 @@
 		4A42E2AF27294D5300E839CF /* TabRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabRow.swift; sourceTree = "<group>"; };
 		4A42E2BE2729DAFE00E839CF /* RequestConsultationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestConsultationView.swift; sourceTree = "<group>"; };
 		4A42E2CD272B4BCF00E839CF /* partialSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = partialSheet.swift; sourceTree = "<group>"; };
+		4A5475322758B0DC0023D006 /* Shapes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shapes.swift; sourceTree = "<group>"; };
 		4A6ABABA270F45B900D8621E /* Napier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Napier.swift; sourceTree = "<group>"; };
 		4A6ABABE270F544D00D8621E /* HorizontalCapsule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalCapsule.swift; sourceTree = "<group>"; };
 		4A82800B2725EBFB004DF64E /* LocalTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LocalTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -215,6 +222,8 @@
 		4A82806C2725FCA0004DF64E /* SharedMobile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SharedMobile.h; path = ../../sharedMobile/build/cocoapods/framework/SharedMobile.framework/Headers/SharedMobile.h; sourceTree = "<group>"; };
 		4A82806D272714AB004DF64E /* typealiases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = typealiases.swift; sourceTree = "<group>"; };
 		4A8280712727157A004DF64E /* TestScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScreens.swift; sourceTree = "<group>"; };
+		4A98B2F727578B0600E62B8D /* CalendarScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarScreen.swift; sourceTree = "<group>"; };
+		4A98B2FA2757910800E62B8D /* CalendarMonthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarMonthView.swift; sourceTree = "<group>"; };
 		4A9F38512741EAED004D5EF5 /* RoundedCornerRectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCornerRectangle.swift; sourceTree = "<group>"; };
 		4A9F386727432140004D5EF5 /* PageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageView.swift; sourceTree = "<group>"; };
 		4AC263D727229EEE002BE68B /* ReducerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReducerView.swift; sourceTree = "<group>"; };
@@ -405,6 +414,14 @@
 			path = Ext;
 			sourceTree = "<group>";
 		};
+		4A98B2F627578AF700E62B8D /* Calendar */ = {
+			isa = PBXGroup;
+			children = (
+				4A98B2F727578B0600E62B8D /* CalendarScreen.swift */,
+			);
+			path = Calendar;
+			sourceTree = "<group>";
+		};
 		4AC263D927229F41002BE68B /* Availability */ = {
 			isa = PBXGroup;
 			children = (
@@ -536,6 +553,7 @@
 				347D13C627400CA9EA09C776 /* ProjectTextEditor.swift */,
 				347D1E959C04E1097F02FE36 /* SharedImage.swift */,
 				4A42E2CD272B4BCF00E839CF /* partialSheet.swift */,
+				4A98B2FA2757910800E62B8D /* CalendarMonthView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -558,6 +576,7 @@
 			isa = PBXGroup;
 			children = (
 				9635187200737E866C588DF2 /* Typography.swift */,
+				4A5475322758B0DC0023D006 /* Shapes.swift */,
 				96351F9D4EEE832DE9A5D481 /* Shapes */,
 				96351BB469CEAA3648AE30CA /* Helpers */,
 			);
@@ -671,6 +690,7 @@
 				347D13C2A748FF89D63D6154 /* More */,
 				347D1D274C3F7850F8799210 /* ChatList */,
 				347D1D7FA3FFF4A309A2460D /* UserChat */,
+				4A98B2F627578AF700E62B8D /* Calendar */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -955,6 +975,7 @@
 				4A8280262725EDAB004DF64E /* DrawingPanel.swift in Sources */,
 				4A8280512725EDAB004DF64E /* CG.swift in Sources */,
 				4A8280392725EDAB004DF64E /* CallScreen.swift in Sources */,
+				4A5475342758B0DC0023D006 /* Shapes.swift in Sources */,
 				4A82806A2725FA3C004DF64E /* detectVolumeButton.swift in Sources */,
 				4A8280322725EDAB004DF64E /* OffsetCircle.swift in Sources */,
 				4A82803D2725EDAB004DF64E /* ImageSharing.swift in Sources */,
@@ -963,9 +984,11 @@
 				4A8280412725EDAB004DF64E /* Flow.swift in Sources */,
 				4A8280352725EDAB004DF64E /* gestures.swift in Sources */,
 				4A8280442725EDAB004DF64E /* UserCell.swift in Sources */,
+				4A98B2F927578C5500E62B8D /* CalendarScreen.swift in Sources */,
 				4A8280532725EDAB004DF64E /* ManualViewUpdater.swift in Sources */,
 				4A8280332725EDAB004DF64E /* DrawShape.swift in Sources */,
 				4A8280492725EDAB004DF64E /* MoreScreen.swift in Sources */,
+				4A98B2FC2757910800E62B8D /* CalendarMonthView.swift in Sources */,
 				4A8280522725EDAB004DF64E /* ChatMessageCell.swift in Sources */,
 				4A82802F2725EDAB004DF64E /* ToggleStillButton.swift in Sources */,
 				4A8280722727157A004DF64E /* TestScreens.swift in Sources */,
@@ -1010,6 +1033,7 @@
 			files = (
 				D568033C2638322500CFE16B /* CallBottomBar.swift in Sources */,
 				D568032F2638320300CFE16B /* ColorPicker.swift in Sources */,
+				4A98B2F827578B0600E62B8D /* CalendarScreen.swift in Sources */,
 				D568031A263831A500CFE16B /* NSError+description.swift in Sources */,
 				D568034C2638327600CFE16B /* TopLevelView.swift in Sources */,
 				D56803442638322500CFE16B /* WidthSlider.swift in Sources */,
@@ -1054,6 +1078,7 @@
 				D568032A2638320300CFE16B /* Control.swift in Sources */,
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
 				D56803462638322500CFE16B /* CallButton.swift in Sources */,
+				4A5475332758B0DC0023D006 /* Shapes.swift in Sources */,
 				D568035026384A2500CFE16B /* WelcomeScreen.swift in Sources */,
 				D56803342638320400CFE16B /* ImageLoader.swift in Sources */,
 				D5680319263831A500CFE16B /* Bundle+displayName.swift in Sources */,
@@ -1062,6 +1087,7 @@
 				4A3A82BA26626D70003DD1F3 /* MoreScreen.swift in Sources */,
 				4A42E2BF2729DAFE00E839CF /* RequestConsultationView.swift in Sources */,
 				4AC263DB27229F4E002BE68B /* AvailabilitiesCalendarView.swift in Sources */,
+				4A98B2FB2757910800E62B8D /* CalendarMonthView.swift in Sources */,
 				D56803422638322500CFE16B /* MyProfileScreen.swift in Sources */,
 				4A0A75F82728AA4E00632E84 /* AvailabilitiesList.swift in Sources */,
 				D568034E26383DA900CFE16B /* SearchBar.swift in Sources */,

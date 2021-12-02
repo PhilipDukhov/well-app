@@ -224,7 +224,7 @@ private fun <T> BookRow(
     ) {
         itemsIndexed(items) { i, item ->
             val selected = i == selectedIndex
-            val shape = RoundedCornerShape(14.dp)
+            val shape = MaterialTheme.shapes.medium
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier

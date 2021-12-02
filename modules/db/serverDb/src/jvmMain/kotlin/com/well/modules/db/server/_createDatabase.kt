@@ -58,8 +58,7 @@ operator fun Database.Companion.invoke(driver: SqlDriver) =
         MeetingsAdapter = Meetings.Adapter(
             idAdapter = Meeting.Id.ColumnAdapter,
             availabilityIdAdapter = Availability.Id.ColumnAdapter,
-            hostIdAdapter = User.Id.ColumnAdapter,
-            attendeeIdAdapter = User.Id.ColumnAdapter,
             startInstantAdapter = InstantColumnAdapter,
+            attendeesAdapter = User.Id.SetColumnAdapter,
         ),
     )

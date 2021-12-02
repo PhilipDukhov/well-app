@@ -14,7 +14,7 @@ struct WelcomeScreen: View {
     let listener: (WelcomeFeature.Msg) -> Void
 
     @State
-    var selection: Int = 0
+    private var selection: Int = 0
 
     var body: some View {
         VStack(spacing: 0) {

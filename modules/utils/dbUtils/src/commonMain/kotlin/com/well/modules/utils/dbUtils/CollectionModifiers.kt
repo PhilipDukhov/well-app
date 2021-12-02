@@ -3,7 +3,7 @@ package com.well.modules.utils.dbUtils
 inline fun <reified T : Enum<T>> Set<Enum<T>>.adaptedIntersectionRegex() =
     adaptedIntersectionRegex { it.name }
 
-fun Collection<String>.adaptedIntersectionRegex() =
+fun<E> Collection<E>.adaptedIntersectionRegex(transform: (E) -> CharSequence) =
     if (isEmpty())
         ""
     else
@@ -11,7 +11,7 @@ fun Collection<String>.adaptedIntersectionRegex() =
             separator = "|",
             prefix = "(,|^)(",
             postfix = "(,|$))"
-        ) { it }
+        ) { transform(it) }
 
 fun Collection<String>.adaptedOneOfRegex() =
     if (isEmpty())

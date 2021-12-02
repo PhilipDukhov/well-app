@@ -9,8 +9,7 @@ data class Meeting(
     val id: Id,
     override val startInstant: Instant,
     override val durationMinutes: Int,
-    val hostId: User.Id,
-    val attendeeId: User.Id,
+    val attendees: Set<User.Id>,
 ): AvailabilityInfo {
     @Serializable
     @JvmInline

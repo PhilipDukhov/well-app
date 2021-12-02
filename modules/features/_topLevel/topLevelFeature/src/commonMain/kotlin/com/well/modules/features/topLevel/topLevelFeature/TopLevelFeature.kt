@@ -1,6 +1,7 @@
 package com.well.modules.features.topLevel.topLevelFeature
 
 import com.well.modules.annotations.ScreenStates
+import com.well.modules.features.calendar.calendarFeature.CalendarFeature
 import com.well.modules.features.call.callFeature.CallFeature
 import com.well.modules.features.chatList.chatListFeature.ChatListFeature
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature
@@ -39,6 +40,7 @@ import com.well.modules.utils.viewUtils.Alert
         SupportFeature::class,
         ChatListFeature::class,
         UserChatFeature::class,
+        CalendarFeature::class,
     ]
 )
 object TopLevelFeature {
@@ -104,17 +106,22 @@ object TopLevelFeature {
             MyProfile,
             Experts,
             ChatList,
+            Calendar,
             More,
 
             Overlay,
             ;
 
-            fun spacedName() = spacedUppercaseName()
+            fun spacedName() = when(this) {
+                MyProfile -> "Profile"
+                else -> spacedUppercaseName()
+            }
 
             fun isTabBar() = when (this) {
                 MyProfile,
                 Experts,
                 ChatList,
+                Calendar,
                 More,
                 -> true
                 else -> false

@@ -9,7 +9,9 @@ struct TextStyle: Equatable {
     let fontSize: CGFloat
     let fontWeight: Font.Weight
 
+    static let h3 = Self(fontSize: 37, fontWeight: .regular)
     static let h4 = Self(fontSize: 30, fontWeight: .bold)
+    static let h5 = Self(fontSize: 25, fontWeight: .regular)
     static let subtitle1 = Self(fontSize: 21, fontWeight: .regular)
     static let subtitle2 = Self(fontSize: 17, fontWeight: .bold)
     static let body1 = Self(fontSize: 18, fontWeight: .regular)

@@ -1,20 +1,13 @@
 package com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar
 
 import com.well.modules.models.Availability
-import com.well.modules.models.date.dateTime.daysShift
-import com.well.modules.models.date.dateTime.firstDayOfWeek
 import com.well.modules.models.date.dateTime.localizedName
-import com.well.modules.models.date.dateTime.monthOffset
-import com.well.modules.models.date.dateTime.today
 import com.well.modules.models.mapDayAvailabilities
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
+import com.well.modules.utils.viewUtils.CalendarInfoFeature
 import com.well.modules.utils.viewUtils.GlobalStringsBase
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.Month
-import kotlinx.datetime.plus
 
 object AvailabilitiesCalendarFeature {
     object Strings : GlobalStringsBase()
@@ -23,69 +16,46 @@ object AvailabilitiesCalendarFeature {
         internal val availabilities: List<Availability>? = null,
         val failureReason: String? = null,
         val processing: Boolean = false,
-        val monthOffset: Int = 0,
+        val infoState: CalendarInfoFeature.State<Availability> = CalendarInfoFeature.State(
+            monthOffset = 0,
+            selectedDate = null,
+            prepareDayEvents = { day ->
+                availabilities
+                    ?.let { availabilities.mapDayAvailabilities(day) }
+                    ?: emptyList()
+            }
+        ),
     ) {
         companion object {
-            val allDaysOfWeek = DayOfWeek.values().toList()
             const val availabilityCellsCount = 3
         }
 
-        data class CalendarItem(
-            val date: LocalDate,
-            val isCurrentMonth: Boolean,
-            val isCurrentDay: Boolean,
-            val availabilities: List<Availability>,
-            val canCreateAvailability: Boolean,
-        )
-        val loaded = availabilities != null
-        val month: Month
-        val weeks: List<List<CalendarItem>>
-        val monthAvailabilities: List<Availability>
         val calendarTitle: String
 
         init {
-            val today = LocalDate.today()
-            val currentMonthFirstDay = today
-                .monthOffset(dayOfMonth = 1, monthOffset = monthOffset)
-            month = currentMonthFirstDay.month
-            val year = currentMonthFirstDay.year.let { year ->
-                if (year != today.year) year else null
-            }
-            calendarTitle = month.localizedName + (year?.let { ", $it" } ?: "")
-            val nextMonth = currentMonthFirstDay.monthOffset(dayOfMonth = 1, monthOffset = 1).month
-            val days = mutableListOf<List<CalendarItem>>()
-            val firstDayOfWeek = firstDayOfWeek
-            val weekDaysCount = DayOfWeek.values().count()
-            val daysBeforeFirstWeekDay =
-                ((firstDayOfWeek.ordinal - currentMonthFirstDay.dayOfWeek.ordinal) - weekDaysCount) % weekDaysCount
-            var loopDay = currentMonthFirstDay.daysShift(daysBeforeFirstWeekDay)
-            val monthAvailabilities = mutableListOf<Availability>()
-            while (loopDay.month != nextMonth) {
-                days += (0 until weekDaysCount)
-                    .map { loopDay.daysShift(it) }
-                    .map { day ->
-                        val availabilities = availabilities
-                            ?.let { availabilities.mapDayAvailabilities(day = day) }
-                            ?: emptyList()
-                        monthAvailabilities.addAll(availabilities)
-                        CalendarItem(
-                            date = day,
-                            isCurrentMonth = day.month == month,
-                            isCurrentDay = day == today,
-                            availabilities = availabilities,
-                            canCreateAvailability = day >= today,
-                        )
-                    }
-                loopDay = loopDay.plus(DateTimeUnit.DayBased(weekDaysCount))
-            }
-            this.weeks = days.toList()
-            this.monthAvailabilities = monthAvailabilities
+            val monthYear = infoState.currentMonthFirstDay.year
+            val yearIfNeeded = if (monthYear != infoState.today.year) ", $monthYear" else ""
+            calendarTitle = infoState.month.localizedName + yearIfNeeded
         }
+
+        val loaded = availabilities != null
+
+        fun canCreateAvailability(item: CalendarInfoFeature.State.Item<Availability>) =
+            item.date >= infoState.today
     }
 
     sealed class Msg {
-        object PrevMonth : Msg()
-        object NextMonth : Msg()
+        internal data class CalendarInfoMsg(val msg: CalendarInfoFeature.Msg) : Msg()
+
+        companion object {
+            val PrevMonth: Msg = CalendarInfoMsg(CalendarInfoFeature.Msg.PrevMonth)
+            val NextMonth: Msg = CalendarInfoMsg(CalendarInfoFeature.Msg.NextMonth)
+
+            @Suppress("FunctionName")
+            fun SelectDate(selectedDate: LocalDate): Msg =
+                CalendarInfoMsg(CalendarInfoFeature.Msg.SelectDate(selectedDate))
+        }
+
         data class Add(val availability: Availability) : Msg()
         data class Update(val availability: Availability) : Msg()
         data class Delete(val availabilityId: Availability.Id) : Msg()
@@ -122,12 +92,6 @@ object AvailabilitiesCalendarFeature {
                 is Msg.Delete -> {
                     return@eff Eff.Remove(msg.availabilityId)
                 }
-                Msg.NextMonth -> {
-                    return@state state.copy(monthOffset = state.monthOffset + 1)
-                }
-                Msg.PrevMonth -> {
-                    return@state state.copy(monthOffset = state.monthOffset - 1)
-                }
                 is Msg.Update -> {
                     return@eff Eff.Update(msg.availability)
                 }
@@ -136,6 +100,11 @@ object AvailabilitiesCalendarFeature {
                 }
                 is Msg.SetProcessing -> {
                     return@state state.copy(processing = msg.processing)
+                }
+                is Msg.CalendarInfoMsg -> {
+                    return@state state.copy(
+                        infoState = CalendarInfoFeature.reduceMsg(msg.msg, state.infoState)
+                    )
                 }
             }
         })

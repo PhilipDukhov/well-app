@@ -27,7 +27,7 @@ struct ProjectTextEditor: View {
         .fillMaxWidth()
             .frame(minHeight: 150)
             .overlay(
-                RoundedRectangle(cornerRadius: 14)
+                Shapes.medium
                     .strokeColorKMM(.companion.LightGray, lineWidth: 2)
                     .padding(1)
             )

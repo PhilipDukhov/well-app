@@ -2,6 +2,8 @@ package com.well.sharedMobileTest
 
 import com.well.modules.atomic.AtomicMutableList
 import com.well.modules.models.Availability
+import com.well.modules.models.Meeting
+import com.well.modules.models.MeetingViewModel
 import com.well.modules.models.Repeat
 import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
@@ -20,7 +22,7 @@ val User.Companion.testUser
         id = User.Id(1),
         initialized = true,
         lastEdited = 0.0,
-        fullName = "12",
+        fullName = "Phil Dukhov",
 //        profileImageUrl = "https://i.imgur.com/StXm8nf.jpg",
         profileImageUrl = "https://s3.us-east-2.amazonaws.com/well-images/profilePictures/3-932c9f30-d066-43ac-beef-a558ea9d07fa..jpeg",
         type = User.Type.Doctor,
@@ -119,4 +121,23 @@ fun Availability.Companion.testValues(count: Int) = List(count) { i ->
     )
 }.mapIndexed { i, state ->
     state.availability(i)
+}
+
+fun MeetingViewModel.Companion.testValues(count: Int) = List(count) { i ->
+    if (i < 4) {
+        MeetingViewModel(
+            id = Meeting.Id(value = i.toLong()),
+            startInstant = Clock.System.now() + Duration.minutes((i - 1) * 20),
+            durationMinutes = 15,
+            user = User.testUser
+        )
+    } else {
+        MeetingViewModel(
+            id = Meeting.Id(value = i.toLong()),
+            startInstant = Clock.System.now() + Duration.days(i) + Duration.hours(Random.nextInt(-10,
+                10)),
+            durationMinutes = Random.nextInt(10, 90),
+            user = User.testUser
+        )
+    }
 }

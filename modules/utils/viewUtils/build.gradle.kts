@@ -18,6 +18,7 @@ kotlin {
                 ":modules:atomic",
                 "kotlin.coroutines.core",
                 "kotlin.serializationJson",
+                "kotlin.datetime",
                 "kotlin.stdLib",
                 "shared.napier",
                 "sqldelight.coroutinesExtensions",

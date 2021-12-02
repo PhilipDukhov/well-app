@@ -9,7 +9,10 @@ import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 
 fun MeetingsQueries.listFlow() =
-    list().asFlow().mapToList()
+    list()
+        .asFlow()
+        .mapToList()
+        .mapIterable(Meetings::toMeetings)
 
 fun MeetingsQueries.listIdsFlow() =
     listIds().asFlow().mapToList()
@@ -17,13 +20,14 @@ fun MeetingsQueries.listIdsFlow() =
 fun MeetingsQueries.insertAll(meetings: List<Meeting>) =
     transaction {
         meetings.forEach { meeting ->
-            insert(
-                id = meeting.id,
-                hostId = meeting.hostId,
-                attendeeId = meeting.attendeeId,
-                startInstant = meeting.startInstant,
-                durationMinutes = meeting.durationMinutes,
-            )
+            with(meeting) {
+                insert(
+                    id = id,
+                    attendees = attendees,
+                    startInstant = startInstant,
+                    durationMinutes = durationMinutes,
+                )
+            }
         }
     }
 
@@ -44,16 +48,14 @@ fun Meetings.toMeetings() = Meeting(
     id = id,
     startInstant = startInstant,
     durationMinutes = durationMinutes,
-    hostId = hostId,
-    attendeeId = attendeeId,
+    attendees = attendees
 )
 
 fun MeetingsDatabase.Companion.create(driver: SqlDriver) =
     MeetingsDatabase(
         driver = driver, MeetingsAdapter = Meetings.Adapter(
             idAdapter = Meeting.Id.ColumnAdapter,
-            hostIdAdapter = User.Id.ColumnAdapter,
-            attendeeIdAdapter = User.Id.ColumnAdapter,
             startInstantAdapter = InstantColumnAdapter,
+            attendeesAdapter = User.Id.SetColumnAdapter,
         )
     )

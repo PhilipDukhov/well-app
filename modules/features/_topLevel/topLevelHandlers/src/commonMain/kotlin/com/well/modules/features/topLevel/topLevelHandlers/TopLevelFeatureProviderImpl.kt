@@ -103,6 +103,7 @@ internal class TopLevelFeatureProviderImpl(
             when (eff) {
                 is FeatureEff.ChatList,
                 is FeatureEff.MyProfile,
+                is FeatureEff.Calendar,
                 -> Unit
                 is Eff.ShowAlert -> {
                     val alert = eff.alert
@@ -157,6 +158,37 @@ internal class TopLevelFeatureProviderImpl(
                             position = TopLevelFeature.State.ScreenPosition(tab = TopLevelFeature.State.Tab.MyProfile,
                                 index = 0),
                             listener = listener,
+                        ),
+                        CalendarEffHandler(
+                            services = CalendarEffHandler.Services(
+                                currentUserId = uid,
+                                meetingsFlow = meetingsQueries.listFlow(),
+                                getUsersByIdsFlow = usersQueries::getByIdsFlow,
+                                openUserProfile  = {
+                                    listener(
+                                        Msg.PushMyProfile(
+                                            MyProfileFeature.initialState(
+                                                isCurrent = false,
+                                                uid = it,
+                                            )
+                                        )
+                                    )
+                                },
+                                startCall = {
+                                    val user = usersQueries.getById(it)
+                                        .executeAsOne()
+                                        .toUser()
+                                    coroutineScope.launch {
+                                        handleCall(user, listener)
+                                    }
+                                },
+                            ),
+                            parentCoroutineScope = coroutineScope,
+                        ).adapt(
+                            effAdapter = { (it as? FeatureEff.Calendar)?.eff },
+                            msgAdapter = {
+                                FeatureMsg.Calendar(msg = it)
+                            }
                         ),
                         ExpertsApiEffectHandler(
                             services = ExpertsApiEffectHandler.Services(

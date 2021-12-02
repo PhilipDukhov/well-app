@@ -3,7 +3,7 @@ package com.well.modules.db.server
 import com.well.modules.models.User
 import com.well.modules.models.UsersFilter
 import com.well.modules.utils.dbUtils.adaptedIntersectionRegex
-import com.well.modules.utils.kotlinUtils.letIfTrue
+import com.well.modules.utils.kotlinUtils.ifTrueOrNull
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 
@@ -90,7 +90,7 @@ fun Users.toUser(
         ratingInfo = User.RatingInfo(
             count = ratingsCount,
             average = averageRating,
-            currentUserRating = letIfTrue(!isCurrent) {
+            currentUserRating = ifTrueOrNull(!isCurrent) {
                 database.ratingQueries.get(
                     owner = currentUid,
                     destination = id,

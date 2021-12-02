@@ -1,3 +1,7 @@
+before_all do
+    ENV["executor"] = "AndroidStudio"
+end
+
 lane :deploy do |options|
   check_changelog(options)
   options[:timeNow]=Time.now

@@ -10,15 +10,17 @@ import SwiftUI
 import SharedMobile
 
 enum Screen: String, CaseIterable {
+    case welcome
     case profile
     case availabilityCalendar = "Availability Calendar"
     case call
     case filter
     case chatMessagesList
+    case calendar
     
     case local
     
-    static let initial: Screen = .call
+    static let initial: Screen = .calendar
 }
 
 struct TestingScreens: View {
@@ -31,6 +33,14 @@ struct TestingScreens: View {
 
     var body: some View {
         switch selectedScreen {
+
+        case .welcome:
+            ReducerView(
+                initial: WelcomeFeature.State(),
+                reducer: WelcomeFeature().reducer,
+                view: WelcomeScreen.init
+            )
+
         case .availabilityCalendar:
             ReducerView(
                 initial: AvailabilitiesCalendarFeature().testState(count: 100),
@@ -70,6 +80,13 @@ struct TestingScreens: View {
                         )
                     }
                 }
+            }
+        case .calendar:
+            ReducerView(
+                initial: CalendarFeature.State.companion.testState,
+                reducer: CalendarFeature().reducer
+            ) {
+                CalendarScreen(state: $0, listener: $1)
             }
             
         case .local:

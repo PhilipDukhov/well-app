@@ -104,6 +104,11 @@ struct TopLevelView: View {
                 listener(state.mapMsgToTopLevel(msg: $0))
             }
 
+        case let state as ScreenState.Calendar:
+            CalendarScreen(state: state.state) {
+                listener(state.mapMsgToTopLevel(msg: $0))
+            }
+
         default:
             EmptyView()
         }
@@ -120,6 +125,8 @@ private extension TopLevelFeature.StateTab {
             Image("expertTab")
         case .chatlist:
             Image(systemName: "message.fill")
+        case .calendar:
+            Image(systemName: "calendar")
         case .more:
             Image("moreTab")
 

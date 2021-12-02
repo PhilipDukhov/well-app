@@ -68,7 +68,7 @@ struct UserChatScreen: View {
     @ViewBuilder
     func leftItem() -> some View {
         HStack {
-            Control(onTap: {
+            Control(action: {
                 listener(UserChatFeature.MsgBack())
             }) {
                 Image(systemName: "chevron.left")
@@ -77,7 +77,7 @@ struct UserChatScreen: View {
                     .padding()
             }
             if let user = state.user {
-                Control(onTap: {
+                Control(action: {
                     listener(UserChatFeature.MsgOpenUserProfile())
                 }) {
                     HStack {

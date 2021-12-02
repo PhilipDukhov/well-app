@@ -5,10 +5,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 val Typography = androidx.compose.material.Typography(
+    h3 = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontSize = 37.sp,
+        letterSpacing = 0.sp
+    ),
     h4 = TextStyle(
         fontWeight = FontWeight.Bold,
         fontSize = 30.sp,
         letterSpacing = (-0.5).sp
+    ),
+    h5 = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontSize = 25.sp,
+        letterSpacing = 0.sp
     ),
     subtitle1 = TextStyle(
         fontWeight = FontWeight.Normal,

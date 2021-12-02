@@ -11,30 +11,30 @@ import SwiftUI
 struct Control<T>: View where T: View {
     let container: T
     let enabled: Bool
-    let onTap: () -> Void
+    let action: () -> Void
     
     init(
         _ container: T,
         enabled: Bool = true,
-        onTap: @escaping () -> Void
+        action: @escaping () -> Void
     ) {
         self.container = container
         self.enabled = enabled
-        self.onTap = onTap
+        self.action = action
     }
 
     init(
-        onTap: @escaping () -> Void,
+        action: @escaping () -> Void,
         enabled: Bool = true,
         @ViewBuilder _ container: () -> T
     ) {
         self.container = container()
         self.enabled = enabled
-        self.onTap = onTap
+        self.action = action
     }
     
     var body: some View {
-        Button(action: onTap) {
+        Button(action: action) {
             container
                 .frame(minSize: controlMinSize)
                 .contentShape(Rectangle())

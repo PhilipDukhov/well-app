@@ -40,6 +40,11 @@ data class User(
             override fun encode(value: Id): Long =
                 value.value
         }
+
+        object SetColumnAdapter: com.well.modules.utils.dbUtils.SetColumnAdapter<Id>(
+            encodeT = { it.value.toString() },
+            decodeT = { Id(it.toLong()) },
+        )
     }
 
     val completeness: Int

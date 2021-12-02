@@ -11,7 +11,7 @@ object NapierProxy {
             if (Platform.isDebug) {
                 DebugAntilog()
             } else {
-                return
+                DebugAntilog()
 //                FileAntilog()
             }
         )

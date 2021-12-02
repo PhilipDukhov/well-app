@@ -24,6 +24,7 @@ import com.well.modules.utils.dbUtils.adaptedOneOfRegex
 import com.well.modules.utils.flowUtils.MutableSetStateFlow
 import com.well.modules.utils.flowUtils.asSingleFlow
 import com.well.modules.utils.flowUtils.collectIn
+import com.well.modules.utils.flowUtils.combineToSet
 import com.well.modules.utils.flowUtils.filterIterable
 import com.well.modules.utils.flowUtils.filterNotEmpty
 import com.well.modules.utils.flowUtils.flatMapLatest
@@ -38,6 +39,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import org.joda.time.Weeks
@@ -86,35 +88,6 @@ class UserSession(
                     )
             }
         }
-    private val neededUsersFlow = expertsFlow
-        .combine(
-            dependencies.database.chatMessagesQueries
-                .peerIdsListFlow(id = currentUid)
-        ) { users, peerIdsList ->
-            users.toMutableSet().apply {
-                add(currentUid)
-                addAll(peerIdsList)
-            }.toSet()
-        }
-    private val notUpToDateUsersFlow =
-        usersPresenceInfoFlow
-            .filterNotNull()
-            .combine(neededUsersFlow) { usersPresenceInfo, neededUsers ->
-                dependencies.database
-                    .usersQueries
-                    .getByIdsFlow(neededUsers)
-                    .map { users ->
-                        users.filter { user ->
-                            usersPresenceInfo
-                                .firstOrNull { it.id == user.id }
-                                ?.lastEdited?.let { presenceLastEdited ->
-                                    user.lastEdited > presenceLastEdited
-                                } ?: true
-                        }.map { it.toUser(currentUid, dependencies.database) }
-                    }
-            }
-            .flatMapLatest()
-            .filterNotEmpty()
     private val newMessagesFlow =
         messagesPresenceInfoFlow
             .filterNotNull()
@@ -160,6 +133,7 @@ class UserSession(
             ) { ids, meetings ->
                 ids to meetings
             }
+
     private val newMeetingsFlow: Flow<List<Meeting>> = meetingsPresenceFlow
         .mapPair { presenceIds, dbMeetings ->
             dbMeetings.filter {
@@ -176,6 +150,38 @@ class UserSession(
         }
         .mapIterable(Meetings::id)
         .filterNotEmpty()
+
+    private val neededUsersFlow = expertsFlow
+        .combineToSet(flowOf(setOf(currentUid)))
+        .combineToSet(
+            dependencies.database.chatMessagesQueries
+                .peerIdsListFlow(id = currentUid)
+        )
+        .combineToSet(
+            dependencies.database.meetingsQueries
+                .getByUserIdFlow(currentUid)
+                .mapIterable { it.attendees }
+                .map { it.flatten() }
+        )
+    private val notUpToDateUsersFlow =
+        usersPresenceInfoFlow
+            .filterNotNull()
+            .combine(neededUsersFlow) { usersPresenceInfo, neededUsers ->
+                dependencies.database
+                    .usersQueries
+                    .getByIdsFlow(neededUsers)
+                    .map { users ->
+                        users.filter { user ->
+                            usersPresenceInfo
+                                .firstOrNull { it.id == user.id }
+                                ?.lastEdited?.let { presenceLastEdited ->
+                                    user.lastEdited > presenceLastEdited
+                                } ?: true
+                        }.map { it.toUser(currentUid, dependencies.database) }
+                    }
+            }
+            .flatMapLatest()
+            .filterNotEmpty()
 
     init {
         listOf(

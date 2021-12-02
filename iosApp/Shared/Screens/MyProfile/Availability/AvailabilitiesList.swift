@@ -12,12 +12,13 @@ import SharedMobile
 private typealias Feature = AvailabilitiesCalendarFeature
 
 struct AvailabilitiesList: View {
-    var selectedItem: AvailabilitiesCalendarFeature.StateCalendarItem?
+    var selectedItem: CalendarInfoFeatureStateItem<Availability>?
 
     let allAvailabilities: [Availability]
     let onSelect: (Availability) -> Void
-    let onCreate: (AvailabilitiesCalendarFeature.StateCalendarItem) -> Void
-    
+    let onCreate: (CalendarInfoFeatureStateItem<Availability>) -> Void
+    let canCreateAvailability: (CalendarInfoFeatureStateItem<Availability>) -> Bool
+
     private static let spacing: CGFloat = 10
     private static let cellsCount = Feature.State.companion.availabilityCellsCount.toInt()
 
@@ -32,7 +33,7 @@ struct AvailabilitiesList: View {
                     alignment: .trailing,
                     spacing: Self.spacing
                 ) {
-                    ForEach(selectedItem?.availabilities ?? allAvailabilities, id: \.self) { availability in
+                    ForEach(selectedItem?.events as? [Availability] ?? allAvailabilities, id: \.self) { availability in
                         Cell(
                             firstRowText: selectedItem.map { _ in nil } ?? availability.startDay.localizedDayAndShortMonth(),
                             secondRowText: availability.intervalString,
@@ -42,8 +43,7 @@ struct AvailabilitiesList: View {
                             }
                         )
                     }
-                    selectedItem.map { selectedItem in
-                        !selectedItem.canCreateAvailability ? nil :
+                    if let selectedItem = selectedItem, canCreateAvailability(selectedItem) {
                         Cell(
                             layoutInfo: cellLayoutInfo,
                             onClick: {
@@ -140,7 +140,7 @@ private struct Cell<Content: View>: View {
                 .minimumScaleFactor(0.01)
                 .frame(width: layoutInfo.width, height: layoutInfo.height)
                 .backgroundColorKMM(.companion.LightBlue15)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .clipShape(Shapes.medium)
                 .onTapGesture(perform: onClick)
         }
     }

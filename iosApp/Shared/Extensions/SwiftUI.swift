@@ -4,7 +4,6 @@
 //
 
 import SwiftUI
-import SharedMobile
 
 extension View {
     @inline(__always)
@@ -52,12 +51,12 @@ extension View {
 
     @inline(__always)
     func frame(
-        size: CGSize,
+        size: CGSize?,
         alignment: Alignment = .center
     ) -> some View {
         frame(
-            width: size.width,
-            height: size.height,
+            width: size?.width,
+            height: size?.height,
             alignment: alignment
         )
     }

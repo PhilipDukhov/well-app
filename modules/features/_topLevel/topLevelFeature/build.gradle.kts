@@ -36,6 +36,7 @@ kotlin {
                 ":modules:features:chatList:chatListFeature",
                 ":modules:features:experts:expertsFeature",
                 ":modules:features:userChat:userChatFeature",
+                ":modules:features:calendar:calendarFeature",
 
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",

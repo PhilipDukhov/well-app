@@ -15,6 +15,7 @@ import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 
 class ChatListEffHandler(
@@ -55,12 +56,13 @@ class ChatListEffHandler(
 
     init {
         chatListItemsFlow
-            .collectIn(coroutineScope) { chatList ->
+            .collectIn(effHandlerScope) { chatList ->
                 listener(Msg.UpdateItems(chatList))
             }
         services.lastPresentMessageIdFlow
             .combineWithUnit(services.onConnectedFlow)
-            .collectIn(coroutineScope) { lastPresentMessageId ->
+            .debounce(100)
+            .collectIn(effHandlerScope) { lastPresentMessageId ->
                 Napier.i("WebSocketMsg.Front.SetChatMessagePresence $lastPresentMessageId")
                 services.sendFrontWebSocketMsg(
                     WebSocketMsg.Front.SetChatMessagePresence(
@@ -70,7 +72,8 @@ class ChatListEffHandler(
             }
         services.lastReadPresenceFlow
             .combineWithUnit(services.onConnectedFlow)
-            .collectIn(coroutineScope) { lastReadPresence ->
+            .debounce(100)
+            .collectIn(effHandlerScope) { lastReadPresence ->
                 services.sendFrontWebSocketMsg(
                     WebSocketMsg.Front.UpdateChatReadStatePresence(
                         lastReadPresence

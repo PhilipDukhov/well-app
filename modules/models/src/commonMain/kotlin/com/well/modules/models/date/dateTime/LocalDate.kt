@@ -6,6 +6,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.daysUntil
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 
@@ -29,7 +30,8 @@ fun LocalDate.monthOffset(dayOfMonth: Int, monthOffset: Int): LocalDate {
     return LocalDate(dayOfMonth = dayOfMonth, month = month, year = year)
 }
 
-fun LocalDate.localizedDayAndShortMonth(separator: String = " ") = "$dayOfMonth$separator${month.localizedShortName}"
+fun LocalDate.localizedDayAndShortMonth(separator: String = " ") =
+    "$dayOfMonth$separator${month.localizedShortName}"
 
 fun LocalDate.daysShift(days: Int): LocalDate = when {
     days < 0 -> {
@@ -49,4 +51,10 @@ private fun Int.positiveRem(other: Int): Int {
         rem += other
     }
     return rem
+}
+
+fun LocalDate.localizedRelatedDescription(): String = when (LocalDate.today().daysUntil(this)) {
+    0 -> "Today"
+    1 -> "Tomorrow"
+    else -> localizedDayAndShortMonth()
 }

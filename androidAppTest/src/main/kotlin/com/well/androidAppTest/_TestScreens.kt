@@ -18,8 +18,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,17 +35,16 @@ enum class TestScreen {
     UserChat,
     UserRating,
     AvailabilityCalendar,
+    Calendar,
     GradientView,
+    DoubleCalendar,
 }
+
+private var selectedScreen: TestScreen by mutableStateOf(TestScreen.Calendar)
+private var opened by mutableStateOf(true)
 
 @Composable
 fun TestComposeScreen() {
-    var selectedScreen: TestScreen by rememberSaveable(Unit) {
-        mutableStateOf(TestScreen.GradientView)
-    }
-    var opened by remember {
-        mutableStateOf(true)
-    }
     if (opened) {
         BackHandler {
             opened = false
@@ -62,36 +59,50 @@ fun TestComposeScreen() {
                 TestScreen.UserChat -> UserChatTest()
                 TestScreen.UserRating -> UserRatingTest()
                 TestScreen.AvailabilityCalendar -> AvailabilityCalendarTest()
+                TestScreen.Calendar -> CalendarTest()
                 TestScreen.GradientView -> GradientViewTest()
-            }
-        }
-    } else {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-        ) {
-            ScrollableTabRow(
-                selectedTabIndex = TestScreen.values().indexOf(selectedScreen),
-                modifier = Modifier.align(Alignment.TopCenter)
-            ) {
-                TestScreen.values().forEach { screen ->
-                    Tab(selected = screen == selectedScreen, onClick = {
-                        selectedScreen = screen
-                        opened = true
-                    }) {
-                        Text(
-                            screen.name,
-                            color = Color.White,
-                            modifier = Modifier.padding(20.dp)
-                        )
+                TestScreen.DoubleCalendar -> {
+                    Box(Modifier.weight(1f)) {
+                        CalendarTest()
+                    }
+                    Box(Modifier.weight(1f)) {
+                        AvailabilityCalendarTest()
                     }
                 }
             }
-            Button(onClick = { opened = true }) {
-                Text("Open")
+        }
+    } else {
+        SelectionScreen()
+    }
+}
+
+@Composable
+fun SelectionScreen() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+    ) {
+        ScrollableTabRow(
+            selectedTabIndex = TestScreen.values().indexOf(selectedScreen),
+            modifier = Modifier.align(Alignment.TopCenter)
+        ) {
+            TestScreen.values().forEach { screen ->
+                Tab(selected = screen == selectedScreen, onClick = {
+                    selectedScreen = screen
+                    opened = true
+                }) {
+                    Text(
+                        screen.name,
+                        color = Color.White,
+                        modifier = Modifier.padding(20.dp)
+                    )
+                }
             }
+        }
+        Button(onClick = { opened = true }) {
+            Text("Open")
         }
     }
 }

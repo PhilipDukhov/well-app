@@ -75,7 +75,7 @@ struct EditingField<Msg: AnyObject>: View {
             }
         }.padding()
             .overlay(
-                RoundedRectangle(cornerRadius: 14)
+                Shapes.medium
                     .strokeColorKMM(
                         fieldContent.valid() || textEditing ? .companion.LightBlue : .companion.RadicalRed,
                         lineWidth: 2

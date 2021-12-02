@@ -72,7 +72,7 @@ struct DrawingPanel: View {
     func topPanel() -> some View {
         ZStack(alignment: .center) {
             HStack {
-                Control(Image(systemName: "chevron.left"), onTap: back)
+                Control(Image(systemName: "chevron.left"), action: back)
                 Spacer()
                 Control(Image(systemName: "trash.circle").font(.system(size: 20)), enabled: state.clearAvailable) {
                     listener(DrawingFeature.MsgLocalClear(saveHistory: true))

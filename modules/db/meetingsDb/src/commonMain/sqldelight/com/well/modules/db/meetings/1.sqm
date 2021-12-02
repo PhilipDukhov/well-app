@@ -1,0 +1,23 @@
+import com.well.modules.models.Meeting;
+import com.well.modules.models.User;
+import kotlin.collections.Set;
+import kotlinx.datetime.Instant;
+
+ALTER TABLE Meetings
+RENAME TO Meetings_tmp;
+
+CREATE TABLE Meetings (
+    id INTEGER AS Meeting.Id NOT NULL,
+    attendees TEXT AS Set<User.Id> NOT NULL,
+    startInstant INTEGER AS Instant NOT NULL,
+    durationMinutes INTEGER AS Int NOT NULL
+);
+
+INSERT INTO Meetings(id, attendees, startInstant, durationMinutes)
+SELECT
+    id,
+    hostId || ',' || attendeeId,
+    startInstant, durationMinutes
+FROM Meetings_tmp;
+
+DROP TABLE Meetings_tmp;

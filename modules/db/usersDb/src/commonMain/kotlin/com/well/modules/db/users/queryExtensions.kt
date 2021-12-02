@@ -24,7 +24,7 @@ fun UsersQueries.getByIdFlow(uid: User.Id) =
         .filterNotNull()
         .map(Users::toUser)
 
-fun UsersQueries.getByIdsFlow(uids: List<User.Id>) =
+fun UsersQueries.getByIdsFlow(uids: Collection<User.Id>) =
     getByIds(uids)
         .asFlow()
         .mapToList()

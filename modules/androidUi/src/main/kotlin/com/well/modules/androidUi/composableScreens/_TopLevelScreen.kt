@@ -1,6 +1,7 @@
 package com.well.modules.androidUi.composableScreens
 
 import com.well.modules.androidUi.R
+import com.well.modules.androidUi.composableScreens.calendar.CalendarScreen
 import com.well.modules.androidUi.composableScreens.call.CallScreen
 import com.well.modules.androidUi.composableScreens.chatList.ChatListScreen
 import com.well.modules.androidUi.composableScreens.experts.ExpertsScreen
@@ -27,6 +28,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.rounded.CalendarToday
 import androidx.compose.material.icons.rounded.ChatBubble
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.runtime.Composable
@@ -116,8 +118,11 @@ private fun Tab.iconPainter() =
         Tab.More -> {
             rememberVectorPainter(Icons.Rounded.Menu)
         }
+        Tab.Calendar -> {
+            rememberVectorPainter(Icons.Rounded.CalendarToday)
+        }
         else -> {
-            error("unexpected tab icond request: $this")
+            error("unexpected tab icon request: $this")
         }
     }
 
@@ -153,6 +158,9 @@ private fun ColumnScope.Screen(screenState: ScreenState, listener: (Feature.Msg)
             listener(screenState.mapMsgToTopLevel(it))
         }
         is ScreenState.UserChat -> UserChatScreen(screenState.state) {
+            listener(screenState.mapMsgToTopLevel(it))
+        }
+        is ScreenState.Calendar -> CalendarScreen(screenState.state) {
             listener(screenState.mapMsgToTopLevel(it))
         }
     }

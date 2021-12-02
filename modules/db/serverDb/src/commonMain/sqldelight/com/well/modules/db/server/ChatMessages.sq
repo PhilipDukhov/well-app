@@ -32,8 +32,7 @@ WHERE
         WHERE fromId = :id OR peerId = :id
         GROUP BY (CASE WHEN fromId = :id THEN peerId ELSE fromId END)
     )
-ORDER BY ChatMessages.creation DESC
-;
+ORDER BY ChatMessages.creation DESC;
 
 getById:
 SELECT * FROM ChatMessages WHERE id = ?;

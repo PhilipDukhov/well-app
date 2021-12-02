@@ -1,5 +1,6 @@
 package com.well.modules.features.topLevel.topLevelFeature
 
+import com.well.modules.features.calendar.calendarFeature.CalendarFeature
 import com.well.modules.features.chatList.chatListFeature.ChatListFeature
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature
 import com.well.modules.features.more.MoreFeature
@@ -13,7 +14,7 @@ import com.well.modules.models.User
 
 internal typealias ReducerResult = Pair<State, Set<Eff>>
 
-internal fun<ChildState> State.copyReplace(
+internal fun <ChildState> State.copyReplace(
     tab: Tab = selectedScreenPosition.tab,
     state: ChildState,
     createScreen: (ScreenPosition, ChildState) -> ScreenState,
@@ -25,7 +26,7 @@ internal fun<ChildState> State.copyReplace(
     )
 }
 
-internal fun<ChildState> State.copyPush(
+internal fun <ChildState> State.copyPush(
     tab: Tab = selectedScreenPosition.tab,
     state: ChildState,
     createScreen: (ScreenPosition, ChildState) -> ScreenState,
@@ -74,7 +75,7 @@ internal fun State.copyHideTab(
     )
 }
 
-private fun<ChildState> Map<Tab, List<ScreenState>>.push(
+private fun <ChildState> Map<Tab, List<ScreenState>>.push(
     tab: Tab,
     state: ChildState,
     createScreen: (ScreenPosition, ChildState) -> ScreenState,
@@ -95,7 +96,7 @@ private fun Map<Tab, List<ScreenState>>.popToRoot(
     listOf(it.first())
 }
 
-private fun<ChildState> Map<Tab, List<ScreenState>>.replace(
+private fun <ChildState> Map<Tab, List<ScreenState>>.replace(
     tab: Tab,
     state: ChildState,
     createScreen: (ScreenPosition, ChildState) -> ScreenState,
@@ -149,7 +150,11 @@ internal fun <Eff, FE : FeatureEff> Set<Eff>.mapTo(
     featureEff(it, position)
 }
 
-internal fun<State, SS: ScreenState> createTab(tab: Tab, state: State, createScreen: (ScreenPosition, State) -> SS) =
+internal fun <State, SS : ScreenState> createTab(
+    tab: Tab,
+    state: State,
+    createScreen: (ScreenPosition, State) -> SS,
+) =
     tab to listOf(
         createScreen(ScreenPosition(tab, index = 0), state)
     )
@@ -172,6 +177,11 @@ internal fun loggedInTabs(uid: User.Id) = mapOf(
         tab = Tab.ChatList,
         state = ChatListFeature.State(),
         createScreen = ScreenState::ChatList,
+    ),
+    createTab(
+        tab = Tab.Calendar,
+        state = CalendarFeature.State(),
+        createScreen = ScreenState::Calendar,
     ),
     createTab(
         tab = Tab.More,

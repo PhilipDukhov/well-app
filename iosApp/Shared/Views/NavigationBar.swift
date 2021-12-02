@@ -145,7 +145,7 @@ struct NavigationBar<Title: View, LV: View, RV: View, ExtraContent: View>: View 
     @ViewBuilder
     private func control<V>(item: NavigationBarItem<V>) -> some View {
         if let handler = item.handler {
-            Control(item.view, enabled: item.enabled, onTap: handler)
+            Control(item.view, enabled: item.enabled, action: handler)
         } else {
             item.view
         }

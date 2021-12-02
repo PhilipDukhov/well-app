@@ -61,6 +61,8 @@ if (includeSharedMobile) {
         ":modules:features:experts:expertsHandlers",
         ":modules:features:userChat:userChatFeature",
         ":modules:features:userChat:userChatHandlers",
+        ":modules:features:calendar:calendarFeature",
+        ":modules:features:calendar:calendarHandlers",
     )
 }
 

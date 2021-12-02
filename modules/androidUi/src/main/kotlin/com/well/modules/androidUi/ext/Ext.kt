@@ -24,7 +24,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -42,8 +41,8 @@ fun Color.toColor() = androidx.compose.ui.graphics.Color(argb)
 
 fun Point.toOffset() = Offset(x, y)
 
-fun Offset.denormalize(constraints: Constraints): Offset =
-    Offset(x * constraints.minWidth, y * constraints.minHeight)
+fun Offset.denormalize(size: Size): Offset =
+    Offset(x * size.width, y * size.height)
 
 fun Modifier.backgroundKMM(
     color: Color,
