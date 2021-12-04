@@ -1,6 +1,6 @@
 package com.well.modules.models
 
-class NetworkConstants private constructor(isDebug: Boolean) {
+class NetworkConstants private constructor(private val isDebug: Boolean) {
     enum class URLProtocol {
         HTTP,
         HTTPS,
@@ -19,9 +19,11 @@ class NetworkConstants private constructor(isDebug: Boolean) {
         "well-env-1.eba-yyqqrxsi.us-east-2.elasticbeanstalk.com"
     val port = if (isDebug) 8090 else null
 
+    override fun toString() = "isDebug: $isDebug; localHttpProtocol: $localHttpProtocol; localWebSocketProtocol: $localWebSocketProtocol; host: $host"
+
     companion object {
-        private val debug = NetworkConstants(true)
-        private val release = NetworkConstants(false)
+        val debug = NetworkConstants(true)
+        val release = NetworkConstants(false)
 
         val base = release
 

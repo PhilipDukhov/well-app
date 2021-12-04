@@ -36,7 +36,7 @@ class MyProfileTestModel(
             services = MyProfileEffHandler.Services(
                 userFlow = flowOf(User.testUser),
                 putUser = {},
-                uploadProfilePicture = { _ -> error("unimplemented") },
+                uploadProfilePicture = { error("unimplemented") },
                 showThrowableAlert = { Napier.e(it.message ?: it.toString(), it) },
                 onInitializationFinished = {},
                 onPop = {},
@@ -47,12 +47,10 @@ class MyProfileTestModel(
                 requestBecomeExpert = {},
                 onRatingRequest = {},
                 getCurrentUserAvailabilities = {
-                    println("getCurrentUserAvailabilities $setAvailabilitiesCounter")
-                    delay(1000)
                     if (setAvailabilitiesCounter++ % 2 == 0)
-                        error("load availabilities error")
-                    else
                         Availability.testValues(20)
+                    else
+                        error("load availabilities error")
                 },
                 addAvailability = { it },
                 updateAvailability = { it },
@@ -65,6 +63,7 @@ class MyProfileTestModel(
                     }
                 },
                 getUserAvailabilitiesToBook = {
+                    delay(3000)
                     if (updateAvailabilitiesCounter++ % 2 == 0)
                         listOf()
                     else
@@ -83,11 +82,6 @@ class MyProfileTestModel(
         effs.forEach { eff ->
             handler.handleEffect(eff)
         }
-    }
-
-    override fun listener(msg: Msg) {
-        super.listener(msg)
-        println("listener $msg ${state.value}")
     }
 
     private val coroutineScope = CoroutineScope(Dispatchers.Default)

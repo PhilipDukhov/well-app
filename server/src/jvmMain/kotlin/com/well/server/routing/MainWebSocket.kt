@@ -12,6 +12,9 @@ import kotlinx.serialization.json.Json
 suspend fun DefaultWebSocketServerSession.mainWebSocket(dependencies: Dependencies) {
     val currentUid = call.authUid
     try {
+        val user = dependencies.database.usersQueries.getById(currentUid)
+            .executeAsOne()
+        println("mainWebSocket connected $user")
         val currentUserSession = UserSession(
             currentUid = currentUid,
             webSocketSession = this,

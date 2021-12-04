@@ -264,4 +264,12 @@ struct NavigationBarItem<V: View> {
         self.enabled = enabled
         self.handler = handler
     }
+
+    static func cancel(enabled: Bool = true, handler: @escaping () -> Void) -> NavigationBarItem<Text> {
+        .init(
+            text: GlobalStringsBase.companion.shared.cancel,
+            enabled: enabled,
+            handler: handler
+        )
+    }
 }

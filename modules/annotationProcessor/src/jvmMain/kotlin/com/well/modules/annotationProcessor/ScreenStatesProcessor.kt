@@ -40,7 +40,6 @@ class ScreenStatesProcessor : AbstractProcessor() {
         roundEnv: RoundEnvironment?,
     ): Boolean {
         roundEnv?.getElementsAnnotatedWith(ScreenStates::class.java)?.forEach { element ->
-            println("getElementsAnnotatedWith $element")
             if (element.kind != ElementKind.CLASS) {
                 processingEnv.println(
                     Kind.ERROR,

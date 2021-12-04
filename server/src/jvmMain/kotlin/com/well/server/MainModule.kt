@@ -26,8 +26,12 @@ import com.well.server.routing.user.updateUser
 import com.well.server.routing.userHasAvailableAvailabilities
 import com.well.server.utils.Dependencies
 import com.well.server.utils.ForbiddenException
+import com.well.server.utils.authUid
 import com.well.server.utils.configProperty
 import com.well.server.utils.createPrincipal
+import com.well.server.utils.executeAndPrettify
+import com.well.server.utils.executeQueryAndPrettify
+import com.well.server.utils.sendEmail
 import com.auth0.jwk.JwkProviderBuilder
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -51,8 +55,36 @@ import java.util.concurrent.TimeUnit
 
 @Suppress("unused") // Referenced in application.conf
 fun Application.module() {
-    val dependencies = Dependencies(this)
+    val dbConfig = environment.config.config("database")
+    val username = dbConfig.property("username").getString()
+    try {
+        initializedModule(Dependencies(this))
+    } catch (t: Throwable) {
+        println("initialization failed: ${t.stackTraceToString()}")
+        if (username == "test") {
+            // e.g. local machine
+            throw t
+        }
+        try {
+            sendEmail(
+                destination = "philip.dukhov@gmail.com",
+                subject = "W.E.L.L. Server failed to start ${t.localizedMessage}",
+                body = t.stackTraceToString(),
+            )
+        } catch (t: Throwable) {
+            println("sendEmail failed $t")
+        }
+        routing {
+            route("*") {
+                handle {
+                    call.respond(HttpStatusCode.InternalServerError)
+                }
+            }
+        }
+    }
+}
 
+fun Application.initializedModule(dependencies: Dependencies) {
     install(CallLogging) {
         level = Level.INFO
         filter { call ->
@@ -90,7 +122,9 @@ fun Application.module() {
         jwt(AuthName.Main) {
             verifier(dependencies.jwtConfig.verifier)
             realm = dependencies.jwtConfig.issuer
-            validate { it.payload.createPrincipal(dependencies) }
+            validate {
+                it.payload.createPrincipal(dependencies)
+            }
         }
         oauth(AuthName.Twitter) {
             client = dependencies.client
@@ -101,7 +135,6 @@ fun Application.module() {
                 NetworkConstants.oauthCallbackPath()
             }
         }
-
         jwt(AuthName.Apple) {
             verifier(
                 JwkProviderBuilder(URL("https://appleid.apple.com/auth/keys"))
@@ -210,6 +243,28 @@ fun Application.module() {
         post("email") { sendEmail(dependencies) }
         post("sms") { sendSms(dependencies) }
 
+//        authenticate(AuthName.Admin) {
+//            post("executeQuerySql") {
+//                val request = call.receive<String>()
+//                println("\nexecuteSql ${call.authUid} $request")
+//                val result = dependencies.dbDriver.executeQueryAndPrettify(request)
+//                    .also(::print)
+//                println("")
+//                call.respond(HttpStatusCode.OK, result)
+//
+//                execute
+//            }
+//            post("executeSql") {
+//                val request = call.receive<String>()
+//                println("\nexecuteSql ${call.authUid} $request")
+//                val result = dependencies.dbDriver.execute(
+//                    null,
+//                    request,
+//                    0
+//                )
+//                call.respond(HttpStatusCode.OK, result)
+//            }
+//        }
         authenticate(AuthName.Main) {
             webSocket(path = "mainWebSocket") {
                 mainWebSocket(dependencies)
@@ -252,5 +307,5 @@ fun Application.module() {
     }
 }
 
-private fun<Id> ApplicationCall.idParameter(builder: (Long) -> Id) : Id =
+private fun <Id> ApplicationCall.idParameter(builder: (Long) -> Id): Id =
     builder(parameters["id"]!!.toLong())

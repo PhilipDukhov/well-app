@@ -10,8 +10,8 @@ isFavorite:
 SELECT EXISTS (SELECT * FROM Favourites WHERE owner = ? AND destination = ?);
 
 addFavorite:
-INSERT INTO Favourites(owner, destination)
-VALUES (?, ?);
+INSERT INTO Favourites
+VALUES ?;
 
 removeFavorite:
 DELETE FROM Favourites WHERE (owner = ? AND destination = ?);

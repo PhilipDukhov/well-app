@@ -6,7 +6,7 @@ import com.well.modules.models.NetworkConstants
 import com.well.modules.networking.createBaseServerClient
 import com.well.modules.utils.viewUtils.ContextHelper
 import com.well.modules.utils.viewUtils.platform.Platform
-import com.well.modules.utils.viewUtils.platform.isDebug
+import com.well.modules.utils.viewUtils.platform.isLocalServer
 import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -86,7 +86,7 @@ internal class OAuthHelper(
     }
 
     private fun processCallbackUrl(url: String): AuthCredential =
-        NetworkConstants.current(Platform.isDebug).oauthCallbackPath().let { oauthCallbackPath ->
+        NetworkConstants.current(Platform.isLocalServer).oauthCallbackPath().let { oauthCallbackPath ->
             when {
                 url.startsWith(oauthCallbackPath) -> {
                     AuthCredential.OAuth1Credential(

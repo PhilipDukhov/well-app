@@ -20,7 +20,7 @@ enum Screen: String, CaseIterable {
     
     case local
     
-    static let initial: Screen = .calendar
+    static let initial: Screen = .profile
 }
 
 struct TestingScreens: View {
@@ -43,7 +43,7 @@ struct TestingScreens: View {
 
         case .availabilityCalendar:
             ReducerView(
-                initial: AvailabilitiesCalendarFeature().testState(count: 100),
+                initial: AvailabilitiesCalendarFeature().testState(count: 0),
                 reducer: AvailabilitiesCalendarFeature().reducer,
                 view: AvailabilitiesCalendarView.init
             ).padding(.bottom, padding)

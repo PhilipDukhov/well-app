@@ -11,7 +11,6 @@ import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State.
 import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State.Tab
 import com.well.modules.models.User
 
-
 internal typealias ReducerResult = Pair<State, Set<Eff>>
 
 internal fun <ChildState> State.copyReplace(

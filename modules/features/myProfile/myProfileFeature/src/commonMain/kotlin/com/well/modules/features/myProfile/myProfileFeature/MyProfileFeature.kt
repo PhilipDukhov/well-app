@@ -66,6 +66,7 @@ object MyProfileFeature {
             user = it,
             editingStatus = if (!isCurrent || user?.initialized != false) EditingStatus.Preview else EditingStatus.Editing,
             availabilityState = if (isCurrent && user?.initialized != false) AvailabilitiesCalendarFeature.State() else null,
+            hasAvailableAvailabilities = if (isCurrent) null else false
         )
     }
 
@@ -78,7 +79,7 @@ object MyProfileFeature {
         val editingStatus: EditingStatus = EditingStatus.Preview,
         val availabilityState: AvailabilitiesCalendarFeature.State? = null,
         val requestConsultationState: RequestConsultationFeature.State? = null,
-        val hasAvailableAvailabilities: Boolean = false,
+        val hasAvailableAvailabilities: Boolean?,
     ) {
         val tabs =
             if (editingStatus != EditingStatus.Preview || availabilityState == null)

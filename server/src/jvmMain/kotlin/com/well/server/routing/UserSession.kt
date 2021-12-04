@@ -265,9 +265,11 @@ class UserSession(
                                 )
                             }
                             lastReadMessagesQueries.insert(
-                                fromId = newLastRead.fromId,
-                                peerId = newLastRead.peerId,
-                                messageId = newLastRead.messageId,
+                                LastReadMessages(
+                                    fromId = newLastRead.fromId,
+                                    peerId = newLastRead.peerId,
+                                    messageId = newLastRead.messageId,
+                                )
                             )
                         }
                     }
@@ -340,9 +342,11 @@ class UserSession(
                                 )
                         }
                         lastReadMessagesQueries.insert(
-                            fromId = message.fromId,
-                            peerId = message.peerId,
-                            messageId = messageId,
+                            LastReadMessages(
+                                fromId = message.fromId,
+                                peerId = message.peerId,
+                                messageId = messageId,
+                            )
                         )
                     }
                 }

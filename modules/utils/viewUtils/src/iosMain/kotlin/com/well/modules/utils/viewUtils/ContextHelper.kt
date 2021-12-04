@@ -67,7 +67,7 @@ actual class ContextHelper actual constructor(actual val appContext: AppContext)
                     UIAlertActionStyleDefault,
                 ) { action.block() }
             } + UIAlertAction.actionWithTitle(
-                "Cancel",
+                GlobalStringsBase.shared.cancel,
                 UIAlertActionStyleCancel,
                 null,
             ))

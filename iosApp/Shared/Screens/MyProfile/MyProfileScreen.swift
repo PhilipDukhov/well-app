@@ -194,6 +194,7 @@ struct MyProfileScreen: View {
                 } label: {
                     Text(content.title)
                 }.buttonStyle(ActionButtonStyle(style: .onWhite))
+                    .disabled(!content.enabled)
 
             default: fatalError("view not provided for \(field.content)")
             }

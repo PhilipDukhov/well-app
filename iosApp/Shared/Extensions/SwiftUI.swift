@@ -105,14 +105,6 @@ extension View {
     func background<Content: View>(@ViewBuilder _ block: () -> Content) -> some View {
         background(block())
     }
-    
-#if DEBUG
-    @inline(__always)
-    func printUI(_ items: Any..., separator: String = " ", file: String = #file, function: String = #function) -> Self {
-        print(items.map { "\($0)" }.joined(separator: separator))
-        return self
-    }
-#endif
 
     @ViewBuilder
     func badgeIfAvailable(_ count: Int) -> some View {

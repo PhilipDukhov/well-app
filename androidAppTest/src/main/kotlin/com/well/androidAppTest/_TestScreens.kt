@@ -40,7 +40,7 @@ enum class TestScreen {
     DoubleCalendar,
 }
 
-private var selectedScreen: TestScreen by mutableStateOf(TestScreen.Calendar)
+private var selectedScreen: TestScreen by mutableStateOf(TestScreen.AvailabilityCalendar)
 private var opened by mutableStateOf(true)
 
 @Composable

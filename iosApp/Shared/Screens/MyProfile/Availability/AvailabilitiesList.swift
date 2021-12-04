@@ -23,9 +23,12 @@ struct AvailabilitiesList: View {
     private static let cellsCount = Feature.State.companion.availabilityCellsCount.toInt()
 
     var body: some View {
+        let availabilities = selectedItem?.events as? [Availability] ?? allAvailabilities
+        let includeFirst = selectedItem == nil
         CalculateCellLayoutInfo(
             cellsCount: Self.cellsCount,
-            spacing: Self.spacing
+            spacing: Self.spacing,
+            includeFirst: includeFirst
         ) { cellLayoutInfo in
             ScrollView {
                 LazyVGrid(
@@ -33,7 +36,7 @@ struct AvailabilitiesList: View {
                     alignment: .trailing,
                     spacing: Self.spacing
                 ) {
-                    ForEach(selectedItem?.events as? [Availability] ?? allAvailabilities, id: \.self) { availability in
+                    ForEach(availabilities, id: \.self) { availability in
                         Cell(
                             firstRowText: selectedItem.map { _ in nil } ?? availability.startDay.localizedDayAndShortMonth(),
                             secondRowText: availability.intervalString,
@@ -55,13 +58,14 @@ struct AvailabilitiesList: View {
                     }
                 }
             }
-        }
+        }.id(includeFirst)
     }
 }
 
 private struct CalculateCellLayoutInfo<Content: View>: View {
     let cellsCount: Int
     let spacing: CGFloat
+    let includeFirst: Bool
     @ViewBuilder
     let content: (CellLayoutInfo) -> Content
     
@@ -77,7 +81,7 @@ private struct CalculateCellLayoutInfo<Content: View>: View {
             if height != nil {
                 content(cellLayoutInfo)
             } else {
-                Cell(firstRowText: " ", secondRowText: " ", layoutInfo: cellLayoutInfo, onClick: {})
+                Cell(firstRowText: includeFirst ? " " : nil, secondRowText: " ", layoutInfo: cellLayoutInfo, onClick: {})
                     .background(
                         GeometryReader { backgroundGeometry in
                             Rectangle().foregroundColor(.clear)

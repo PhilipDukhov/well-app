@@ -4,11 +4,9 @@ import com.squareup.sqldelight.TransacterImpl
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.db.use
 
-private class SqlDriverTransacter(driver: SqlDriver) : TransacterImpl(driver)
-
 fun SqlDriver.migrateIfNeededMySql(schema: SqlDriver.Schema) {
     val driver = this
-    val sqlDriverTransacter = SqlDriverTransacter(this)
+    val sqlDriverTransacter = object : TransacterImpl(this) {}
     val result = sqlDriverTransacter.transactionWithResult<Pair<Boolean, Int>> {
         var needsMetaTable = false
         val version = try {

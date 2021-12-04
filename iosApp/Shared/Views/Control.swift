@@ -39,8 +39,8 @@ struct Control<T>: View where T: View {
                 .frame(minSize: controlMinSize)
                 .contentShape(Rectangle())
                 .opacity(enabled ? 1 : 0.4)
-                .allowsHitTesting(enabled)
         }
+        .disabled(!enabled)
     }
 }
 

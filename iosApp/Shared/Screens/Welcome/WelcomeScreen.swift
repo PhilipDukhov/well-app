@@ -27,10 +27,11 @@ struct WelcomeScreen: View {
 
     var topImagesView: some View {
         GeometryReader { geometry in
-            let offset = geometry.safeAreaInsets.top
+            let offset: CGFloat = geometry.safeAreaInsets.top
+            let height: CGFloat = max(geometry.size.width * 1084.0 / 929.0, geometry.size.height) + offset + cornerRadius
             let size = CGSize(
                 width: geometry.size.width,
-                height: max(geometry.size.width * 1084 / 929, geometry.size.height) + offset + cornerRadius
+                height: height
             )
             TabView(selection: $selection.animation()) {
                 ForEachIndexed(state.descriptions) { i, _ in

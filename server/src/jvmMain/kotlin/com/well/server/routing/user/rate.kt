@@ -1,5 +1,6 @@
 package com.well.server.routing.user
 
+import com.well.modules.db.server.Ratings
 import com.well.modules.models.RatingRequest
 import com.well.server.utils.Dependencies
 import com.well.server.utils.authUid
@@ -24,10 +25,12 @@ suspend fun PipelineContext<*, ApplicationCall>.rate(
         database
             .ratingQueries
             .add(
-                owner = currentUid,
-                destination = request.uid,
-                value_ = request.rating.value,
-                text = request.rating.text
+                Ratings(
+                    owner = currentUid,
+                    destination = request.uid,
+                    value_ = request.rating.value,
+                    text = request.rating.text
+                )
             )
         val userRatingInfo = database
             .ratingQueries

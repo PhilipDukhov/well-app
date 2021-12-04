@@ -56,7 +56,7 @@ platform :ios do
   lane :deploy do |options|
     changelog = check_changelog(options)
     update_version(options)
-    build_app(workspace: "iosApp/Well.xcworkspace", scheme: "WELL")
+    build_app(workspace: "iosApp/Well.xcworkspace", scheme: "Well")
     upload_to_testflight(
       changelog: changelog,
       distribute_external: true,

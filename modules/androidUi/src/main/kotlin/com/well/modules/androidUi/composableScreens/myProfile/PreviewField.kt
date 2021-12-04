@@ -2,10 +2,10 @@ package com.well.modules.androidUi.composableScreens.myProfile
 
 import com.well.modules.androidUi.R
 import com.well.modules.androidUi.customViews.ActionButton
-import androidx.compose.foundation.Image
 import com.well.modules.androidUi.ext.toColor
-import com.well.modules.models.Color
 import com.well.modules.features.myProfile.myProfileFeature.UIPreviewField
+import com.well.modules.models.Color
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -83,10 +83,13 @@ fun <Msg> PreviewField(
                 }
             }
             is UIPreviewField.Content.Button<*> -> {
-                ActionButton(onClick = {
-                    @Suppress("UNCHECKED_CAST")
-                    listener(content.msg as Msg)
-                }) {
+                ActionButton(
+                    enabled = content.enabled,
+                    onClick = {
+                        @Suppress("UNCHECKED_CAST")
+                        listener(content.msg as Msg)
+                    }
+                ) {
                     Text(content.title)
                 }
             }

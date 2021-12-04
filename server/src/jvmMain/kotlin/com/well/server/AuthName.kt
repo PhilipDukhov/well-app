@@ -8,6 +8,7 @@ enum class AuthName {
     Twitter,
     Apple,
     Main,
+    Admin,
 }
 
 fun Route.authenticate(

@@ -31,8 +31,6 @@ def versions = [
 ]
 
 if (ext.properties["kotlin.native.binary.memoryModel"] == "experimental") {
-    versions["kotlin"] = "1.6.0"
-    versions["napier"] = "2.2.0"
     versions["kotlinCoroutines"] = "1.5.1-new-mm-dev2"
     versions["ktor"] = "1.6.2-native-mm-eap-196"
 }
@@ -41,8 +39,10 @@ if (stableCompose) {
     versions["compose"] = "1.0.5"
     versions["accompanist"] = "0.20.2"
 } else {
-    versions["compose"] = "1.1.0-beta03"
-    versions["accompanist"] = "0.21.3-beta"
+    versions["napier"] = "2.2.0"
+    versions["kotlin"] = "1.6.0"
+    versions["compose"] = "1.1.0-beta04"
+    versions["accompanist"] = "0.21.4-beta"
 }
 
 ext.Versions = versions

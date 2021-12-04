@@ -34,13 +34,10 @@ struct ChatMessageCell: View {
             if incoming {
                 Spacer(minLength: .minSpacerWidth)
             }
-        }.sheet(item: $fullscreenImage) { fullscreenImage in
-            SharedImage(
-                url: NSURL(string: fullscreenImage.url)!,
-                placeholder: ProgressView(),
-                aspectRatio: fullscreenImage.aspectRatio.toCGFloat(),
-                contentMode: .fit
-            )
+        }.sheet(item: $fullscreenImage) {
+            FullscreenImage(image: $0) {
+                fullscreenImage = nil
+            }
         }
     }
 
@@ -51,7 +48,7 @@ struct ChatMessageCell: View {
             let width = UIScreen.main.bounds.width / 2.5
             VStack(alignment: .trailing) {
                 SharedImage(
-                    url: NSURL(string: content.url)!,
+                    url: URL(string: content.url)!,
                     placeholder: ProgressView()
                 )
                     .frame(
@@ -60,7 +57,7 @@ struct ChatMessageCell: View {
                     )
                     .onTapGesture {
                         fullscreenImage = content
-                    }
+                    }.clipped()
                 dateAndStatus()
             }
 
@@ -113,6 +110,42 @@ private extension ChatMessageViewModel.Status {
         case .outgoingread:
             Image("double-checkmark")
         default: fatalError("unexpected ChatMessageWithStatus.Status: \(self.name)")
+        }
+    }
+}
+
+private struct FullscreenImage: View {
+    let image: ChatMessageViewModel.ContentImage
+    let dismiss: () -> Void
+    @State
+    private var isSharePresented = false
+
+    var body: some View {
+        VStack {
+            NavigationBar(
+                leftItem: .cancel(handler: dismiss),
+                rightItem: .init(
+                    viewBuilder: {
+                        Image(systemName: "square.and.arrow.up")
+                    }, handler: {
+                        isSharePresented = true
+                    }
+                )
+            )
+            Spacer().fillMaxHeight()
+            let remoteUrl = URL(string: image.url)!
+            SharedImage(
+                url: remoteUrl,
+                placeholder: ProgressView(),
+                processImage: { view, uiImage in
+                    view.background{
+                        HalfScreenActivityView(activityItems: [uiImage], isPresented: $isSharePresented)
+                    }
+                },
+                aspectRatio: image.aspectRatio.toCGFloat(),
+                contentMode: .fit
+            ).layoutPriority(1)
+            Spacer().fillMaxHeight()
         }
     }
 }

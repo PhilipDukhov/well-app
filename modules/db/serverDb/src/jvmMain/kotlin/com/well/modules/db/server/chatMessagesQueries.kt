@@ -33,23 +33,29 @@ fun Database.insertChatMessage(
             is ChatMessage.Content.Image -> {
                 chatContentImagesQueries
                     .insert(
-                        messageId = messageId,
-                        url = content.url,
-                        aspectRatio = content.aspectRatio,
+                        ChatContentImages(
+                            messageId = messageId,
+                            url = content.url,
+                            aspectRatio = content.aspectRatio,
+                        )
                     )
             }
             is ChatMessage.Content.Meeting -> {
                 chatContentMeetingsQueries
                     .insert(
-                        messageId = messageId,
-                        meetingId = content.meetingId,
+                        ChatContentMeetings(
+                            messageId = messageId,
+                            meetingId = content.meetingId,
+                        )
                     )
             }
             is ChatMessage.Content.Text -> {
                 chatContentTextsQueries
                     .insert(
-                        messageId = messageId,
-                        text = content.string,
+                        ChatContentTexts(
+                            messageId = messageId,
+                            text = content.string,
+                        )
                     )
             }
         }

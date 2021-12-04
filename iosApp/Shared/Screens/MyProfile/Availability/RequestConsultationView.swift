@@ -19,7 +19,7 @@ struct RequestConsultationOverlay: View {
             InactiveOverlay {
                 ZStack {
                     switch state.status {
-                    case is Feature.StateStatusProcessing, is Feature.StateStatusLoading:
+                    case is Feature.StateStatusProcessing:
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .companion.Green))
 
@@ -95,6 +95,7 @@ struct RequestConsultationView: View {
             .textStyle(.subtitle2)
         if state.status is Feature.StateStatusLoading {
             ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: .companion.Green))
         } else if state.availabilitiesByDay.isEmpty {
             Text(Feature.Strings.shared.hasNoConsultations)
         } else {

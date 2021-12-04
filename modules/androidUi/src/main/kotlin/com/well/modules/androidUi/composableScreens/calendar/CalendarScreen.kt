@@ -67,7 +67,7 @@ fun CalendarScreen(
     ) {
         CalendarMonthView(
             state = state.infoState,
-            title = { CalendarTitleView(state) },
+            title = { TitleView(state) },
             colors = CalendarMonthViewColors.mainCalendar,
             onSelect = {
                 listener(Msg.SelectDate(it))
@@ -95,7 +95,7 @@ fun CalendarScreen(
 }
 
 @Composable
-private fun CalendarTitleScope.CalendarTitleView(state: State) {
+private fun CalendarTitleScope.TitleView(state: State) {
     CompositionLocalProvider(LocalContentColor provides Color.White.toColor()) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

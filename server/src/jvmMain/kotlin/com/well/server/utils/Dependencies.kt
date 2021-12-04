@@ -1,17 +1,27 @@
 package com.well.server.utils
 
+import com.well.modules.db.server.Database
 import com.well.modules.db.server.toUser
 import com.well.modules.models.User
 import com.well.modules.utils.flowUtils.MutableMapFlow
 import com.well.modules.utils.ktorUtils.createBaseHttpClient
 import com.well.server.routing.UserSession
+import com.squareup.sqldelight.db.SqlDriver
 import io.ktor.application.*
 import io.ktor.client.*
 import java.util.*
 
 class Dependencies(app: Application) {
     val environment = app.environment
-    val database = initialiseDatabase(app)
+    val database: Database
+    val dbDriver: SqlDriver
+
+    init {
+        val dbInfo = initialiseDatabase(app)
+        database = dbInfo.first
+        dbDriver = dbInfo.second
+    }
+
     val jwtConfig = JwtConfig(
         environment.configProperty("jwt.accessTokenSecret"),
     )

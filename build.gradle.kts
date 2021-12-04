@@ -82,7 +82,7 @@ subprojects {
     apply(from = "${rootDir}/dependencies.gradle")
 }
 
-subprojectsConfigurationsResolutionStrategy(setOf(ResolutionStrategy.Kotlin, ResolutionStrategy.Coroutines))
+subprojectsConfigurationsResolutionStrategy(ResolutionStrategy.Kotlin, ResolutionStrategy.Coroutines)
 
 // ./gradlew -q -PallDepsNeeded=1 allDeps > deps.txt && open deps.txt
 val allDepsNeeded: String? by project

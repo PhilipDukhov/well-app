@@ -30,7 +30,11 @@ data class UIPreviewField(
         ) : Content()
 
         data class List(val list: kotlin.collections.List<String>) : Content()
-        data class Button<Msg>(val title: String, val msg: Msg) : Content()
+        data class Button<Msg>(
+            val title: String,
+            val msg: Msg,
+            val enabled: Boolean = true,
+        ) : Content()
     }
 
     enum class Icon {

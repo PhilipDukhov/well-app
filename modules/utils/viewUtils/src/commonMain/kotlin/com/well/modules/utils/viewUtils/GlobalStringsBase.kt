@@ -12,4 +12,8 @@ open class GlobalStringsBase {
     val skillsExpertise = "Skills/Expertise"
     val tryAgain = "Try again"
     val filter = "Filter"
+
+    companion object {
+        val shared = GlobalStringsBase()
+    }
 }

@@ -1,8 +1,13 @@
+import com.well.modules.models.Repeat;
+import com.well.modules.models.User;
+import com.well.modules.models.Availability;
+import kotlinx.datetime.Instant;
+
 CREATE TABLE Availabilities (
-    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    ownerId BIGINT NOT NULL,
-    startInstantEpochMilliseconds BIGINT NOT NULL,
+    id BIGINT AS Availability.Id NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    ownerId BIGINT AS User.Id NOT NULL,
+    startInstantEpochMilliseconds BIGINT AS Instant NOT NULL,
     durationMinutes INTEGER NOT NULL,
-    repeat TEXT AS Repeat NOT NULL,
+    `repeat` TEXT AS Repeat NOT NULL,
     deleted BOOLEAN NOT NULL DEFAULT FALSE
 );

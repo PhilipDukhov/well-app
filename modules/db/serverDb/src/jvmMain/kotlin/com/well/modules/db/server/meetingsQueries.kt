@@ -14,7 +14,7 @@ fun MeetingsQueries.insert(
 ): Meeting.Id = transactionWithResult {
     insert(
         availabilityId = availability.id,
-        attendees = setOf(attendeeId,  availability.ownerId),
+        attendees = setOf(attendeeId, availability.ownerId),
         startInstant = bookingAvailability.startInstant,
         durationMinutes = availability.durationMinutes,
     )

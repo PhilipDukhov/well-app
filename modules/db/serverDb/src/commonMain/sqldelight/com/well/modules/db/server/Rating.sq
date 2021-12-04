@@ -14,8 +14,8 @@ WHERE owner = ? AND destination = ?;
 
 -- TODO: use REPLACE when https://github.com/AlecStrong/sql-psi/issues/271 fixed
 add:
-INSERT INTO Ratings(owner, destination, value, text)
-VALUES (?, ?, ?, ?);
+INSERT INTO Ratings
+VALUES ?;
 
 get:
 SELECT *

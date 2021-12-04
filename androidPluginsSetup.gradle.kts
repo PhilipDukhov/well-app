@@ -43,4 +43,4 @@ subprojects {
     }
 }
 
-subprojectsConfigurationsResolutionStrategy(setOf(ResolutionStrategy.Compose))
+subprojectsConfigurationsResolutionStrategy(ResolutionStrategy.Compose)

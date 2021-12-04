@@ -21,7 +21,6 @@ struct ImageSharingBottomBar: View {
                     )
                     .background(
                         OffsetCircle(offset: 2)
-
                             .fill(color)
                     )
                     .padding(2)

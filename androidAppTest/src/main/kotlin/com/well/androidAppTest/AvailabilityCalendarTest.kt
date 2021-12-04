@@ -21,7 +21,7 @@ import com.google.accompanist.insets.systemBarsPadding
 fun AvailabilityCalendarTest() {
     val state = remember {
         mutableStateOf(
-            AvailabilitiesCalendarFeature.testState(100)
+            AvailabilitiesCalendarFeature.testState(0)
         )
     }
     var padding by remember { mutableStateOf(0f) }
@@ -29,7 +29,7 @@ fun AvailabilityCalendarTest() {
         Box(
             modifier = Modifier
                 .weight(1f)
-                .padding(bottom = with(LocalDensity.current) { padding.toDp() })
+                .padding(vertical = with(LocalDensity.current) { padding.toDp() })
         ) {
             key(padding) {
                 AvailabilitiesCalendarView(

@@ -12,6 +12,7 @@ import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalend
 import com.well.modules.models.Availability
 import com.well.modules.models.Color
 import com.well.modules.models.date.dateTime.localizedDayAndShortMonth
+import com.well.modules.utils.kotlinUtils.ifTrueOrNull
 import com.well.modules.utils.viewUtils.CalendarInfoFeature
 import com.well.modules.utils.viewUtils.CalendarMonthViewColors
 import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.AvailabilitiesCalendarFeature as Feature
@@ -84,7 +85,7 @@ fun AvailabilitiesCalendarView(
             CalendarMonthView(
                 state = state.infoState,
                 title = {
-                    CalendarTitleView(state, onLeft = ::showPrevMonth, onRight = ::showNextMonth)
+                    TitleView(state, onLeft = ::showPrevMonth, onRight = ::showNextMonth)
                 },
                 colors = CalendarMonthViewColors.availabilitiesCalendar,
                 onSelect = {
@@ -185,9 +186,11 @@ private fun AvailabilitiesList(
     canCreateAvailability: (CalendarItem) -> Boolean,
 ) {
     val spacing = 10.dp
+    val availabilities = selectedItem?.events ?: allAvailabilities
     CalculateSize(
         cellsCount = State.availabilityCellsCount,
         spacing = spacing,
+        includeFirst = selectedItem == null,
     ) { size ->
         LazyVerticalGrid(
             cells = GridCells.Fixed(State.availabilityCellsCount),
@@ -195,10 +198,11 @@ private fun AvailabilitiesList(
             horizontalArrangement = Arrangement.spacedBy(spacing),
             contentPadding = PaddingValues(vertical = spacing),
         ) {
-            items(selectedItem?.events ?: allAvailabilities) { availability ->
+            items(availabilities) { availability ->
                 AvailabilityCell(
-                    firstRowText = selectedItem?.let { null }
-                        ?: availability.startDay.localizedDayAndShortMonth(),
+                    firstRowText = ifTrueOrNull(selectedItem == null) {
+                        availability.startDay.localizedDayAndShortMonth()
+                    },
                     secondRowText = availability.intervalString,
                     onClick = {
                         onSelect(availability)
@@ -273,7 +277,7 @@ private fun AvailabilityCell(
 }
 
 @Composable
-private fun CalendarTitleView(
+private fun TitleView(
     state: State,
     onLeft: () -> Unit,
     onRight: () -> Unit,
@@ -299,15 +303,16 @@ private fun CalculateSize(
     @Suppress("SameParameterValue")
     cellsCount: Int,
     spacing: Dp,
+    includeFirst: Boolean,
     content: @Composable (DpSize) -> Unit,
 ) {
-    val (size, setSize) = remember { mutableStateOf<DpSize?>(null) }
+    val (size, setSize) = remember(includeFirst) { mutableStateOf<DpSize?>(null) }
     if (size == null) {
         BoxWithConstraints {
             val width = ((maxWidth - spacing * (cellsCount - 1)) / cellsCount).value.roundToInt().dp
             val density = LocalDensity.current
             AvailabilityCell(
-                firstRowText = "",
+                firstRowText = if (includeFirst) "" else null,
                 secondRowText = "",
                 size = null,
                 modifier = Modifier

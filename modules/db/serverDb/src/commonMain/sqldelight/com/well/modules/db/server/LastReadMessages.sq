@@ -15,8 +15,8 @@ WHERE fromId = ? AND peerId = ?;
 
 -- TODO: use REPLACE when https://github.com/AlecStrong/sql-psi/issues/271 fixed
 insert:
-INSERT INTO LastReadMessages(fromId, peerId, messageId)
-VALUES (?, ?, ?);
+INSERT INTO LastReadMessages
+VALUES ?;
 
 selectMessageId:
 SELECT messageId FROM LastReadMessages WHERE fromId = ? AND peerId = ?;

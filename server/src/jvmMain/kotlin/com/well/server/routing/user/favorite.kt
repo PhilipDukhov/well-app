@@ -2,6 +2,7 @@ package com.well.server.routing.user
 
 import com.well.modules.models.FavoriteSetter
 import com.well.server.utils.Dependencies
+import com.well.modules.db.server.Favourites
 import com.well.server.utils.authUid
 import io.ktor.application.*
 import io.ktor.http.*
@@ -18,7 +19,12 @@ suspend fun PipelineContext<*, ApplicationCall>.setUserFavorite(
         val currentValue = isFavorite(uid, setFavorite.uid).executeAsOne()
         if (currentValue == setFavorite.favorite) return@databaseQuery
         if (setFavorite.favorite) {
-            addFavorite(uid, setFavorite.uid)
+            addFavorite(
+                Favourites(
+                    owner = uid,
+                    destination = setFavorite.uid,
+                )
+            )
         } else {
             removeFavorite(uid, setFavorite.uid)
         }

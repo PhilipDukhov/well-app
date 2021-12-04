@@ -2,7 +2,7 @@ package com.well.modules.utils.viewUtils.dataStore
 
 import com.well.modules.utils.viewUtils.AppContext
 import com.well.modules.utils.viewUtils.platform.Platform
-import com.well.modules.utils.viewUtils.platform.isDebug
+import com.well.modules.utils.viewUtils.platform.isLocalServer
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -23,7 +23,7 @@ expect class Key<T> {
 expect inline fun <reified T : Any> createKey(name: String): Key<T>
 
 @SharedImmutable
-private val authInfoKey = createKey<String>(if (Platform.isDebug) "debugAuthInfoKey" else "authInfoKey")
+private val authInfoKey = createKey<String>(if (Platform.isLocalServer) "debugAuthInfoKey" else "authInfoKey")
 var DataStore.authInfo: AuthInfo?
     get() = getValue(authInfoKey)?.let { Json.decodeFromString(it) }
     set(value) = setValue(Json.encodeToString(value), authInfoKey)

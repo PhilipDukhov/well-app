@@ -5,9 +5,10 @@
 import SwiftUI
 import SharedMobile
 
-struct SharedImage<Placeholder: View>: View {
+struct SharedImage<Placeholder: View, ProcessedImage: View>: View {
     let image: SharedMobile.SharedImage?
     let placeholder: Placeholder
+    let processImage: (Image, UIImage) -> ProcessedImage
     let aspectRatio: CGFloat?
     let contentMode: ContentMode
 
@@ -16,21 +17,38 @@ struct SharedImage<Placeholder: View>: View {
         placeholder: Placeholder,
         aspectRatio: CGFloat? = nil,
         contentMode: ContentMode = .fill
-    ) {
+    ) where ProcessedImage == Image {
         self.image = image
         self.placeholder = placeholder
+        self.processImage = { view, _ in view }
         self.aspectRatio = aspectRatio
         self.contentMode = contentMode
     }
 
     init(
-        url: NSURL,
+        url: URL,
         placeholder: Placeholder,
         aspectRatio: CGFloat? = nil,
         contentMode: ContentMode = .fill
-    ) {
-        self.image = UrlImage(url: url.absoluteString!)
+    ) where ProcessedImage == Image {
+        self.image = UrlImage(url: url.absoluteString)
         self.placeholder = placeholder
+        self.processImage = { view, _ in view }
+        self.aspectRatio = aspectRatio
+        self.contentMode = contentMode
+    }
+
+    init(
+        url: URL,
+        placeholder: Placeholder,
+        @ViewBuilder
+        processImage: @escaping (Image, UIImage) -> ProcessedImage,
+        aspectRatio: CGFloat? = nil,
+        contentMode: ContentMode = .fill
+    ) {
+        self.image = UrlImage(url: url.absoluteString)
+        self.placeholder = placeholder
+        self.processImage = processImage
         self.aspectRatio = aspectRatio
         self.contentMode = contentMode
     }
@@ -64,8 +82,10 @@ struct SharedImage<Placeholder: View>: View {
     }
 
     private func buildImage(uiImage: UIImage) -> some View {
-        Image(uiImage: uiImage)
-            .resizable()
-            .aspectRatio(contentMode: contentMode)
+        processImage(
+            Image(uiImage: uiImage)
+                .resizable(),
+            uiImage
+        ).aspectRatio(contentMode: contentMode)
     }
 }

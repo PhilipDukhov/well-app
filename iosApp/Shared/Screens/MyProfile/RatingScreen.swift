@@ -31,8 +31,7 @@ struct RatingScreen: View {
         ZStack {
             VStack {
                 NavigationBar(
-                    rightItem: NavigationBarItem(
-                        text: "Cancel",
+                    rightItem: .cancel(
                         handler: {
                             presentationMode.wrappedValue.dismiss()
                         }

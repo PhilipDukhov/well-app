@@ -4,7 +4,7 @@ import com.well.modules.models.Size
 import com.well.modules.utils.viewUtils.BuildConfig
 
 actual val Platform.Companion.isDebug: Boolean
-    get() = !prodTesting && BuildConfig.DEBUG
+    get() = BuildConfig.DEBUG
 
 actual val Platform.Companion.nativeScale: Float
     get() = 1F

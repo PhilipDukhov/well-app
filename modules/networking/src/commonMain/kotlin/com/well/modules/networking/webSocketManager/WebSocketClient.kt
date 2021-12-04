@@ -3,7 +3,6 @@ package com.well.modules.networking.webSocketManager
 import com.well.modules.networking.createBaseServerClient
 import io.ktor.client.*
 import io.ktor.client.features.*
-import io.ktor.client.features.logging.*
 import io.ktor.client.features.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -28,9 +27,6 @@ internal class WebSocketClient(val config: Config) {
             }
             install(WebSockets) {
                 pingInterval = 5_000
-            }
-            install(Logging) {
-                level = LogLevel.ALL
             }
         }
     }

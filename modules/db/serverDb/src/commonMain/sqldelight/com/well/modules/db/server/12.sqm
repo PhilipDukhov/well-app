@@ -39,8 +39,7 @@ CREATE TABLE ChatContentMeetings (
     meetingId BIGINT NOT NULL
 );
 
-ALTER TABLE ChatMessages
-ADD COLUMN contentType TEXT AFTER peerId;
+ALTER TABLE ChatMessages ADD COLUMN contentType TEXT AFTER peerId;
 
 UPDATE ChatMessages
 SET contentType = CASE WHEN photoUrl IS NOT NULL THEN 'Image' ELSE 'Text' END;

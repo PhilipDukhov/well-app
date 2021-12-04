@@ -1,12 +1,7 @@
 package com.well.server.routing.auth
 
 import com.well.server.utils.Dependencies
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder
-import com.amazonaws.services.simpleemail.model.Body
-import com.amazonaws.services.simpleemail.model.Content
-import com.amazonaws.services.simpleemail.model.Destination
-import com.amazonaws.services.simpleemail.model.Message
-import com.amazonaws.services.simpleemail.model.SendEmailRequest
+import com.well.server.utils.sendEmail
 import com.amazonaws.services.sns.AmazonSNSClientBuilder
 import com.amazonaws.services.sns.model.MessageAttributeValue
 import com.amazonaws.services.sns.model.PublishRequest
@@ -51,28 +46,3 @@ private fun sendSms(
     )
 }
 
-private fun sendEmail(
-    source: String,
-    destination: String,
-    subject: String,
-    body: String,
-) {
-    AmazonSimpleEmailServiceClientBuilder
-        .standard()
-        .build().sendEmail(
-        SendEmailRequest()
-            .withSource(source)
-            .withDestination(
-                Destination()
-                    .withToAddresses(destination)
-            )
-            .withMessage(
-                Message()
-                    .withSubject(Content(subject))
-                    .withBody(
-                        Body()
-                            .withHtml(Content(body))
-                    )
-            )
-    )
-}

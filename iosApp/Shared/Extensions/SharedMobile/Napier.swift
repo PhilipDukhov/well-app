@@ -10,13 +10,13 @@ import SharedMobile
 import SwiftUI
 
 extension Napier {
-    #if DEBUG
     @inline(__always)
     static func printUI(tag: String? = nil, _ items: Any..., separator: String = " ", file: String = #file, function: String = #function) -> some View {
+#if DEBUG
         log(logLevel: .debug, tag: tag, items, separator: separator, file: file, function: function)
+#endif
         return EmptyView()
     }
-    #endif
     
     static func v(tag: String? = nil, _ items: Any..., separator: String = " ", file: String = #file, function: String = #function) {
         log(logLevel: .verbose, tag: tag, items, separator: separator, file: file, function: function)

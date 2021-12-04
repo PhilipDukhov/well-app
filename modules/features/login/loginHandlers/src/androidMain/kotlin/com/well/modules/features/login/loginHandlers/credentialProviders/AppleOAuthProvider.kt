@@ -5,7 +5,7 @@ import com.well.modules.models.NetworkConstants
 import com.well.modules.utils.viewUtils.AppContext
 import com.well.modules.utils.viewUtils.WebAuthenticator
 import com.well.modules.utils.viewUtils.platform.Platform
-import com.well.modules.utils.viewUtils.platform.isDebug
+import com.well.modules.utils.viewUtils.platform.isLocalServer
 import com.well.sharedMobile.BuildKonfig
 import android.app.Activity
 import android.content.Intent
@@ -26,7 +26,7 @@ class AppleOAuthProvider(
     private var handleActivityResultCancelJob: Job? = null
     private var webAuthenticateJob: Job? = null
     private var getCredentialsContinuation: CancellableContinuation<AuthCredential>? = null
-    private val constants = NetworkConstants.current(Platform.isDebug)
+    private val constants = NetworkConstants.current(Platform.isLocalServer)
 
     override suspend fun getCredentials(): AuthCredential =
         suspendCancellableCoroutine {

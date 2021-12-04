@@ -8,14 +8,15 @@ import com.well.modules.utils.kotlinUtils.ifTrueOrNull
 import com.well.modules.utils.kotlinUtils.letIfTrueOrNull
 import com.well.modules.utils.kotlinUtils.spacedUppercaseName
 
-internal fun User.previewGroups(isCurrent: Boolean, hasAvailableAvailabilities: Boolean) =
+internal fun User.previewGroups(isCurrent: Boolean, hasAvailableAvailabilities: Boolean?) =
     listOfNotNull(
-        if (!isCurrent && hasAvailableAvailabilities) {
+        if (hasAvailableAvailabilities != null) {
             UIGroup.Preview(
                 UIPreviewField(
                     content = UIPreviewField.Content.Button(
-                        Strings.requestConsultation,
-                        MyProfileFeature.Msg.RequestConsultation
+                        title = Strings.requestConsultation,
+                        msg = MyProfileFeature.Msg.RequestConsultation,
+                        enabled = hasAvailableAvailabilities
                     ),
                 )
             )

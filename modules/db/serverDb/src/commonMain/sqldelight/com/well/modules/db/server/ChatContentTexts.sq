@@ -6,8 +6,8 @@ CREATE TABLE ChatContentTexts (
 );
 
 insert:
-INSERT INTO ChatContentTexts(messageId, text)
-VALUES (?, ?);
+INSERT INTO ChatContentTexts
+VALUES ?;
 
 getById:
 SELECT * FROM ChatContentTexts WHERE messageId = ?;

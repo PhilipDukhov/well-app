@@ -5,6 +5,7 @@ import com.well.modules.androidUi.customViews.NavigationBar
 import com.well.modules.androidUi.customViews.clearFocusOnKeyboardDismiss
 import com.well.modules.androidUi.customViews.rememberControlItem
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Msg
+import com.well.modules.utils.viewUtils.GlobalStringsBase
 import com.well.modules.utils.viewUtils.UIEditingField
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
@@ -81,10 +82,10 @@ private fun ModalContent(
     Column(Modifier.fillMaxSize()) {
         NavigationBar(
             title = field.placeholder,
-            leftItem = rememberControlItem(text = "Cancel") {
+            leftItem = rememberControlItem(text = GlobalStringsBase.shared.cancel) {
                 showModalContent(null)
             },
-            rightItem = if (field.content.multipleSelectionAvailable) ControlItem(text = "Done") {
+            rightItem = if (field.content.multipleSelectionAvailable) ControlItem(text = GlobalStringsBase.shared.done) {
                 onFinish(selectionState.value)
             } else null,
         )

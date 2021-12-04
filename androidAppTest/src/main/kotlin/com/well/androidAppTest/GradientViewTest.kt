@@ -137,11 +137,6 @@ fun GradientViewCalibrator(initial: Gradient, modifier: Modifier) {
                     detectDragGestures(
                         onDragStart = { offset ->
                             val normalized = offset.normalize()
-                            println("onDragStart $size $offset $normalized ${
-                                normalized.distance(gradient.startPoint)
-                            } ${
-                                normalized.distance(gradient.endPoint)
-                            }")
                             movingPoint = if (normalized.distance(gradient.startPoint)
                                 < normalized.distance(gradient.endPoint)
                             ) 1 else 2
@@ -159,9 +154,6 @@ fun GradientViewCalibrator(initial: Gradient, modifier: Modifier) {
                                     throw IllegalStateException()
                                 }
                             }
-                        },
-                        onDragEnd = {
-                            println("gradient ${gradient.startPoint} ${gradient.endPoint}")
                         },
                     )
                 }

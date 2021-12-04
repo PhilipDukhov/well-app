@@ -28,6 +28,13 @@ object AvailabilitiesCalendarFeature {
     ) {
         companion object {
             const val availabilityCellsCount = 3
+
+            fun prepareDayEvents(availabilities: List<Availability>?) =
+                { day: LocalDate ->
+                    availabilities
+                        ?.let { availabilities.mapDayAvailabilities(day) }
+                        ?: emptyList()
+                }
         }
 
         val calendarTitle: String
@@ -42,6 +49,14 @@ object AvailabilitiesCalendarFeature {
 
         fun canCreateAvailability(item: CalendarInfoFeature.State.Item<Availability>) =
             item.date >= infoState.today
+
+        fun copy(availabilities: List<Availability>?) =
+            copy(
+                availabilities = availabilities,
+                infoState = infoState.copy(
+                    prepareDayEvents = prepareDayEvents(availabilities)
+                )
+            )
     }
 
     sealed class Msg {

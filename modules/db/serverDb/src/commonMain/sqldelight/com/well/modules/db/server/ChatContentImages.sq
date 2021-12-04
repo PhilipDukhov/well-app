@@ -7,8 +7,8 @@ CREATE TABLE ChatContentImages (
 );
 
 insert:
-INSERT INTO ChatContentImages(messageId, url, aspectRatio)
-VALUES (?, ?, ?);
+INSERT INTO ChatContentImages
+VALUES ?;
 
 getById:
 SELECT * FROM ChatContentImages WHERE messageId = ?;

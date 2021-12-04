@@ -1,43 +1,43 @@
 rootProject.name = "WELL"
 
-enum class Executor {
-    AndroidStudio,
-    Idea,
-    Cocoapods,
-    CocoapodsArm64Simulator,
-    Console,
-    // update other locations after adding/updating values
-}
+//enum class Executor {
+//    AndroidStudio,
+//    Idea,
+//    Cocoapods,
+//    CocoapodsArm64Simulator,
+//    Console,
+//    // update other locations after adding/updating values
+//}
 
 apply(from = "dependenciesResolver.gradle.kts")
 val withAndroid = System.getProperty("withAndroid")!!.toBoolean()
-val executor = Executor.values()[System.getProperty("executor")!!.toInt()]
+//val executor = Executor.values()[System.getProperty("executor")!!.toInt()]
 
-val includeAndroid = listOf(
-    Executor.AndroidStudio,
-    Executor.Console,
-).contains(executor)
-val includeServer = listOf(
-    Executor.AndroidStudio,
-    Executor.Idea,
-    Executor.Console,
-).contains(executor)
-val includeSharedMobile = executor != Executor.Idea
-if (includeAndroid) {
+//val includeAndroid = listOf(
+//    Executor.AndroidStudio,
+//    Executor.Console,
+//).contains(executor)
+//val includeServer = listOf(
+//    Executor.AndroidStudio,
+//    Executor.Idea,
+//    Executor.Console,
+//).contains(executor)
+//val includeSharedMobile = executor != Executor.Idea
+//if (includeAndroid) {
     include(
         "androidApp",
         "androidAppTest",
         ":modules:androidUi",
         ":modules:androidWebrtc",
     )
-}
-if (includeServer) {
+//}
+//if (includeServer) {
     include(
         ":server",
         ":modules:db:serverDb",
     )
-}
-if (includeSharedMobile) {
+//}
+//if (includeSharedMobile) {
     include(
         ":sharedMobileTest",
         ":modules:atomic",
@@ -64,7 +64,7 @@ if (includeSharedMobile) {
         ":modules:features:calendar:calendarFeature",
         ":modules:features:calendar:calendarHandlers",
     )
-}
+//}
 
 include(
     ":modules:annotations",

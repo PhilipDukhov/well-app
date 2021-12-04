@@ -3,6 +3,7 @@ package com.well.server.utils
 import com.well.modules.db.server.Database
 import com.well.modules.db.server.invoke
 import com.well.modules.utils.dbUtils.migrateIfNeededMySql
+import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.sqlite.driver.asJdbcDriver
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -11,22 +12,24 @@ import io.ktor.application.*
 import org.slf4j.LoggerFactory
 import java.io.File
 
-fun initialiseDatabase(app: Application): Database {
+fun initialiseDatabase(app: Application): Pair<Database, SqlDriver> {
     val dbConfig = app.environment.config.config("database")
-    var connectionUrl: String = dbConfig.property("connection")
-        .getString()
     val userName = dbConfig.property("username").getString()
     val pass = dbConfig.property("password").getString()
 
-    val rdsConnection = dbConfig.property("rdsConnection").getString()
-    val significantPart = rdsConnection.substringAfter("//")
-
     val datasourceConfig = HikariConfig().apply {
-        // Ensure that rdsConnection is not empty
-        if (significantPart.split(":", "/").all { it.isNotEmpty() }) {
-            jdbcUrl = "$rdsConnection?user=$userName&password=$pass"
+        try {
+            val rdsHostname = dbConfig.property("rdsHostname").getString()
+            val overrideRdsHostname = dbConfig.propertyOrNull("overrideRdsHostname")?.getString()
+            val rdsPort = dbConfig.property("rdsPort").getString()
+            val rdsDbName = dbConfig.property("rdsDbName").getString()
+            jdbcUrl = "jdbc:mysql://${overrideRdsHostname ?: rdsHostname}:$rdsPort/$rdsDbName" +
+                    "?user=$userName&password=$pass"
             driverClassName = "com.mysql.cj.jdbc.Driver"
-        } else {
+        } catch (t: Throwable) {
+            // drs info missing - load local file
+            var connectionUrl: String = dbConfig.property("connection")
+                .getString()
             // If this is a local h2 database, ensure the directories exist
             if (connectionUrl.startsWith("jdbc:h2:file:")) {
                 val dbFile = File(connectionUrl.removePrefix("jdbc:h2:file:")).absoluteFile
@@ -70,5 +73,25 @@ fun initialiseDatabase(app: Application): Database {
                 db.usersQueries.deleteUninitialized()
             }
         }
-    return db
+    return db to driver
 }
+
+fun SqlDriver.executeQueryAndPrettify(sql: String): String =
+    executeQuery(
+        null,
+        sql,
+        0
+    ).run {
+        var result = ""
+        while (next()) {
+            try {
+                var i = 0
+                while (true) {
+                    result += getString(i++) + " "
+                }
+            } catch (_: Throwable) {
+            }
+            result += "\n"
+        }
+        result
+    }

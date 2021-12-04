@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.google.accompanist.insets.navigationBarsPadding
+import androidx.activity.compose.BackHandler
 
 @Composable
 fun ColumnScope.ExpertsScreen(
@@ -34,6 +35,9 @@ fun ColumnScope.ExpertsScreen(
 ) {
     var filterScreenVisible by remember { mutableStateOf(false) }
     if (!filterScreenVisible) {
+        BackHandler {
+            filterScreenVisible = false
+        }
         ExpertsScreenContent(
             state,
             listener,

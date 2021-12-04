@@ -278,7 +278,7 @@ enum class ResolutionStrategy {
     Coroutines,
 }
 
-fun Project.subprojectsConfigurationsResolutionStrategy(strategies: Set<ResolutionStrategy>) {
+fun Project.subprojectsConfigurationsResolutionStrategy(vararg strategies: ResolutionStrategy) {
     subprojects.plus(project).forEach {
         it.configurations.all {
             resolutionStrategy.eachDependency {

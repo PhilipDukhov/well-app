@@ -41,6 +41,8 @@
 		4A4E3E90267A469300BF34EC /* UserChatScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D1E65EC96D4AE332C928E /* UserChatScreen.swift */; };
 		4A5475332758B0DC0023D006 /* Shapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5475322758B0DC0023D006 /* Shapes.swift */; };
 		4A5475342758B0DC0023D006 /* Shapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A5475322758B0DC0023D006 /* Shapes.swift */; };
+		4A547537275BA60B0023D006 /* HalfScreenActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A547536275BA60B0023D006 /* HalfScreenActivityView.swift */; };
+		4A547538275BA60B0023D006 /* HalfScreenActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A547536275BA60B0023D006 /* HalfScreenActivityView.swift */; };
 		4A6ABABB270F45B900D8621E /* Napier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6ABABA270F45B900D8621E /* Napier.swift */; };
 		4A6ABABF270F544D00D8621E /* HorizontalCapsule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6ABABE270F544D00D8621E /* HorizontalCapsule.swift */; };
 		4A82800E2725EBFB004DF64E /* LocalTestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82800D2725EBFB004DF64E /* LocalTestApp.swift */; };
@@ -212,6 +214,7 @@
 		4A42E2BE2729DAFE00E839CF /* RequestConsultationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestConsultationView.swift; sourceTree = "<group>"; };
 		4A42E2CD272B4BCF00E839CF /* partialSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = partialSheet.swift; sourceTree = "<group>"; };
 		4A5475322758B0DC0023D006 /* Shapes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shapes.swift; sourceTree = "<group>"; };
+		4A547536275BA60B0023D006 /* HalfScreenActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalfScreenActivityView.swift; sourceTree = "<group>"; };
 		4A6ABABA270F45B900D8621E /* Napier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Napier.swift; sourceTree = "<group>"; };
 		4A6ABABE270F544D00D8621E /* HorizontalCapsule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalCapsule.swift; sourceTree = "<group>"; };
 		4A82800B2725EBFB004DF64E /* LocalTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LocalTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -554,6 +557,7 @@
 				347D1E959C04E1097F02FE36 /* SharedImage.swift */,
 				4A42E2CD272B4BCF00E839CF /* partialSheet.swift */,
 				4A98B2FA2757910800E62B8D /* CalendarMonthView.swift */,
+				4A547536275BA60B0023D006 /* HalfScreenActivityView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1010,6 +1014,7 @@
 				4A8280382725EDAB004DF64E /* ProjectTextEditor.swift in Sources */,
 				4A9F386927432140004D5EF5 /* PageView.swift in Sources */,
 				4A0A75F92728AA4F00632E84 /* AvailabilitiesList.swift in Sources */,
+				4A547538275BA60B0023D006 /* HalfScreenActivityView.swift in Sources */,
 				4A8280282725EDAB004DF64E /* SearchBar.swift in Sources */,
 				4A8280472725EDAB004DF64E /* MyProfileScreen.swift in Sources */,
 				4A278EFC2743520D00A612C1 /* ForceNavControllerBarHidden.swift in Sources */,
@@ -1033,6 +1038,7 @@
 			files = (
 				D568033C2638322500CFE16B /* CallBottomBar.swift in Sources */,
 				D568032F2638320300CFE16B /* ColorPicker.swift in Sources */,
+				4A547537275BA60B0023D006 /* HalfScreenActivityView.swift in Sources */,
 				4A98B2F827578B0600E62B8D /* CalendarScreen.swift in Sources */,
 				D568031A263831A500CFE16B /* NSError+description.swift in Sources */,
 				D568034C2638327600CFE16B /* TopLevelView.swift in Sources */,
@@ -1153,6 +1159,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS -Xfrontend -warn-long-function-bodies=100 -Xfrontend -warn-long-expression-type-checking=100";
 				PRODUCT_BUNDLE_IDENTIFIER = com.well.app.localTest;
 				PRODUCT_MODULE_NAME = Well;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1227,7 +1234,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 2L8ZA5WNKK;
-				ENABLE_BITCODE = NO;
+				ENABLE_BITCODE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1293,7 +1300,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 2L8ZA5WNKK;
-				ENABLE_BITCODE = NO;
+				ENABLE_BITCODE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1338,63 +1345,9 @@
 					"-l\"c++\"",
 					"-l\"stdc++\"",
 					"-l\"z\"",
-					"-framework",
-					"\"AppAuth\"",
-					"-framework",
-					"\"CoreGraphics\"",
-					"-framework",
-					"\"CoreText\"",
-					"-framework",
-					"\"FBSDKCoreKit\"",
-					"-framework",
-					"\"FBSDKLoginKit\"",
-					"-framework",
-					"\"Foundation\"",
-					"-framework",
-					"\"GTMAppAuth\"",
-					"-framework",
-					"\"GTMSessionFetcher\"",
-					"-framework",
-					"\"GoogleSignIn\"",
-					"-framework",
-					"\"LocalAuthentication\"",
-					"-framework",
-					"\"SafariServices\"",
-					"-framework",
-					"\"Security\"",
-					"-framework",
-					"\"SharedMobile\"",
-					"-framework",
-					"\"SystemConfiguration\"",
-					"-framework",
-					"\"UIKit\"",
-					"-weak_framework",
-					"\"Accelerate\"",
-					"-weak_framework",
-					"\"Accounts\"",
-					"-weak_framework",
-					"\"AdSupport\"",
-					"-weak_framework",
-					"\"AudioToolbox\"",
-					"-weak_framework",
-					"\"AuthenticationServices\"",
-					"-weak_framework",
-					"\"CoreGraphics\"",
-					"-weak_framework",
-					"\"Foundation\"",
-					"-weak_framework",
-					"\"QuartzCore\"",
-					"-weak_framework",
-					"\"Security\"",
-					"-weak_framework",
-					"\"Social\"",
-					"-weak_framework",
-					"\"StoreKit\"",
-					"-weak_framework",
-					"\"UIKit\"",
 					"-lsqlite3",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited)";
+				OTHER_SWIFT_FLAGS = "$(inherited) -Xfrontend -warn-long-function-bodies=100 -Xfrontend -warn-long-expression-type-checking=100";
 				PRODUCT_BUNDLE_IDENTIFIER = com.well.well.debug;
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME)";
 				PRODUCT_NAME = "$(TARGET_NAME)_D";
@@ -1427,63 +1380,8 @@
 					"-l\"c++\"",
 					"-l\"stdc++\"",
 					"-l\"z\"",
-					"-framework",
-					"\"AppAuth\"",
-					"-framework",
-					"\"CoreGraphics\"",
-					"-framework",
-					"\"CoreText\"",
-					"-framework",
-					"\"FBSDKCoreKit\"",
-					"-framework",
-					"\"FBSDKLoginKit\"",
-					"-framework",
-					"\"Foundation\"",
-					"-framework",
-					"\"GTMAppAuth\"",
-					"-framework",
-					"\"GTMSessionFetcher\"",
-					"-framework",
-					"\"GoogleSignIn\"",
-					"-framework",
-					"\"LocalAuthentication\"",
-					"-framework",
-					"\"SafariServices\"",
-					"-framework",
-					"\"Security\"",
-					"-framework",
-					"\"SharedMobile\"",
-					"-framework",
-					"\"SystemConfiguration\"",
-					"-framework",
-					"\"UIKit\"",
-					"-weak_framework",
-					"\"Accelerate\"",
-					"-weak_framework",
-					"\"Accounts\"",
-					"-weak_framework",
-					"\"AdSupport\"",
-					"-weak_framework",
-					"\"AudioToolbox\"",
-					"-weak_framework",
-					"\"AuthenticationServices\"",
-					"-weak_framework",
-					"\"CoreGraphics\"",
-					"-weak_framework",
-					"\"Foundation\"",
-					"-weak_framework",
-					"\"QuartzCore\"",
-					"-weak_framework",
-					"\"Security\"",
-					"-weak_framework",
-					"\"Social\"",
-					"-weak_framework",
-					"\"StoreKit\"",
-					"-weak_framework",
-					"\"UIKit\"",
 					"-lsqlite3",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.well.app;
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME)";
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -150,7 +150,7 @@ private struct ProfileSelectionScreen: View {
             title: title,
             leftItem: NavigationBarItem(text: "Cancel", handler: onCancel),
             rightItem: !multipleSelection ? nil :
-                       NavigationBarItem(text: "Done") {
+                       NavigationBarItem(text: GlobalStringsBase.companion.shared.cancel) {
                            onSelectionChanged(selection)
                        }
         )

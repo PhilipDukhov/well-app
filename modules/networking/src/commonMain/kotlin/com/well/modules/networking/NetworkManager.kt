@@ -19,7 +19,7 @@ import com.well.modules.networking.webSocketManager.WebSocketSession
 import com.well.modules.networking.webSocketManager.ws
 import com.well.modules.utils.kotlinUtils.tryF
 import com.well.modules.utils.viewUtils.platform.Platform
-import com.well.modules.utils.viewUtils.platform.isDebug
+import com.well.modules.utils.viewUtils.platform.isLocalServer
 import io.github.aakira.napier.Napier
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
@@ -46,7 +46,7 @@ class NetworkManager(
     private val unauthorizedHandler: () -> Unit,
 ) : CloseableContainer() {
     private val clientWrapper = WebSocketClient(
-        NetworkConstants.current(Platform.isDebug).let { constants ->
+        NetworkConstants.current(Platform.isLocalServer).let { constants ->
             WebSocketClient.Config(
                 host = constants.host,
                 port = constants.port,

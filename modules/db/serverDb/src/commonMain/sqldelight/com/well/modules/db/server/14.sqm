@@ -1,0 +1,10 @@
+-- prod server fix
+
+-- UPDATE ChatMessages
+-- SET contentType = CASE WHEN photoUrl IS NOT NULL THEN 'Image' ELSE 'Text' END;
+--
+-- ALTER TABLE
+--   ChatMessages DROP COLUMN photoAspectRatio,
+--   DROP COLUMN photoUrl,
+--   DROP COLUMN text;
+

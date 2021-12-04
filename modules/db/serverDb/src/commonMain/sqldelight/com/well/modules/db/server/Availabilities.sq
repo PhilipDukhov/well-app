@@ -8,7 +8,7 @@ CREATE TABLE Availabilities (
     ownerId BIGINT AS User.Id NOT NULL,
     startInstant BIGINT AS Instant NOT NULL,
     durationMinutes INTEGER NOT NULL,
-    repeat TEXT AS Repeat NOT NULL,
+    `repeat` TEXT AS Repeat NOT NULL,
     deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
@@ -25,7 +25,7 @@ getById:
 SELECT * FROM Availabilities WHERE id = ?;
 
 insert:
-INSERT INTO Availabilities(ownerId, startInstant, durationMinutes ,repeat)
+INSERT INTO Availabilities(ownerId, startInstant, durationMinutes, `repeat`)
 VALUES (?, ?, ?, ?);
 
 intersects:
