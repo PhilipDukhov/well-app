@@ -27,6 +27,7 @@ def versions = [
     bouncycastle       : "1.69",
     aws                : "1.12.60",
     kotlin             : "1.5.31",
+    kotlinBuildSrc     : "1.6.0",
     napier             : "2.1.0",
 ]
 
@@ -37,6 +38,7 @@ if (ext.properties["kotlin.native.binary.memoryModel"] == "experimental") {
 
 if (stableCompose) {
     versions["compose"] = "1.0.5"
+    versions["kotlin"] = "1.5.31"
     versions["accompanist"] = "0.20.2"
 } else {
     versions["napier"] = "2.2.0"

@@ -16,10 +16,9 @@ repositories {
     google()
     mavenCentral()
 }
-
 apply(from = "${projectDir.parent}/dependenciesResolver.gradle.kts")
 apply(from = "${projectDir.parent}/dependencies.gradle")
-val kotlinVersion = (extra["Versions"] as Map<*, *>)["kotlin"] as String
+val kotlinVersion = (extra["Versions"] as Map<*, *>)["kotlinBuildSrc"] as String
 val gradlePluginVersion = extra.properties["gradlePluginVersion"] as? String
 val dotEnv = ((extra["Libs"] as Map<*, *>)["build"] as Map<*, *>)["dotenv"] as String
 

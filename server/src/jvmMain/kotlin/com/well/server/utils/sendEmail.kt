@@ -8,7 +8,7 @@ import com.amazonaws.services.simpleemail.model.Message
 import com.amazonaws.services.simpleemail.model.SendEmailRequest
 
 fun sendEmail(
-    source: String = "philip.dukhov@gmail.com",
+    source: String = "worldendolivelink@gmail.com",
     destination: String,
     subject: String,
     body: String,
