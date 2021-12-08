@@ -29,6 +29,8 @@
 		4A0A75F92728AA4F00632E84 /* AvailabilitiesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0A75F72728AA4E00632E84 /* AvailabilitiesList.swift */; };
 		4A0A75FB2728BBB300632E84 /* AvailabilityEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0A75FA2728BBB300632E84 /* AvailabilityEditView.swift */; };
 		4A0A75FC2728BBB300632E84 /* AvailabilityEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A0A75FA2728BBB300632E84 /* AvailabilityEditView.swift */; };
+		4A187CC82760F8A900EEE563 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A187CC72760F8A900EEE563 /* TabBarController.swift */; };
+		4A187CC92760F8A900EEE563 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A187CC72760F8A900EEE563 /* TabBarController.swift */; };
 		4A278EFC2743520D00A612C1 /* ForceNavControllerBarHidden.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A278EFB2743520D00A612C1 /* ForceNavControllerBarHidden.swift */; };
 		4A3A82BA26626D70003DD1F3 /* MoreScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D19F97DCC9822CBBE4C71 /* MoreScreen.swift */; };
 		4A42E2B027294D5300E839CF /* TabRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A42E2AF27294D5300E839CF /* TabRow.swift */; };
@@ -209,6 +211,7 @@
 		4A0A75932727440500632E84 /* AppContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContainer.swift; sourceTree = "<group>"; };
 		4A0A75F72728AA4E00632E84 /* AvailabilitiesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailabilitiesList.swift; sourceTree = "<group>"; };
 		4A0A75FA2728BBB300632E84 /* AvailabilityEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailabilityEditView.swift; sourceTree = "<group>"; };
+		4A187CC72760F8A900EEE563 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		4A278EFB2743520D00A612C1 /* ForceNavControllerBarHidden.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForceNavControllerBarHidden.swift; sourceTree = "<group>"; };
 		4A42E2AF27294D5300E839CF /* TabRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabRow.swift; sourceTree = "<group>"; };
 		4A42E2BE2729DAFE00E839CF /* RequestConsultationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestConsultationView.swift; sourceTree = "<group>"; };
@@ -536,6 +539,7 @@
 			isa = PBXGroup;
 			children = (
 				D555C21E25D9013A00B4755F /* GradientKMM.swift */,
+				4A187CC72760F8A900EEE563 /* TabBarController.swift */,
 				4A9F386727432140004D5EF5 /* PageView.swift */,
 				D5378B1A25DA211C00561199 /* InactiveOverlay.swift */,
 				D556940E25D473880012EA36 /* HVStack.swift */,
@@ -1022,6 +1026,7 @@
 				4A82803B2725EDAB004DF64E /* Kotlin.swift in Sources */,
 				4A82803F2725EDAB004DF64E /* ViewContainer.swift in Sources */,
 				4A82804C2725EDAB004DF64E /* CallButton.swift in Sources */,
+				4A187CC92760F8A900EEE563 /* TabBarController.swift in Sources */,
 				4A8280452725EDAB004DF64E /* ProfileImage.swift in Sources */,
 				4A8280552725EDAB004DF64E /* HorizontalCapsule.swift in Sources */,
 				4A8280312725EDAB004DF64E /* ForEachIndexed.swift in Sources */,
@@ -1053,6 +1058,7 @@
 				4A42E2CE272B4BCF00E839CF /* partialSheet.swift in Sources */,
 				4A9F386827432140004D5EF5 /* PageView.swift in Sources */,
 				4AC2640D272387E7002BE68B /* Flow.swift in Sources */,
+				4A187CC82760F8A900EEE563 /* TabBarController.swift in Sources */,
 				D568031D263831DB00CFE16B /* EdgeInsets.swift in Sources */,
 				D568034B2638324D00CFE16B /* ExpertsScreen.swift in Sources */,
 				D56803292638320300CFE16B /* HVStack.swift in Sources */,

@@ -68,7 +68,7 @@ struct ExpertsScreen: View {
                 Rectangle()
                     .foregroundColor(.white)
                     .frame(height: 1)
-                VStack {
+                LazyVStack {
                     ForEach(state.users, id: \.id) { user in
                         UserCell(user: user) {
                             listener(Feature.MsgOnUserFavorite(user: user))

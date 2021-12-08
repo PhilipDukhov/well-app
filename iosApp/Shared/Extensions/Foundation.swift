@@ -24,6 +24,10 @@ extension Collection {
     var isNotEmpty: Bool {
         !isEmpty
     }
+
+    @inlinable public func filterNot(_ isNotIncluded: (Element) throws -> Bool) rethrows -> [Element] {
+        try filter { try !isNotIncluded($0) }
+    }
 }
 
 extension Sequence {

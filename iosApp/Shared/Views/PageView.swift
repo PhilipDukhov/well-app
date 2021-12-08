@@ -39,7 +39,7 @@ struct PageView<Page: Hashable, PageView: View>: View {
     }
 }
 
-struct PageViewController<PageView: View>: UIViewControllerRepresentable {
+private struct PageViewController<PageView: View>: UIViewControllerRepresentable {
     var pageViews: [PageView]
     @Binding var currentPage: Int
     @State private var previousPage = 0
@@ -54,7 +54,7 @@ struct PageViewController<PageView: View>: UIViewControllerRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(self)
+        Coordinator($currentPage)
     }
 
     func makeUIViewController(
@@ -94,11 +94,12 @@ struct PageViewController<PageView: View>: UIViewControllerRepresentable {
     }
 
     final class Coordinator: NSObject, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
-        private let parent: PageViewController
+        @Binding
+        private var currentPage: Int
         var controllers = [UIHostingController<PageView>]()
 
-        init(_ pageViewController: PageViewController) {
-            self.parent = pageViewController
+        init(_ currentPage: Binding<Int>) {
+            _currentPage = currentPage
         }
 
         func updateViews(views: [PageView]) {
@@ -153,7 +154,7 @@ struct PageViewController<PageView: View>: UIViewControllerRepresentable {
                let visibleViewController = pageViewController.viewControllers?.first,
                let index = index(of: visibleViewController)
             {
-                parent.currentPage = index
+                currentPage = index
             }
         }
 

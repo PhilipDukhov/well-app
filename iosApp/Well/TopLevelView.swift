@@ -24,24 +24,30 @@ struct TopLevelView: View {
             screenView(screen: screen.screen)
             
         case let tabsScreen as TopLevelFeatureStateScreenTabs:
-            TabView(selection: Binding<TopLevelFeature.StateTab>(get: {
-                state.selectedTab
-            }, set: { tab in
-                listener(TopLevelFeature.MsgSelectTab(tab: tab))
-            })) {
-                ForEach(tabsScreen.tabs, id: \.tab) { tabScreen in
+            TabBarController(
+                items: tabsScreen.tabs,
+                tabKeyPath: \.tab,
+                selectedTab: state.selectedTab,
+                setSelectedTab: { tabScreen in
+                    listener(TopLevelFeature.MsgSelectTab(tab: tabScreen))
+                },
+                tabBarItem: { tab in
+                    UITabBarItem(
+                        title: tab.spacedName(),
+                        image: tab.icon(),
+                        tag: 0
+                    )
+                }, badgeValue: { tabScreen in
                     let unreadCount = (tabScreen.screen as? ScreenState.ChatList)?.state.unreadCount.toInt() ?? 0
+                    return unreadCount > 0 ? "\(unreadCount)" : nil
+                }, contentView: { tabScreen in
                     VStack(spacing: 0) {
                         screenView(screen: tabScreen.screen)
                     }
-                    .tabItem {
-                        tabScreen.tab.icon()
-                        Text(tabScreen.tab.spacedName())
-                    }
-                    .tag(tabScreen.tab)
-                    .badgeIfAvailable(unreadCount)
                 }
-            }.accentColor(SwiftUI.Color(hex: 0x1B3D6D))
+            ).ignoresSafeArea()
+
+                .accentColor(SwiftUI.Color(hex: 0x1B3D6D))
 
         default:
             fatalError("state.currentScreen unexpected \(state.currentScreen)")
@@ -116,19 +122,18 @@ struct TopLevelView: View {
 }
 
 private extension TopLevelFeature.StateTab {
-    @ViewBuilder
-    func icon() -> some View {
+    func icon() -> UIImage? {
         switch self {
         case .myprofile:
-            Image(systemName: "person.fill")
+            return UIImage(systemName: "person.fill")
         case .experts:
-            Image("expertTab")
+            return UIImage(named: "expertTab")
         case .chatlist:
-            Image(systemName: "message.fill")
+            return UIImage(systemName: "message.fill")
         case .calendar:
-            Image(systemName: "calendar")
+            return UIImage(systemName: "calendar")
         case .more:
-            Image("moreTab")
+            return UIImage(named: "moreTab")
 
         default:
             fatalError("need image for tab \(self)")
