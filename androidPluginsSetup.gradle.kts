@@ -8,7 +8,6 @@ object Constants {
     const val version = "1.0-SNAPSHOT"
 }
 
-val gradlePluginVersion = System.getProperty("gradlePluginVersion")!!
 subprojects {
     plugins.matching { it is AppPlugin || it is LibraryPlugin }.whenPluginAdded {
         configure<BaseExtension> {

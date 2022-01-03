@@ -10,7 +10,7 @@ kotlin {
                 ":modules:annotations",
             )
             dependencies {
-                implementation("com.squareup:kotlinpoet:1.10.1")
+                implementation("com.squareup:kotlinpoet:1.10.2")
             }
         }
     }
