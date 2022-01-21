@@ -1,13 +1,13 @@
 package com.well.modules.utils.viewUtils.dataStore
 
-import com.well.modules.utils.viewUtils.AppContext
+import com.well.modules.utils.viewUtils.ApplicationContext
 import platform.Foundation.NSUserDefaults
 
-actual class DataStore actual constructor(appContext: AppContext) {
+actual class DataStore actual constructor(applicationContext: ApplicationContext) {
     private val userDefaults = NSUserDefaults.standardUserDefaults
 
     internal actual inline fun <reified T> getValue(
-        key: Key<T>
+        key: Key<T>,
     ): T? = when (T::class) {
         String::class -> userDefaults.stringForKey(key.name) as T?
         Boolean::class -> userDefaults.boolForKey(key.name) as T
@@ -16,7 +16,7 @@ actual class DataStore actual constructor(appContext: AppContext) {
 
     internal actual inline fun <reified T> setValue(
         value: T?,
-        key: Key<T>
+        key: Key<T>,
     ) = when (T::class) {
         String::class,
         Boolean::class,

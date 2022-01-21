@@ -4,7 +4,8 @@ import com.well.modules.atomic.AtomicRef
 import com.well.modules.features.login.loginFeature.credentialProvider.AuthCredential
 import com.well.modules.models.NetworkConstants
 import com.well.modules.networking.createBaseServerClient
-import com.well.modules.utils.viewUtils.ContextHelper
+import com.well.modules.utils.viewUtils.AndroidRequestCodes
+import com.well.modules.utils.viewUtils.SystemHelper
 import com.well.modules.utils.viewUtils.platform.Platform
 import com.well.modules.utils.viewUtils.platform.isLocalServer
 import io.ktor.client.features.*
@@ -21,13 +22,10 @@ import kotlin.coroutines.resumeWithException
 
 internal class OAuthHelper(
     private val name: String,
-    private val contextHelper: ContextHelper,
+    private val systemHelper: SystemHelper,
 ) {
     private var getCredentialsJob by AtomicRef<Job>()
     private var getCredentialsContinuation by AtomicRef<CancellableContinuation<AuthCredential>>()
-    companion object {
-        const val requestCode = 89781
-    }
 
     private val client = createBaseServerClient().config {
         expectSuccess = false
@@ -54,8 +52,8 @@ internal class OAuthHelper(
                     try {
                         continuation.resume(
                             processCallbackUrl(
-                                contextHelper
-                                    .webAuthenticate(redirect.location, requestCode)
+                                systemHelper
+                                    .webAuthenticate(redirect.location, AndroidRequestCodes.OAuthHelper.code)
                             )
                         )
                     } catch (t: Throwable) {
@@ -74,9 +72,7 @@ internal class OAuthHelper(
             )
             getCredentialsJob?.cancel()
             return true
-        } catch (t: Throwable) {
-
-        }
+        } catch (_: Throwable) { }
         return false
     }
 

@@ -44,6 +44,7 @@ kotlin {
                 ":modules:features:experts:expertsHandlers",
                 ":modules:features:userChat:userChatHandlers",
                 ":modules:features:calendar:calendarHandlers",
+                ":modules:features:notifications",
 
                 "kotlin.serializationJson",
                 "kotlin.coroutines.core",

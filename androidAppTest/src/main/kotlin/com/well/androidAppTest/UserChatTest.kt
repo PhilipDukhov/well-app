@@ -20,7 +20,7 @@ internal fun UserChatTest() {
                     ChatMessageViewModel(
                         id = ChatMessage.Id(it.toLong()),
                         creation = 0.0,
-                        content = ChatMessageViewModel.Content.Text("akjsdnasjk"),
+                        content = ChatMessage.Content.Text("akjsdnasjk"),
                         status = ChatMessageViewModel.Status.IncomingRead,
                     )
                 }

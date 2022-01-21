@@ -18,6 +18,10 @@ extension Data {
     func toString(encoding: String.Encoding) -> String? {
         String(data: self, encoding: encoding)
     }
+
+    func toHexEncodedString() -> String {
+        map { String(format: "%02hhx", $0) }.joined()
+    }
 }
 
 extension Collection {

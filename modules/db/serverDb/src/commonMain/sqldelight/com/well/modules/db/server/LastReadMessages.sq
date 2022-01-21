@@ -25,9 +25,13 @@ select:
 SELECT * FROM LastReadMessages
 WHERE CONCAT(fromId, '|', peerId) IN :fromAndPeerIds;
 
-selectByPeerId:
+selectByAnyId:
 SELECT * FROM LastReadMessages
 WHERE peerId = :id OR fromId = :id;
+
+selectByPeerId:
+SELECT * FROM LastReadMessages
+WHERE peerId = :id;
 
 
 

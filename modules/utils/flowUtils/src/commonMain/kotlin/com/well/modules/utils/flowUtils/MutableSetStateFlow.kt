@@ -6,22 +6,37 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class MutableSetStateFlow<T>(value: Set<T> = emptySet()): Flow<Set<T>> {
+class MutableSetStateFlow<E>(value: Set<E> = emptySet()) : Flow<Set<E>> {
     private val flow = MutableStateFlow(value)
-    val value: Set<T>
+    val value: Set<E>
         get() = flow.value
 
     @OptIn(InternalCoroutinesApi::class)
-    override suspend fun collect(collector: FlowCollector<Set<T>>) {
+    override suspend fun collect(collector: FlowCollector<Set<E>>) {
         flow.collect(collector)
     }
 
-    fun add(element: T): Boolean =
+    fun add(element: E): Boolean =
         modify {
             add(element)
         }
 
-    private fun modify(modification: MutableSet<T>.() -> Boolean): Boolean =
+    fun remove(element: E): Boolean =
+        modify {
+            remove(element)
+        }
+
+    fun removeAll(elements: Collection<E>): Boolean =
+        modify {
+            removeAll(elements.toSet())
+        }
+
+    fun removeAll(predicate: (E) -> Boolean): Boolean =
+        modify {
+            removeAll(predicate)
+        }
+
+    private fun modify(modification: MutableSet<E>.() -> Boolean): Boolean =
         flow.value.toMutableSet()
             .let { value ->
                 value.modification()

@@ -36,3 +36,11 @@ ORDER BY ChatMessages.creation DESC;
 
 getById:
 SELECT * FROM ChatMessages WHERE id = ?;
+
+unreadCount:
+SELECT COUNT(id) FROM ChatMessages
+    WHERE id > (
+        SELECT messageId FROM LastReadMessages WHERE fromId = :fromId AND peerId = :peerId
+    )
+    AND fromId = :fromId AND peerId = :peerId
+;

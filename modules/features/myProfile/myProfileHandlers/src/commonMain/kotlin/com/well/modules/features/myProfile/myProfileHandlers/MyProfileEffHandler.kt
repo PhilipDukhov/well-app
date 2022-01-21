@@ -14,8 +14,8 @@ import com.well.modules.models.User
 import com.well.modules.puerhBase.EffectHandler
 import com.well.modules.utils.flowUtils.collectIn
 import com.well.modules.utils.kotlinUtils.getOrFill
-import com.well.modules.utils.viewUtils.ContextHelper
 import com.well.modules.utils.viewUtils.SuspendAction
+import com.well.modules.utils.viewUtils.SystemHelper
 import com.well.modules.utils.viewUtils.pickSystemImageSafe
 import com.well.modules.utils.viewUtils.sharedImage.asByteArrayOptimizedForNetwork
 import com.well.modules.utils.viewUtils.showSheetThreadSafe
@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class MyProfileEffHandler(
-    private val contextHelper: ContextHelper,
+    private val systemHelper: SystemHelper,
     private val services: Services,
     parentCoroutineScope: CoroutineScope,
 ) : EffectHandler<Eff, Msg>(parentCoroutineScope) {
@@ -92,7 +92,7 @@ class MyProfileEffHandler(
             }
             is Eff.OpenUrl -> {
                 MainScope().launch {
-                    contextHelper.openUrl(eff.url)
+                    systemHelper.openUrl(eff.url)
                 }
             }
             is Eff.UploadUser -> {
@@ -205,7 +205,7 @@ class MyProfileEffHandler(
 
     private suspend fun initiateImageUpdate(eff: Eff.InitiateImageUpdate) {
         if (eff.hasImage) {
-            contextHelper.showSheetThreadSafe(
+            systemHelper.showSheetThreadSafe(
                 SuspendAction("Replace image") {
                     pickSystemImage()
                 },
@@ -219,7 +219,7 @@ class MyProfileEffHandler(
     }
 
     private suspend fun pickSystemImage() {
-        val image = contextHelper.pickSystemImageSafe()
+        val image = systemHelper.pickSystemImageSafe()
         if (image != null) {
             listener(Msg.UpdateImage(image.toImageContainer()))
         }

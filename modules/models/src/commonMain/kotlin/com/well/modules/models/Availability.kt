@@ -20,6 +20,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import kotlin.jvm.JvmInline
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 
 enum class Repeat {
     None,
@@ -41,8 +42,8 @@ interface AvailabilityInfo {
 
     val startDay get() = startInstant.toLocalDate(TimeZone.currentSystemDefault())
     val startTime get() = startInstant.toLocalTime(TimeZone.currentSystemDefault())
-    val endTime get() = startTime.plus(Duration.minutes(durationMinutes))
-    val endInstant get() = startInstant.plus(Duration.minutes(durationMinutes))
+    val endTime get() = startTime.plus(durationMinutes.minutes)
+    val endInstant get() = startInstant.plus(durationMinutes.minutes)
 
     val intervalString: String
         get() = "$startTime-$endTime"

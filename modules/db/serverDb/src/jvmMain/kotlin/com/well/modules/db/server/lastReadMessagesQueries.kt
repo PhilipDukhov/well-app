@@ -11,8 +11,8 @@ fun LastReadMessages.toLastReadMessage() = LastReadMessage(
     peerId = peerId,
 )
 
-fun LastReadMessagesQueries.selectByPeerIdFlow(id: User.Id) =
-    selectByPeerId(id)
+fun LastReadMessagesQueries.selectByAnyIdFlow(id: User.Id) =
+    selectByAnyId(id)
         .asFlow()
         .mapToList()
 

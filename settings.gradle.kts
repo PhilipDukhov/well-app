@@ -63,6 +63,7 @@ val withAndroid = System.getProperty("withAndroid")!!.toBoolean()
         ":modules:features:userChat:userChatHandlers",
         ":modules:features:calendar:calendarFeature",
         ":modules:features:calendar:calendarHandlers",
+        ":modules:features:notifications",
     )
 //}
 

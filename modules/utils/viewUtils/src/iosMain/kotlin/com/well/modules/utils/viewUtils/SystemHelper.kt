@@ -31,7 +31,7 @@ import platform.UIKit.UIViewController
 import platform.darwin.NSObject
 import kotlin.coroutines.resume
 
-actual class ContextHelper actual constructor(actual val appContext: AppContext) :
+actual class SystemHelper actual constructor(actual val systemContext: SystemContext) :
     WebAuthenticator {
     actual fun showAlert(alert: Alert) {
         presentViewController(
@@ -110,7 +110,7 @@ actual class ContextHelper actual constructor(actual val appContext: AppContext)
                     }
                 )
                 session.presentationContextProvider =
-                    appContext.rootController as? ASWebAuthenticationPresentationContextProvidingProtocol
+                    systemContext.rootController as? ASWebAuthenticationPresentationContextProvidingProtocol
                 session.start()
                 continuation.invokeOnCancellation {
                     session.cancel()
@@ -121,7 +121,7 @@ actual class ContextHelper actual constructor(actual val appContext: AppContext)
 
     private fun presentViewController(
         viewController: UIViewController,
-        animated: Boolean = true
+        animated: Boolean = true,
     ) {
         MainScope().launch {
             topmostController().presentViewController(viewController, animated, null)
@@ -129,7 +129,7 @@ actual class ContextHelper actual constructor(actual val appContext: AppContext)
     }
 
     private fun topmostController(): UIViewController {
-        var topmost = appContext.rootController
+        var topmost = systemContext.rootController
         while (topmost.presentedViewController != null && !topmost.presentedViewController!!.isBeingDismissed()) {
             topmost = topmost.presentedViewController!!
         }
@@ -157,7 +157,7 @@ actual class ContextHelper actual constructor(actual val appContext: AppContext)
 
                     override fun imagePickerController(
                         picker: UIImagePickerController,
-                        didFinishPickingMediaWithInfo: Map<Any?, *>
+                        didFinishPickingMediaWithInfo: Map<Any?, *>,
                     ) {
                         val url =
                             didFinishPickingMediaWithInfo[UIImagePickerControllerImageURL] as NSURL

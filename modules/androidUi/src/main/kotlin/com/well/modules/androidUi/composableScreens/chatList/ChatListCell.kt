@@ -69,7 +69,7 @@ fun ChatListCell(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = Feature.Strings.messageContentDescription(item.lastMessage.content),
+                text = item.lastMessage.content.descriptionText,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.captionLight,

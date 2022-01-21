@@ -7,29 +7,35 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 class MutableMapFlow<K, V>(value: Map<K, V> = emptyMap()): Flow<Map<K, V>> {
     private val flow = MutableStateFlow(value)
+    val value: Map<K, V>
+        get() = flow.value
 
     @OptIn(InternalCoroutinesApi::class)
     override suspend fun collect(collector: FlowCollector<Map<K, V>>) {
         flow.collect(collector)
     }
 
-    suspend fun put(key: K, value: V): V? =
-        flow.value.toMutableMap().let { map ->
-            map.put(key, value)
-                .also {
-                    flow.emit(map)
-                }
+    fun put(key: K, value: V): V? =
+        modify {
+            put(key, value)
         }
 
     operator fun get(key: K): V? = flow.value[key]
 
-    suspend fun remove(key: K) : V? =
+    fun remove(key: K) : V? =
+        modify {
+            remove(key)
+        }
+
+    fun contains(key: K): Boolean = flow.value.contains(key)
+
+    private fun<R> modify(modification: MutableMap<K, V>.() -> R?): R? =
         flow.value.toMutableMap()
             .let { value ->
-                value.remove(key)
-                    .also { oldValue ->
-                        if (oldValue != null) {
-                            flow.emit(value)
+                value.modification()
+                    .also { result ->
+                        if (result != null) {
+                            flow.value = value
                         }
                     }
             }

@@ -48,6 +48,10 @@ fun <Eff1 : Any, Msg1 : Any, Eff2 : Any, Msg2 : Any> EffectHandler<Eff1, Msg1>.a
     effAdapter: (Eff2) -> Eff1?,
     msgAdapter: (Msg1) -> Msg2?,
 ): EffectHandler<Eff2, Msg2> = object : EffectHandler<Eff2, Msg2>(effHandlerScope) {
+    init {
+        addCloseableChild(this@adapt)
+    }
+
     override fun setListener(listener: suspend (Msg2) -> Unit) =
         setListener { msg: Msg1 -> msgAdapter(msg)?.let { listener(it) } }
 

@@ -15,6 +15,8 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 
 object CreateAvailabilityFeature {
     object Strings : GlobalStringsBase() {
@@ -30,7 +32,7 @@ object CreateAvailabilityFeature {
             availability = Availability(
                 id = Availability.Id(-1),
                 startDay = startDate,
-                startTime = LocalTime.now() + Duration.hours(1),
+                startTime = LocalTime.now() + 1.hours,
                 durationMinutes = 30,
                 repeat = Repeat.None,
             ),
@@ -101,7 +103,7 @@ object CreateAvailabilityFeature {
                     return@state state.copy(startTime = msg.time)
                 }
                 is Msg.SetEndTime -> {
-                    val oneDay = Duration.days(1)
+                    val oneDay = 1.days
                     var duration = (msg.time - state.availability.startTime)
                     if (!duration.isPositive() && duration.absoluteValue > oneDay / 2) {
                         duration += oneDay

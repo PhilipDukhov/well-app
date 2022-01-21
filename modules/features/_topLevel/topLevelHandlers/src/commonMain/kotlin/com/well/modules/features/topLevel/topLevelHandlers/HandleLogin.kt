@@ -7,6 +7,10 @@ import com.well.modules.db.users.usersPresenceFlow
 import com.well.modules.features.login.loginFeature.LoginFeature
 import com.well.modules.features.login.loginFeature.SocialNetwork
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature
+import com.well.modules.features.topLevel.topLevelFeature.FeatureMsg
+import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature
+import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State.ScreenPosition
+import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State.Tab
 import com.well.modules.models.AuthResponse
 import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
@@ -17,12 +21,9 @@ import com.well.modules.utils.flowUtils.combineWithUnit
 import com.well.modules.utils.viewUtils.Alert
 import com.well.modules.utils.viewUtils.dataStore.AuthInfo
 import com.well.modules.utils.viewUtils.dataStore.authInfo
-import com.well.modules.features.topLevel.topLevelFeature.FeatureMsg
-import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature
-import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State.ScreenPosition
-import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State.Tab
+import com.well.modules.utils.viewUtils.dataStore.deviceUid
+import com.well.modules.utils.viewUtils.dataStore.notificationToken
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
@@ -31,7 +32,9 @@ internal suspend fun TopLevelFeatureProviderImpl.socialNetworkLogin(
     listener: Listener<TopLevelFeature.Msg>,
 ) {
     try {
-        gotAuthResponse(socialNetworkService.login(socialNetwork), listener)
+        socialNetworkService?.login(socialNetwork)?.let { authResponse ->
+            gotAuthResponse(authResponse, listener)
+        }
     } catch (t: Throwable) {
         if (t !is CancellationException && t.message?.contains("com.well.modules.utils error 0") != true) {
             listener.invoke(TopLevelFeature.Msg.ShowAlert(Alert.Error.fixDescription(t)))
@@ -57,11 +60,13 @@ internal fun TopLevelFeatureProviderImpl.gotAuthResponse(
     if (!authResponse.user.initialized) {
         nonInitializedAuthInfo.value = authInfo
         networkManager = NetworkManager(
-            authResponse.token,
+            token = authResponse.token,
+            deviceId = dataStore.deviceUid,
             startWebSocket = false,
             unauthorizedHandler = {
                 sessionInfo = null
-            })
+            },
+        )
         listener.invoke(
             TopLevelFeature.Msg.PushMyProfile(
                 MyProfileFeature.initialState(
@@ -84,9 +89,14 @@ internal fun TopLevelFeatureProviderImpl.loggedIn(
     sessionInfo = SessionInfo(uid)
     openDatabase()
     user?.let(usersQueries::insertOrReplace)
-    networkManager = NetworkManager(authInfo.token, startWebSocket = true, unauthorizedHandler = {
-        logOut(listener)
-    })
+    networkManager = NetworkManager(
+        token = authInfo.token,
+        deviceId = dataStore.deviceUid,
+        startWebSocket = true,
+        unauthorizedHandler = {
+            logOut(listener)
+        },
+    )
     listener.invoke(TopLevelFeature.Msg.LoggedIn(uid))
     val webSocketListenerCloseable = networkManager
         .webSocketMsgSharedFlow
@@ -106,14 +116,26 @@ internal fun TopLevelFeatureProviderImpl.loggedIn(
         networkManager,
         meetingsPresenceCloseable,
     ).forEach(sessionInfo!!::addCloseableChild)
-    platform.dataStore.authInfo = authInfo
+    dataStore.authInfo = authInfo
 }
 
 internal fun TopLevelFeatureProviderImpl.logOut(listener: (TopLevelFeature.Msg) -> Unit) {
-    sessionInfo = null
-    platform.dataStore.authInfo = null
-    clearDatabase()
-    listener.invoke(TopLevelFeature.Msg.OpenLoginScreen)
+    coroutineScope.launch {
+        notificationHandler?.clearAllNotifications()
+        notificationHandler = null
+        val token = dataStore.notificationToken
+        if (token != null) {
+            networkManager.sendFront(WebSocketMsg.Front.Logout)
+        }
+//        networkManager.webSocketMsgSharedFlow
+//            .filterIsInstance<WebSocketMsg.Back.LogoutConfirmation>()
+//            .first()
+        sessionInfo = null
+        dataStore.authInfo = null
+        pendingNotifications.dropAll()
+        clearDatabase()
+        listener.invoke(TopLevelFeature.Msg.OpenLoginScreen)
+    }
 }
 
 private fun AuthResponse.toAuthInfo() = AuthInfo(token = token, id = user.id)

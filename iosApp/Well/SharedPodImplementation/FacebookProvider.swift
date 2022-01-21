@@ -13,13 +13,13 @@ import FBSDKLoginKit
 final class FacebookProvider: CredentialProvider {
     private let loginManager: LoginManager
 
-    override init(appContext: AppContext) {
+    override init(systemContext: SystemContext) {
         Settings.shared.isAdvertiserIDCollectionEnabled = true
         Settings.shared.loggingBehaviors = Set()
         ApplicationDelegate.shared.initializeSDK()
         Settings.shared.isAdvertiserIDCollectionEnabled = false
         loginManager = LoginManager()
-        super.init(appContext: appContext)
+        super.init(systemContext: systemContext)
     }
 
     override func getCredentials(completionHandler: @escaping (AuthCredential?, Error?) -> Void) {

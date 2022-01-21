@@ -10,17 +10,19 @@ import SharedMobile
 import GoogleSignIn
 
 final class GoogleProvider: CredentialProvider {
-    private let appContext: AppContext
+    private let systemContext: SystemContext
 
-    override init(appContext: AppContext) {
-        self.appContext = appContext
-        super.init(appContext: appContext)
+    override init(systemContext: SystemContext) {
+        self.systemContext = systemContext
+        super.init(systemContext: systemContext)
     }
 
     override func getCredentials(completionHandler: @escaping (AuthCredential?, Error?) -> Void) {
         GIDSignIn.sharedInstance.signIn(
-            with: GIDConfiguration(clientID: Bundle.main.object(forInfoDictionaryKey: "googleClientId") as! String),
-            presenting: appContext.rootController
+            with: GIDConfiguration(
+                clientID: (Bundle.main.object(forInfoDictionaryKey: "firebaseInfo") as! [String: String])["clientId"]!
+            ),
+            presenting: systemContext.rootController
         ) { user, error in
             if let token = user?.authentication.idToken {
                 completionHandler(AuthCredential.GoogleCredential(token: token), nil)

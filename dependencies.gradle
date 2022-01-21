@@ -37,13 +37,13 @@ if (ext.properties["kotlin.native.binary.memoryModel"] == "experimental") {
 }
 
 if (stableCompose) {
-    versions["compose"] = "1.0.5"
-    versions["kotlin"] = "1.5.31"
-    versions["accompanist"] = "0.20.2"
-} else {
-    versions["napier"] = "2.2.0" // 2.3.0
     versions["kotlin"] = "1.6.0"
     versions["compose"] = "1.1.0-rc01"
+    versions["accompanist"] = "0.22.0-rc"
+} else {
+    versions["napier"] = "2.3.0"
+    versions["kotlin"] = "1.6.10"
+    versions["compose"] = "1.2.0-alpha01"
     versions["accompanist"] = "0.22.0-rc"
 }
 
@@ -55,7 +55,7 @@ ext.Libs = [
         googleServices      : "com.google.gms:google-services:4.3.10",
         dotenv              : "io.github.cdimascio:dotenv-kotlin:6.2.2",
         sqldelight          : "com.squareup.sqldelight:gradle-plugin:$versions.sqldelight",
-        gradleVersionsPlugin: "com.github.ben-manes:gradle-versions-plugin:0.40.0",
+        gradleVersionsPlugin: "com.github.ben-manes:gradle-versions-plugin:0.41.0",
         buildKonfig         : "com.codingfeline.buildkonfig:buildkonfig-gradle-plugin:0.11.0",
     ],
     kotlin    : [
@@ -79,17 +79,18 @@ ext.Libs = [
         webrtc       : "org.webrtc:google-webrtc:1.0.32006",
         facebookLogin: "com.facebook.android:facebook-login:12.2.0",
         compose      : [
-            ui                    : "androidx.compose.ui:ui:$versions.compose",
-            util                  : "androidx.compose.ui:ui-util:$versions.compose",
-            tooling               : "androidx.compose.ui:ui-tooling:$versions.compose",
-            foundation            : "androidx.compose.foundation:foundation:$versions.compose",
-            material              : "androidx.compose.material:material:$versions.compose",
-            materialIconsCore     : "androidx.compose.material:material-icons-core:$versions.compose",
-            materialIconsExtended : "androidx.compose.material:material-icons-extended:$versions.compose",
-            constraintLayout      : "androidx.constraintlayout:constraintlayout-compose:1.0.0-rc02",
-            viewModel             : "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0",
-            activity              : "androidx.activity:activity-compose:$versions.androidActivity",
-            coil                  : "io.coil-kt:coil-compose:$versions.coil",
+            core                  : [
+                ui                   : "androidx.compose.ui:ui:$versions.compose",
+                util                 : "androidx.compose.ui:ui-util:$versions.compose",
+                tooling              : "androidx.compose.ui:ui-tooling:$versions.compose",
+                foundation           : "androidx.compose.foundation:foundation:$versions.compose",
+                material             : "androidx.compose.material:material:$versions.compose",
+                materialIconsCore    : "androidx.compose.material:material-icons-core:$versions.compose",
+                materialIconsExtended: "androidx.compose.material:material-icons-extended:$versions.compose",
+                constraintLayout     : "androidx.constraintlayout:constraintlayout-compose:1.0.0-rc02",
+                viewModel            : "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0",
+                activity             : "androidx.activity:activity-compose:$versions.androidActivity",
+            ],
             composeMaterialDialogs: [
                 datetime: "io.github.vanpra.compose-material-dialogs:datetime:0.6.2",
             ],
@@ -99,6 +100,7 @@ ext.Libs = [
                 pager          : "com.google.accompanist:accompanist-pager:$versions.accompanist",
                 pagerIndicators: "com.google.accompanist:accompanist-pager-indicators:$versions.accompanist",
             ],
+            coil                  : "io.coil-kt:coil-compose:$versions.coil",
         ],
     ],
     google    : [
@@ -109,6 +111,7 @@ ext.Libs = [
     firebase  : [
         bom      : "com.google.firebase:firebase-bom:29.0.3",
         analytics: "com.google.firebase:firebase-analytics-ktx",
+        messaging: "com.google.firebase:firebase-messaging-ktx",
     ],
     ktor      : [
         server       : [
@@ -136,8 +139,10 @@ ext.Libs = [
     server    : [
         logback           : "ch.qos.logback:logback-classic:1.2.10",
         hikariCP          : "com.zaxxer:HikariCP:5.0.0",
-        h2database        : "com.h2database:h2:2.0.204",
+        h2database        : "com.h2database:h2:1.4.200",
         mysqlConnectorJava: "mysql:mysql-connector-java:8.0.26",
+        firebaseAdmin     : "com.google.firebase:firebase-admin:8.1.0",
+        pushy             : "com.eatthepath:pushy:0.14.1",
         aws               : [
             s3 : "com.amazonaws:aws-java-sdk-s3:$versions.aws",
             sns: "com.amazonaws:aws-java-sdk-sns:$versions.aws",

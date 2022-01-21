@@ -3,10 +3,13 @@ package com.well.modules.features.topLevel.topLevelHandlers
 import com.well.modules.atomic.AtomicCloseableLateInitRef
 import com.well.modules.atomic.AtomicCloseableRef
 import com.well.modules.atomic.AtomicLateInitRef
+import com.well.modules.atomic.AtomicMutableList
+import com.well.modules.atomic.AtomicRef
 import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
 import com.well.modules.atomic.freeze
 import com.well.modules.db.chatMessages.delete
+import com.well.modules.db.chatMessages.getByIdFlow
 import com.well.modules.db.chatMessages.insert
 import com.well.modules.db.chatMessages.lastListFlow
 import com.well.modules.db.chatMessages.messagePresenceFlow
@@ -27,13 +30,12 @@ import com.well.modules.features.experts.expertsFeature.ExpertsFeature
 import com.well.modules.features.experts.expertsHandlers.ExpertsApiEffectHandler
 import com.well.modules.features.login.loginFeature.LoginFeature
 import com.well.modules.features.login.loginFeature.SocialNetwork
-import com.well.modules.features.login.loginHandlers.SocialNetworkService
 import com.well.modules.features.login.loginHandlers.credentialProviders.CredentialProvider
-import com.well.modules.features.login.loginHandlers.credentialProviders.OAuthCredentialProvider
 import com.well.modules.features.more.MoreFeature
 import com.well.modules.features.more.about.AboutFeature
 import com.well.modules.features.more.support.SupportFeature
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature
+import com.well.modules.features.notifications.NotificationHandler
 import com.well.modules.features.topLevel.topLevelFeature.FeatureEff
 import com.well.modules.features.topLevel.topLevelFeature.FeatureMsg
 import com.well.modules.features.topLevel.topLevelFeature.ScreenState
@@ -51,16 +53,22 @@ import com.well.modules.puerhBase.SyncFeature
 import com.well.modules.puerhBase.adapt
 import com.well.modules.puerhBase.wrapWithEffectHandler
 import com.well.modules.utils.flowUtils.combineWithUnit
+import com.well.modules.utils.flowUtils.filterNotEmpty
 import com.well.modules.utils.flowUtils.mapProperty
 import com.well.modules.utils.kotlinUtils.map
 import com.well.modules.utils.viewUtils.Alert
-import com.well.modules.utils.viewUtils.AppContext
-import com.well.modules.utils.viewUtils.ContextHelper
+import com.well.modules.utils.viewUtils.ApplicationContext
+import com.well.modules.utils.viewUtils.RawNotification
+import com.well.modules.utils.viewUtils.SystemContext
 import com.well.modules.utils.viewUtils.WebAuthenticator
 import com.well.modules.utils.viewUtils.dataStore.AuthInfo
 import com.well.modules.utils.viewUtils.dataStore.authInfo
+import com.well.modules.utils.viewUtils.dataStore.notificationToken
+import com.well.modules.utils.viewUtils.dataStore.notificationTokenNotified
 import com.well.modules.utils.viewUtils.dataStore.welcomeShowed
+import com.well.modules.utils.viewUtils.napier.NapierProxy
 import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler
+import com.well.modules.utils.viewUtils.permissionsHandler.requestPermissions
 import com.well.modules.utils.viewUtils.platform.Platform
 import com.well.modules.utils.viewUtils.platform.isDebug
 import io.github.aakira.napier.Napier
@@ -69,33 +77,35 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 internal class TopLevelFeatureProviderImpl(
-    private val appContext: AppContext,
+    private val applicationContext: ApplicationContext,
     val webRtcManagerGenerator: (List<String>, WebRtcManagerI.Listener) -> WebRtcManagerI,
-    providerGenerator: (SocialNetwork, AppContext, WebAuthenticator) -> CredentialProvider,
+    private val providerGenerator: (SocialNetwork, SystemContext, WebAuthenticator) -> CredentialProvider,
 ) : Feature<Msg, TopLevelFeature.State, Eff> by SyncFeature(
     TopLevelFeature.initialState(),
     TopLevelFeature::reducer,
-    Dispatchers.Default
-), DatabaseProvider by createDatabaseProvider(appContext) {
-    var sessionInfo by AtomicCloseableRef<SessionInfo>()
-    val socialNetworkService = SocialNetworkService { network ->
-        when (network) {
-            SocialNetwork.Twitter -> {
-                OAuthCredentialProvider("twitter", contextHelper)
-            }
-            else -> providerGenerator(network, appContext, contextHelper)
-        }
+    Dispatchers.Default,
+), DatabaseProvider by createDatabaseProvider(applicationContext) {
+    init {
+        NapierProxy.initializeLogging()
     }
-    val platform = Platform(appContext)
-    val permissionsHandler = PermissionsHandler(appContext.permissionsHandlerContext)
+
+    var sessionInfo by AtomicCloseableRef<SessionInfo>()
+    private var systemService by AtomicRef<SystemService?>()
+    val socialNetworkService get() = systemService?.socialNetworkService
+    private val platform = Platform(applicationContext)
+    var notificationHandler by AtomicRef<NotificationHandler?>()
+    val dataStore get() = platform.dataStore
+    val permissionsHandler get() = systemService?.permissionsHandler
     val coroutineScope = CoroutineScope(coroutineContext)
-    val contextHelper = ContextHelper(appContext)
+    val systemHelper get() = systemService?.context?.helper
     var networkManager by AtomicCloseableLateInitRef<NetworkManager>()
     val nonInitializedAuthInfo = AtomicLateInitRef<AuthInfo>()
     val callCloseableContainer = CloseableContainer()
+    var pendingNotifications = AtomicMutableList<RawNotification>()
     private var topScreenHandlerCloseable by AtomicCloseableRef<Closeable>()
 
     private val effectInterpreter: ExecutorEffectsInterpreter<Eff, Msg> =
@@ -111,8 +121,10 @@ internal class TopLevelFeatureProviderImpl(
                         Napier.e("alert", alert.throwable)
                         Napier.e(alert.throwable.stackTraceToString())
                     }
-                    MainScope().launch {
-                        contextHelper.showAlert(alert)
+                    systemHelper?.run {
+                        MainScope().launch {
+                            showAlert(alert)
+                        }
                     }
                 }
                 is FeatureEff.Experts -> when (val expertsEff = eff.eff) {
@@ -138,11 +150,11 @@ internal class TopLevelFeatureProviderImpl(
                     handleCallEff(eff.eff, listener, eff.position)
                 }
                 Eff.Initial -> {
-                    val authInfo = platform.dataStore.authInfo
+                    val authInfo = dataStore.authInfo
                     if (authInfo != null) {
                         loggedIn(authInfo, listener = listener)
                     } else {
-                        if (Platform.isDebug || platform.dataStore.welcomeShowed) {
+                        if (Platform.isDebug || dataStore.welcomeShowed) {
                             listener.invoke(Msg.OpenLoginScreen)
                         } else {
                             listener.invoke(Msg.OpenWelcomeScreen)
@@ -164,7 +176,7 @@ internal class TopLevelFeatureProviderImpl(
                                 currentUserId = uid,
                                 meetingsFlow = meetingsQueries.listFlow(),
                                 getUsersByIdsFlow = usersQueries::getByIdsFlow,
-                                openUserProfile  = {
+                                openUserProfile = {
                                     listener(
                                         Msg.PushMyProfile(
                                             MyProfileFeature.initialState(
@@ -240,9 +252,48 @@ internal class TopLevelFeatureProviderImpl(
                             msgAdapter = { FeatureMsg.ChatList(it) }
                         ),
                     ).map(::wrapWithEffectHandler).forEach(sessionInfo!!::addCloseableChild)
+                    notificationHandler = NotificationHandler(
+                        applicationContext = applicationContext,
+                        currentUid = uid,
+                        services = NotificationHandler.Services(
+                            lastListViewModelFlow = messagesDatabase
+                                .lastListFlow(uid)
+                                .toChatMessageContainerFlow(uid, this@TopLevelFeatureProviderImpl),
+                            unreadCountsFlow = { messages ->
+                                messagesDatabase
+                                    .chatMessagesQueries
+                                    .unreadCountsFlow(uid, messages)
+                            },
+                            getUsersByIdsFlow = usersQueries::getByIdsFlow,
+                            getMessageByIdFlow = { id ->
+                                messagesDatabase
+                                    .getByIdFlow(id)
+                                    .map { listOf(it) }
+                                    .toChatMessageContainerFlow(uid, this@TopLevelFeatureProviderImpl)
+                                    .filterNotEmpty()
+                                    .map { it.first() }
+                            },
+                            openChat = {
+                                Napier.d("openChat $it")
+                                listener(Msg.OpenUserChat(uid = it))
+                            },
+                        ),
+                        parentCoroutineScope = coroutineScope,
+                    )
+                    pendingNotifications
+                        .dropAll()
+                        .forEach {
+                            notificationHandler?.handleRawNotification(it)
+                        }
+                    val notificationToken = dataStore.notificationToken
+                    if (notificationToken != null && !dataStore.notificationTokenNotified) {
+                        networkManager.sendFront(WebSocketMsg.Front.UpdateNotificationToken(notificationToken))
+                        dataStore.notificationTokenNotified = true
+                    }
+                    Napier.d(eff.toString())
                 }
                 Eff.SystemBack -> {
-                    appContext.systemBack()
+                    systemService?.context?.systemBack()
                 }
                 is FeatureEff.Login -> {
                     when (val loginEff = eff.eff) {
@@ -254,7 +305,7 @@ internal class TopLevelFeatureProviderImpl(
                 is FeatureEff.Welcome -> {
                     when (eff.eff) {
                         WelcomeFeature.Eff.Continue -> {
-//                            platform.dataStore.welcomeShowed = true
+//                            dataStore.welcomeShowed = true
                             listener.invoke(Msg.OpenLoginScreen)
                         }
                     }
@@ -265,7 +316,7 @@ internal class TopLevelFeatureProviderImpl(
                             listener(Msg.Pop)
                         }
                         is AboutFeature.Eff.OpenLink -> {
-                            contextHelper.openUrl(aboutEff.link)
+                            systemHelper?.openUrl(aboutEff.link)
                         }
 //                        is AboutFeature.Eff.Push -> {
 //                            error("${eff.eff} should be handler in screen state")
@@ -349,6 +400,36 @@ internal class TopLevelFeatureProviderImpl(
                         }
                     }
                 }
+                is Eff.UpdateNotificationToken -> {
+                    if (dataStore.notificationToken == eff.token) return@interpreter
+                    dataStore.notificationToken = eff.token
+                    if (sessionInfo != null) {
+                        networkManager.sendFront(WebSocketMsg.Front.UpdateNotificationToken(eff.token))
+                    } else {
+                        dataStore.notificationTokenNotified = false
+                    }
+                }
+                is Eff.UpdateSystemContext -> {
+                    systemService = eff.systemContext?.let { context ->
+                        SystemService(context, providerGenerator)
+                    }
+                    Napier.i("UpdateSystemContext $systemService")
+                    permissionsHandler?.run {
+                        MainScope().launch {
+                            requestPermissions(*PermissionsHandler.Type.values())
+                                .also {
+                                    Napier.i("requestPermissions $it")
+                                }
+                        }
+                    }
+                }
+                is Eff.HandleRawNotification -> {
+                    if (notificationHandler != null) {
+                        notificationHandler?.handleRawNotification(eff.rawNotification)
+                    } else if (dataStore.authInfo != null) {
+                        pendingNotifications.add(eff.rawNotification)
+                    }
+                }
             }
         }
 
@@ -358,9 +439,7 @@ internal class TopLevelFeatureProviderImpl(
             effectInterpreter,
             coroutineScope,
         )
-        wrapWithEffectHandler(
-            handler
-        )
+        wrapWithEffectHandler(handler)
         handler.freeze()
 
         accept(Msg.Initial)
@@ -419,6 +498,13 @@ internal class TopLevelFeatureProviderImpl(
             is WebSocketMsg.Back.RemovedMeetings -> {
                 meetingsQueries
                     .removeAll(msg.ids)
+            }
+            WebSocketMsg.Back.NotificationTokenRequest -> {
+                dataStore.notificationToken?.let { notificationToken ->
+                    coroutineScope.launch {
+                        networkManager.sendFront(WebSocketMsg.Front.UpdateNotificationToken(notificationToken))
+                    }
+                }
             }
         }
     }

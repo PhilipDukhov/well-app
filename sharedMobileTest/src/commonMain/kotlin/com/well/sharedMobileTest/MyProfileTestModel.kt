@@ -10,7 +10,7 @@ import com.well.modules.models.Availability
 import com.well.modules.models.BookingAvailability
 import com.well.modules.models.User
 import com.well.modules.puerhBase.ReducerViewModel
-import com.well.modules.utils.viewUtils.ContextHelper
+import com.well.modules.utils.viewUtils.SystemHelper
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +21,7 @@ import kotlin.time.Duration
 
 class MyProfileTestModel(
     isCurrent: Boolean,
-    contextHelper: ContextHelper,
+    systemHelper: SystemHelper,
 ) : ReducerViewModel<State, Msg, Eff>(
     MyProfileFeature.testState(isCurrent),
     MyProfileFeature::reducer,
@@ -32,7 +32,7 @@ class MyProfileTestModel(
 
     private val handler by lazy {
         MyProfileEffHandler(
-            contextHelper = contextHelper,
+            contextHelper = systemHelper,
             services = MyProfileEffHandler.Services(
                 userFlow = flowOf(User.testUser),
                 putUser = {},

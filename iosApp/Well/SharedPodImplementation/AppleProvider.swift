@@ -8,12 +8,12 @@ import UIKit
 import AuthenticationServices
 
 final class AppleProvider: CredentialProvider {
-    private let appContext: AppContext
+    private let systemContext: SystemContext
     private var completionHandler: ((AuthCredential?, Error?) -> Void)?
 
-    override init(appContext: AppContext) {
-        self.appContext = appContext
-        super.init(appContext: appContext)
+    override init(systemContext: SystemContext) {
+        self.systemContext = systemContext
+        super.init(systemContext: systemContext)
     }
 
     override func getCredentials(completionHandler: @escaping (AuthCredential?, Error?) -> Void) {
@@ -24,7 +24,7 @@ final class AppleProvider: CredentialProvider {
 
         let authorizationController = ASAuthorizationController(authorizationRequests: [request])
         authorizationController.delegate = self
-        authorizationController.presentationContextProvider = appContext.rootController as? ASAuthorizationControllerPresentationContextProviding
+        authorizationController.presentationContextProvider = systemContext.rootController as? ASAuthorizationControllerPresentationContextProviding
         authorizationController.performRequests()
     }
 }
@@ -60,7 +60,9 @@ extension AppleProvider: ASAuthorizationControllerDelegate {
         didCompleteWithError error: Error
     ) {
         let error = error as NSError
-        if error.domain == ASAuthorizationErrorDomain && error.code == ASAuthorizationError.canceled.rawValue {
+        if error.domain == ASAuthorizationErrorDomain
+            && [ASAuthorizationError.canceled, .unknown].contains(where: { error.code == $0.rawValue })
+        {
             completionHandler?(nil, KotlinCancellationException().toNSError())
         } else {
             Napier.e(#function, error)

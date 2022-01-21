@@ -12,6 +12,7 @@ import com.well.modules.androidUi.composableScreens.more.SupportScreen
 import com.well.modules.androidUi.composableScreens.myProfile.MyProfileScreen
 import com.well.modules.androidUi.composableScreens.userChat.UserChatScreen
 import com.well.modules.androidUi.composableScreens.welcome.WelcomeScreen
+import com.well.modules.androidUi.customViews.AutoSizeText
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.features.topLevel.topLevelFeature.ScreenState
 import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State.Tab
@@ -89,7 +90,7 @@ fun TopLevelScreen(
                                 }
                             },
                             label = {
-                                Text(
+                                AutoSizeText(
                                     text = tabScreen.tab.spacedName(),
                                 )
                             },

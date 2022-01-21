@@ -1,6 +1,7 @@
 package com.well.modules.models.date.dateTime
 
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.nanoseconds
 
 private val iso8601Regex = Regex(
     "([-+]?)P(?:([-+]?\\d+)D)?(T(?:([-+]?\\d+)H)?(?:([-+]?\\d+)M)?(?:([-+]?\\d+)(?:[.,](\\d{0,9}))?S)?)?",
@@ -19,13 +20,12 @@ fun Duration(
     minutes: Int = 0,
     seconds: Int = 0,
     nanoseconds: Int = 0,
-): Duration = Duration.nanoseconds(
-    (days * nanosecondsPerDay) +
-            (hours * nanosecondsPerHour) +
-            (minutes * nanosecondsPerMinute) +
-            (seconds * nanosecondsPerSecond) +
-            nanoseconds
-)
+): Duration = ((days * nanosecondsPerDay) +
+        (hours * nanosecondsPerHour) +
+        (minutes * nanosecondsPerMinute) +
+        (seconds * nanosecondsPerSecond) +
+        nanoseconds
+        ).nanoseconds
 
 fun Duration.Companion.parse(isoString: CharSequence): Duration =
     requireNotNull(parseOrNull(isoString)) { "Invalid ISO-8601 duration: $isoString" }

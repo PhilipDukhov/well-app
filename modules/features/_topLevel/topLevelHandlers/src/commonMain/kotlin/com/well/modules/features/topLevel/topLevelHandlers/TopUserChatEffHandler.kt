@@ -22,8 +22,7 @@ internal class TopUserChatEffHandler(
     private val featureProviderImpl: TopLevelFeatureProviderImpl,
     parentCoroutineScope: CoroutineScope,
 ) : EffectHandler<UserChatFeature.Eff, UserChatFeature.Msg>(parentCoroutineScope) {
-
-    private val handler = featureProviderImpl.run {
+    private val handler = with(featureProviderImpl) {
         UserChatEffHandler(
             services = UserChatEffHandler.Services(
                 peerUserFlow = usersQueries.getByIdFlow(peerUid),
@@ -33,7 +32,7 @@ internal class TopUserChatEffHandler(
                         peerUid = peerUid,
                     )
                     .toChatMessageContainerFlow(currentUid, featureProviderImpl),
-                pickSystemImage = contextHelper::pickSystemImage,
+                pickSystemImage = systemHelper!!::pickSystemImage,
                 markRead = messagesDatabase::markRead,
                 sendImage = ::sendImage.launchedIn(parentCoroutineScope),
                 sendText = ::sendText.launchedIn(parentCoroutineScope),
@@ -48,8 +47,8 @@ internal class TopUserChatEffHandler(
     }
 
     init {
-        Napier.d("handler.setListener(::listener)")
         handler.setListener(::listener)
+        addCloseableChild(handler)
     }
 
     override suspend fun processEffect(eff: UserChatFeature.Eff) {
@@ -71,8 +70,8 @@ internal class TopUserChatEffHandler(
         val photoUrl = featureProviderImpl.networkManager.uploadMessagePicture(
             imageContainer.asByteArrayOptimizedForNetwork()
         )
-        featureProviderImpl.contextHelper.appContext.cacheImage(imageContainer,
-            photoUrl)
+        featureProviderImpl.systemHelper?.systemContext
+            ?.cacheImage(imageContainer, photoUrl)
         featureProviderImpl.networkManager.sendFront(
             WebSocketMsg.Front.CreateChatMessage(
                 newMessage.copy(
@@ -92,7 +91,6 @@ internal class TopUserChatEffHandler(
                 peerId = peerUid,
                 ChatMessage.Content.Text(text),
             )
-        Napier.i("Eff.SendMessage $newMessage")
         featureProviderImpl.networkManager.sendFront(
             WebSocketMsg.Front.CreateChatMessage(
                 newMessage

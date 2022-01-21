@@ -9,7 +9,17 @@ sealed class Alert(
     val positiveAction: Action? = null,
     val negativeAction: Action? = null,
 ) {
-    object CameraOrMicDenied : Alert(
+    object MicDenied : Alert(
+        title = Strings.micDenied,
+        positiveAction = Action.Ok,
+        negativeAction = Action.Settings
+    )
+    object CameraDenied : Alert(
+        title = Strings.cameraDenied,
+        positiveAction = Action.Ok,
+        negativeAction = Action.Settings
+    )
+    object CallDenied : Alert(
         title = Strings.callDenied,
         positiveAction = Action.Ok,
         negativeAction = Action.Settings

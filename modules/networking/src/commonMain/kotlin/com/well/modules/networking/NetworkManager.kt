@@ -9,6 +9,7 @@ import com.well.modules.models.BookingAvailability
 import com.well.modules.models.ConnectionStatus.Connected
 import com.well.modules.models.ConnectionStatus.Connecting
 import com.well.modules.models.ConnectionStatus.Disconnected
+import com.well.modules.models.DeviceId
 import com.well.modules.models.FavoriteSetter
 import com.well.modules.models.NetworkConstants
 import com.well.modules.models.RatingRequest
@@ -42,6 +43,7 @@ import kotlinx.serialization.json.Json
 
 class NetworkManager(
     token: String,
+    deviceId: DeviceId,
     startWebSocket: Boolean,
     private val unauthorizedHandler: () -> Unit,
 ) : CloseableContainer() {
@@ -76,7 +78,7 @@ class NetworkManager(
                 try {
                     _connectionStatus.value = Connecting
                     Napier.i("Connecting")
-                    clientWrapper.ws("/mainWebSocket") {
+                    clientWrapper.ws("/mainWebSocket/${deviceId}") {
                         webSocketSession = this
                         _connectionStatus.value = Connected
                         Napier.i("Connected")

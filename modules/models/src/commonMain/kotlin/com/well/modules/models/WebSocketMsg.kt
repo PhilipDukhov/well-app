@@ -47,6 +47,14 @@ sealed class WebSocketMsg {
         data class CreateChatMessage(
             val message: ChatMessage,
         ) : Front()
+
+        @Serializable
+        data class UpdateNotificationToken(
+            val token: NotificationToken,
+        ) : Front()
+
+        @Serializable
+        object Logout : Front()
     }
 
     @Serializable
@@ -91,6 +99,9 @@ sealed class WebSocketMsg {
         data class RemovedMeetings(
             val ids: List<Meeting.Id>,
         ) : Back()
+
+        @Serializable
+        object NotificationTokenRequest : Back()
     }
 
     @Serializable

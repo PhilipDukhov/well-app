@@ -14,6 +14,7 @@ import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State.
 import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State.Tab
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.features.welcome.WelcomeFeature
+import com.well.modules.models.NotificationToken
 import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.puerhBase.toSetOf
@@ -22,6 +23,8 @@ import com.well.modules.utils.kotlinUtils.map
 import com.well.modules.utils.kotlinUtils.mapSecond
 import com.well.modules.utils.kotlinUtils.spacedUppercaseName
 import com.well.modules.utils.viewUtils.Alert
+import com.well.modules.utils.viewUtils.RawNotification
+import com.well.modules.utils.viewUtils.SystemContext
 
 // to remove build/tmp/kapt3 after updating features to refresh cache
 // run kaptClean&Generate config
@@ -112,7 +115,7 @@ object TopLevelFeature {
             Overlay,
             ;
 
-            fun spacedName() = when(this) {
+            fun spacedName() = when (this) {
                 MyProfile -> "Profile"
                 else -> spacedUppercaseName()
             }
@@ -146,6 +149,9 @@ object TopLevelFeature {
         data class OpenUserChat(val uid: User.Id) : Msg()
         object Back : Msg()
         object Pop : Msg()
+        data class UpdateNotificationToken(val token: NotificationToken) : Msg()
+        data class UpdateSystemContext(val systemContext: SystemContext?) : Msg()
+        data class RawNotificationReceived(val rawNotification: RawNotification) : Msg()
     }
 
     sealed interface Eff {
@@ -154,6 +160,9 @@ object TopLevelFeature {
         object Initial : Eff
         object InitialLoggedIn : Eff
         data class TopScreenAppeared(val screen: ScreenState, val position: ScreenPosition) : Eff
+        data class UpdateNotificationToken(val token: NotificationToken) : Eff
+        data class UpdateSystemContext(val systemContext: SystemContext?) : Eff
+        data class HandleRawNotification(val rawNotification: RawNotification) : Eff
     }
 
     fun reducer(
@@ -268,6 +277,15 @@ object TopLevelFeature {
                         )
                     }
                     return@reducer newState.reduceScreenChanged()
+                }
+                is Msg.UpdateNotificationToken -> {
+                    return@eff Eff.UpdateNotificationToken(msg.token)
+                }
+                is Msg.UpdateSystemContext -> {
+                    return@eff Eff.UpdateSystemContext(msg.systemContext)
+                }
+                is Msg.RawNotificationReceived -> {
+                    return@eff Eff.HandleRawNotification(msg.rawNotification)
                 }
             }
         })

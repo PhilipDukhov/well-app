@@ -2,8 +2,8 @@ package com.well.androidAppTest.Utility
 
 import com.well.androidAppTest.TestComposeScreen
 import com.well.modules.androidUi.theme.Theme
-import com.well.modules.utils.viewUtils.AppContext
-import com.well.modules.utils.viewUtils.ContextHelper
+import com.well.modules.utils.viewUtils.SystemContext
+import com.well.modules.utils.viewUtils.SystemHelper
 import com.well.modules.utils.viewUtils.napier.NapierProxy
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -20,13 +20,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val contextHelper = ContextHelper(AppContext(this))
+        val systemHelper = SystemHelper(SystemContext(this))
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             Theme {
                 ProvideWindowInsets {
                     CompositionLocalProvider(
-                        LocalContextHelper provides contextHelper
+                        LocalSystemHelper provides systemHelper
                     ) {
                         TestComposeScreen()
                     }
@@ -36,6 +36,6 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-val LocalContextHelper = compositionLocalOf<ContextHelper> {
+val LocalSystemHelper = compositionLocalOf<SystemHelper> {
     error("CompositionLocal LocalAppContext not present")
 }

@@ -1,6 +1,7 @@
 package com.well.server
 
 import com.well.modules.models.Availability
+import com.well.modules.models.DeviceId
 import com.well.modules.models.NetworkConstants
 import com.well.modules.models.User
 import com.well.server.routing.auth.AppleOauthResponse
@@ -26,11 +27,8 @@ import com.well.server.routing.user.updateUser
 import com.well.server.routing.userHasAvailableAvailabilities
 import com.well.server.utils.Dependencies
 import com.well.server.utils.ForbiddenException
-import com.well.server.utils.authUid
 import com.well.server.utils.configProperty
 import com.well.server.utils.createPrincipal
-import com.well.server.utils.executeAndPrettify
-import com.well.server.utils.executeQueryAndPrettify
 import com.well.server.utils.sendEmail
 import com.auth0.jwk.JwkProviderBuilder
 import io.ktor.application.*
@@ -177,6 +175,14 @@ fun Application.initializedModule(dependencies: Dependencies) {
 //    }
 
     routing {
+//        post("testNotification") {
+////            sendFcmNotification(dependencies, call.receive())
+//            call.respond(HttpStatusCode.OK)
+//        }
+//        post("testAppleNotification") {
+//            sendApnsNotification(dependencies, call.receive())
+//            call.respond(HttpStatusCode.OK)
+//        }
         route("login") {
             post("facebook") { facebookLogin(dependencies) }
             post("google") { googleLogin(dependencies) }
@@ -204,9 +210,9 @@ fun Application.initializedModule(dependencies: Dependencies) {
                                 "grant_type" to "authorization_code",
                                 "code" to code,
                                 "redirect_uri" to "https://well-env-1.eba-yyqqrxsi.us-east-2.elasticbeanstalk.com/login/appleCallback",
-                                "client_id" to "com.well.server.debug",//configProperty("social.apple.clientId"),
+                                "client_id" to configProperty("social.apple.clientId"),
                                 "client_secret" to dependencies.jwtConfig.createAppleAuthToken(
-                                    keyId = configProperty("social.apple.keyId"),
+                                    keyId = configProperty("social.apple.serviceKeyId"),
                                     privateKeyString = String(
                                         Base64.getDecoder()
                                             .decode(environment.configProperty("social.apple.privateKey"))
@@ -266,8 +272,8 @@ fun Application.initializedModule(dependencies: Dependencies) {
 //            }
 //        }
         authenticate(AuthName.Main) {
-            webSocket(path = "mainWebSocket") {
-                mainWebSocket(dependencies)
+            webSocket(path = "mainWebSocket/{deviceId}") {
+                mainWebSocket(dependencies, DeviceId(call.parameters["deviceId"]!!))
             }
             post("uploadMessageMedia") { uploadMessageMedia(dependencies) }
             route("user") {

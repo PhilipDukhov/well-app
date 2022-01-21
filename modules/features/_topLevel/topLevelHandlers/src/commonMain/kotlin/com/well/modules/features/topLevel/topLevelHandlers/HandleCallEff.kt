@@ -5,6 +5,9 @@ import com.well.modules.atomic.freeze
 import com.well.modules.features.call.callFeature.CallFeature
 import com.well.modules.features.call.callFeature.drawing.DrawingFeature
 import com.well.modules.features.call.callHandlers.CallEffectHandler
+import com.well.modules.features.topLevel.topLevelFeature.FeatureEff
+import com.well.modules.features.topLevel.topLevelFeature.FeatureMsg
+import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature
 import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.puerhBase.adapt
@@ -16,9 +19,6 @@ import com.well.modules.utils.viewUtils.permissionsHandler.requestPermissions
 import com.well.modules.utils.viewUtils.pickSystemImageSafe
 import com.well.modules.utils.viewUtils.sharedImage.ImageContainer
 import com.well.modules.utils.viewUtils.showSheetThreadSafe
-import com.well.modules.features.topLevel.topLevelFeature.FeatureEff
-import com.well.modules.features.topLevel.topLevelFeature.FeatureMsg
-import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature
 import com.well.modules.features.call.callFeature.CallFeature.Msg as CallMsg
 import com.well.modules.features.call.callFeature.drawing.DrawingFeature.Msg as DrawingMsg
 import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.Msg as TopLevelMsg
@@ -57,9 +57,9 @@ internal suspend fun TopLevelFeatureProviderImpl.handleCallEff(
                         position = position,
                     )
                 )
-            contextHelper.showSheetThreadSafe(
+            systemHelper?.showSheetThreadSafe(
                 SuspendAction("Draw on image") {
-                    val image = contextHelper.pickSystemImageSafe()
+                    val image = systemHelper?.pickSystemImageSafe()
                     if (image != null) {
                         listener.invokeDrawingMsg(
                             DrawingMsg.LocalUpdateImage(image.toImageContainer()),
@@ -111,16 +111,16 @@ private suspend fun TopLevelFeatureProviderImpl.handleRequestImageUpdate(
     updateImage: (ImageContainer?) -> Unit,
 ) {
     if (eff.alreadyHasImage) {
-        contextHelper.showSheetThreadSafe(
+        systemHelper?.showSheetThreadSafe(
             SuspendAction("Replace image") {
-                contextHelper.pickSystemImageSafe()?.let { updateImage(it.toImageContainer()) }
+                systemHelper?.pickSystemImageSafe()?.let { updateImage(it.toImageContainer()) }
             },
             SuspendAction("Clear image") {
                 updateImage(null)
             },
         )
     } else {
-        contextHelper.pickSystemImageSafe()?.let { updateImage(it.toImageContainer()) }
+        systemHelper?.pickSystemImageSafe()?.let { updateImage(it.toImageContainer()) }
     }
 }
 
@@ -140,11 +140,11 @@ internal fun TopLevelFeatureProviderImpl.endCall(
 
 internal suspend fun TopLevelFeatureProviderImpl.handleCallPermissions() =
     permissionsHandler
-        .requestPermissions(
+        ?.requestPermissions(
             PermissionsHandler.Type.Camera,
             PermissionsHandler.Type.Microphone,
         )
-        .firstOrNull {
+        ?.firstOrNull {
             it.second != PermissionsHandler.Result.Authorized
         }
 
@@ -152,15 +152,17 @@ private fun ((TopLevelMsg) -> Unit).invokeDrawingMsg(
     msg: DrawingMsg,
     position: TopLevelFeature.State.ScreenPosition,
 ) = invoke(
-        FeatureMsg.Call(
-            CallMsg.DrawingMsg(
-                msg
-            ),
-            position
-        )
+    FeatureMsg.Call(
+        CallMsg.DrawingMsg(
+            msg
+        ),
+        position
     )
+)
 
 internal val PermissionsHandler.Type.alert: Alert
     get() = when (this) {
-        PermissionsHandler.Type.Camera, PermissionsHandler.Type.Microphone -> Alert.CameraOrMicDenied
+        PermissionsHandler.Type.Camera -> Alert.CameraDenied
+        PermissionsHandler.Type.Microphone -> Alert.MicDenied
+        PermissionsHandler.Type.CallPhone -> Alert.CallDenied
     }

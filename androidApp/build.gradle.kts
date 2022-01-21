@@ -1,5 +1,4 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
 
 plugins {
     id("com.android.application")
@@ -15,10 +14,11 @@ dependencies {
 libDependencies(
     "android.appCompat",
     "android.webrtc",
-    "android.compose.activity",
+    "android.compose.core.activity",
     "android.compose.accompanist.insets",
 
     "firebase.analytics",
+    "firebase.messaging",
     "shared.napier",
 
     "kotlin.serializationJson",
@@ -28,6 +28,7 @@ libDependencies(
     ":modules:androidUi",
     ":modules:androidWebrtc",
     ":modules:utils:viewUtils",
+    ":modules:utils:flowUtils",
     ":modules:features:_topLevel:topLevelFeature",
     ":modules:features:_topLevel:topLevelHandlers",
     ":modules:features:login:loginFeature",
@@ -82,8 +83,8 @@ android {
                     "facebook_app_id" to dotEnv.facebookAppId,
                     "facebook_client_token" to dotEnv["SHARED_FACEBOOK_CLIENT_TOKEN"],
                     "fb_login_protocol_scheme" to "fb${dotEnv.facebookAppId}",
-                    "gcm_defaultSenderId" to dotEnv.googleAppId,
-                    "google_app_id" to "1:${dotEnv.googleAppId}:android:23b05b40100225534c61a4",
+                    "gcm_defaultSenderId" to dotEnv.gcmSenderId,
+                    "google_app_id" to "1:${dotEnv.gcmSenderId}:android:23b05b40100225534c61a4",
                     "google_api_key" to dotEnv.googleApiKey,
                     "google_crash_reporting_api_key" to dotEnv.googleApiKey,
                     "default_web_client_id" to dotEnv.googleWebClientIdFull,

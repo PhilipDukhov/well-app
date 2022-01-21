@@ -1,6 +1,7 @@
 package com.well.modules.features.login.loginHandlers.credentialProviders
 
-import com.well.modules.utils.viewUtils.ContextHelper
+import com.well.modules.utils.viewUtils.AndroidRequestCodes
+import com.well.modules.utils.viewUtils.SystemHelper
 import android.app.Activity.RESULT_CANCELED
 import android.content.Intent
 import kotlinx.coroutines.CoroutineScope
@@ -11,9 +12,9 @@ import kotlinx.coroutines.launch
 
 actual class OAuthCredentialProvider actual constructor(
     name: String,
-    contextHelper: ContextHelper,
-) : CredentialProvider(contextHelper.appContext) {
-    private val oAuthHelper = OAuthHelper(name, contextHelper)
+    systemHelper: SystemHelper,
+) : CredentialProvider(systemHelper.systemContext) {
+    private val oAuthHelper = OAuthHelper(name, systemHelper)
     private var handleActivityResultCancelJob: Job? = null
 
     override suspend fun getCredentials() =
@@ -30,7 +31,7 @@ actual class OAuthCredentialProvider actual constructor(
         resultCode: Int,
         data: Intent?
     ): Boolean {
-        if (requestCode == OAuthHelper.requestCode && resultCode == RESULT_CANCELED) {
+        if (requestCode == com.well.modules.utils.viewUtils.AndroidRequestCodes.OAuthHelper.code && resultCode == RESULT_CANCELED) {
             handleActivityResultCancelJob = CoroutineScope(Dispatchers.Default).launch {
                 delay(100)
                 oAuthHelper.cancel()

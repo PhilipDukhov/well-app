@@ -67,7 +67,7 @@ internal fun TopLevelFeatureProviderImpl.createProfileEffHandler(
             }
         },
     ),
-    contextHelper = contextHelper,
+    systemHelper = systemHelper!!,
     parentCoroutineScope = coroutineScope,
 ).adapt(
     effAdapter = { eff ->

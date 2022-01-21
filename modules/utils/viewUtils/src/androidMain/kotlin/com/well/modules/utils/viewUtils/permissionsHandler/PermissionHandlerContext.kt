@@ -1,6 +1,5 @@
 package com.well.modules.utils.viewUtils.permissionsHandler
 
-import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 
@@ -21,7 +20,7 @@ actual class PermissionHandlerContext(componentActivity: ComponentActivity) {
 
     fun launchPermissionsHandler(
         permissions: List<String>,
-        handler: MultiplePermissionsHandler
+        handler: MultiplePermissionsHandler,
     ) {
         multiplePermissionsHandler = handler
         multiplePermissionsLauncher.launch(permissions.toTypedArray())

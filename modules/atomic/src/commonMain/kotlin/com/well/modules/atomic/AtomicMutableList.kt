@@ -5,36 +5,36 @@ class AtomicMutableList<E>(value: List<E>): AbstractList<E>() {
     private val atomicReference = AtomicRef(value)
 
     fun add(element: E, index: Int = count()) =
-        modify(+1) {
+        modify {
             add(index, element)
         }
     fun addAll(elements: Collection<E>) =
-        modify(+1) {
+        modify {
             addAll(elements)
         }
 
     fun remove(element: E) =
-        modify(-1) {
+        modify {
             remove(element)
         }
 
     fun clear() =
-        modify(-size) {
+        modify {
             clear()
         }
 
     fun removeAt(index: Int): E =
-        modify(-1) {
+        modify {
             removeAt(index)
         }
 
     fun removeAll(predicate: (E) -> Boolean): Boolean =
-        modify(-1) {
+        modify {
             removeAll(predicate)
         }
 
     fun set(index: Int, element: E): E =
-        modify(0) {
+        modify {
             set(index, element)
         }
 
@@ -52,9 +52,8 @@ class AtomicMutableList<E>(value: List<E>): AbstractList<E>() {
     override fun lastIndexOf(element: E): Int = atomicReference.value.lastIndexOf(element)
     override fun iterator(): Iterator<E> = atomicReference.value.iterator()
 
-    private fun <R> modify(capacityDiff: Int, block: ArrayList<E>.() -> R): R {
-        val newValue = ArrayList<E>(size + capacityDiff)
-        newValue.addAll(this)
+    private fun <R> modify(block: MutableList<E>.() -> R): R {
+        val newValue = toMutableList()
         val result = block(newValue)
         atomicReference.value = newValue
         return result

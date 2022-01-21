@@ -178,6 +178,15 @@ fun LastReadMessagesQueries.select(
                 .map { "${it.first}|${it.second}" }
         ).asFlow().mapToList()
 
+fun ChatMessagesDatabase.getByIdFlow(id: ChatMessage.Id) =
+    chatMessagesQueries
+        .getById(id)
+        .asFlow()
+        .mapToOne()
+        .map {
+            it.toChatMessage(database = this)
+        }
+
 fun ChatMessagesQueries.unreadCountFlow(uid: User.Id, message: ChatMessage) =
     unreadCount(fromId = message.secondId(uid), peerId = uid)
         .asFlow()

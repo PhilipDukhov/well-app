@@ -1,10 +1,13 @@
 package com.well.modules.features.login.loginHandlers
 
-import com.well.modules.features.login.loginFeature.credentialProvider.AuthCredential
-import com.well.modules.features.login.loginFeature.credentialProvider.AuthCredential.*
-import com.well.modules.features.login.loginHandlers.credentialProviders.CredentialProvider
 import com.well.modules.atomic.AtomicMutableMap
 import com.well.modules.features.login.loginFeature.SocialNetwork
+import com.well.modules.features.login.loginFeature.credentialProvider.AuthCredential
+import com.well.modules.features.login.loginFeature.credentialProvider.AuthCredential.AppleCredential
+import com.well.modules.features.login.loginFeature.credentialProvider.AuthCredential.FacebookCredential
+import com.well.modules.features.login.loginFeature.credentialProvider.AuthCredential.GoogleCredential
+import com.well.modules.features.login.loginFeature.credentialProvider.AuthCredential.OAuth1Credential
+import com.well.modules.features.login.loginHandlers.credentialProviders.CredentialProvider
 import com.well.modules.models.AuthResponse
 import com.well.modules.networking.createBaseServerClient
 import io.ktor.client.request.*
@@ -17,7 +20,7 @@ class SocialNetworkService(private val providerGenerator: (SocialNetwork) -> Cre
     private val client = createBaseServerClient()
 
     suspend fun login(
-        network: SocialNetwork
+        network: SocialNetwork,
     ) = Dispatchers.Main.invoke {
         getToken(
             credentialProviders.getOrPut(network) {
@@ -27,7 +30,7 @@ class SocialNetworkService(private val providerGenerator: (SocialNetwork) -> Cre
     }
 
     private suspend fun getToken(
-        credentials: AuthCredential
+        credentials: AuthCredential,
     ): AuthResponse = when (credentials) {
         is GoogleCredential -> {
             client.post(path = "login/google") {

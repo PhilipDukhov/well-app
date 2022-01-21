@@ -38,7 +38,7 @@ struct RatingInfoView: View {
                         : .companion.LightGray
                     )
             }
-        }
+        }   
         Spacer()
         Text("reviews (\(Int(ratingInfo.count)))")
             .foregroundColorKMM(.companion.MediumBlue)

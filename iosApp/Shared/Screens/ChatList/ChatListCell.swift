@@ -23,11 +23,7 @@ struct ChatListCell: View {
                 }
                 HStack(spacing: 7) {
                     Text(
-                        ChatListFeature
-                            .Strings.shared
-                            .messageContentDescription(
-                                content: item.lastMessage.content
-                            )
+                        item.lastMessage.content.descriptionText
                     )
                         .textStyle(.captionLight)
                         .foregroundColorKMM(.companion.DarkGrey)

@@ -1,7 +1,6 @@
 package com.well.modules.utils.viewUtils
 
 import com.well.modules.atomic.Closeable
-import com.well.modules.utils.viewUtils.AppContext
 import com.well.modules.utils.viewUtils.sharedImage.LocalImage
 import android.app.AlertDialog
 import android.content.Intent
@@ -18,9 +17,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-actual class ContextHelper actual constructor(actual val appContext: AppContext): WebAuthenticator {
+actual class SystemHelper actual constructor(actual val systemContext: SystemContext): WebAuthenticator {
     actual fun showAlert(alert: Alert) =
-        AlertDialog.Builder(appContext.androidContext)
+        AlertDialog.Builder(systemContext.activity)
             .setTitle(alert.title)
             .setMessage(alert.description)
             .setPositiveButton(alert.positiveAction)
@@ -29,7 +28,7 @@ actual class ContextHelper actual constructor(actual val appContext: AppContext)
             .show()
 
     actual fun showSheet(actions: List<Action>): Closeable {
-        val builder = BottomSheetDialogBuilder(appContext.androidContext)
+        val builder = BottomSheetDialogBuilder(systemContext.activity)
         actions.forEach(builder::add)
         builder.show()
         return object : Closeable {
@@ -43,13 +42,13 @@ actual class ContextHelper actual constructor(actual val appContext: AppContext)
 
     actual fun openUrl(url: String) {
         MainScope().launch {
-            appContext.androidContext.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            systemContext.activity.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
         }
     }
 
     actual override suspend fun webAuthenticate(
         url: String,
-        requestCode: Int
+        requestCode: Int,
     ): String = suspendCancellableCoroutine {
         MainScope().launch {
             val preferredPackage = getPreferredCustomTabsPackage()
@@ -67,7 +66,7 @@ actual class ContextHelper actual constructor(actual val appContext: AppContext)
                 intent
             }
             @Suppress("DEPRECATION")
-            appContext.androidContext.startActivityForResult(intent, requestCode)
+            systemContext.activity.startActivityForResult(intent, requestCode)
         }
     }
 
@@ -88,11 +87,11 @@ actual class ContextHelper actual constructor(actual val appContext: AppContext)
     private fun Alert.Action.handle() = when (this) {
         Alert.Action.Ok -> Unit
         Alert.Action.Settings ->
-            appContext.androidContext.startActivity(
+            systemContext.activity.startActivity(
                 Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                     data = Uri.fromParts(
                         "package",
-                        appContext.androidContext.packageName,
+                        systemContext.activity.packageName,
                         null
                     )
                 }
@@ -113,12 +112,12 @@ actual class ContextHelper actual constructor(actual val appContext: AppContext)
             continuation = null
         }
 
-    private val imagePickerLauncher = appContext.androidContext.registerForActivityResult(
+    private val imagePickerLauncher = systemContext.activity.registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
         val data = it.data?.data
         if (data != null) {
-            continuation?.resume(LocalImage(data, appContext.androidContext))
+            continuation?.resume(LocalImage(data, systemContext.activity))
         } else {
             continuation?.cancel(IllegalStateException("imagePickerLauncher result: ${it.resultCode}"))
         }
@@ -138,7 +137,7 @@ actual class ContextHelper actual constructor(actual val appContext: AppContext)
 
     private fun getDefaultBrowser(): String? {
         val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com"))
-        val packageManager = appContext.androidContext.packageManager
+        val packageManager = systemContext.activity.packageManager
         val resolveInfo = packageManager.resolveActivity(
             browserIntent,
             PackageManager.MATCH_DEFAULT_ONLY
@@ -148,7 +147,7 @@ actual class ContextHelper actual constructor(actual val appContext: AppContext)
     }
 
     private fun getCustomTabsPackages(): List<String> {
-        val packageManager = appContext.androidContext.packageManager
+        val packageManager = systemContext.activity.packageManager
         val activityIntent =
             Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com"))
         val resolvedActivityList =

@@ -33,6 +33,9 @@ kotlin {
                     "android.activity",
                     "android.browser",
                 )
+                dependencies {
+                    api(libAt("firebase.messaging"))
+                }
             }
         }
         val iosMain by getting {
@@ -41,4 +44,8 @@ kotlin {
             )
         }
     }
+}
+
+dependencies {
+    implementation(platform(libAt("firebase.bom")))
 }

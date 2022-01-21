@@ -8,11 +8,13 @@ import com.well.modules.db.server.getByIdsFlow
 import com.well.modules.db.server.getByUserIdFlow
 import com.well.modules.db.server.insertChatMessage
 import com.well.modules.db.server.peerIdsListFlow
-import com.well.modules.db.server.selectByPeerIdFlow
+import com.well.modules.db.server.selectByAnyIdFlow
+import com.well.modules.db.server.selectByDeviceIdFlow
 import com.well.modules.db.server.toChatMessage
 import com.well.modules.db.server.toLastReadMessage
 import com.well.modules.db.server.toMeetings
 import com.well.modules.db.server.toUser
+import com.well.modules.models.DeviceId
 import com.well.modules.models.Meeting
 import com.well.modules.models.User
 import com.well.modules.models.UserPresenceInfo
@@ -31,22 +33,27 @@ import com.well.modules.utils.flowUtils.flatMapLatest
 import com.well.modules.utils.flowUtils.mapIterable
 import com.well.modules.utils.flowUtils.mapPair
 import com.well.server.utils.CallInfo
+import com.well.server.utils.ClientKey
 import com.well.server.utils.Dependencies
 import com.well.server.utils.send
 import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.daysUntil
 import org.joda.time.Weeks
-import java.util.*
 
 class UserSession(
     private val currentUid: User.Id,
+    private val deviceId: DeviceId,
     private val webSocketSession: WebSocketSession,
     private val dependencies: Dependencies,
 ) : WebSocketSession by webSocketSession {
@@ -61,6 +68,7 @@ class UserSession(
     private val meetingIdsPresenceFlow = MutableStateFlow<List<Meeting.Id>?>(null)
     private val chatReadStatePresenceFlow = MutableStateFlow<List<LastReadMessage>>(emptyList())
     private val userCreatedChatMessageInfosFlow = MutableSetStateFlow<CreatedMessageInfo>()
+    private val currentClientKey = ClientKey(deviceId, currentUid)
 
     private val expertsFlow: Flow<List<User.Id>> = expertsFilterFlow
         .filterNotNull()
@@ -113,7 +121,7 @@ class UserSession(
                     .groupBy { it.fromId to it.peerId }
                     .mapValues { it.value.first() }
                 dependencies.database.lastReadMessagesQueries
-                    .selectByPeerIdFlow(currentUid)
+                    .selectByAnyIdFlow(currentUid)
                     .filterIterable { databaseLRM ->
                         val currentReadState =
                             chatReadStatePresenceMap[databaseLRM.fromId to databaseLRM.peerId]
@@ -182,6 +190,13 @@ class UserSession(
             }
             .flatMapLatest()
             .filterNotEmpty()
+    private val fcmTokenNeededFlow = dependencies.database
+        .notificationTokensQueries
+        .selectByDeviceIdFlow(deviceId = deviceId)
+        .filter { token ->
+            token == null
+                    || token.timestamp.daysUntil(Clock.System.now(), TimeZone.currentSystemDefault()) > 10
+        }.map {}
 
     init {
         listOf(
@@ -191,6 +206,7 @@ class UserSession(
             newReadStatesFlow.map(WebSocketMsg.Back::UpdateCharReadPresence),
             newMeetingsFlow.map(WebSocketMsg.Back::AddMeetings),
             removedMeetingIdsFlow.map(WebSocketMsg.Back::RemovedMeetings),
+            fcmTokenNeededFlow.map { WebSocketMsg.Back.NotificationTokenRequest }
         ).forEach { flow ->
             flow
                 .onEach {
@@ -206,11 +222,10 @@ class UserSession(
             is WebSocketMsg.Call.Candidate,
             is WebSocketMsg.Call.Offer,
             -> {
-                dependencies.callPartnerId(currentUid)!!
-                    .run {
-                        dependencies.connectedUserSessionsFlow[value]!!
-                            .send(msg)
-                    }
+                val indexedClientKey = dependencies.callPartnerId(currentUid)!!
+                dependencies.connectedUserSessionsFlow
+                    .value[indexedClientKey.value]
+                    ?.send(msg)
             }
             is WebSocketMsg.Call.EndCall -> {
                 dependencies.endCall(
@@ -238,6 +253,10 @@ class UserSession(
             }
             is WebSocketMsg.Front.SetChatMessagePresence -> {
                 messagesPresenceInfoFlow.value = msg.messagePresenceId
+                dependencies.messagesToDeliver
+                    .removeAll {
+                        it.second <= msg.messagePresenceId
+                    }
             }
             is WebSocketMsg.Front.ChatMessageRead -> {
                 chatMessageRead(msg.messageId)
@@ -279,20 +298,31 @@ class UserSession(
             is WebSocketMsg.Front.SetMeetingsPresence -> {
                 meetingIdsPresenceFlow.value = msg.meetingsPresence
             }
+            is WebSocketMsg.Front.Logout -> {
+                dependencies.database.notificationTokensQueries.delete(deviceId)
+            }
+            is WebSocketMsg.Front.UpdateNotificationToken -> {
+                dependencies.database.notificationTokensQueries.insert(
+                    token = msg.token,
+                    deviceId = deviceId,
+                    uid = currentUid,
+                    timestamp = Clock.System.now(),
+                )
+            }
         }
     }
 
     private suspend fun initiateCall(msg: WebSocketMsg.Front.InitiateCall) {
-        val session = dependencies.connectedUserSessionsFlow[msg.uid]
+        val session = dependencies.connectedUserSessionsFlow.value.entries.firstOrNull { it.key.uid == msg.uid }
         if (session == null) {
             send(WebSocketMsg.Call.EndCall(WebSocketMsg.Call.EndCall.Reason.Offline))
             return
         }
-        if (dependencies.callInfos.any { it.uids.contains(currentUid) }) {
+        if (dependencies.callInfos.any { it.uids.contains(currentClientKey) }) {
             send(WebSocketMsg.Call.EndCall(WebSocketMsg.Call.EndCall.Reason.Busy))
             return
         }
-        session.send(
+        session.value.send(
             WebSocketMsg.Back.IncomingCall(
                 dependencies.getUser(
                     uid = msg.uid,
@@ -300,12 +330,12 @@ class UserSession(
                 )
             )
         )
-        dependencies.callInfos.add(CallInfo(listOf(currentUid, msg.uid)))
+        dependencies.callInfos.add(CallInfo(listOf(currentClientKey, session.key)))
     }
 
     private fun insertChatMessage(message: ChatMessage) {
         with(dependencies.database) {
-            transaction {
+            val id = transactionWithResult<ChatMessage.Id> {
                 val finalMessageId = insertChatMessage(message)
                 userCreatedChatMessageInfosFlow.add(
                     CreatedMessageInfo(
@@ -313,8 +343,9 @@ class UserSession(
                         id = finalMessageId
                     )
                 )
-                println("insertChatMessage ${Date().time.toDouble() / 1000} ${message.id} $finalMessageId")
+                finalMessageId
             }
+            dependencies.deliverMessageNotificationIfNeeded(id)
         }
     }
 
@@ -357,13 +388,13 @@ class UserSession(
 private fun Dependencies.callPartnerId(uid: User.Id) =
     callInfos
         .withIndex()
-        .firstOrNull { it.value.uids.contains(uid) }
+        .firstOrNull { it.value.uids.any { it.uid == uid } }
         ?.run {
             IndexedValue(
                 index,
                 value
                     .uids
-                    .first { it != uid }
+                    .first { it.uid != uid }
             )
         }
 

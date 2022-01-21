@@ -86,10 +86,7 @@ fun ChatMessageViewModel.Companion.getTestMessagesWithStatus(count: Int): List<C
                     values[i % values.count()]
                 }, 
             creation = message.creation,
-            content = ChatMessageViewModel.Content.create(
-                content = message.content,
-                getMeeting = { null },
-            ),
+            content = message.content,
         )
     }
 

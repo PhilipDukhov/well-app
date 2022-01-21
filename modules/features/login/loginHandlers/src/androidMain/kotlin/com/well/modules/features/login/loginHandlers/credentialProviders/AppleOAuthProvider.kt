@@ -2,7 +2,8 @@ package com.well.modules.features.login.loginHandlers.credentialProviders
 
 import com.well.modules.features.login.loginFeature.credentialProvider.AuthCredential
 import com.well.modules.models.NetworkConstants
-import com.well.modules.utils.viewUtils.AppContext
+import com.well.modules.utils.viewUtils.AndroidRequestCodes
+import com.well.modules.utils.viewUtils.SystemContext
 import com.well.modules.utils.viewUtils.WebAuthenticator
 import com.well.modules.utils.viewUtils.platform.Platform
 import com.well.modules.utils.viewUtils.platform.isLocalServer
@@ -19,10 +20,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 
 class AppleOAuthProvider(
-    appContext: AppContext,
+    systemContext: SystemContext,
     private val webAuthenticator: WebAuthenticator,
-) : CredentialProvider(appContext) {
-    private val requestCode = 98234
+) : CredentialProvider(systemContext) {
+    private val requestCode = AndroidRequestCodes.AppleOAuthProvider.code
     private var handleActivityResultCancelJob: Job? = null
     private var webAuthenticateJob: Job? = null
     private var getCredentialsContinuation: CancellableContinuation<AuthCredential>? = null

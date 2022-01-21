@@ -756,7 +756,7 @@
 				7555FF77242A565900829871 /* Sources */,
 				7555FF78242A565900829871 /* Frameworks */,
 				7555FF79242A565900829871 /* Resources */,
-				491238037572C75B2A859A9E /* [CP] Embed Pods Frameworks */,
+				D95AEB4942A020B13A5D73AD /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -849,23 +849,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		491238037572C75B2A859A9E /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		4A8280632725F193004DF64E /* SwiftLint */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -940,6 +923,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/zsh;
 			shellScript = "if test -d \"/opt/homebrew/bin/\"; then\n  PATH=\"/opt/homebrew/bin/:${PATH}\"\nfi\n\nexport PATH\n\nif which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+		D95AEB4942A020B13A5D73AD /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Well/Pods-Well-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1339,7 +1339,7 @@
 				FACEBOOK_APP_ID = "$(SHARED_FACEBOOK_APP_ID)";
 				FACEBOOK_CLIENT_TOKEN = "$(SHARED_FACEBOOK_CLIENT_TOKEN)";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				GOOGLE_CLIENT_ID = "$(IOS_GOOGLE_CLIENT_ID)";
+				GOOGLE_APP_ID_PREFIX = "$(IOS_GOOGLE_APP_ID_DEV_PREFIX)";
 				INFOPLIST_FILE = "well/Supporting files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1374,7 +1374,7 @@
 				FACEBOOK_APP_ID = "$(SHARED_FACEBOOK_APP_ID)";
 				FACEBOOK_CLIENT_TOKEN = "$(SHARED_FACEBOOK_CLIENT_TOKEN)";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				GOOGLE_CLIENT_ID = "$(IOS_GOOGLE_CLIENT_ID)";
+				GOOGLE_APP_ID_PREFIX = "$(IOS_GOOGLE_APP_ID_PROD_PREFIX)";
 				INFOPLIST_FILE = "well/Supporting files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

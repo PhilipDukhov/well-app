@@ -19,7 +19,7 @@ inline fun <A, B, RB> Pair<A, B>.mapSecond(
 fun <E> Set<E>.removing(element: E): Set<E> = toMutableSet().apply { remove(element) }
 
 inline fun <A, B, RA, RB> Pair<A, B>.mapNotNull(
-    transformA: ((A) -> RA?),
+    transformA: (A) -> RA?,
     transformB: (B) -> RB?,
 ): Pair<RA, RB>? {
     val f = transformA(first)

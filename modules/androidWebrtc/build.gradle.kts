@@ -4,7 +4,7 @@ plugins {
 }
 
 libDependencies(
-    "android.compose.ui",
+    "android.compose.core.ui",
     "android.webrtc",
 
     "shared.napier",

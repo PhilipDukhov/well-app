@@ -10,8 +10,8 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlin.coroutines.coroutineContext
 
-expect class ContextHelper(appContext: AppContext): WebAuthenticator {
-    val appContext: AppContext
+expect class SystemHelper(systemContext: SystemContext): WebAuthenticator {
+    val systemContext: SystemContext
     fun showAlert(alert: Alert)
     fun showSheet(actions: List<Action>): Closeable
     fun openUrl(url: String)
@@ -19,7 +19,7 @@ expect class ContextHelper(appContext: AppContext): WebAuthenticator {
     suspend fun pickSystemImage(): LocalImage
 }
 
-suspend fun ContextHelper.showSheetThreadSafe(
+suspend fun SystemHelper.showSheetThreadSafe(
     vararg actions: SuspendAction,
 ): Closeable {
     val context = coroutineContext
@@ -40,7 +40,7 @@ suspend fun ContextHelper.showSheetThreadSafe(
     return closeableContainer
 }
 
-suspend fun ContextHelper.pickSystemImageSafe(): LocalImage? = try {
+suspend fun SystemHelper.pickSystemImageSafe(): LocalImage? = try {
     pickSystemImage()
 } catch (t: Throwable) {
     Napier.e("pickSystemImageSafe failed", t)

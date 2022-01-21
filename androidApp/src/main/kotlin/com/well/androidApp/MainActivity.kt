@@ -2,15 +2,10 @@ package com.well.androidApp
 
 import com.well.modules.androidUi.composableScreens.TopLevelScreen
 import com.well.modules.androidUi.theme.Theme
-import com.well.modules.androidWebrtc.WebRtcManager
-import com.well.modules.features.login.loginHandlers.credentialProviders.providerGenerator
 import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature
-import com.well.modules.features.topLevel.topLevelHandlers.createFeatureProvider
 import com.well.modules.features.topLevel.topLevelHandlers.handleActivityResult
 import com.well.modules.features.topLevel.topLevelHandlers.handleOnNewIntent
-import com.well.modules.puerhBase.FeatureProvider
-import com.well.modules.utils.viewUtils.AppContext
-import com.well.modules.utils.viewUtils.napier.NapierProxy
+import com.well.modules.utils.viewUtils.SystemContext
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
@@ -22,24 +17,12 @@ import androidx.core.view.WindowCompat
 import com.google.accompanist.insets.ProvideWindowInsets
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var featureProvider: FeatureProvider<TopLevelFeature.Msg, TopLevelFeature.State>
+    private lateinit var systemContext: SystemContext
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        NapierProxy.initializeLogging()
-        featureProvider = createFeatureProvider(
-            AppContext(this),
-            webRtcManagerGenerator = { iceServers, listener ->
-                WebRtcManager(
-                    iceServers,
-                    applicationContext,
-                    listener,
-                )
-            },
-            providerGenerator = ::providerGenerator
-        )
         onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 featureProvider.accept(TopLevelFeature.Msg.Back)
@@ -53,9 +36,20 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        systemContext = SystemContext(this)
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onStart() {
+        super.onStart()
+        featureProvider.accept(TopLevelFeature.Msg.UpdateSystemContext(systemContext))
+    }
+
+    override fun onStop() {
+        super.onStop()
+        featureProvider.accept(TopLevelFeature.Msg.UpdateSystemContext(null))
+    }
+
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         featureProvider.handleOnNewIntent(intent)
     }

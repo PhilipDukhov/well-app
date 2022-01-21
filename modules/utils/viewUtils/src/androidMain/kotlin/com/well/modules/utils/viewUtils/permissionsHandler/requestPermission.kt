@@ -1,24 +1,28 @@
 package com.well.modules.utils.viewUtils.permissionsHandler
 
-import android.Manifest.permission.*
-import android.content.pm.PackageManager
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
-import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler.Type
 import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler.Result
-import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler.Result.*
-import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler.Type.*
-import java.lang.IllegalStateException
+import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler.Result.Authorized
+import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler.Result.Denied
+import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler.Type
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.app.ActivityCompat
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 actual suspend fun PermissionsHandler.requestPermissions(vararg types: Type): List<Pair<Type, Result>> =
     suspendCoroutine { continuation ->
         context.launchPermissionsHandler(
-            types.map {
+            types.flatMap {
                 when (it) {
-                    Camera -> CAMERA
-                    Microphone -> RECORD_AUDIO
+                    Type.Camera -> listOf(Manifest.permission.CAMERA)
+                    Type.Microphone -> listOf(Manifest.permission.RECORD_AUDIO)
+                    Type.CallPhone -> listOfNotNull(
+                        Manifest.permission.CALL_PHONE,
+                        Manifest.permission.BIND_TELECOM_CONNECTION_SERVICE,
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Manifest.permission.MANAGE_OWN_CALLS else null,
+                    )
                 }
             }
         ) { result ->
@@ -49,7 +53,11 @@ actual suspend fun PermissionsHandler.requestPermissions(vararg types: Type): Li
 
 private fun Type(permission: String): Type =
     when (permission) {
-        CAMERA -> Camera
-        RECORD_AUDIO -> Microphone
+        Manifest.permission.CAMERA -> Type.Camera
+        Manifest.permission.RECORD_AUDIO -> Type.Microphone
+        Manifest.permission.CALL_PHONE,
+        Manifest.permission.MANAGE_OWN_CALLS,
+        Manifest.permission.BIND_TELECOM_CONNECTION_SERVICE,
+        -> Type.CallPhone
         else -> throw IllegalStateException()
     }

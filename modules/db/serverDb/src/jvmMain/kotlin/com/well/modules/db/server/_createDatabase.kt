@@ -1,10 +1,12 @@
 package com.well.modules.db.server
 
 import com.well.modules.models.Availability
+import com.well.modules.models.DeviceId
 import com.well.modules.models.Meeting
 import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
 import com.well.modules.utils.dbUtils.InstantColumnAdapter
+import com.well.modules.utils.dbUtils.SerializableColumnAdapter
 import com.well.modules.utils.dbUtils.SetEnumColumnAdapter
 import com.squareup.sqldelight.EnumColumnAdapter
 import com.squareup.sqldelight.db.SqlDriver
@@ -35,6 +37,12 @@ operator fun Database.Companion.invoke(driver: SqlDriver) =
         FavouritesAdapter = Favourites.Adapter(
             ownerAdapter = User.Id.ColumnAdapter,
             destinationAdapter = User.Id.ColumnAdapter,
+        ),
+        NotificationTokensAdapter = NotificationTokens.Adapter(
+            tokenAdapter = SerializableColumnAdapter(),
+            uidAdapter = User.Id.ColumnAdapter,
+            deviceIdAdapter = DeviceId.ColumnAdapter,
+            timestampAdapter = InstantColumnAdapter,
         ),
         LastReadMessagesAdapter = LastReadMessages.Adapter(
             fromIdAdapter = User.Id.ColumnAdapter,

@@ -23,14 +23,14 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.$(GOOGLE_CLIENT_ID)</string>
+				<string>com.googleusercontent.apps.$(IOS_GOOGLE_CLIENT_ID)</string>
 				<string>fb$(FACEBOOK_APP_ID)</string>
 				<string>world.endo.live.link</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>202112042132</string>
+	<string>202112101105</string>
 	<key>FacebookAdvertiserIDCollectionEnabled</key>
 	<true/>
 	<key>FacebookAppID</key>
@@ -41,6 +41,8 @@
 	<string>$(FACEBOOK_CLIENT_TOKEN)</string>
 	<key>FacebookDisplayName</key>
 	<string>$(TARGET_NAME)</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSApplicationQueriesSchemes</key>
@@ -96,7 +98,18 @@
 	</array>
 	<key>UIUserInterfaceStyle</key>
 	<string>Light</string>
-	<key>googleClientId</key>
-	<string>$(GOOGLE_CLIENT_ID).apps.googleusercontent.com</string>
+	<key>firebaseInfo</key>
+	<dict>
+		<key>apiKey</key>
+		<string>$(GOOGLE_API_KEY)</string>
+		<key>appId</key>
+		<string>1:$(GCM_SENDER_ID):ios:$(GOOGLE_APP_ID_PREFIX)</string>
+		<key>clientId</key>
+		<string>$(GCM_SENDER_ID).apps.googleusercontent.com</string>
+		<key>gcmSenderID</key>
+		<string>$(GCM_SENDER_ID)</string>
+		<key>projectID</key>
+		<string>$(GOOGLE_PROJECT_ID)</string>
+	</dict>
 </dict>
 </plist>

@@ -6,14 +6,14 @@ import platform.Foundation.NSURL
 import platform.UIKit.UIApplication
 import platform.UIKit.UIViewController
 
-actual data class AppContext(
+actual data class SystemContext(
     val rootController: UIViewController,
     val application: UIApplication,
     val launchOptions: Map<Any?, Any>?,
     val cacheImage: (ImageContainer, NSURL) -> Unit,
 ) {
-    actual val permissionsHandlerContext: PermissionHandlerContext
-        get() = PermissionHandlerContext()
+    actual val permissionHandlerContext = PermissionHandlerContext()
+    actual val helper = SystemHelper(this)
 
     actual fun systemBack() {}
     actual fun cacheImage(image: ImageContainer, url: String) {

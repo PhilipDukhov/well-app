@@ -2,7 +2,7 @@
 
 package com.well.androidAppTest
 
-import com.well.androidAppTest.Utility.LocalContextHelper
+import com.well.androidAppTest.Utility.LocalSystemHelper
 import com.well.modules.androidUi.composableScreens.myProfile.MyProfileScreen
 import com.well.modules.androidUi.customViews.rememberPreference
 import com.well.sharedMobileTest.MyProfileTestModel
@@ -22,7 +22,7 @@ import com.google.accompanist.insets.navigationBarsPadding
 @Composable
 internal fun MyProfileTest() {
     var isCurrent by rememberPreference(booleanPreferencesKey("MyProfileTest_isCurrent"), false)
-    val appContext = LocalContextHelper.current
+    val appContext = LocalSystemHelper.current
     val viewModel = remember(isCurrent, appContext) {
         MyProfileTestModel(isCurrent, appContext)
     }

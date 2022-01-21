@@ -9,7 +9,7 @@ class DotEnv(project: Project) {
     val facebookAppId = dotenv["SHARED_FACEBOOK_APP_ID"]
     val googleWebClientId = dotenv["ANDROID_GOOGLE_CLIENT_ID"]
     val googleWebClientIdFull = "$googleWebClientId.apps.googleusercontent.com"
-    val googleAppId = dotenv["GOOGLE_APP_ID"]
+    val gcmSenderId = dotenv["GCM_SENDER_ID"]
     val googleApiKey = dotenv["GOOGLE_API_KEY"]
 
     operator fun get(key: String) = dotenv[key]

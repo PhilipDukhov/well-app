@@ -2,26 +2,10 @@ package com.well.modules.features.chatList.chatListFeature
 
 import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessageViewModel
-import com.well.modules.models.date.dateTime.localizedDayAndShortMonth
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
-import com.well.modules.utils.viewUtils.GlobalStringsBase
 
 object ChatListFeature {
-    object Strings : GlobalStringsBase() {
-        fun messageContentDescription(content: ChatMessageViewModel.Content) = when (content) {
-            is ChatMessageViewModel.Content.Image -> "photo"
-            is ChatMessageViewModel.Content.Text -> content.string
-            is ChatMessageViewModel.Content.Meeting -> {
-                "new meeting scheduled".plus(
-                    content.meeting?.let { meeting ->
-                        " on ${meeting.startDay.localizedDayAndShortMonth()} at ${meeting.startTime}"
-                    } ?: ""
-                )
-            }
-        }
-    }
-
     data class State(
         internal val allListItems: List<ListItem> = listOf(),
         val filter: String? = null,

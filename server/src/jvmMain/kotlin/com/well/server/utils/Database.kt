@@ -1,6 +1,7 @@
 package com.well.server.utils
 
 import com.well.modules.db.server.Database
+import com.well.modules.db.server.Users
 import com.well.modules.db.server.invoke
 import com.well.modules.utils.dbUtils.migrateIfNeededMySql
 import com.squareup.sqldelight.db.SqlDriver
@@ -67,7 +68,7 @@ fun initialiseDatabase(app: Application): Pair<Database, SqlDriver> {
     db.usersQueries
         .selectUninitialized()
         .executeAsList()
-        .let { uninitialized ->
+        .let { uninitialized: List<Users> ->
             if (uninitialized.isNotEmpty()) {
                 println("cleaning uninitialized: $uninitialized")
                 db.usersQueries.deleteUninitialized()

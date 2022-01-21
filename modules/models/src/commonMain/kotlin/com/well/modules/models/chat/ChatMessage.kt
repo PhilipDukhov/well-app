@@ -43,6 +43,15 @@ data class ChatMessage(
 
         val simpleType get() = SimpleType.valueOf(this::class.simpleName!!)
 
+        val descriptionText get() =
+            when (this) {
+                is Image -> "photo"
+                is Text -> string
+                is Meeting -> {
+                    TODO("remove")
+                }
+            }
+
         @Serializable
         data class Text(val string: String) : Content()
 

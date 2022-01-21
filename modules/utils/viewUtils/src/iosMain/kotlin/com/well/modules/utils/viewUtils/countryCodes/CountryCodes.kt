@@ -1,6 +1,6 @@
 package com.well.modules.utils.viewUtils.countryCodes
 
-import com.well.modules.utils.viewUtils.AppContext
+import com.well.modules.utils.viewUtils.SystemContext
 import platform.Foundation.*
 
 actual fun countryCodesList(): Set<String> =
@@ -9,5 +9,5 @@ actual fun countryCodesList(): Set<String> =
 actual fun nameForCountryCode(countryCode: String) =
     NSLocale.systemLocale.displayNameForKey(NSLocaleCountryCode, countryCode)!!
 
-actual fun currentCountryCode(appContext: AppContext): String? =
+actual fun currentCountryCode(systemContext: SystemContext): String? =
     NSLocale.currentLocale.countryCode

@@ -5,7 +5,7 @@
 import SwiftUI
 import SharedMobile
 
-extension ChatMessageViewModel.ContentImage: Identifiable {
+extension ChatMessage.ContentImage: Identifiable {
     public var id: String {
         url
     }
@@ -15,7 +15,7 @@ struct ChatMessageCell: View {
     let message: ChatMessageViewModel
 
     @State
-    private var fullscreenImage: ChatMessageViewModel.ContentImage?
+    private var fullscreenImage: ChatMessage.ContentImage?
 
     var body: some View {
         let incoming = message.status.isIncoming
@@ -42,9 +42,9 @@ struct ChatMessageCell: View {
     }
 
     @ViewBuilder
-    private func contentView(content: ChatMessageViewModel.Content) -> some View {
+    private func contentView(content: ChatMessage.Content) -> some View {
         switch message.content {
-        case let content as ChatMessageViewModel.ContentImage:
+        case let content as ChatMessage.ContentImage:
             let width = UIScreen.main.bounds.width / 2.5
             VStack(alignment: .trailing) {
                 SharedImage(
@@ -61,7 +61,7 @@ struct ChatMessageCell: View {
                 dateAndStatus()
             }
 
-        case let content as ChatMessageViewModel.ContentText:
+        case let content as ChatMessage.ContentText:
             ZStack(alignment: .bottomTrailing) {
                 // two dateAndStatus hack to align text left and date right
                 VStack(alignment: .leading, spacing: 0) {
@@ -69,19 +69,6 @@ struct ChatMessageCell: View {
                         .textStyle(.body2Light)
                     dateAndStatus()
                         .foregroundColor(.clear)
-                }
-                dateAndStatus()
-            }
-
-        case let content as ChatMessageViewModel.ContentMeeting:
-            VStack(alignment: .trailing) {
-                VStack(alignment: .leading) {
-                    Text(UserChatFeature.Strings.shared.meetingScheduled)
-                        .textStyle(.body1Light)
-                    content.meeting.map { meeting in
-                        Text(UserChatFeature.Strings.shared.meetingStars(meeting: meeting))
-                            .textStyle(.body2Light)
-                    }
                 }
                 dateAndStatus()
             }
@@ -115,7 +102,7 @@ private extension ChatMessageViewModel.Status {
 }
 
 private struct FullscreenImage: View {
-    let image: ChatMessageViewModel.ContentImage
+    let image: ChatMessage.ContentImage
     let dismiss: () -> Void
     @State
     private var isSharePresented = false

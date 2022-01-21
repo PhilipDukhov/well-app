@@ -1,6 +1,6 @@
 package com.well.modules.utils.viewUtils.dataStore
 
-import com.well.modules.utils.viewUtils.AppContext
+import com.well.modules.utils.viewUtils.ApplicationContext
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 
-actual class DataStore actual constructor(appContext: AppContext) {
-    private val androidContext = appContext.androidContext
+actual class DataStore actual constructor(private val applicationContext: ApplicationContext) {
+    private val dataStore get() = applicationContext.context.dataStore
 
     internal actual inline fun <reified T> getValue(key: Key<T>): T? = runBlocking {
-        androidContext.dataStore.data.map { it[key] }
+        dataStore.data.map { it[key] }
             .firstOrNull()
     }
 
@@ -22,7 +22,7 @@ actual class DataStore actual constructor(appContext: AppContext) {
         key: Key<T>,
     ) {
         runBlocking {
-            androidContext.dataStore.edit {
+            dataStore.edit {
                 if (value != null) {
                     it[key] = value
                 } else {
@@ -32,6 +32,5 @@ actual class DataStore actual constructor(appContext: AppContext) {
         }
     }
 
-    private val android.content.Context.dataStore
-            : DataStore<Preferences> by preferencesDataStore(name = "settings")
+    private val android.content.Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 }

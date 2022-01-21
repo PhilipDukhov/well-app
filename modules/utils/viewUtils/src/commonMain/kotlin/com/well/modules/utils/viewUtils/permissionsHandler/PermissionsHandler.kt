@@ -4,6 +4,7 @@ class PermissionsHandler(internal val context: PermissionHandlerContext) {
     enum class Type {
         Camera,
         Microphone,
+        CallPhone,
     }
     enum class Result {
         Authorized,

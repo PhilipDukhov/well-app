@@ -2,11 +2,22 @@ package com.well.modules.utils.viewUtils.permissionsHandler
 
 import com.well.modules.atomic.freeze
 import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler.Result
-import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler.Type.*
-import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler.Result.*
+import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler.Result.Authorized
+import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler.Result.Denied
 import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler.Type
+import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler.Type.CallPhone
+import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler.Type.Camera
+import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler.Type.Microphone
 import kotlinx.coroutines.suspendCancellableCoroutine
-import platform.AVFoundation.*
+import platform.AVFoundation.AVAuthorizationStatusAuthorized
+import platform.AVFoundation.AVAuthorizationStatusDenied
+import platform.AVFoundation.AVAuthorizationStatusNotDetermined
+import platform.AVFoundation.AVCaptureDevice
+import platform.AVFoundation.AVMediaType
+import platform.AVFoundation.AVMediaTypeAudio
+import platform.AVFoundation.AVMediaTypeVideo
+import platform.AVFoundation.authorizationStatusForMediaType
+import platform.AVFoundation.requestAccessForMediaType
 import kotlin.coroutines.resume
 
 actual suspend fun PermissionsHandler.requestPermissions(vararg types: Type) =
@@ -14,9 +25,10 @@ actual suspend fun PermissionsHandler.requestPermissions(vararg types: Type) =
         it to requestPermission(it)
     }
 
-/*actual*/ suspend fun PermissionsHandler.requestPermission(type: Type): Result = when (type) {
+suspend fun PermissionsHandler.requestPermission(type: Type): Result = when (type) {
     Camera -> requestAVCaptureDevicePermission(AVMediaTypeVideo)
     Microphone -> requestAVCaptureDevicePermission(AVMediaTypeAudio)
+    CallPhone -> Authorized
 }
 
 private suspend fun requestAVCaptureDevicePermission(mediaType: AVMediaType): Result =

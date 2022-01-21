@@ -332,6 +332,7 @@ R.generated.swift
 
 # Config
 iosApp/Well/Supporting files/Shared.xcconfig
+server/src/jvmMain/resources/services/*
 
 deps.txt
 # Elastic Beanstalk Files

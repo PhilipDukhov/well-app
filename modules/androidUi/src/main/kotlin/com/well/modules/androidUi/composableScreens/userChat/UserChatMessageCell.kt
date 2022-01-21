@@ -8,6 +8,7 @@ import com.well.modules.androidUi.theme.body1Light
 import com.well.modules.androidUi.theme.body2Light
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.models.Color
+import com.well.modules.models.chat.ChatMessage
 import com.well.modules.models.chat.ChatMessageViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -120,10 +121,10 @@ fun UserChatMessageCell(
 
 @Composable
 private fun ContentView(
-    content: ChatMessageViewModel.Content,
+    content: ChatMessage.Content,
 ) {
     when (content) {
-        is ChatMessageViewModel.Content.Image -> {
+        is ChatMessage.Content.Image -> {
             val width = LocalContext.current.resources.displayMetrics.widthDp / 2.5f
             Box(contentAlignment = Alignment.Center) {
                 LoadingCoilImage(
@@ -136,26 +137,27 @@ private fun ContentView(
 
             }
         }
-        is ChatMessageViewModel.Content.Text -> {
+        is ChatMessage.Content.Text -> {
             Text(
                 content.string,
                 style = MaterialTheme.typography.body2Light,
                 color = Color.White.toColor(),
             )
         }
-        is ChatMessageViewModel.Content.Meeting -> {
+        is ChatMessage.Content.Meeting -> {
             Text(
                 UserChatFeature.Strings.meetingScheduled,
                 style = MaterialTheme.typography.body1Light,
                 color = Color.White.toColor(),
             )
-            content.meeting?.let { meeting ->
-                Text(
-                    UserChatFeature.Strings.meetingStars(meeting),
-                    style = MaterialTheme.typography.body2Light,
-                    color = Color.White.toColor(),
-                )
-            }
+            TODO("remove")
+//            content.meeting?.let { meeting ->
+//                Text(
+//                    UserChatFeature.Strings.meetingStars(meeting),
+//                    style = MaterialTheme.typography.body2Light,
+//                    color = Color.White.toColor(),
+//                )
+//            }
         }
     }
 }

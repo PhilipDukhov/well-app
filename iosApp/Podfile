@@ -7,9 +7,8 @@ target 'Well' do
   use_frameworks!
 
   pod 'topLevelHandlers', :path => '../modules/features/_topLevel/topLevelHandlers'
-#  pod 'GoogleWebRTC'
   pod "WebRTC-lib"
-  
+
   pod 'GoogleSignIn'
   pod 'FBSDKLoginKit'
   pod 'FBSDKCoreKit'

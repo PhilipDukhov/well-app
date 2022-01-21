@@ -10,8 +10,7 @@ import com.well.modules.db.mobile.helper.DatabaseDriverFactory
 import com.well.modules.db.users.UsersDatabase
 import com.well.modules.db.users.UsersQueries
 import com.well.modules.db.users.create
-import com.well.modules.utils.viewUtils.AppContext
-import io.github.aakira.napier.Napier
+import com.well.modules.utils.viewUtils.ApplicationContext
 
 interface DatabaseProvider {
     fun openDatabase()
@@ -22,11 +21,11 @@ interface DatabaseProvider {
     val meetingsQueries: MeetingsQueries
 }
 
-fun createDatabaseProvider(appContext: AppContext): DatabaseProvider =
-    DatabaseProviderImpl(appContext)
+fun createDatabaseProvider(applicationContext: ApplicationContext): DatabaseProvider =
+    DatabaseProviderImpl(applicationContext)
 
-internal class DatabaseProviderImpl(appContext: AppContext) : DatabaseProvider {
-    private val driverFactory = DatabaseDriverFactory(appContext)
+internal class DatabaseProviderImpl(applicationContext: ApplicationContext) : DatabaseProvider {
+    private val driverFactory = DatabaseDriverFactory(applicationContext)
 
     private var usersDatabaseContainer by AtomicLateInitRef<DatabaseContainer<UsersDatabase>>()
     override val usersQueries get() = usersDatabaseContainer.database.usersQueries
