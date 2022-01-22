@@ -15,6 +15,7 @@ import com.well.modules.utils.flowUtils.MutableSetStateFlow
 import com.well.modules.utils.ktorUtils.createBaseHttpClient
 import com.well.server.routing.UserSession
 import com.well.server.utils.notifications.sendNotification
+import ch.qos.logback.core.util.Loader
 import com.eatthepath.pushy.apns.ApnsClient
 import com.eatthepath.pushy.apns.ApnsClientBuilder
 import com.eatthepath.pushy.apns.auth.ApnsSigningKey
@@ -32,46 +33,52 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 import java.io.File
 import java.io.FileInputStream
+import java.io.InputStream
+import java.net.URL
 import java.util.*
+import java.util.stream.Stream
 
 
 class Dependencies(app: Application) {
     val environment = app.environment
     val database: Database
     val dbDriver: SqlDriver
-    val apnsClient: ApnsClient
+    val devApnsClient by lazy {
+        createApnsClient(ApnsClientBuilder.DEVELOPMENT_APNS_HOST)
+    }
+    val prodApnsClient by lazy {
+        createApnsClient(ApnsClientBuilder.PRODUCTION_APNS_HOST)
+    }
+
+    private fun createApnsClient(apnsServer: String) =
+        ApnsClientBuilder()
+            .setApnsServer(
+                apnsServer
+            )
+            .setSigningKey(
+                ApnsSigningKey.loadFromInputStream(
+                    resourceStream("services/apns_key.p8"),
+                    environment.configProperty("social.apple.teamId"),
+                    environment.configProperty("social.apple.apnsKeyId"),
+                )
+            )
+            .build()!!
 
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
-    private fun resourceFile(name: String): File =
-        File(javaClass.getResource("/$name")!!.file)
+    private fun resourceStream(name: String): InputStream =
+        javaClass.getResourceAsStream("/$name")!!
 
     init {
         val dbInfo = initialiseDatabase(app)
         database = dbInfo.first
         dbDriver = dbInfo.second
 
-        val fcmCredential = FileInputStream(resourceFile("services/fcm_service_account.json"))
-
         val options = FirebaseOptions.builder()
-            .setCredentials(GoogleCredentials.fromStream(fcmCredential))
+            .setCredentials(GoogleCredentials.fromStream(resourceStream("services/fcm_service_account.json")))
             .build()
 
         FirebaseApp.initializeApp(options)
-
-        apnsClient = ApnsClientBuilder()
-            .setApnsServer(
-                ApnsClientBuilder.DEVELOPMENT_APNS_HOST
-//                    ApnsClientBuilder.PRODUCTION_APNS_HOST
-            )
-            .setSigningKey(
-                ApnsSigningKey.loadFromPkcs8File(
-                    resourceFile("services/apns_key.p8"),
-                    environment.configProperty("social.apple.teamId"),
-                    environment.configProperty("social.apple.apnsKeyId"),
-                )
-            )
-            .build()
     }
 
     val jwtConfig = JwtConfig(

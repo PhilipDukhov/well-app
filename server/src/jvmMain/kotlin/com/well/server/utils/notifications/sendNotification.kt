@@ -108,7 +108,13 @@ private suspend fun sendApnsNotification(
         /* apnsId = */
         null,
     )
-    val response = dependencies.apnsClient
+    val response = dependencies
+        .run {
+            if (bundleId == "com.well.app")
+                prodApnsClient
+            else
+                devApnsClient
+        }
         .sendNotification(pushNotification)
         .await()
     println("${response.apnsId} rejectionReason ${response.rejectionReason}")
