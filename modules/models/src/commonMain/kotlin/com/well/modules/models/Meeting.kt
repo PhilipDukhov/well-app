@@ -9,7 +9,9 @@ data class Meeting(
     val id: Id,
     override val startInstant: Instant,
     override val durationMinutes: Int,
-    val attendees: Set<User.Id>,
+    val expertUid: User.Id,
+    val creatorUid: User.Id,
+    val state: State,
 ): AvailabilityInfo {
     @Serializable
     @JvmInline
@@ -24,4 +26,16 @@ data class Meeting(
                 value.value
         }
     }
+    @Serializable
+    enum class State {
+        Requested,
+        Confirmed,
+        Rejected,
+    }
+
+    fun otherUid(currentUid: User.Id) =
+        if (expertUid == currentUid)
+            creatorUid
+        else
+            expertUid
 }

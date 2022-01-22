@@ -1,6 +1,5 @@
 package com.well.modules.db.chatMessages
 
-import com.well.modules.models.Meeting
 import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
 import com.squareup.sqldelight.EnumColumnAdapter
@@ -24,10 +23,6 @@ fun ChatMessagesDatabase.Companion.create(driver: SqlDriver) = ChatMessagesDatab
     ),
     ChatContentImagesAdapter = ChatContentImages.Adapter(
         messageIdAdapter = ChatMessage.Id.ColumnAdapter,
-    ),
-    ChatContentMeetingsAdapter = ChatContentMeetings.Adapter(
-        messageIdAdapter = ChatMessage.Id.ColumnAdapter,
-        meetingIdAdapter = Meeting.Id.ColumnAdapter,
     ),
     ChatContentTextsAdapter = ChatContentTexts.Adapter(
         messageIdAdapter = ChatMessage.Id.ColumnAdapter,

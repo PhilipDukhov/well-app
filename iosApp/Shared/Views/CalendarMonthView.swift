@@ -100,8 +100,16 @@ private struct DayView<Event: NSObject>: View {
                 }
                 VStack(spacing: 0) {
                     Spacer().fillMaxHeight()
-                    Text(day.date.dayOfMonth.toString())
-                        .foregroundColor(textColor)
+                    ZStack(alignment: .topTrailing) {
+                        Text(day.date.dayOfMonth.toString())
+                            .foregroundColor(textColor)
+                        if day.hasBadge {
+                            let size: CGFloat = 8
+                            Circle().foregroundColorKMM(.companion.Pink)
+                                .frame(size: size)
+                                .offset(x: size / 2, y: -size / 2)
+                        }
+                    }
                     ZStack(alignment: .top) {
                         Rectangle().foregroundColor(.clear)
                         if day.events.isNotEmpty {

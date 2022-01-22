@@ -8,6 +8,7 @@ import com.well.modules.androidUi.ext.toColor
 import com.well.modules.features.calendar.calendarFeature.CalendarFeature.Msg
 import com.well.modules.features.calendar.calendarFeature.CalendarFeature.State
 import com.well.modules.models.Color
+import com.well.modules.models.Meeting
 import com.well.modules.models.MeetingViewModel
 import com.well.modules.models.date.dateTime.localizedRelatedDescription
 import com.well.modules.utils.kotlinUtils.ifTrueOrNull
@@ -22,11 +23,14 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -49,6 +53,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.statusBarsPadding
@@ -89,7 +94,10 @@ fun CalendarScreen(
             },
             onSelectUser = {
                 listener(Msg.OpenUserProfile(it))
-            }
+            },
+            onUpdateState = { meeting, state ->
+                listener(Msg.UpdateMeetingState(meeting, state))
+            },
         )
     }
 }
@@ -165,6 +173,7 @@ private fun MeetingsList(
     onSelectMeeting: (MeetingViewModel) -> Unit,
     onStartCall: (MeetingViewModel) -> Unit,
     onSelectUser: (MeetingViewModel) -> Unit,
+    onUpdateState: (MeetingViewModel, Meeting.State) -> Unit,
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(15.dp),
@@ -184,24 +193,37 @@ private fun MeetingsList(
                 }
             }
             items(dayMeetings.meetings, key = { it.id.toString() }) { meeting ->
-                MeetingCard(meeting,
-                    onSelect = {
-                        onSelectMeeting(meeting)
-                    },
-                    onStartCall = {
-                        onStartCall(meeting)
-                    },
-                    onSelectUser = {
-                        onSelectUser(meeting)
-                    }
-                )
+                if (meeting.waitingExpertResolution) {
+                    RequestedMeetingCard(
+                        meeting = meeting,
+                        onUpdateState = {
+                            onUpdateState(meeting, it)
+                        },
+                        onSelectUser = {
+                            onSelectUser(meeting)
+                        },
+                    )
+                } else {
+                    ConfirmedMeetingCard(
+                        meeting = meeting,
+                        onSelect = {
+                            onSelectMeeting(meeting)
+                        },
+                        onStartCall = {
+                            onStartCall(meeting)
+                        },
+                        onSelectUser = {
+                            onSelectUser(meeting)
+                        },
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun MeetingCard(
+private fun ConfirmedMeetingCard(
     meeting: MeetingViewModel,
     onSelect: () -> Unit,
     onSelectUser: () -> Unit,
@@ -217,8 +239,8 @@ private fun MeetingCard(
     ) {
         Box(
             Modifier
-            .padding(15.dp)
-            .padding(start = 12.dp)
+                .padding(15.dp)
+                .padding(start = 12.dp)
         ) {
             Column {
                 ProvideTextStyle(value = MaterialTheme.typography.caption) {
@@ -243,28 +265,25 @@ private fun MeetingCard(
                     color = Color.Black.toColor(),
                     modifier = Modifier.padding(top = 3.dp, bottom = 9.dp)
                 )
-                val user = meeting.user
-                if (user != null) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .clickable {
+                            onSelectUser()
+                        }
+                ) {
+                    ProfileImage(
+                        user = meeting.otherUser,
                         modifier = Modifier
-                            .clip(CircleShape)
-                            .clickable {
-                                onSelectUser()
-                            }
-                    ) {
-                        ProfileImage(
-                            user = user,
-                            modifier = Modifier
-                                .size(20.dp)
-                                .padding(end = 7.dp)
-                        )
-                        Text(
-                            "with ${user.fullName}",
-                            style = MaterialTheme.typography.caption,
-                            color = Color.LightBlue.toColor()
-                        )
-                    }
+                            .padding(end = 7.dp)
+                            .size(20.dp)
+                    )
+                    Text(
+                        "with ${meeting.otherUser.fullName}",
+                        style = MaterialTheme.typography.caption,
+                        color = Color.LightBlue.toColor()
+                    )
                 }
             }
             if (meeting.status == MeetingViewModel.Status.Ongoing) {
@@ -283,3 +302,104 @@ private fun MeetingCard(
         }
     }
 }
+
+@Composable
+private fun RequestedMeetingCard(
+    meeting: MeetingViewModel,
+    onSelectUser: () -> Unit,
+    onUpdateState: (Meeting.State) -> Unit,
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(
+                    PaddingValues(15.dp) + PaddingValues(start = 12.dp) - ButtonDefaults.TextButtonContentPadding
+                )
+                .fillMaxWidth()
+        ) {
+            if (meeting.isExpert) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    TextButton(onClick = onSelectUser) {
+                        Text(
+                            meeting.otherUser.fullName,
+                            style = MaterialTheme.typography.subtitle2,
+                        )
+                    }
+                    Text(
+                        Feature.Strings.needsYourHelp,
+                        style = MaterialTheme.typography.subtitle2,
+                    )
+                }
+            } else {
+                Text(
+                    meeting.title,
+                    style = MaterialTheme.typography.subtitle2,
+                )
+            }
+            Text(
+                "${Feature.Strings.bookingTime}: ${meeting.startTime}",
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(
+                    start = ButtonDefaults.TextButtonContentPadding.start()
+                )
+            )
+
+            Row {
+                TextButton(onClick = {
+                    onUpdateState(Meeting.State.Confirmed)
+                }) {
+                    Text(
+                        Feature.Strings.confirm,
+                        style = MaterialTheme.typography.subtitle2,
+                        color = Color.MediumBlue.toColor(),
+                    )
+                }
+                Spacer(Modifier.width(10.dp))
+                TextButton(onClick = {
+                    onUpdateState(Meeting.State.Rejected)
+                }) {
+                    Text(
+                        Feature.Strings.reject,
+                        style = MaterialTheme.typography.subtitle2,
+                        color = Color.Pink.toColor(),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private operator fun PaddingValues.plus(second: PaddingValues) =
+    PaddingValues(
+        start = start() + second.start(),
+        end = end() + second.end(),
+        top = top() + second.top(),
+        bottom = bottom() + second.bottom(),
+    )
+
+@Composable
+private operator fun PaddingValues.minus(second: PaddingValues) =
+    PaddingValues(
+        start = start() - second.start(),
+        end = end() - second.end(),
+        top = top() - second.top(),
+        bottom = bottom() - second.bottom(),
+    )
+
+@Composable
+private fun PaddingValues.start() = calculateStartPadding(LocalLayoutDirection.current)
+
+@Composable
+private fun PaddingValues.end() = calculateEndPadding(LocalLayoutDirection.current)
+
+@Composable
+private fun PaddingValues.top() = calculateTopPadding()
+
+@Composable
+private fun PaddingValues.bottom() = calculateBottomPadding()

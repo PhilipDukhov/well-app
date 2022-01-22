@@ -144,21 +144,6 @@ private fun ContentView(
                 color = Color.White.toColor(),
             )
         }
-        is ChatMessage.Content.Meeting -> {
-            Text(
-                UserChatFeature.Strings.meetingScheduled,
-                style = MaterialTheme.typography.body1Light,
-                color = Color.White.toColor(),
-            )
-            TODO("remove")
-//            content.meeting?.let { meeting ->
-//                Text(
-//                    UserChatFeature.Strings.meetingStars(meeting),
-//                    style = MaterialTheme.typography.body2Light,
-//                    color = Color.White.toColor(),
-//                )
-//            }
-        }
     }
 }
 

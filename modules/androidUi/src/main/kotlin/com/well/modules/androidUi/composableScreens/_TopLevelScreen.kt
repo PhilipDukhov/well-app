@@ -65,9 +65,10 @@ fun TopLevelScreen(
                         .navigationBarsPadding()
                 ) {
                     screen.tabs.forEach { tabScreen ->
-                        val unreadCount = (tabScreen.screen as? ScreenState.ChatList)
-                            ?.state?.unreadCount
-                            ?: 0
+                        val unreadCount =
+                            (tabScreen.screen as? ScreenState.ChatList)?.state?.unreadCount
+                                ?: (tabScreen.screen as? ScreenState.Calendar)?.state?.unreadCount
+                                ?: 0
                         BottomNavigationItem(
                             selected = state.selectedTab == tabScreen.tab,
                             onClick = {

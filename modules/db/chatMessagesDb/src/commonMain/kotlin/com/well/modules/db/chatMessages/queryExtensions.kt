@@ -65,9 +65,6 @@ fun ChatMessagesDatabase.delete(id: ChatMessage.Id) =
             ChatMessage.Content.SimpleType.Image -> {
                 chatContentImagesQueries.delete(id)
             }
-            ChatMessage.Content.SimpleType.Meeting -> {
-                chatContentMeetingsQueries.delete(id)
-            }
             ChatMessage.Content.SimpleType.Text -> {
                 chatContentTextsQueries.delete(id)
             }
@@ -116,13 +113,6 @@ fun ChatMessages.toChatMessage(database: ChatMessagesDatabase) = ChatMessage(
                 .getById(id)
                 .executeAsOne()
             ChatMessage.Content.Image(content.url, content.aspectRatio)
-        }
-        ChatMessage.Content.SimpleType.Meeting -> {
-            val content = database
-                .chatContentMeetingsQueries
-                .getById(id)
-                .executeAsOne()
-            ChatMessage.Content.Meeting(content.meetingId)
         }
         ChatMessage.Content.SimpleType.Text -> {
             val content = database
@@ -233,13 +223,6 @@ private fun ChatMessagesDatabase.insertContent(
                     messageId = id,
                     url = content.url,
                     aspectRatio = content.aspectRatio,
-                )
-        }
-        is ChatMessage.Content.Meeting -> {
-            chatContentMeetingsQueries
-                .insert(
-                    messageId = id,
-                    meetingId = content.meetingId,
                 )
         }
         is ChatMessage.Content.Text -> {

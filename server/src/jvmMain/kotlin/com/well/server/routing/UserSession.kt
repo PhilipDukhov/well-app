@@ -12,7 +12,7 @@ import com.well.modules.db.server.selectByAnyIdFlow
 import com.well.modules.db.server.selectByDeviceIdFlow
 import com.well.modules.db.server.toChatMessage
 import com.well.modules.db.server.toLastReadMessage
-import com.well.modules.db.server.toMeetings
+import com.well.modules.db.server.toMeeting
 import com.well.modules.db.server.toUser
 import com.well.modules.models.DeviceId
 import com.well.modules.models.Meeting
@@ -65,7 +65,7 @@ class UserSession(
     private val expertsFilterFlow = MutableStateFlow<UsersFilter?>(null)
     private val usersPresenceInfoFlow = MutableStateFlow<List<UserPresenceInfo>?>(null)
     private val messagesPresenceInfoFlow = MutableStateFlow<ChatMessage.Id?>(null)
-    private val meetingIdsPresenceFlow = MutableStateFlow<List<Meeting.Id>?>(null)
+    private val meetingIdsPresenceFlow = MutableStateFlow<List<Pair<Meeting.Id, Meeting.State>>?>(null)
     private val chatReadStatePresenceFlow = MutableStateFlow<List<LastReadMessage>>(emptyList())
     private val userCreatedChatMessageInfosFlow = MutableSetStateFlow<CreatedMessageInfo>()
     private val currentClientKey = ClientKey(deviceId, currentUid)
@@ -132,7 +132,7 @@ class UserSession(
             }
             .filterNotEmpty()
 
-    private val meetingsPresenceFlow: Flow<Pair<List<Meeting.Id>, List<Meetings>>> =
+    private val meetingsPresenceFlow: Flow<Pair<List<Pair<Meeting.Id, Meeting.State>>, List<Meetings>>> =
         meetingIdsPresenceFlow
             .filterNotNull()
             .combine(
@@ -145,15 +145,15 @@ class UserSession(
     private val newMeetingsFlow: Flow<List<Meeting>> = meetingsPresenceFlow
         .mapPair { presenceIds, dbMeetings ->
             dbMeetings.filter {
-                !presenceIds.contains(it.id) && !it.deleted
+                !presenceIds.contains(it.id to it.state) && !it.deleted
             }
         }
-        .mapIterable(Meetings::toMeetings)
+        .mapIterable(Meetings::toMeeting)
         .filterNotEmpty()
     private val removedMeetingIdsFlow: Flow<List<Meeting.Id>> = meetingsPresenceFlow
         .mapPair { presenceIds, dbMeetings ->
-            dbMeetings.filter {
-                presenceIds.contains(it.id) && it.deleted
+            dbMeetings.filter { dbMeeting ->
+                presenceIds.any { it.first == dbMeeting.id } && dbMeeting.deleted
             }
         }
         .mapIterable(Meetings::id)
@@ -168,7 +168,7 @@ class UserSession(
         .combineToSet(
             dependencies.database.meetingsQueries
                 .getByUserIdFlow(currentUid)
-                .mapIterable { it.attendees }
+                .mapIterable { setOf(it.expertUid, it.creatorUid) }
                 .map { it.flatten() }
         )
     private val notUpToDateUsersFlow =
@@ -297,6 +297,10 @@ class UserSession(
             }
             is WebSocketMsg.Front.SetMeetingsPresence -> {
                 meetingIdsPresenceFlow.value = msg.meetingsPresence
+                dependencies.meetingsToDeliver
+                    .removeAll { toDeliver ->
+                        msg.meetingsPresence.any { it.first == toDeliver.second }
+                    }
             }
             is WebSocketMsg.Front.Logout -> {
                 dependencies.database.notificationTokensQueries.delete(deviceId)
@@ -308,6 +312,9 @@ class UserSession(
                     uid = currentUid,
                     timestamp = Clock.System.now(),
                 )
+            }
+            is WebSocketMsg.Front.UpdateMeetingState -> {
+                dependencies.database.meetingsQueries.updateState(state = msg.state, id = msg.meetingId)
             }
         }
     }

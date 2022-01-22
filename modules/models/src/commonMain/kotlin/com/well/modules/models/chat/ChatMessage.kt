@@ -37,7 +37,6 @@ data class ChatMessage(
     sealed class Content {
         enum class SimpleType {
             Image,
-            Meeting,
             Text,
         }
 
@@ -47,16 +46,10 @@ data class ChatMessage(
             when (this) {
                 is Image -> "photo"
                 is Text -> string
-                is Meeting -> {
-                    TODO("remove")
-                }
             }
 
         @Serializable
         data class Text(val string: String) : Content()
-
-        @Serializable
-        data class Meeting(val meetingId: com.well.modules.models.Meeting.Id) : Content()
 
         @Serializable
         data class Image(val url: String, val aspectRatio: Float) : Content()

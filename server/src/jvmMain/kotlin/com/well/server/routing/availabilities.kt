@@ -3,12 +3,10 @@ package com.well.server.routing
 import com.well.modules.db.server.AvailabilitiesQueries
 import com.well.modules.db.server.getByOwnerId
 import com.well.modules.db.server.insert
-import com.well.modules.db.server.insertChatMessage
 import com.well.modules.models.Availability
 import com.well.modules.models.BookingAvailabilitiesListByDay
 import com.well.modules.models.BookingAvailability
 import com.well.modules.models.User
-import com.well.modules.models.chat.ChatMessage
 import com.well.modules.utils.kotlinUtils.mapSecond
 import com.well.server.utils.Dependencies
 import com.well.server.utils.ForbiddenException
@@ -134,11 +132,7 @@ suspend fun PipelineContext<*, ApplicationCall>.bookAvailability(
                 bookingAvailability = bookingRequest,
                 attendeeId = attendeeId,
             )
-        database.insertChatMessage(
-            fromId = attendeeId,
-            peerId = availability.ownerId,
-            content = ChatMessage.Content.Meeting(newMeetingId)
-        )
+        database.meetingsQueries
         return@transactionWithResult true
     }
     call.respond(if (success) HttpStatusCode.Created else HttpStatusCode.NotFound)

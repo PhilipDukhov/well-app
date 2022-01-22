@@ -17,4 +17,12 @@ sealed class Notification {
         val chatUnreadCount: Int,
         override val totalUnreadCount: Int,
     ) : Notification()
+
+    @Serializable
+    data class Meeting(
+        val meetingId: com.well.modules.models.Meeting.Id,
+        val senderName: String,
+        val chatUnreadCount: Int,
+        override val totalUnreadCount: Int,
+    ) : Notification()
 }

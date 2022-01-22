@@ -35,7 +35,7 @@ sealed class WebSocketMsg {
 
         @Serializable
         data class SetMeetingsPresence(
-            val meetingsPresence: List<Meeting.Id>,
+            val meetingsPresence: List<Pair<Meeting.Id, Meeting.State>>,
         ) : Front()
 
         @Serializable
@@ -51,6 +51,12 @@ sealed class WebSocketMsg {
         @Serializable
         data class UpdateNotificationToken(
             val token: NotificationToken,
+        ) : Front()
+
+        @Serializable
+        data class UpdateMeetingState(
+            val meetingId: Meeting.Id,
+            val state: Meeting.State,
         ) : Front()
 
         @Serializable

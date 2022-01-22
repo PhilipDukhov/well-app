@@ -23,7 +23,8 @@ object AvailabilitiesCalendarFeature {
                 availabilities
                     ?.let { availabilities.mapDayAvailabilities(day) }
                     ?: emptyList()
-            }
+            },
+            hasBadge = { false },
         ),
     ) {
         companion object {

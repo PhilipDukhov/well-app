@@ -7,7 +7,9 @@ import kotlin.collections.Set;
 CREATE TABLE Meetings (
     id BIGINT AS Meeting.Id NOT NULL PRIMARY KEY AUTO_INCREMENT,
     availabilityId BIGINT AS Availability.Id NOT NULL,
-    attendees TEXT AS Set<User.Id> NOT NULL,
+    expertUid BIGINT AS User.Id NOT NULL,
+    creatorUid BIGINT AS User.Id NOT NULL,
+    state TEXT AS Meeting.State NOT NULL,
     startInstant BIGINT AS Instant NOT NULL,
     durationMinutes INTEGER NOT NULL,
     deleted BOOLEAN NOT NULL DEFAULT FALSE
@@ -21,16 +23,24 @@ lastInsertId:
 SELECT LAST_INSERT_ID();
 
 insert:
-INSERT INTO Meetings(availabilityId, attendees, startInstant, durationMinutes)
-VALUES (?, ?, ?, ?);
+INSERT INTO Meetings(availabilityId, expertUid, creatorUid, state, startInstant, durationMinutes)
+VALUES (?, ?, ?, ?, ?,?);
 
 getById:
 SELECT * FROM Meetings WHERE id = ?;
 
 getByUserId:
-SELECT * FROM Meetings WHERE attendees REGEXP :attendeesRegexp;
+SELECT * FROM Meetings WHERE expertUid = :uid OR creatorUid = :uid;
 
 markDeleted:
 UPDATE Meetings
 SET deleted = TRUE
 WHERE id = ?;
+
+updateState:
+UPDATE Meetings
+SET state = ?
+WHERE id = ?;
+
+countByState:
+SELECT COUNT(*) FROM Meetings WHERE expertUid = ? AND state = ?;

@@ -38,7 +38,8 @@ struct TopLevelView: View {
                         tag: 0
                     )
                 }, badgeValue: { tabScreen in
-                    let unreadCount = (tabScreen.screen as? ScreenState.ChatList)?.state.unreadCount.toInt() ?? 0
+                    let unreadCount = (tabScreen.screen as? ScreenState.ChatList)?.state.unreadCount.toInt()
+                    ?? (tabScreen.screen as? ScreenState.Calendar)?.state.unreadCount.toInt() ?? 0
                     return unreadCount > 0 ? "\(unreadCount)" : nil
                 }, contentView: { tabScreen in
                     VStack(spacing: 0) {

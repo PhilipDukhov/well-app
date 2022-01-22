@@ -1,5 +1,6 @@
 package com.well.modules.features.calendar.calendarFeature
 
+import com.well.modules.models.Meeting
 import com.well.modules.models.MeetingViewModel
 import com.well.modules.models.User
 import com.well.modules.models.date.dateTime.localizedName
@@ -7,12 +8,17 @@ import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
 import com.well.modules.utils.viewUtils.CalendarInfoFeature
 import com.well.modules.utils.viewUtils.GlobalStringsBase
+import io.github.aakira.napier.Napier
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 
 object CalendarFeature {
     object Strings : GlobalStringsBase() {
         const val now = "Now"
+        const val bookingTime = "Booking time"
+        const val confirm = "Confirm"
+        const val reject = "Reject"
+        const val needsYourHelp = "needs your help"
     }
 
     data class State(
@@ -21,8 +27,13 @@ object CalendarFeature {
             monthOffset = 0,
             selectedDate = null,
             prepareDayEvents = prepareDayEvents(meetings),
+            hasBadge = {
+                it.any(MeetingViewModel::waitingExpertResolution)
+            },
         ),
     ) {
+        val unreadCount get() = meetings.count(MeetingViewModel::waitingExpertResolution)
+
         val currentMonthName = infoState.month.localizedName
         val prevMonthName = infoState.monthFirstDay(infoState.monthOffset - 1).month.localizedName
         val nextMonthName = infoState.monthFirstDay(infoState.monthOffset + 1).month.localizedName
@@ -67,6 +78,7 @@ object CalendarFeature {
         data class UpdateMeetings(val meetings: List<MeetingViewModel>) : Msg()
         data class OpenUserProfile(val meeting: MeetingViewModel) : Msg()
         data class StartCall(val meeting: MeetingViewModel) : Msg()
+        data class UpdateMeetingState(val meeting: MeetingViewModel, val state: Meeting.State) : Msg()
 
         internal data class CalendarInfoMsg(val msg: CalendarInfoFeature.Msg) : Msg()
 
@@ -83,6 +95,7 @@ object CalendarFeature {
     sealed interface Eff {
         data class OpenUserProfile(val uid: User.Id) : Eff
         data class StartCall(val uid: User.Id) : Eff
+        data class UpdateMeetingState(val meetingId: Meeting.Id, val state: Meeting.State) : Eff
     }
 
     fun reducer(
@@ -102,12 +115,23 @@ object CalendarFeature {
                     )
                 }
                 is Msg.OpenUserProfile -> {
-                    val uid = msg.meeting.user?.id ?: return@state state
+                    val uid = msg.meeting.otherUser?.id ?: return@state state
                     return@eff Eff.OpenUserProfile(uid)
                 }
                 is Msg.StartCall -> {
-                    val uid = msg.meeting.user?.id ?: return@state state
+                    val uid = msg.meeting.otherUser?.id ?: return@state state
                     return@eff Eff.StartCall(uid)
+                }
+                is Msg.UpdateMeetingState -> {
+                    if (
+                        !msg.meeting.isExpert
+                        || msg.meeting.state != Meeting.State.Requested
+                        || msg.state == Meeting.State.Requested
+                    ) {
+                        Napier.e("unexpected state update")
+                        return@state state
+                    }
+                    return@eff Eff.UpdateMeetingState(msg.meeting.id, msg.state)
                 }
             }
         })

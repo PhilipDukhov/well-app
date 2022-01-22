@@ -1,0 +1,2 @@
+DROP TABLE ChatContentMeetings;
+DELETE FROM ChatMessages WHERE contentType = 'Meeting';

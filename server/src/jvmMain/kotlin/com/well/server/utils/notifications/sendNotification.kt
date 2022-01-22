@@ -1,8 +1,10 @@
 package com.well.server.utils.notifications
 
 import com.well.modules.db.server.SelectTokenByUid
+import com.well.modules.db.server.toMeeting
 import com.well.modules.models.Notification
 import com.well.modules.models.NotificationToken
+import com.well.modules.models.date.dateTime.localizedDayAndShortMonth
 import com.well.server.utils.Dependencies
 import com.eatthepath.pushy.apns.DeliveryPriority
 import com.eatthepath.pushy.apns.util.SimpleApnsPayloadBuilder
@@ -77,6 +79,12 @@ private suspend fun sendApnsNotification(
         is Notification.ChatMessage -> {
             payloadBuilder.setAlertTitle(notification.senderName)
             payloadBuilder.setAlertBody(notification.message.content.descriptionText)
+        }
+        is Notification.Meeting -> {
+            val meeting = dependencies.database.meetingsQueries.getById(notification.meetingId).executeAsOne().toMeeting()
+            payloadBuilder.setAlertTitle(
+                "${notification.senderName} has requested a meeting on ${meeting.startDay.localizedDayAndShortMonth()} at ${meeting.startTime}"
+            )
         }
     }
     payloadBuilder.setBadgeNumber(notification.totalUnreadCount)

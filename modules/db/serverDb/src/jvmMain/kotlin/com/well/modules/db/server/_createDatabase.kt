@@ -56,10 +56,6 @@ operator fun Database.Companion.invoke(driver: SqlDriver) =
         ChatContentImagesAdapter = ChatContentImages.Adapter(
             messageIdAdapter = ChatMessage.Id.ColumnAdapter,
         ),
-        ChatContentMeetingsAdapter = ChatContentMeetings.Adapter(
-            messageIdAdapter = ChatMessage.Id.ColumnAdapter,
-            meetingIdAdapter = Meeting.Id.ColumnAdapter,
-        ),
         ChatContentTextsAdapter = ChatContentTexts.Adapter(
             messageIdAdapter = ChatMessage.Id.ColumnAdapter,
         ),
@@ -67,6 +63,8 @@ operator fun Database.Companion.invoke(driver: SqlDriver) =
             idAdapter = Meeting.Id.ColumnAdapter,
             availabilityIdAdapter = Availability.Id.ColumnAdapter,
             startInstantAdapter = InstantColumnAdapter,
-            attendeesAdapter = User.Id.SetColumnAdapter,
+            expertUidAdapter = User.Id.ColumnAdapter,
+            creatorUidAdapter = User.Id.ColumnAdapter,
+            stateAdapter = EnumColumnAdapter(),
         ),
     )

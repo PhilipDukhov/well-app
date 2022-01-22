@@ -3,8 +3,10 @@ package com.well.server.utils
 import com.well.modules.db.server.Database
 import com.well.modules.db.server.SelectTokenByUid
 import com.well.modules.db.server.toChatMessage
+import com.well.modules.db.server.toMeeting
 import com.well.modules.db.server.toUser
 import com.well.modules.models.DeviceId
+import com.well.modules.models.Meeting
 import com.well.modules.models.Notification
 import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
@@ -27,7 +29,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import java.io.File
 import java.io.FileInputStream
@@ -122,26 +123,16 @@ class Dependencies(app: Application) {
             println("clientsToDeliver $clientsToDeliver")
             val notification = lazy {
                 val senderName = database.usersQueries.getById(message.fromId).executeAsOne().fullName
-                val maybeUnread = database.lastReadMessagesQueries.selectByPeerId(message.peerId)
-                    .executeAsList()
-                var chatUnreadCount = 0
-                val totalUnreadCount = maybeUnread.sumOf { lastReadMessage ->
-                    database.chatMessagesQueries.unreadCount(
-                        fromId = lastReadMessage.fromId,
-                        peerId = lastReadMessage.peerId,
-                    ).executeAsOne().toInt()
-                        .also {
-                            if (message.fromId == lastReadMessage.fromId) {
-                                chatUnreadCount = it
-                            }
-                        }
-                }
+                val chatUnreadCount = database.chatMessagesQueries.unreadCount(
+                    fromId = message.fromId,
+                    peerId = message.peerId,
+                ).executeAsOne().toInt()
 
                 Notification.ChatMessage(
                     message = message,
                     senderName = senderName,
                     chatUnreadCount = chatUnreadCount,
-                    totalUnreadCount = totalUnreadCount,
+                    totalUnreadCount = totalUnreadCount(message.peerId),
                 )
             }
             clientsToDeliver.forEach {
@@ -191,5 +182,94 @@ class Dependencies(app: Application) {
             tokenInfo = tokenInfo,
             dependencies = this@Dependencies
         )
+    }
+
+    val meetingsToDeliver = MutableSetStateFlow<Pair<DeviceId, Meeting.Id>>()
+    fun deliverMeetingNotificationIfNeeded(id: Meeting.Id) {
+        coroutineScope.launch {
+            val meeting = database.meetingsQueries
+                .getById(id)
+                .executeAsOne()
+                .toMeeting()
+            val tokens = database.notificationTokensQueries
+                .selectTokenByUid(meeting.expertUid)
+                .executeAsList()
+            val clientsToDeliver = tokens.map {
+                it to ClientKey(it.deviceId, meeting.expertUid)
+            }
+            val notification = lazy {
+                val senderName = database.usersQueries.getById(meeting.creatorUid).executeAsOne().fullName
+                Notification.Meeting(
+                    meetingId = id,
+                    senderName = senderName,
+                    chatUnreadCount = 0,
+                    totalUnreadCount = totalUnreadCount(meeting.expertUid),
+                )
+            }
+            clientsToDeliver.forEach {
+                deliver(
+                    id = id,
+                    clientKey = it.second,
+                    tokenInfo = it.first,
+                    notification = notification,
+                )
+            }
+        }
+    }
+
+    private suspend fun CoroutineScope.deliver(
+        id: Meeting.Id,
+        clientKey: ClientKey,
+        tokenInfo: SelectTokenByUid,
+        notification: Lazy<Notification>,
+    ) {
+        if (connectedUserSessionsFlow.contains(clientKey)) {
+            println("deliver token: waiting socket to deliver")
+            val meetingToDeliver = clientKey.deviceId to id
+            meetingsToDeliver.add(meetingToDeliver)
+            val checkingJob = launch checkingJob@{
+                val collectingJob = launch {
+                    meetingsToDeliver.collect {
+                        if (!it.contains(meetingToDeliver)) {
+                            this@checkingJob.cancel()
+                        }
+                    }
+                }
+                delay(10.seconds)
+                collectingJob.cancel()
+            }
+            checkingJob.join()
+            if (checkingJob.isCancelled) {
+                println("deliver token: socket delivered")
+                return
+            }
+            meetingsToDeliver.remove(meetingToDeliver)
+            println("deliver token: socket not delivered - delivering")
+        } else {
+            println("deliver token: client not connected - delivering")
+        }
+        sendNotification(
+            notification = notification.value,
+            tokenInfo = tokenInfo,
+            dependencies = this@Dependencies
+        )
+    }
+
+    private fun totalUnreadCount(uid: User.Id): Int {
+        val maybeUnreadChat = database.lastReadMessagesQueries.selectByPeerId(uid)
+            .executeAsList()
+        val unreadChatCount = maybeUnreadChat.sumOf { lastReadMessage ->
+            database.chatMessagesQueries.unreadCount(
+                fromId = lastReadMessage.fromId,
+                peerId = lastReadMessage.peerId,
+            ).executeAsOne().toInt()
+        }
+        val unreadMeetingsCount = database.meetingsQueries
+            .countByState(
+                expertUid = uid,
+                state = Meeting.State.Requested,
+            )
+            .executeAsOne().toInt()
+        return unreadMeetingsCount + unreadChatCount
     }
 }

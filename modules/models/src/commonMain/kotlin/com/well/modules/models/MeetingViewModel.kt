@@ -5,19 +5,38 @@ import kotlinx.datetime.Instant
 
 data class MeetingViewModel(
     val id: Meeting.Id,
+    val state: Meeting.State,
+    val isExpert: Boolean,
     override val startInstant: Instant,
     override val durationMinutes: Int,
-    val user: User?,
-): AvailabilityInfo {
+    val otherUser: User,
+) : AvailabilityInfo {
     companion object
 
-    val title = "Video call"
+    val waitingExpertResolution get() = isExpert && state == Meeting.State.Requested
 
-    val status get() = when {
-        startInstant > Clock.System.now() -> Status.Upcoming
-        endInstant < Clock.System.now() -> Status.Past
-        else -> Status.Ongoing
+    val title = when (state) {
+        Meeting.State.Requested -> {
+            if (isExpert) {
+                "${otherUser.fullName} needs your help"
+            } else {
+                "Meeting requested"
+            }
+        }
+        Meeting.State.Confirmed -> {
+            "Meeting"
+        }
+        Meeting.State.Rejected -> {
+            "Meeting rejected"
+        }
     }
+
+    val status
+        get() = when {
+            startInstant > Clock.System.now() -> Status.Upcoming
+            endInstant < Clock.System.now() -> Status.Past
+            else -> Status.Ongoing
+        }
 
     enum class Status {
         Upcoming,

@@ -20,14 +20,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Badge
+import androidx.compose.material.BadgedBox
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -50,8 +55,8 @@ fun <Event> CalendarMonthView(
         LazyColumn(
             modifier = Modifier
                 .swipeableLeftRight(
-                    onLeft = showPrevMonth,
-                    onRight = showNextMonth,
+                    onLeft = showNextMonth,
+                    onRight = showPrevMonth,
                 )
         ) {
             item(key = "month_title_${state.month}") {
@@ -134,34 +139,48 @@ private fun <Event> RowScope.DayView(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .size(35.dp)
-                .clip(CircleShape)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
                     onClick = onSelect
                 )
                 .drawBehind {
-                    when {
-                        day.isCurrentDay && colors.currentDayBackgroundIsGradient -> {
-                            drawGradient(
-                                Gradient.Main,
-                                alpha = if (selected) 1f else 0.5f
+                    clipPath(Path().apply {
+                        addOval(
+                            Rect(
+                                Offset.Zero,
+                                size
                             )
-                        }
-                        day.isCurrentDay || selected -> {
-                            drawRect(
-                                color = colors.selectedBackgroundColor.toColor(),
-                                alpha = if (day.isCurrentDay && !selected) 0.3f else 1f
-                            )
+                        )
+                    }) {
+                        when {
+                            day.isCurrentDay && colors.currentDayBackgroundIsGradient -> {
+                                drawGradient(
+                                    Gradient.Main,
+                                    alpha = if (selected) 1f else 0.5f
+                                )
+                            }
+                            day.isCurrentDay || selected -> {
+                                drawRect(
+                                    color = colors.selectedBackgroundColor.toColor(),
+                                    alpha = if (day.isCurrentDay && !selected) 0.3f else 1f
+                                )
+                            }
                         }
                     }
                 }
         ) {
             Spacer(Modifier.weight(1f))
-            Text(
-                day.date.dayOfMonth.toString(),
-                color = textColor,
-            )
+            BadgedBox(badge = {
+                if (day.hasBadge) {
+                    Badge()
+                }
+            }) {
+                Text(
+                    day.date.dayOfMonth.toString(),
+                    color = textColor,
+                )
+            }
             Box(
                 contentAlignment = Alignment.TopCenter,
                 modifier = Modifier.weight(1f)

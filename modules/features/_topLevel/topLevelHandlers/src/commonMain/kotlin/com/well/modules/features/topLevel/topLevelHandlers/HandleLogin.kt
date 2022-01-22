@@ -1,7 +1,7 @@
 package com.well.modules.features.topLevel.topLevelHandlers
 
 import com.well.modules.atomic.asCloseable
-import com.well.modules.db.meetings.listIdsFlow
+import com.well.modules.db.meetings.listIdAndStatesFlow
 import com.well.modules.db.users.insertOrReplace
 import com.well.modules.db.users.usersPresenceFlow
 import com.well.modules.features.login.loginFeature.LoginFeature
@@ -105,9 +105,15 @@ internal fun TopLevelFeatureProviderImpl.loggedIn(
         }
         .asCloseable()
     val meetingsPresenceCloseable = meetingsQueries
-        .listIdsFlow()
+        .listIdAndStatesFlow()
         .combineWithUnit(networkManager.onConnectedFlow)
-        .map(WebSocketMsg.Front::SetMeetingsPresence)
+        .map {
+            WebSocketMsg.Front.SetMeetingsPresence(
+                it.map {
+                    it.id to it.state
+                }
+            )
+        }
         .collectIn(coroutineScope, networkManager::sendFront)
         .asCloseable()
     listOf(

@@ -23,6 +23,7 @@ class CalendarEffHandler(
         val getUsersByIdsFlow: (Set<User.Id>) -> Flow<List<User>>,
         val openUserProfile: (User.Id) -> Unit,
         val startCall: (User.Id) -> Unit,
+        val updateMeetingState: (Meeting.Id, Meeting.State) -> Unit,
     )
 
     private val meetingsFlow = services
@@ -32,8 +33,7 @@ class CalendarEffHandler(
             services
                 .getUsersByIdsFlow(
                     meetings
-                        .map(Meeting::attendees)
-                        .flatten()
+                        .map { it.otherUid(services.currentUserId) }
                         .toSet()
                 )
                 .print { "getUsersByIdsFlow $it" }
@@ -41,15 +41,21 @@ class CalendarEffHandler(
                     val groupedUsers = users
                         .groupBy(User::id)
                         .mapValues { it.value.first() }
-                    meetings.map { meeting ->
-                        val userId = meeting.attendees.first { it != services.currentUserId }
+                    meetings.mapNotNull { meeting ->
+                        val otherUserId = meeting.otherUid(services.currentUserId)
+                        val otherUser = groupedUsers[otherUserId] ?: return@mapNotNull null
                         MeetingViewModel(
                             id = meeting.id,
+                            state = meeting.state,
+                            isExpert = meeting.expertUid == services.currentUserId,
                             startInstant = meeting.startInstant,
                             durationMinutes = meeting.durationMinutes,
-                            user = groupedUsers[userId]
+                            otherUser = otherUser,
                         )
                     }
+                        .filter {
+                            !it.isExpert || it.state != Meeting.State.Rejected
+                        }
                 }
         }
 
@@ -67,6 +73,9 @@ class CalendarEffHandler(
             }
             is Eff.StartCall -> {
                 services.startCall(eff.uid)
+            }
+            is Eff.UpdateMeetingState -> {
+                services.updateMeetingState(eff.meetingId, eff.state)
             }
         }
     }

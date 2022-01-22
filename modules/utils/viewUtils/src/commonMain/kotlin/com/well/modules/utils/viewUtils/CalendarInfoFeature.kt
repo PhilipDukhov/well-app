@@ -16,6 +16,7 @@ object CalendarInfoFeature {
         val monthOffset: Int,
         val selectedDate: LocalDate?,
         val prepareDayEvents: (LocalDate) -> List<Event>,
+        val hasBadge: (List<Event>) -> Boolean,
     ) {
         companion object {
             val allDaysOfWeek = DayOfWeek.values().toList()
@@ -25,6 +26,7 @@ object CalendarInfoFeature {
             val date: LocalDate,
             val isCurrentMonth: Boolean,
             val isCurrentDay: Boolean,
+            val hasBadge: Boolean,
             val events: List<Event>,
         )
 
@@ -57,6 +59,7 @@ object CalendarInfoFeature {
                             isCurrentMonth = day.month == month,
                             isCurrentDay = day == today,
                             events = events,
+                            hasBadge = hasBadge(events)
                         )
                     }
                 loopDay = loopDay.plus(DateTimeUnit.DayBased(weekDaysCount))

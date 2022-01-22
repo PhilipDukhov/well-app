@@ -126,7 +126,7 @@ fun MeetingViewModel.Companion.testValues(count: Int) = List(count) { i ->
             id = Meeting.Id(value = i.toLong()),
             startInstant = Clock.System.now() + Duration.minutes((i - 1) * 20),
             durationMinutes = 15,
-            user = User.testUser
+            otherUser = User.testUser
         )
     } else {
         MeetingViewModel(
@@ -134,7 +134,7 @@ fun MeetingViewModel.Companion.testValues(count: Int) = List(count) { i ->
             startInstant = Clock.System.now() + Duration.days(i) + Duration.hours(Random.nextInt(-10,
                 10)),
             durationMinutes = Random.nextInt(10, 90),
-            user = User.testUser
+            otherUser = User.testUser
         )
     }
 }

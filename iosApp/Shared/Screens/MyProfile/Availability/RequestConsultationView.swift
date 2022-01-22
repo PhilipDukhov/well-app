@@ -184,14 +184,15 @@ private struct BookRow<T, ID: Hashable>: View {
         let itemSize = CGSize(width: width, height: (width / aspectRatio).rounded())
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                ForEachIndexed(items, id: id) { i, item in
+                ForEachIndexed(items) { i, item in
                     let selected = i == selectedIndex
+                    let text = itemText(item)
                     Button(action: {
                         withAnimation {
                             selectedIndex = i
                         }
                     }) {
-                        Text(itemText(item))
+                        Text(text)
                             .frame(size: itemSize)
                             .textStyle(textStyle)
                             .multilineTextAlignment(.center)
@@ -207,6 +208,7 @@ private struct BookRow<T, ID: Hashable>: View {
                                 .padding(1)
                         }
                     }
+                    .id(text)
                 }
             }.padding(.horizontal)
         }

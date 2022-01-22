@@ -6,7 +6,6 @@ import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import java.util.*
 
-
 fun Database.insertChatMessage(message: ChatMessage) =
     insertChatMessage(
         fromId = message.fromId,
@@ -40,15 +39,6 @@ fun Database.insertChatMessage(
                         )
                     )
             }
-            is ChatMessage.Content.Meeting -> {
-                chatContentMeetingsQueries
-                    .insert(
-                        ChatContentMeetings(
-                            messageId = messageId,
-                            meetingId = content.meetingId,
-                        )
-                    )
-            }
             is ChatMessage.Content.Text -> {
                 chatContentTextsQueries
                     .insert(
@@ -75,13 +65,6 @@ fun ChatMessages.toChatMessage(database: Database): ChatMessage {
                     .getById(id)
                     .executeAsOne()
                 ChatMessage.Content.Image(content.url, content.aspectRatio)
-            }
-            ChatMessage.Content.SimpleType.Meeting -> {
-                val content = database
-                    .chatContentMeetingsQueries
-                    .getById(id)
-                    .executeAsOne()
-                ChatMessage.Content.Meeting(content.meetingId)
             }
             ChatMessage.Content.SimpleType.Text -> {
                 val content = database

@@ -1,7 +1,12 @@
 import com.well.modules.models.Meeting;
+import com.well.modules.models.Meeting.Id;
+import com.well.modules.models.Meeting.State;
 import com.well.modules.models.User;
+import com.well.modules.models.User.Id;
 import kotlin.collections.Set;
 import kotlinx.datetime.Instant;
+
+DROP TABLE Meetings;
 
 CREATE TABLE Meetings (
     id INTEGER AS Meeting.Id NOT NULL PRIMARY KEY,
@@ -11,19 +16,3 @@ CREATE TABLE Meetings (
     state TEXT AS Meeting.State NOT NULL,
     durationMinutes INTEGER AS Int NOT NULL
 );
-
-insert:
-INSERT OR REPLACE INTO Meetings(id, expertUid, creatorUid, state, startInstant, durationMinutes)
-VALUES (?, ?, ?, ?, ?, ?);
-
-delete:
-DELETE FROM Meetings WHERE id = ?;
-
-list:
-SELECT * FROM Meetings;
-
-getByIds:
-SELECT * FROM Meetings WHERE id IN ?;
-
-listIdAndStates:
-SELECT id, state FROM Meetings;

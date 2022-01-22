@@ -194,6 +194,11 @@ internal class TopLevelFeatureProviderImpl(
                                         handleCall(user, listener)
                                     }
                                 },
+                                updateMeetingState = { id, state ->
+                                    coroutineScope.launch {
+                                        networkManager.sendFront(WebSocketMsg.Front.UpdateMeetingState(id, state))
+                                    }
+                                }
                             ),
                             parentCoroutineScope = coroutineScope,
                         ).adapt(

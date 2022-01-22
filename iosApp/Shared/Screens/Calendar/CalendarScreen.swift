@@ -42,8 +42,9 @@ struct CalendarScreen: View {
                 },
                 onSelectUser: {
                     listener(Feature.MsgOpenUserProfile(meeting: $0))
+                }) {
+                    listener(Feature.MsgUpdateMeetingState(meeting: $0, state: $1))
                 }
-            )
             Spacer()
         }.padding(.horizontal)
             .fillMaxSize()
@@ -140,6 +141,7 @@ private struct MeetingsList: View {
     let onSelectMeeting: (MeetingViewModel) -> Void
     let onStartCall: (MeetingViewModel) -> Void
     let onSelectUser: (MeetingViewModel) -> Void
+    let onUpdateState: (MeetingViewModel, Meeting.State) -> Void
 
     var body: some View {
         ScrollView {
@@ -149,18 +151,30 @@ private struct MeetingsList: View {
                         .textStyle(.body1)
                         .foregroundColor(.white)
                     ForEach(dayMeetings.meetings) { meeting in
-                        MeetingCard(
-                            meeting: meeting,
-                            onSelect: {
-                                onSelectMeeting(meeting)
-                            },
-                            onStartCall: {
-                                onStartCall(meeting)
-                            },
-                            onSelectUser: {
-                                onSelectUser(meeting)
-                            }
-                        )
+                        if meeting.waitingExpertResolution {
+                            RequestedMeetingCard(
+                                meeting: meeting,
+                                onSelectUser: {
+                                    onSelectUser(meeting)
+                                },
+                                onUpdateState: {
+                                    onUpdateState(meeting, $0)
+                                }
+                            )
+                        } else {
+                            ConfirmedMeetingCard(
+                                meeting: meeting,
+                                onSelect: {
+                                    onSelectMeeting(meeting)
+                                },
+                                onStartCall: {
+                                    onStartCall(meeting)
+                                },
+                                onSelectUser: {
+                                    onSelectUser(meeting)
+                                }
+                            )
+                        }
                     }
                 }
             }.padding(.vertical, 15).padding(.trailing)
@@ -168,7 +182,7 @@ private struct MeetingsList: View {
     }
 }
 
-private struct MeetingCard: View {
+private struct ConfirmedMeetingCard: View {
     let meeting: MeetingViewModel
 
     let onSelect: () -> Void
@@ -190,16 +204,14 @@ private struct MeetingCard: View {
                         .foregroundColor(.black)
                         .padding(.top, 3)
                         .padding(.bottom, 9)
-                    if let user = meeting.user {
-                        Button(action: onSelectUser) {
-                            HStack {
-                                ProfileImage(user)
-                                    .frame(size: 20)
-                                Spacer().frame(width: 7)
-                                Text("with \(user.fullName)")
-                                    .textStyle(.caption)
-                                    .foregroundColorKMM(.companion.LightBlue)
-                            }
+                    Button(action: onSelectUser) {
+                        HStack {
+                            ProfileImage(meeting.otherUser)
+                                .frame(size: 20)
+                            Spacer().frame(width: 7)
+                            Text("with \(meeting.otherUser.fullName)")
+                                .textStyle(.caption)
+                                .foregroundColorKMM(.companion.LightBlue)
                         }
                     }
                 }
@@ -216,5 +228,54 @@ private struct MeetingCard: View {
         }.padding(15).padding(.leading, 12)
             .background(Shapes.medium.foregroundColor(.white))
             .onTapGesture(perform: onSelect)
+    }
+}
+
+private struct RequestedMeetingCard: View {
+    let meeting: MeetingViewModel
+
+    let onSelectUser: () -> Void
+    let onUpdateState: (Meeting.State) -> Void
+
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 10) {
+                if meeting.isExpert {
+                    HStack {
+                        Button(action: onSelectUser) {
+                            Text(meeting.otherUser.fullName)
+                                .textStyle(.subtitle2)
+                                .foregroundColorKMM(.companion.Green)
+                        }
+                        Text(Feature.Strings.shared.needsYourHelp)
+                            .textStyle(.subtitle2)
+                    }
+                } else {
+                    Text(meeting.title)
+                        .textStyle(.subtitle2)
+                        .foregroundColor(.black)
+                }
+                Text("\(Feature.Strings.shared.bookingTime): \(meeting.startTime)")
+                    .textStyle(.caption)
+                HStack {
+                    Button(action: {
+                        onUpdateState(Meeting.State.confirmed)
+                    }) {
+                        Text(Feature.Strings.shared.confirm)
+                            .textStyle(.subtitle2)
+                            .foregroundColorKMM(.companion.MediumBlue)
+                    }
+                    Button(action: {
+                        onUpdateState(Meeting.State.rejected)
+                    }) {
+                        Text(Feature.Strings.shared.reject)
+                            .textStyle(.subtitle2)
+                            .foregroundColorKMM(.companion.Pink)
+                    }
+                }
+            }.layoutPriority(1)
+            Spacer().fillMaxWidth()
+        }.padding(15).padding(.leading, 12)
+            .background(Shapes.medium.foregroundColor(.white))
     }
 }

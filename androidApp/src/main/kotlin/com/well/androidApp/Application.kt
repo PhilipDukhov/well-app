@@ -17,8 +17,6 @@ class Application: Application() {
     override fun onCreate() {
         super.onCreate()
 
-        val a = MainActivity::class.java
-
         featureProvider = createFeatureProvider(
             applicationContext = ApplicationContext(
                 context = applicationContext,

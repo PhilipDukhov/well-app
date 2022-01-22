@@ -4,6 +4,7 @@ import com.well.modules.models.Meeting
 import com.well.modules.models.User
 import com.well.modules.utils.dbUtils.InstantColumnAdapter
 import com.well.modules.utils.flowUtils.mapIterable
+import com.squareup.sqldelight.EnumColumnAdapter
 import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
@@ -14,8 +15,8 @@ fun MeetingsQueries.listFlow() =
         .mapToList()
         .mapIterable(Meetings::toMeetings)
 
-fun MeetingsQueries.listIdsFlow() =
-    listIds().asFlow().mapToList()
+fun MeetingsQueries.listIdAndStatesFlow() =
+    listIdAndStates().asFlow().mapToList()
 
 fun MeetingsQueries.insertAll(meetings: List<Meeting>) =
     transaction {
@@ -23,7 +24,9 @@ fun MeetingsQueries.insertAll(meetings: List<Meeting>) =
             with(meeting) {
                 insert(
                     id = id,
-                    attendees = attendees,
+                    expertUid = expertUid,
+                    creatorUid = creatorUid,
+                    state = state,
                     startInstant = startInstant,
                     durationMinutes = durationMinutes,
                 )
@@ -48,7 +51,9 @@ fun Meetings.toMeetings() = Meeting(
     id = id,
     startInstant = startInstant,
     durationMinutes = durationMinutes,
-    attendees = attendees
+    expertUid = expertUid,
+    creatorUid = creatorUid,
+    state = state,
 )
 
 fun MeetingsDatabase.Companion.create(driver: SqlDriver) =
@@ -56,6 +61,8 @@ fun MeetingsDatabase.Companion.create(driver: SqlDriver) =
         driver = driver, MeetingsAdapter = Meetings.Adapter(
             idAdapter = Meeting.Id.ColumnAdapter,
             startInstantAdapter = InstantColumnAdapter,
-            attendeesAdapter = User.Id.SetColumnAdapter,
+            expertUidAdapter = User.Id.ColumnAdapter,
+            creatorUidAdapter = User.Id.ColumnAdapter,
+            stateAdapter = EnumColumnAdapter(),
         )
     )
