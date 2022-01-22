@@ -129,6 +129,8 @@
 		4A9F38532741EAED004D5EF5 /* RoundedCornerRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9F38512741EAED004D5EF5 /* RoundedCornerRectangle.swift */; };
 		4A9F386827432140004D5EF5 /* PageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9F386727432140004D5EF5 /* PageView.swift */; };
 		4A9F386927432140004D5EF5 /* PageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A9F386727432140004D5EF5 /* PageView.swift */; };
+		4AACB300279C2551002C7C9B /* WellAcademyScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AACB2FF279C2551002C7C9B /* WellAcademyScreen.swift */; };
+		4AACB301279C2551002C7C9B /* WellAcademyScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AACB2FF279C2551002C7C9B /* WellAcademyScreen.swift */; };
 		4AC263D827229EEE002BE68B /* ReducerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC263D727229EEE002BE68B /* ReducerView.swift */; };
 		4AC263DB27229F4E002BE68B /* AvailabilitiesCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC263DA27229F4E002BE68B /* AvailabilitiesCalendarView.swift */; };
 		4AC2640D272387E7002BE68B /* Flow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC2640C272387E7002BE68B /* Flow.swift */; };
@@ -232,6 +234,7 @@
 		4A98B2FA2757910800E62B8D /* CalendarMonthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarMonthView.swift; sourceTree = "<group>"; };
 		4A9F38512741EAED004D5EF5 /* RoundedCornerRectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCornerRectangle.swift; sourceTree = "<group>"; };
 		4A9F386727432140004D5EF5 /* PageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageView.swift; sourceTree = "<group>"; };
+		4AACB2FF279C2551002C7C9B /* WellAcademyScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WellAcademyScreen.swift; sourceTree = "<group>"; };
 		4AC263D727229EEE002BE68B /* ReducerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReducerView.swift; sourceTree = "<group>"; };
 		4AC263DA27229F4E002BE68B /* AvailabilitiesCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailabilitiesCalendarView.swift; sourceTree = "<group>"; };
 		4AC2640C272387E7002BE68B /* Flow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Flow.swift; sourceTree = "<group>"; };
@@ -331,6 +334,7 @@
 				347D19F97DCC9822CBBE4C71 /* MoreScreen.swift */,
 				347D13A469E07DE98EF0A87D /* AboutScreen.swift */,
 				347D1015E6F913660F210818 /* SupportScreen.swift */,
+				4AACB2FF279C2551002C7C9B /* WellAcademyScreen.swift */,
 			);
 			path = More;
 			sourceTree = "<group>";
@@ -1013,6 +1017,7 @@
 				4A82800E2725EBFB004DF64E /* LocalTestApp.swift in Sources */,
 				4A82805B2725EDAB004DF64E /* SelectableHVStack.swift in Sources */,
 				4A8280402725EDAB004DF64E /* Foundation.swift in Sources */,
+				4AACB301279C2551002C7C9B /* WellAcademyScreen.swift in Sources */,
 				4A82802E2725EDAB004DF64E /* LoginScreen.swift in Sources */,
 				4A82802A2725EDAB004DF64E /* FilterScreen.swift in Sources */,
 				4A8280382725EDAB004DF64E /* ProjectTextEditor.swift in Sources */,
@@ -1109,6 +1114,7 @@
 				D568034A2638323700CFE16B /* UserCell.swift in Sources */,
 				D56803282638320300CFE16B /* HostingController.swift in Sources */,
 				D56803472638322500CFE16B /* ToggleStillButton.swift in Sources */,
+				4AACB300279C2551002C7C9B /* WellAcademyScreen.swift in Sources */,
 				D56803402638322500CFE16B /* ImageSharingBottomBar.swift in Sources */,
 				D56803392638320F00CFE16B /* FacebookProvider.swift in Sources */,
 				D568032E2638320300CFE16B /* Label.swift in Sources */,

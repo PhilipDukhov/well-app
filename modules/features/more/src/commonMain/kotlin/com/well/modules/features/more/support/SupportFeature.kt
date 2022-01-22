@@ -24,7 +24,7 @@ object SupportFeature {
 
     fun reducer(
         msg: Msg,
-        state: State
+        state: State,
     ): Pair<State, Set<Eff>> =
         state toSetOf when (msg) {
             Msg.Back -> Eff.Back

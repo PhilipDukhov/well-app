@@ -34,6 +34,7 @@ import com.well.modules.features.login.loginHandlers.credentialProviders.Credent
 import com.well.modules.features.more.MoreFeature
 import com.well.modules.features.more.about.AboutFeature
 import com.well.modules.features.more.support.SupportFeature
+import com.well.modules.features.more.wellAcademy.WellAcademyFeature
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature
 import com.well.modules.features.notifications.NotificationHandler
 import com.well.modules.features.topLevel.topLevelFeature.FeatureEff
@@ -341,6 +342,13 @@ internal class TopLevelFeatureProviderImpl(
                             listener(Msg.Pop)
                         }
                         is SupportFeature.Eff.Send -> {
+                            listener(Msg.Pop)
+                        }
+                    }
+                }
+                is FeatureEff.WellAcademy -> {
+                    when (eff.eff) {
+                        WellAcademyFeature.Eff.Back -> {
                             listener(Msg.Pop)
                         }
                     }

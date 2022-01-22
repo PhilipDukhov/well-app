@@ -9,6 +9,7 @@ import com.well.modules.features.login.loginFeature.LoginFeature
 import com.well.modules.features.more.MoreFeature
 import com.well.modules.features.more.about.AboutFeature
 import com.well.modules.features.more.support.SupportFeature
+import com.well.modules.features.more.wellAcademy.WellAcademyFeature
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature
 import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State.ScreenPosition
 import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State.Tab
@@ -41,6 +42,7 @@ import com.well.modules.utils.viewUtils.SystemContext
         MoreFeature::class,
         AboutFeature::class,
         SupportFeature::class,
+        WellAcademyFeature::class,
         ChatListFeature::class,
         UserChatFeature::class,
         CalendarFeature::class,
