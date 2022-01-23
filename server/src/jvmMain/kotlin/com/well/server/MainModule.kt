@@ -20,6 +20,7 @@ import com.well.server.routing.mainWebSocket
 import com.well.server.routing.putAvailability
 import com.well.server.routing.upload.uploadMessageMedia
 import com.well.server.routing.upload.uploadProfilePicture
+import com.well.server.routing.user.delete
 import com.well.server.routing.user.rate
 import com.well.server.routing.user.requestBecomeExpert
 import com.well.server.routing.user.setUserFavorite
@@ -287,6 +288,9 @@ fun Application.initializedModule(dependencies: Dependencies) {
                 }
                 post("requestBecomeExpert") {
                     requestBecomeExpert(dependencies)
+                }
+                delete {
+                    delete(dependencies)
                 }
             }
             route("availabilities") {

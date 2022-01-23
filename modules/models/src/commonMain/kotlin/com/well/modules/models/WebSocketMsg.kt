@@ -107,6 +107,11 @@ sealed class WebSocketMsg {
         ) : Back()
 
         @Serializable
+        data class RemovedUsers(
+            val ids: List<User.Id>,
+        ) : Back()
+
+        @Serializable
         object NotificationTokenRequest : Back()
     }
 

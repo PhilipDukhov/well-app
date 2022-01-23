@@ -5,6 +5,7 @@ import com.well.modules.atomic.AtomicMutableList
 import com.well.modules.atomic.asCloseable
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Eff
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Msg
+import com.well.modules.features.myProfile.myProfileFeature.SettingsFeature
 import com.well.modules.models.Availability
 import com.well.modules.models.BookingAvailabilitiesListByDay
 import com.well.modules.models.BookingAvailability
@@ -45,6 +46,8 @@ class MyProfileEffHandler(
         val onStartCall: (User) -> Unit,
         val onOpenUserChat: (User.Id) -> Unit,
         val onLogout: () -> Unit,
+        val onDeleteProfile: () -> Unit,
+        val openTechSupport: () -> Unit,
         val requestBecomeExpert: () -> Unit,
         val onRatingRequest: (RatingRequest) -> Unit,
 
@@ -56,7 +59,8 @@ class MyProfileEffHandler(
         val hasAvailableAvailabilities: suspend () -> Boolean,
         val book: suspend (BookingAvailability) -> Unit,
         val getUserAvailabilitiesToBook: suspend () -> BookingAvailabilitiesListByDay,
-    )
+
+        )
 
     private var requestConsultationEffHandler by AtomicCloseableRef<RequestConsultationEffHandler>()
 
@@ -106,7 +110,6 @@ class MyProfileEffHandler(
             is Eff.InitializationFinished -> services.onInitializationFinished
             is Eff.Call -> services.onStartCall(eff.user)
             is Eff.Message -> services.onOpenUserChat(eff.uid)
-            is Eff.Logout -> services.onLogout()
             is Eff.BecomeExpert -> services.requestBecomeExpert()
             is Eff.RatingRequest -> services.onRatingRequest(eff.ratingRequest)
             is Eff.AvailabilityEff -> handleAvailabilityEff(eff.eff)
@@ -133,6 +136,19 @@ class MyProfileEffHandler(
                         }
                     }
                     .handleEffect(eff.eff)
+            }
+            is Eff.SettingsEff -> {
+                when (eff.eff) {
+                    SettingsFeature.Eff.DeleteProfile -> {
+                        services.onDeleteProfile()
+                    }
+                    SettingsFeature.Eff.Logout -> {
+                        services.onLogout()
+                    }
+                    SettingsFeature.Eff.OpenTechnicalSupport -> {
+                        services.openTechSupport()
+                    }
+                }
             }
         }
     }

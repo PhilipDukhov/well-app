@@ -1,6 +1,7 @@
 package com.well.modules.db.mobile
 
 import com.well.modules.db.mobile.helper.DatabaseDriverFactory
+import com.well.modules.utils.viewUtils.SystemContext
 import com.well.modules.utils.viewUtils.platform.Platform
 import com.well.modules.utils.viewUtils.platform.isLocalServer
 import com.squareup.sqldelight.db.SqlDriver
@@ -18,8 +19,8 @@ internal class DatabaseContainer<T>(
     private val driver = driverFactory.createDriver(fileName, schema)
     val database = createDatabase(driver)
 
-    fun clear() {
+    fun clear(systemContext: SystemContext) {
         driver.close()
-        driverFactory.deleteDatabase(fileName)
+        driverFactory.deleteDatabase(fileName, systemContext)
     }
 }

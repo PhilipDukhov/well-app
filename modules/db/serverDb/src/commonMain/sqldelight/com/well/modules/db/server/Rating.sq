@@ -29,3 +29,7 @@ WHERE destination = :uid;
 
 list:
 EXPLAIN SELECT * FROM Ratings;
+
+clearUser:
+DELETE FROM Ratings
+WHERE owner = :id OR destination = :id;

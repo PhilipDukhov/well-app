@@ -512,6 +512,19 @@ internal class TopLevelFeatureProviderImpl(
                 meetingsQueries
                     .removeAll(msg.ids)
             }
+            is WebSocketMsg.Back.RemovedUsers -> {
+                msg.ids.forEach { id ->
+                    usersQueries.transaction {
+                        meetingsQueries.transaction {
+                            messagesDatabase.transaction {
+                                usersQueries.deleteById(id)
+                                meetingsQueries.clearUser(id)
+                                messagesDatabase.chatMessagesQueries.clearUser(id)
+                            }
+                        }
+                    }
+                }
+            }
             WebSocketMsg.Back.NotificationTokenRequest -> {
                 dataStore.notificationToken?.let { notificationToken ->
                     coroutineScope.launch {

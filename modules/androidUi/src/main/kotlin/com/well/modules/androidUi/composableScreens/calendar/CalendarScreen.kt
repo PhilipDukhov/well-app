@@ -4,6 +4,9 @@ import com.well.modules.androidUi.customViews.CalendarMonthView
 import com.well.modules.androidUi.customViews.CalendarTitleScope
 import com.well.modules.androidUi.customViews.ProfileImage
 import com.well.modules.androidUi.customViews.gradientBackground
+import com.well.modules.androidUi.ext.minus
+import com.well.modules.androidUi.ext.plus
+import com.well.modules.androidUi.ext.start
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.features.calendar.calendarFeature.CalendarFeature.Msg
 import com.well.modules.features.calendar.calendarFeature.CalendarFeature.State
@@ -23,8 +26,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -53,7 +54,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.statusBarsPadding
@@ -373,33 +373,3 @@ private fun RequestedMeetingCard(
         }
     }
 }
-
-@Composable
-private operator fun PaddingValues.plus(second: PaddingValues) =
-    PaddingValues(
-        start = start() + second.start(),
-        end = end() + second.end(),
-        top = top() + second.top(),
-        bottom = bottom() + second.bottom(),
-    )
-
-@Composable
-private operator fun PaddingValues.minus(second: PaddingValues) =
-    PaddingValues(
-        start = start() - second.start(),
-        end = end() - second.end(),
-        top = top() - second.top(),
-        bottom = bottom() - second.bottom(),
-    )
-
-@Composable
-private fun PaddingValues.start() = calculateStartPadding(LocalLayoutDirection.current)
-
-@Composable
-private fun PaddingValues.end() = calculateEndPadding(LocalLayoutDirection.current)
-
-@Composable
-private fun PaddingValues.top() = calculateTopPadding()
-
-@Composable
-private fun PaddingValues.bottom() = calculateBottomPadding()

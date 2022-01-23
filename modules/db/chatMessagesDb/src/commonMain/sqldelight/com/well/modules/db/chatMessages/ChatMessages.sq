@@ -67,3 +67,20 @@ SELECT id FROM ChatMessages
 WHERE id >= 0
 ORDER BY creation DESC
 LIMIT 1;
+
+clearUser {
+    DELETE FROM ChatContentImages
+    WHERE messageId IN (
+        SELECT id FROM ChatMessages
+        WHERE fromId = :id OR peerId = :id
+        );
+
+    DELETE FROM ChatContentTexts
+        WHERE messageId IN (
+            SELECT id FROM ChatMessages
+            WHERE fromId = :id OR peerId = :id
+        );
+
+    DELETE FROM ChatMessages
+    WHERE fromId = :id OR peerId = :id;
+}

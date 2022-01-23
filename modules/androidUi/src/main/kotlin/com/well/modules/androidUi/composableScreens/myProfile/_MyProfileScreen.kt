@@ -73,9 +73,7 @@ fun ColumnScope.MyProfileScreen(
     listener: (Msg) -> Unit,
 ) {
     val (rightItemBeforeAction, setRightItemBeforeAction) = remember {
-        mutableStateOf<(() -> Unit)?>(
-            null
-        )
+        mutableStateOf<(() -> Unit)?>(null)
     }
     val availabilityState = state.availabilityState
     var selectedTab by rememberSaveable(availabilityState != null) {
@@ -121,6 +119,13 @@ fun ColumnScope.MyProfileScreen(
             availabilityState?.let {
                 AvailabilitiesCalendarView(state = availabilityState) {
                     listener(Msg.AvailabilityMsg(it))
+                }
+            }
+        }
+        Feature.ProfileTab.Settings -> {
+            state.settingsState?.let {
+                SettingsScreen(it) {
+                    listener(Msg.SettingsMsg(it))
                 }
             }
         }

@@ -190,6 +190,19 @@ class UserSession(
             }
             .flatMapLatest()
             .filterNotEmpty()
+    private val removedUsersFlow = usersPresenceInfoFlow
+        .filterNotNull()
+        .flatMapLatest { usersPresenceInfo ->
+            val usersPresenceIds = usersPresenceInfo.map { it.id }
+            dependencies.database.usersQueries
+                .getByIdsFlow(usersPresenceIds)
+                .map { foundUsers ->
+                    val foundUserIds = foundUsers.map { it.id }
+                    usersPresenceIds
+                        .filterNot(foundUserIds::contains)
+                }
+        }
+        .filterNotEmpty()
     private val fcmTokenNeededFlow = dependencies.database
         .notificationTokensQueries
         .selectByDeviceIdFlow(deviceId = deviceId)
@@ -206,7 +219,8 @@ class UserSession(
             newReadStatesFlow.map(WebSocketMsg.Back::UpdateCharReadPresence),
             newMeetingsFlow.map(WebSocketMsg.Back::AddMeetings),
             removedMeetingIdsFlow.map(WebSocketMsg.Back::RemovedMeetings),
-            fcmTokenNeededFlow.map { WebSocketMsg.Back.NotificationTokenRequest }
+            fcmTokenNeededFlow.map { WebSocketMsg.Back.NotificationTokenRequest },
+            removedUsersFlow.map(WebSocketMsg.Back::RemovedUsers),
         ).forEach { flow ->
             flow
                 .onEach {

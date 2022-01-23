@@ -139,7 +139,9 @@ internal fun TopLevelFeatureProviderImpl.logOut(listener: (TopLevelFeature.Msg) 
         sessionInfo = null
         dataStore.authInfo = null
         pendingNotifications.dropAll()
-        clearDatabase()
+        systemHelper?.systemContext?.let {
+            clearDatabase(it)
+        }
         listener.invoke(TopLevelFeature.Msg.OpenLoginScreen)
     }
 }

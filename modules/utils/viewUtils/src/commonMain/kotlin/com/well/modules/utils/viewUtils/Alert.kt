@@ -9,6 +9,12 @@ sealed class Alert(
     val positiveAction: Action? = null,
     val negativeAction: Action? = null,
 ) {
+    class Custom(
+        title: String = "",
+        description: String = "",
+        positiveAction: Action? = null,
+        negativeAction: Action? = null,
+    ) : Alert(title, description, positiveAction, negativeAction)
     object MicDenied : Alert(
         title = Strings.micDenied,
         positiveAction = Action.Ok,
@@ -47,6 +53,8 @@ sealed class Alert(
 
     sealed class Action(val title: String) {
         object Ok : Action(Strings.ok)
+        object Cancel : Action(Strings.cancel)
         object Settings : Action(Strings.settings)
+        class Custom(title: String, val action: () -> Unit, ): Action(title)
     }
 }

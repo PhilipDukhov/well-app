@@ -44,3 +44,7 @@ markDeleted:
 UPDATE Availabilities
 SET deleted = TRUE
 WHERE id = ?;
+
+clearUser:
+DELETE FROM Availabilities
+WHERE ownerId = :id;

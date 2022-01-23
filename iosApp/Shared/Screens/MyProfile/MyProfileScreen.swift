@@ -77,6 +77,13 @@ struct MyProfileScreen: View {
                             listener(Feature.MsgAvailabilityMsg(msg: $0))
                         }
                     }
+
+                case .settings:
+                    state.settingsState.map {
+                        SettingsScreen(state: $0) {
+                            listener(Feature.MsgSettingsMsg(msg: $0))
+                        }
+                    }
                     
                 default:
                     fatalError("Unexpected tab")

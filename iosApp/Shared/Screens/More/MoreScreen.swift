@@ -12,9 +12,7 @@ struct MoreScreen: View {
     let listener: (MoreFeature.Msg) -> Void
 
     var body: some View {
-        NavigationBar(
-            title: state.title,
-        )
+        NavigationBar(title: state.title)
         VStack {
             ForEachIndexed(state.items) { _, item in
                 Button(action: {
@@ -24,7 +22,7 @@ struct MoreScreen: View {
                         item.icon()
                             .font(.system(size: 25))
                             .foregroundColorKMM(.companion.LightBlue)
-                        Text("\(item)")
+                        Text(item.title)
                             .textStyle(.body1)
                         Spacer()
                     }.padding()
@@ -38,7 +36,7 @@ struct MoreScreen: View {
 private extension Feature.StateItem {
     func icon() -> Image {
         switch self {
-        case .support:
+        case .technicalsupport:
             return Image(systemName: "wrench")
         case .about:
             return Image(systemName: "info.circle")

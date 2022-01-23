@@ -11,10 +11,11 @@ import com.well.modules.db.users.UsersDatabase
 import com.well.modules.db.users.UsersQueries
 import com.well.modules.db.users.create
 import com.well.modules.utils.viewUtils.ApplicationContext
+import com.well.modules.utils.viewUtils.SystemContext
 
 interface DatabaseProvider {
     fun openDatabase()
-    fun clearDatabase()
+    fun clearDatabase(systemContext: SystemContext)
 
     val usersQueries: UsersQueries
     val messagesDatabase: ChatMessagesDatabase
@@ -54,11 +55,13 @@ internal class DatabaseProviderImpl(applicationContext: ApplicationContext) : Da
         )
     }
 
-    override fun clearDatabase() {
+    override fun clearDatabase(systemContext: SystemContext) {
         listOf(
             usersDatabaseContainer,
             messagesDatabaseContainer,
             meetingsDatabaseContainer,
-        ).forEach(DatabaseContainer<*>::clear)
+        ).forEach {
+            it.clear(systemContext)
+        }
     }
 }

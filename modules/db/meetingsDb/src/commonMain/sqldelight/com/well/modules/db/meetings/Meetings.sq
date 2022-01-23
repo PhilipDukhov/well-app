@@ -27,3 +27,7 @@ SELECT * FROM Meetings WHERE id IN ?;
 
 listIdAndStates:
 SELECT id, state FROM Meetings;
+
+clearUser:
+DELETE FROM Meetings
+WHERE expertUid = :id OR creatorUid = :id;

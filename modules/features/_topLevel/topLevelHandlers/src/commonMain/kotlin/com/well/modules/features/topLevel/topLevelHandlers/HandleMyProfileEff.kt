@@ -15,6 +15,7 @@ import com.well.modules.puerhBase.adapt
 import com.well.modules.utils.kotlinUtils.launchedIn
 import com.well.modules.utils.kotlinUtils.map
 import com.well.modules.utils.viewUtils.Alert
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 internal fun TopLevelFeatureProviderImpl.createProfileEffHandler(
@@ -44,6 +45,27 @@ internal fun TopLevelFeatureProviderImpl.createProfileEffHandler(
         onLogout = {
             logOut(listener)
             listener.invoke(Msg.OpenLoginScreen)
+        },
+        onDeleteProfile = {
+            MainScope().launch {
+                systemHelper?.showAlert(
+                    Alert.Custom(
+                        title = "Confirmation",
+                        description = "Are you sure you want to delete your account? This operation cannot be undone",
+                        positiveAction = Alert.Action.Cancel,
+                        negativeAction = Alert.Action.Custom("Delete") {
+                            coroutineScope.launch {
+                                logOut(listener)
+                                listener.invoke(Msg.OpenLoginScreen)
+                                networkManager.deleteProfile()
+                            }
+                        }
+                    )
+                )
+            }
+        },
+        openTechSupport = {
+            TODO()
         },
         requestBecomeExpert = networkManager::requestBecomeExpert
             .launchedIn(coroutineScope),

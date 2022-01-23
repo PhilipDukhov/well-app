@@ -143,6 +143,7 @@ class NotificationHandler(
                     notificationHelper.updateMessageNotification(notification)
                 }
             }
+            is Notification.Meeting -> TODO()
         }
         currentNotificationsStateFlow.add(notification)
         Napier.i("currentNotificationsStateFlow ${currentNotificationsStateFlow.value}")

@@ -159,3 +159,6 @@ WHERE initialized = FALSE AND UNIX_TIMESTAMP() - createdDate < 60 * 60 * 24;
 deleteUninitialized:
 DELETE FROM Users
 WHERE initialized = FALSE AND UNIX_TIMESTAMP() - createdDate < 60 * 60 * 24;
+
+delete:
+DELETE FROM Users WHERE id = ?;

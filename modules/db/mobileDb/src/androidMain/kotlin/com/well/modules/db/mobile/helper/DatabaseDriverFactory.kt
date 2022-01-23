@@ -1,7 +1,7 @@
 package com.well.modules.db.mobile.helper
 
 import com.well.modules.utils.viewUtils.ApplicationContext
-import android.app.Activity
+import com.well.modules.utils.viewUtils.SystemContext
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import com.squareup.sqldelight.db.SqlDriver
 
@@ -13,7 +13,10 @@ internal actual class DatabaseDriverFactory actual constructor(private val appli
             name = filename,
         )
 
-    actual fun deleteDatabase(filename: String) {
-        (applicationContext as Activity).deleteDatabase(filename)
+    actual fun deleteDatabase(
+        filename: String,
+        systemContext: SystemContext,
+    ) {
+        systemContext.activity.deleteDatabase(filename)
     }
 }

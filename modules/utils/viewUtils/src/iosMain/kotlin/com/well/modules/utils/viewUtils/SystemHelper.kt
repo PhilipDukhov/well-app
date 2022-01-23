@@ -138,11 +138,15 @@ actual class SystemHelper actual constructor(actual val systemContext: SystemCon
 
     private fun Alert.Action.handle() {
         when (this) {
-            Alert.Action.Ok -> Unit
-            Alert.Action.Settings ->
+            Alert.Action.Ok,
+            Alert.Action.Cancel,
+            -> Unit
+            Alert.Action.Settings -> {
                 UIApplication
                     .sharedApplication
                     .openURL(NSURL(string = UIApplicationOpenSettingsURLString))
+            }
+            is Alert.Action.Custom -> action()
         }
     }
 

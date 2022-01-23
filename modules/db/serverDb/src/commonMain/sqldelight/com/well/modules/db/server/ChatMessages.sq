@@ -44,3 +44,20 @@ SELECT COUNT(id) FROM ChatMessages
     )
     AND fromId = :fromId AND peerId = :peerId
 ;
+
+clearUser {
+    DELETE FROM ChatContentImages
+    WHERE messageId IN (
+        SELECT id FROM ChatMessages
+        WHERE fromId = :id OR peerId = :id
+        );
+
+    DELETE FROM ChatContentTexts
+        WHERE messageId IN (
+            SELECT id FROM ChatMessages
+            WHERE fromId = :id OR peerId = :id
+        );
+
+    DELETE FROM ChatMessages
+    WHERE fromId = :id OR peerId = :id;
+}

@@ -44,3 +44,7 @@ WHERE id = ?;
 
 countByState:
 SELECT COUNT(*) FROM Meetings WHERE expertUid = ? AND state = ?;
+
+clearUser:
+DELETE FROM Meetings
+WHERE expertUid = :id OR creatorUid = :id;

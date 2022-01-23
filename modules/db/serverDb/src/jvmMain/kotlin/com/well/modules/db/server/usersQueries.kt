@@ -50,7 +50,7 @@ fun UsersQueries.updateUser(user: User) = user.apply {
     )
 }
 
-fun UsersQueries.getByIdsFlow(ids: Set<User.Id>) =
+fun UsersQueries.getByIdsFlow(ids: Collection<User.Id>) =
     getByIds(ids)
         .asFlow()
         .mapToList()

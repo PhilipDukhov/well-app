@@ -24,6 +24,7 @@ object MyProfileFeature {
     enum class ProfileTab {
         ProfileInformation,
         Availability,
+        Settings,
         ;
 
         val title get() = spacedUppercaseName()
@@ -66,6 +67,7 @@ object MyProfileFeature {
             user = it,
             editingStatus = if (!isCurrent || user?.initialized != false) EditingStatus.Preview else EditingStatus.Editing,
             availabilityState = if (isCurrent && user?.initialized != false) AvailabilitiesCalendarFeature.State() else null,
+            settingsState = if (isCurrent && user?.initialized != false) SettingsFeature.State() else null,
             hasAvailableAvailabilities = if (isCurrent) null else false
         )
     }
@@ -79,6 +81,7 @@ object MyProfileFeature {
         val editingStatus: EditingStatus = EditingStatus.Preview,
         val availabilityState: AvailabilitiesCalendarFeature.State? = null,
         val requestConsultationState: RequestConsultationFeature.State? = null,
+        val settingsState: SettingsFeature.State? = null,
         val hasAvailableAvailabilities: Boolean?,
     ) {
         val tabs =
@@ -125,27 +128,24 @@ object MyProfileFeature {
             }
             val result = NavigationBarModel(
                 title = if (user?.initialized == false) "Create new profile" else "My profile",
-                leftItem = (if (user?.initialized == true) when (editingStatus) {
-                    EditingStatus.Preview -> {
-                        NavigationBarModel.Item(
-                            text = Strings.logout,
-                            msg = Msg.OnLogout,
-                        )
-                    }
-                    EditingStatus.Editing,
-                    EditingStatus.Uploading,
-                    -> {
-                        NavigationBarModel.Item(
-                            text = Strings.cancel,
-                            enabled = editingStatus == EditingStatus.Editing,
-                            msg = Msg.Back,
-                        )
-                    }
-                } else null) ?: NavigationBarModel.Item(
-                    icon = NavigationBarModel.Item.Content.Icon.Icon.Back,
-                    enabled = editingStatus != EditingStatus.Uploading,
-                    msg = Msg.Back,
-                ),
+                leftItem = run {
+                    (if (user?.initialized == true) when (editingStatus) {
+                        EditingStatus.Preview -> if (isCurrent) return@run null else null
+                        EditingStatus.Editing,
+                        EditingStatus.Uploading,
+                        -> {
+                            NavigationBarModel.Item(
+                                text = Strings.cancel,
+                                enabled = editingStatus == EditingStatus.Editing,
+                                msg = Msg.Back,
+                            )
+                        }
+                    } else null) ?: NavigationBarModel.Item(
+                        icon = NavigationBarModel.Item.Content.Icon.Icon.Back,
+                        enabled = editingStatus != EditingStatus.Uploading,
+                        msg = Msg.Back,
+                    )
+                },
                 rightItem = when (tab) {
                     ProfileTab.ProfileInformation -> {
                         when (editingStatus) {
@@ -167,7 +167,9 @@ object MyProfileFeature {
                             }
                         }
                     }
-                    ProfileTab.Availability -> {
+                    ProfileTab.Settings,
+                    ProfileTab.Availability,
+                    -> {
                         null
                     }
                 },
@@ -199,11 +201,11 @@ object MyProfileFeature {
         data class UserUploadFinished(val throwable: Throwable?) : Msg()
         data class UpdateHasAvailableAvailabilities(val hasAvailableAvailabilities: Boolean) : Msg()
         data class Rate(val rating: Rating) : Msg()
-        object OnLogout : Msg()
         data class AvailabilityMsg(val msg: AvailabilitiesCalendarFeature.Msg) : Msg()
         object RequestConsultation : Msg()
         object CloseConsultationRequest : Msg()
         data class RequestConsultationMsg(val msg: RequestConsultationFeature.Msg) : Msg()
+        data class SettingsMsg(val msg: SettingsFeature.Msg) : Msg()
     }
 
     sealed interface Eff {
@@ -221,11 +223,11 @@ object MyProfileFeature {
 
         object Back : Eff
         object InitializationFinished : Eff
-        object Logout : Eff
         object BecomeExpert : Eff
         data class SetUserFavorite(val setter: FavoriteSetter) : Eff
         data class AvailabilityEff(val eff: AvailabilitiesCalendarFeature.Eff) : Eff
         data class RequestConsultationEff(val eff: RequestConsultationFeature.Eff) : Eff
+        data class SettingsEff(val eff: SettingsFeature.Eff) : Eff
         object CloseConsultationRequest : Eff
     }
 
@@ -307,9 +309,6 @@ object MyProfileFeature {
                 is Msg.Message -> {
                     return@eff Eff.Message(state.uid)
                 }
-                is Msg.OnLogout -> {
-                    return@eff Eff.Logout
-                }
                 is Msg.BecomeExpert -> {
                     val user = state.originalUser!!.copy(type = User.Type.PendingExpert)
                     return@reducer state.copy(
@@ -373,6 +372,12 @@ object MyProfileFeature {
                     return@state state.copy(
                         hasAvailableAvailabilities = msg.hasAvailableAvailabilities,
                     )
+                }
+                is Msg.SettingsMsg -> {
+                    val reducerResult = SettingsFeature.reducer(msg.msg, state.settingsState ?: return@state state)
+                    return@reducer state.copy(
+                        settingsState = reducerResult.first
+                    ) to reducerResult.second.mapTo(mutableSetOf(), Eff::SettingsEff)
                 }
             }
         })

@@ -15,3 +15,7 @@ VALUES ?;
 
 removeFavorite:
 DELETE FROM Favourites WHERE (owner = ? AND destination = ?);
+
+clearUser:
+DELETE FROM Favourites
+WHERE owner = :id OR destination = :id;

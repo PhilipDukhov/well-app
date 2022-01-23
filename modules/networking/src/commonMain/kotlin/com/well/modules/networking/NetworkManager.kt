@@ -233,6 +233,9 @@ class NetworkManager(
 
     suspend fun getAvailabilities(userId: User.Id): BookingAvailabilitiesListByDay =
         client.get("availabilities/listByUser/${userId.value}")
+
+    suspend fun deleteProfile(): Unit =
+        client.delete("user")
 }
 
 private fun Throwable.toResponseException(): Throwable =

@@ -41,5 +41,5 @@ SELECT * FROM Users WHERE id IN ?;
 getById:
 SELECT * FROM Users WHERE id = ?;
 
-deleteAll:
-DELETE FROM Users;
+deleteById:
+DELETE FROM Users WHERE id = ?;

@@ -25,3 +25,7 @@ SELECT token, deviceId FROM NotificationTokens WHERE uid = ?;
 
 selectByDeviceId:
 SELECT * FROM NotificationTokens WHERE deviceId = ?;
+
+clearUser:
+DELETE FROM NotificationTokens
+WHERE uid = ?;

@@ -17,8 +17,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-actual class SystemHelper actual constructor(actual val systemContext: SystemContext): WebAuthenticator {
-    actual fun showAlert(alert: Alert) =
+actual class SystemHelper actual constructor(actual val systemContext: SystemContext) : WebAuthenticator {
+    actual fun showAlert(alert: Alert) {
         AlertDialog.Builder(systemContext.activity)
             .setTitle(alert.title)
             .setMessage(alert.description)
@@ -26,6 +26,7 @@ actual class SystemHelper actual constructor(actual val systemContext: SystemCon
             .setNegativeButton(alert.negativeAction)
             .create()
             .show()
+    }
 
     actual fun showSheet(actions: List<Action>): Closeable {
         val builder = BottomSheetDialogBuilder(systemContext.activity)
@@ -85,7 +86,9 @@ actual class SystemHelper actual constructor(actual val systemContext: SystemCon
         }
 
     private fun Alert.Action.handle() = when (this) {
-        Alert.Action.Ok -> Unit
+        Alert.Action.Cancel,
+        Alert.Action.Ok,
+        -> Unit
         Alert.Action.Settings ->
             systemContext.activity.startActivity(
                 Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
@@ -96,6 +99,7 @@ actual class SystemHelper actual constructor(actual val systemContext: SystemCon
                     )
                 }
             )
+        is Alert.Action.Custom -> action()
     }
 
     actual suspend fun pickSystemImage() =
