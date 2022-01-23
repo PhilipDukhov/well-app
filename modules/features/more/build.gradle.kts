@@ -13,6 +13,7 @@ kotlin {
         val commonMain by getting {
             libDependencies(
                 ":modules:puerhBase",
+                ":modules:utils:kotlinUtils",
                 ":modules:utils:viewUtils",
                 "kotlin.stdLib",
                 "shared.napier",

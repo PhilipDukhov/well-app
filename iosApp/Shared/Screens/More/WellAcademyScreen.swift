@@ -15,13 +15,10 @@ struct WellAcademyScreen: View {
     let state: WellAcademyFeature.State
     let listener: (WellAcademyFeature.Msg) -> Void
 
-    @State
-    private var text = ""
-
     var body: some View {
         NavigationBar(
-            title: Feature.StateCompanion.shared.title,
-            leftItem: NavigationBarItem(view: Image(systemName: "chevron.left")) {
+            title: state.title,
+            leftItem: .back {
                 listener(Feature.MsgBack())
             }
         )

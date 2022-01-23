@@ -272,4 +272,8 @@ struct NavigationBarItem<V: View> {
             handler: handler
         )
     }
+
+    static func back(handler: @escaping () -> Void) -> NavigationBarItem<Image> {
+        .init(view: Image(systemName: "chevron.left"), handler: handler)
+    }
 }

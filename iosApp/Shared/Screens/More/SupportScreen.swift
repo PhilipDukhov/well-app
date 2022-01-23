@@ -14,8 +14,8 @@ struct SupportScreen: View {
 
     var body: some View {
         NavigationBar(
-            title: "Support",
-            leftItem: NavigationBarItem(view: Image(systemName: "chevron.left")) {
+            title: state.title,
+            leftItem: .back {
                 listener(SupportFeature.MsgBack())
             }
         )

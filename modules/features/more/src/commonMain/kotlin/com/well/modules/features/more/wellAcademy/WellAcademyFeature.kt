@@ -1,10 +1,13 @@
 package com.well.modules.features.more.wellAcademy
 
+import com.well.modules.features.more.MoreFeature
 import com.well.modules.puerhBase.toSetOf
 
 object WellAcademyFeature {
     class State {
+        val title = MoreFeature.State.Item.WellAcademy.title
         val text = "The WELL app provides urologists globally with an inexpensive and easily accessible means of performing mentored urological procedures in any environment. Coming soon"
+        val items = Items.values().toList()
 
         enum class Items(val title: String) {
             Webinars("Webinars"),
@@ -13,12 +16,6 @@ object WellAcademyFeature {
             Blog("Blog"),
             JournalClub("Journal Club"),
             FundamentalsInEndourology("Fundamentals in Endourology"),
-        }
-
-        val items = Items.values().toList()
-
-        companion object {
-            const val title = "WELL Academy"
         }
     }
 

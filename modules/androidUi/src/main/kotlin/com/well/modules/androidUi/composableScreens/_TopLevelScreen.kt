@@ -9,6 +9,7 @@ import com.well.modules.androidUi.composableScreens.login.LoginScreen
 import com.well.modules.androidUi.composableScreens.more.AboutScreen
 import com.well.modules.androidUi.composableScreens.more.MoreScreen
 import com.well.modules.androidUi.composableScreens.more.SupportScreen
+import com.well.modules.androidUi.composableScreens.more.WellAcademyScreen
 import com.well.modules.androidUi.composableScreens.myProfile.MyProfileScreen
 import com.well.modules.androidUi.composableScreens.userChat.UserChatScreen
 import com.well.modules.androidUi.composableScreens.welcome.WelcomeScreen
@@ -154,6 +155,9 @@ private fun ColumnScope.Screen(screenState: ScreenState, listener: (Feature.Msg)
             listener(screenState.mapMsgToTopLevel(it))
         }
         is ScreenState.Support -> SupportScreen(screenState.state) {
+            listener(screenState.mapMsgToTopLevel(it))
+        }
+        is ScreenState.WellAcademy -> WellAcademyScreen(screenState.state) {
             listener(screenState.mapMsgToTopLevel(it))
         }
         is ScreenState.ChatList -> ChatListScreen(screenState.state) {

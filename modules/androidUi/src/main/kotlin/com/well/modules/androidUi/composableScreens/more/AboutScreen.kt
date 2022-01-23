@@ -28,7 +28,7 @@ fun ColumnScope.AboutScreen(
     state: State,
     listener: (Msg) -> Unit,
 ) {
-    NavigationBar(title = "About")
+    NavigationBar(title = state.title)
     state.teamMembers.forEach { teamMember ->
         Row(
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)

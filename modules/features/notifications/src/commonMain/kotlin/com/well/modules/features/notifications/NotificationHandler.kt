@@ -64,7 +64,7 @@ class NotificationHandler(
                                     it.id == messageContainer.message.secondId(currentUid)
                                 }?.fullName ?: return@mapNotNull null,
                                 chatUnreadCount = unreadCounts[messageContainer.message.id]?.toInt() ?: 0,
-                                totalUnreadCount = 0,
+                                totalUnreadCount = 0, // updated later
                             )
                         }
                     val totalUnreadCount = notifications.sumOf { it.chatUnreadCount }

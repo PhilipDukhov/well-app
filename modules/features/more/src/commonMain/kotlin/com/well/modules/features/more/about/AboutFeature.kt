@@ -1,5 +1,6 @@
 package com.well.modules.features.more.about
 
+import com.well.modules.features.more.MoreFeature
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
 import com.well.modules.utils.viewUtils.sharedImage.SharedImage
@@ -7,6 +8,7 @@ import com.well.modules.utils.viewUtils.sharedImage.UrlImage
 
 object AboutFeature {
     data class State(val termsOpened: Boolean = false) {
+        val title = MoreFeature.State.Item.About.title
         val teamMembers = listOf(
             TeamMember(name = "Ralph Clayman", position = "MD, Co-Founder", twitter = "RalphVClayman"),
             TeamMember(name = "Zham Okhunov", position = "MD, Co-Founder", twitter = "zhamokhunov"),
@@ -32,22 +34,18 @@ object AboutFeature {
             val name: String,
             val position: String,
             val image: SharedImage,
-            internal val twitter: String
+            internal val twitter: String,
         ) {
             constructor(
                 name: String,
                 position: String,
-                twitter: String
+                twitter: String,
             ) : this(
                 name,
                 position,
                 UrlImage("https://well-images.s3.us-east-2.amazonaws.com/appImages/${name.filter { !it.isWhitespace() }}.png"),
                 twitter
             )
-        }
-
-        companion object {
-            const val title = "About"
         }
     }
 

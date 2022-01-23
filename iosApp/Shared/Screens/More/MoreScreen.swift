@@ -5,18 +5,20 @@
 import SwiftUI
 import SharedMobile
 
+private typealias Feature = MoreFeature
+
 struct MoreScreen: View {
     let state: MoreFeature.State
     let listener: (MoreFeature.Msg) -> Void
 
     var body: some View {
         NavigationBar(
-            title: "More"
+            title: state.title,
         )
         VStack {
             ForEachIndexed(state.items) { _, item in
                 Button(action: {
-                    listener(MoreFeature.MsgSelectItem(item: item))
+                    listener(Feature.MsgSelectItem(item: item))
                 }) {
                     HStack(spacing: 16) {
                         item.icon()
@@ -33,7 +35,7 @@ struct MoreScreen: View {
     }
 }
 
-private extension MoreFeature.StateItem {
+private extension Feature.StateItem {
     func icon() -> Image {
         switch self {
         case .support:

@@ -93,17 +93,14 @@ fun WelcomeScreen(
                         context.packageName
                     )
                 }
-                val painter = painterResource(id = drawableId)
-                Box {
-                    Image(
-                        painter,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillParentMaxWidth()
-                            .fillMaxHeight()
-                    )
-                }
+                Image(
+                    painterResource(id = drawableId),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillParentMaxWidth()
+                        .fillMaxHeight()
+                )
             }
         }
         GradientView(

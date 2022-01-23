@@ -157,7 +157,7 @@ private struct FilterSelectionScreen: View {
     var body: some View {
         NavigationBar(
             title: title,
-            leftItem: NavigationBarItem(view: Image(systemName: "chevron.left")) {
+            leftItem: .back {
                 onSelectionChanged(selection)
             },
             rightItem: { () -> NavigationBarItem<Text>? in

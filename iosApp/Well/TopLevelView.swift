@@ -106,6 +106,11 @@ struct TopLevelView: View {
                 listener(state.mapMsgToTopLevel(msg: $0))
             }
 
+        case let state as ScreenState.ChatList:
+            ChatListScreen(state: state.state) {
+                listener(state.mapMsgToTopLevel(msg: $0))
+            }
+
         case let state as ScreenState.UserChat:
             UserChatScreen(state: state.state) {
                 listener(state.mapMsgToTopLevel(msg: $0))

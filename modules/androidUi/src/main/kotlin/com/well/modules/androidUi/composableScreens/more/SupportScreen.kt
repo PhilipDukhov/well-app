@@ -24,7 +24,7 @@ fun ColumnScope.SupportScreen(
     state: State,
     listener: (Msg) -> Unit,
 ) {
-    NavigationBar(title = "Support")
+    NavigationBar(title = state.title)
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier

@@ -5,21 +5,23 @@
 import SwiftUI
 import SharedMobile
 
+private typealias Feature = AboutFeature
+
 struct AboutScreen: View {
     let state: AboutFeature.State
     let listener: (AboutFeature.Msg) -> Void
 
     var body: some View {
         NavigationBar(
-            title: "About",
-            leftItem: NavigationBarItem(view: Image(systemName: "chevron.left")) {
-                listener(AboutFeature.MsgBack())
+            title: state.title,
+            leftItem: .back {
+                listener(Feature.MsgBack())
             }
         )
         VStack {
             ForEachIndexed(state.teamMembers) { _, teamMember in
                 TeamMemberCell(user: teamMember) {
-                    listener(AboutFeature.MsgOpenTwitter(teamMember: teamMember))
+                    listener(Feature.MsgOpenTwitter(teamMember: teamMember))
                 }
             }
             Text(state.text)
@@ -30,7 +32,7 @@ struct AboutScreen: View {
 }
 
 private struct TeamMemberCell: View {
-    let user: AboutFeature.StateTeamMember
+    let user: Feature.StateTeamMember
     let onTwitterSelect: () -> Void
 
     var body: some View {
