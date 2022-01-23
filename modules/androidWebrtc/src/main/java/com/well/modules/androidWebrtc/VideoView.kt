@@ -1,12 +1,12 @@
 package com.well.modules.androidWebrtc
 
+import com.well.modules.features.call.callFeature.VideoViewContext
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import com.well.modules.features.call.callFeature.VideoViewContext
 import io.github.aakira.napier.Napier
 
 @Composable
@@ -24,20 +24,21 @@ fun VideoTextureView(
     }
 
     AndroidView(
-        { customView },
+        factory = { customView },
+        update = {
+            try {
+                videoContext.videoTrack.addSink(it)
+            } catch (t: Throwable) {
+                Napier.e("VideoView addSink failed", throwable = t)
+            }
+        },
         modifier = modifier
-    ) {
-        try {
-            videoContext.videoTrack.addSink(it)
-        } catch (t: Throwable) {
-            Napier.e("VideoView addSink failed", throwable = t)
-        }
-    }
+    )
     DisposableEffect(videoContext.videoTrack.id()) {
         onDispose {
             try {
                 videoContext.videoTrack.removeSink(customView)
-            } catch (t: Throwable) { }
+            } catch (_: Throwable) { }
         }
     }
 }

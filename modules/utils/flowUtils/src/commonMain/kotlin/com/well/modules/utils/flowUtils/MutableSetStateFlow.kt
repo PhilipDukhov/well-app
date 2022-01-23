@@ -40,10 +40,8 @@ class MutableSetStateFlow<E>(value: Set<E> = emptySet()) : Flow<Set<E>> {
         flow.value.toMutableSet()
             .let { value ->
                 value.modification()
-                    .also { changed ->
-                        if (changed) {
-                            flow.value = value
-                        }
+                    .also {
+                        flow.value = value
                     }
             }
 }

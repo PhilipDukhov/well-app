@@ -8,9 +8,7 @@ import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.sqlite.driver.asJdbcDriver
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import com.zaxxer.hikari.util.DriverDataSource
 import io.ktor.application.*
-import org.slf4j.LoggerFactory
 import java.io.File
 
 fun initialiseDatabase(app: Application): Pair<Database, SqlDriver> {
@@ -47,18 +45,6 @@ fun initialiseDatabase(app: Application): Pair<Database, SqlDriver> {
             ?.getString()
             ?.toInt() ?: 10
     }
-
-    listOf(
-        HikariDataSource::class.java,
-        com.zaxxer.hikari.pool.HikariPool::class.java,
-        com.zaxxer.hikari.pool.HikariPool::class.java.superclass,
-        DriverDataSource::class.java,
-        HikariConfig::class.java,
-    )
-        .map { LoggerFactory.getLogger(it) as ch.qos.logback.classic.Logger }
-        .forEach {
-            it.level = ch.qos.logback.classic.Level.WARN
-        }
 
     val dataSource = HikariDataSource(datasourceConfig)
     val driver = dataSource.asJdbcDriver()

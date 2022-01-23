@@ -23,6 +23,9 @@ import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.squareup.sqldelight.db.SqlDriver
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
+import com.zaxxer.hikari.util.DriverDataSource
 import io.ktor.application.*
 import io.ktor.client.*
 import kotlinx.coroutines.CoroutineScope
@@ -30,6 +33,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.slf4j.LoggerFactory
 import kotlin.time.Duration.Companion.seconds
 import java.io.File
 import java.io.FileInputStream
@@ -70,6 +74,24 @@ class Dependencies(app: Application) {
         javaClass.getResourceAsStream("/$name")!!
 
     init {
+        listOf(
+            HikariDataSource::class.java,
+            com.zaxxer.hikari.pool.HikariPool::class.java,
+            com.zaxxer.hikari.pool.HikariPool::class.java.superclass,
+            DriverDataSource::class.java,
+            HikariConfig::class.java,
+            "c.e.pushy.apns.ApnsClientHandler::class.java",
+        ).forEach {
+            (when (it) {
+                is String -> LoggerFactory.getLogger(it)
+                is Class<out Any> -> LoggerFactory.getLogger(it)
+                else -> throw IllegalStateException()
+            } as ch.qos.logback.classic.Logger)
+                .apply {
+                    level = ch.qos.logback.classic.Level.WARN
+                }
+        }
+
         val dbInfo = initialiseDatabase(app)
         database = dbInfo.first
         dbDriver = dbInfo.second

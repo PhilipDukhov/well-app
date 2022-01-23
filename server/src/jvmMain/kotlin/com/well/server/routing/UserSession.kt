@@ -346,8 +346,8 @@ class UserSession(
         session.value.send(
             WebSocketMsg.Back.IncomingCall(
                 dependencies.getUser(
-                    uid = msg.uid,
-                    currentUid = currentUid,
+                    uid = currentUid,
+                    currentUid = msg.uid,
                 )
             )
         )
