@@ -121,8 +121,18 @@ struct TopLevelView: View {
                 listener(state.mapMsgToTopLevel(msg: $0))
             }
 
+        case let state as ScreenState.UpdateRequest:
+            UpdateRequestScreen(state: state.state) {
+                listener(state.mapMsgToTopLevel(msg: $0))
+            }
+
         default:
+#if DEBUG
+            fatalError("expected screen \(screen)")
+#else
+            let _ = Napier.e("unexpected screen \(screen)")
             EmptyView()
+#endif
         }
     }
 }

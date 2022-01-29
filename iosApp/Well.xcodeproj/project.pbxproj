@@ -121,6 +121,8 @@
 		4A82806A2725FA3C004DF64E /* detectVolumeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8280692725FA3C004DF64E /* detectVolumeButton.swift */; };
 		4A82806E272714AB004DF64E /* typealiases.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82806D272714AB004DF64E /* typealiases.swift */; };
 		4A8280722727157A004DF64E /* TestScreens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A8280712727157A004DF64E /* TestScreens.swift */; };
+		4A84852727A5308C00B0F956 /* UpdateRequestScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A84852627A5308C00B0F956 /* UpdateRequestScreen.swift */; };
+		4A84852827A5308C00B0F956 /* UpdateRequestScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A84852627A5308C00B0F956 /* UpdateRequestScreen.swift */; };
 		4A98B2F827578B0600E62B8D /* CalendarScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A98B2F727578B0600E62B8D /* CalendarScreen.swift */; };
 		4A98B2F927578C5500E62B8D /* CalendarScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A98B2F727578B0600E62B8D /* CalendarScreen.swift */; };
 		4A98B2FB2757910800E62B8D /* CalendarMonthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A98B2FA2757910800E62B8D /* CalendarMonthView.swift */; };
@@ -232,6 +234,7 @@
 		4A82806C2725FCA0004DF64E /* SharedMobile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SharedMobile.h; path = ../../sharedMobile/build/cocoapods/framework/SharedMobile.framework/Headers/SharedMobile.h; sourceTree = "<group>"; };
 		4A82806D272714AB004DF64E /* typealiases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = typealiases.swift; sourceTree = "<group>"; };
 		4A8280712727157A004DF64E /* TestScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScreens.swift; sourceTree = "<group>"; };
+		4A84852627A5308C00B0F956 /* UpdateRequestScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateRequestScreen.swift; sourceTree = "<group>"; };
 		4A98B2F727578B0600E62B8D /* CalendarScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarScreen.swift; sourceTree = "<group>"; };
 		4A98B2FA2757910800E62B8D /* CalendarMonthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarMonthView.swift; sourceTree = "<group>"; };
 		4A9F38512741EAED004D5EF5 /* RoundedCornerRectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCornerRectangle.swift; sourceTree = "<group>"; };
@@ -425,6 +428,14 @@
 				4A82806D272714AB004DF64E /* typealiases.swift */,
 			);
 			path = Ext;
+			sourceTree = "<group>";
+		};
+		4A84852527A5306200B0F956 /* UpdateRequest */ = {
+			isa = PBXGroup;
+			children = (
+				4A84852627A5308C00B0F956 /* UpdateRequestScreen.swift */,
+			);
+			path = UpdateRequest;
 			sourceTree = "<group>";
 		};
 		4A98B2F627578AF700E62B8D /* Calendar */ = {
@@ -699,6 +710,7 @@
 			isa = PBXGroup;
 			children = (
 				D568035126384A2A00CFE16B /* Welcome */,
+				4A84852527A5306200B0F956 /* UpdateRequest */,
 				D555C1F225D8099500B4755F /* Login */,
 				D5F0A09A2578AC29002A55DB /* Experts */,
 				D5087658259A64A2000A57E5 /* Call */,
@@ -956,6 +968,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4A84852827A5308C00B0F956 /* UpdateRequestScreen.swift in Sources */,
 				4A82801C2725EDAB004DF64E /* UserChatScreen.swift in Sources */,
 				4A82804A2725EDAB004DF64E /* SupportScreen.swift in Sources */,
 				4A8280542725EDAB004DF64E /* WidthSlider.swift in Sources */,
@@ -1131,6 +1144,7 @@
 				347D1737EF6D0ED04DA9AC65 /* ForEachIndexed.swift in Sources */,
 				347D15DDABDD467C0CC08BF1 /* RatingInfoView.swift in Sources */,
 				347D1B5FCCA8AC2CBCFFF0DD /* ToggleFavoriteButton.swift in Sources */,
+				4A84852727A5308C00B0F956 /* UpdateRequestScreen.swift in Sources */,
 				347D1284F7802A92EBD89A49 /* RatingScreen.swift in Sources */,
 				347D1A25C3F01A6BE29610D2 /* UIKit.swift in Sources */,
 				347D1FC94691586F8E442AEF /* AboutScreen.swift in Sources */,

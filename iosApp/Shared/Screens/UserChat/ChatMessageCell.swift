@@ -95,7 +95,7 @@ private extension ChatMessageViewModel.Status {
         case .outgoingsent:
             Image(systemName: "checkmark")
         case .outgoingread:
-            Image("double-checkmark")
+            Image("doubleCheckmark")
         default: fatalError("unexpected ChatMessageWithStatus.Status: \(self.name)")
         }
     }

@@ -17,7 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
 
 class MyProfileTestModel(
     isCurrent: Boolean,
@@ -32,7 +32,7 @@ class MyProfileTestModel(
 
     private val handler by lazy {
         MyProfileEffHandler(
-            contextHelper = systemHelper,
+            systemHelper = systemHelper,
             services = MyProfileEffHandler.Services(
                 userFlow = flowOf(User.testUser),
                 putUser = {},
@@ -70,9 +70,11 @@ class MyProfileTestModel(
                         BookingAvailability.createWithAvailabilities(
                             Availability.testValues(10),
                             days = 30,
-                            minInterval = Duration.hours(1),
+                            minInterval = 1.hours,
                         )
                 },
+                onDeleteProfile = {},
+                openTechSupport = {},
             ),
             parentCoroutineScope = coroutineScope
         )

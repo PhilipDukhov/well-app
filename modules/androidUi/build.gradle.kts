@@ -39,6 +39,7 @@ libDependencies(
     ":modules:features:experts:expertsFeature",
     ":modules:features:userChat:userChatFeature",
     ":modules:features:calendar:calendarFeature",
+    ":modules:features:updateRequest",
 )
 
 android {

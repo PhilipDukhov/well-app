@@ -13,6 +13,7 @@ import com.well.modules.features.more.wellAcademy.WellAcademyFeature
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature
 import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State.ScreenPosition
 import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State.Tab
+import com.well.modules.features.updateRequest.UpdateRequestFeature
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.features.welcome.WelcomeFeature
 import com.well.modules.models.NotificationToken
@@ -46,6 +47,7 @@ import com.well.modules.utils.viewUtils.SystemContext
         ChatListFeature::class,
         UserChatFeature::class,
         CalendarFeature::class,
+        UpdateRequestFeature::class,
     ]
 )
 object TopLevelFeature {
@@ -154,6 +156,7 @@ object TopLevelFeature {
         data class UpdateNotificationToken(val token: NotificationToken) : Msg()
         data class UpdateSystemContext(val systemContext: SystemContext?) : Msg()
         data class RawNotificationReceived(val rawNotification: RawNotification) : Msg()
+        object ShowUpdateNeededScreen : Msg()
     }
 
     sealed interface Eff {
@@ -288,6 +291,13 @@ object TopLevelFeature {
                 }
                 is Msg.RawNotificationReceived -> {
                     return@eff Eff.HandleRawNotification(msg.rawNotification)
+                }
+                is Msg.ShowUpdateNeededScreen -> {
+                    return@state state.copyPush(
+                        Tab.Overlay,
+                        UpdateRequestFeature.State,
+                        ScreenState::UpdateRequest,
+                    )
                 }
             }
         })

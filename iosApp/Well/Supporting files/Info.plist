@@ -23,14 +23,14 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.$(IOS_GOOGLE_CLIENT_ID)</string>
+				<string>com.googleusercontent.apps.$(GCM_SENDER_ID)</string>
 				<string>fb$(FACEBOOK_APP_ID)</string>
 				<string>world.endo.live.link</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>202112101105</string>
+	<string>202201232036</string>
 	<key>FacebookAdvertiserIDCollectionEnabled</key>
 	<true/>
 	<key>FacebookAppID</key>

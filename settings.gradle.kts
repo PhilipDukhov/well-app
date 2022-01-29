@@ -64,6 +64,7 @@ val withAndroid = System.getProperty("withAndroid")!!.toBoolean()
         ":modules:features:calendar:calendarFeature",
         ":modules:features:calendar:calendarHandlers",
         ":modules:features:notifications",
+        ":modules:features:updateRequest",
     )
 //}
 

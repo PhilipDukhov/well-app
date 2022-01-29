@@ -11,6 +11,7 @@ import com.well.modules.androidUi.composableScreens.more.MoreScreen
 import com.well.modules.androidUi.composableScreens.more.SupportScreen
 import com.well.modules.androidUi.composableScreens.more.WellAcademyScreen
 import com.well.modules.androidUi.composableScreens.myProfile.MyProfileScreen
+import com.well.modules.androidUi.composableScreens.updateRequest.UpdateRequestScreen
 import com.well.modules.androidUi.composableScreens.userChat.UserChatScreen
 import com.well.modules.androidUi.composableScreens.welcome.WelcomeScreen
 import com.well.modules.androidUi.customViews.AutoSizeText
@@ -167,6 +168,9 @@ private fun ColumnScope.Screen(screenState: ScreenState, listener: (Feature.Msg)
             listener(screenState.mapMsgToTopLevel(it))
         }
         is ScreenState.Calendar -> CalendarScreen(screenState.state) {
+            listener(screenState.mapMsgToTopLevel(it))
+        }
+        is ScreenState.UpdateRequest -> UpdateRequestScreen(screenState.state) {
             listener(screenState.mapMsgToTopLevel(it))
         }
     }

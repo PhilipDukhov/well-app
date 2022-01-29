@@ -34,19 +34,24 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
 class NetworkManager(
     token: String,
     deviceId: DeviceId,
     startWebSocket: Boolean,
-    private val unauthorizedHandler: () -> Unit,
+    private val services: Services,
 ) : CloseableContainer() {
+    data class Services(
+        val onUnauthorized: () -> Unit,
+        val onUpdateNeeded: () -> Unit,
+    )
+
     private val clientWrapper = WebSocketClient(
         NetworkConstants.current(Platform.isLocalServer).let { constants ->
             WebSocketClient.Config(
@@ -58,6 +63,7 @@ class NetworkManager(
         }
     )
     private val client get() = clientWrapper.client
+
 
     private val webSocketScope = CoroutineScope(Dispatchers.Default)
 
@@ -91,6 +97,10 @@ class NetworkManager(
                             _webSocketMsgSharedFlow.emit(msg)
                         }
                     }
+                } catch (t: SerializationException) {
+                    Napier.e("web socket serialization error", t)
+                    services.onUpdateNeeded()
+                    break
                 } catch (t: Throwable) {
                     if (handleUnauthorized(t)) break
                     Napier.e("web socket connection error", t)
@@ -202,7 +212,7 @@ class NetworkManager(
         when (val t = t.toResponseException()) {
             is ClientRequestException -> {
                 if (t.status == HttpStatusCode.Unauthorized) {
-                    unauthorizedHandler()
+                    services.onUnauthorized()
                     return true
                 }
             }
@@ -212,21 +222,22 @@ class NetworkManager(
 
     suspend fun listCurrentUserAvailabilities(): List<Availability> =
         client.get("availabilities/listCurrent")
-    
+
     suspend fun removeAvailability(availabilityId: Availability.Id) {
         client.delete<Unit>("availabilities/${availabilityId.value}")
     }
+
     suspend fun putAvailability(availability: Availability): Availability =
         client.put("availabilities") {
             contentType(ContentType.Application.Json)
             body = availability
         }
 
-    suspend fun userHasAvailableAvailabilities(userId: User.Id) : Boolean =
+    suspend fun userHasAvailableAvailabilities(userId: User.Id): Boolean =
         client.get("availabilities/userHasAvailable/${userId.value}")
 
     suspend fun book(availability: BookingAvailability): Unit =
-        client.post("availabilities/book"){
+        client.post("availabilities/book") {
             contentType(ContentType.Application.Json)
             body = availability
         }
@@ -267,8 +278,3 @@ data class ClientRequestException(val status: HttpStatusCode) : Exception() {
 data class ServerResponseException(val status: HttpStatusCode) : Exception() {
     constructor(exception: io.ktor.client.features.ServerResponseException) : this(exception.response.status)
 }
-
-fun <T> Flow<T>.combineToNetworkConnectedState(networkManager: NetworkManager): Flow<T> =
-    combine(networkManager.onConnectedFlow) { value, _ ->
-        value
-    }

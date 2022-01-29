@@ -15,7 +15,9 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.random.Random
-import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 val User.Companion.testUser
     get() = User(
@@ -84,7 +86,7 @@ fun ChatMessageViewModel.Companion.getTestMessagesWithStatus(count: Int): List<C
             status = ChatMessageViewModel.Status.values()
                 .let { values ->
                     values[i % values.count()]
-                }, 
+                },
             creation = message.creation,
             content = message.content,
         )
@@ -103,7 +105,7 @@ private data class TestAvailabilitiesState(
                 id = Availability.Id(i.toLong()),
                 startDay = now.date.daysShift(i),
                 startTime = now.time,
-                durationMinutes = Duration.hours(hoursDuration).inWholeMinutes.toInt(),
+                durationMinutes = hoursDuration.hours.inWholeMinutes.toInt(),
                 repeat = repeat,
             )
         }
@@ -124,17 +126,20 @@ fun MeetingViewModel.Companion.testValues(count: Int) = List(count) { i ->
     if (i < 4) {
         MeetingViewModel(
             id = Meeting.Id(value = i.toLong()),
-            startInstant = Clock.System.now() + Duration.minutes((i - 1) * 20),
+            startInstant = Clock.System.now() + ((i - 1) * 20).minutes,
             durationMinutes = 15,
-            otherUser = User.testUser
+            otherUser = User.testUser,
+            state = Meeting.State.Requested,
+            isExpert = false
         )
     } else {
         MeetingViewModel(
             id = Meeting.Id(value = i.toLong()),
-            startInstant = Clock.System.now() + Duration.days(i) + Duration.hours(Random.nextInt(-10,
-                10)),
+            startInstant = Clock.System.now() + i.days + Random.nextInt(-10, 10).hours,
             durationMinutes = Random.nextInt(10, 90),
-            otherUser = User.testUser
+            otherUser = User.testUser,
+            state = Meeting.State.Requested,
+            isExpert = true
         )
     }
 }

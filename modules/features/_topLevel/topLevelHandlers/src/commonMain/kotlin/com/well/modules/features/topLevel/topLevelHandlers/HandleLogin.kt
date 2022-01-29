@@ -63,9 +63,14 @@ internal fun TopLevelFeatureProviderImpl.gotAuthResponse(
             token = authResponse.token,
             deviceId = dataStore.deviceUid,
             startWebSocket = false,
-            unauthorizedHandler = {
-                sessionInfo = null
-            },
+            services = NetworkManager.Services(
+                onUnauthorized = {
+                    sessionInfo = null
+                },
+                onUpdateNeeded = {
+                    listener(TopLevelFeature.Msg.ShowUpdateNeededScreen)
+                },
+            ),
         )
         listener.invoke(
             TopLevelFeature.Msg.PushMyProfile(
@@ -93,9 +98,14 @@ internal fun TopLevelFeatureProviderImpl.loggedIn(
         token = authInfo.token,
         deviceId = dataStore.deviceUid,
         startWebSocket = true,
-        unauthorizedHandler = {
-            logOut(listener)
-        },
+        NetworkManager.Services(
+            onUnauthorized = {
+                logOut(listener)
+            },
+            onUpdateNeeded = {
+                listener(TopLevelFeature.Msg.ShowUpdateNeededScreen)
+            },
+        ),
     )
     listener.invoke(TopLevelFeature.Msg.LoggedIn(uid))
     val webSocketListenerCloseable = networkManager
