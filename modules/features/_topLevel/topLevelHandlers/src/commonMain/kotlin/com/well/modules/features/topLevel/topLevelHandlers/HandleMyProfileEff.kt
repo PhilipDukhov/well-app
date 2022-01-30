@@ -1,6 +1,5 @@
 package com.well.modules.features.topLevel.topLevelHandlers
 
-import com.well.modules.db.users.getByIdFlow
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature
 import com.well.modules.features.myProfile.myProfileHandlers.MyProfileEffHandler
 import com.well.modules.features.topLevel.topLevelFeature.FeatureEff
@@ -25,7 +24,7 @@ internal fun TopLevelFeatureProviderImpl.createProfileEffHandler(
     listener: Listener<Msg>,
 ): EffectHandler<Eff, Msg> = MyProfileEffHandler(
     services = MyProfileEffHandler.Services(
-        userFlow = usersQueries.getByIdFlow(uid),
+        userFlow = getFullUserByIdFlow(uid),
         putUser = networkManager::putUser,
         uploadProfilePicture = networkManager::uploadProfilePicture,
         showThrowableAlert = {

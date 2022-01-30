@@ -23,11 +23,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -91,7 +93,8 @@ fun CallScreen(
     )
     ProfileImage(
         state.user,
-        squareCircleShaped = !ongoing,
+        shape = if (ongoing) RectangleShape else CircleShape,
+        aspectRatio = if (ongoing) null else 1f,
         modifier = Modifier
             .constrainAs(profileImage) {
                 centerHorizontallyTo(parent)

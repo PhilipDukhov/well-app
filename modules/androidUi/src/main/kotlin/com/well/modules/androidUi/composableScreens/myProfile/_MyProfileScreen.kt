@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -58,6 +57,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -354,10 +354,10 @@ private fun OtherUserHeader(
 ) {
     ProfileImage(
         header.image,
-        squareCircleShaped = false,
+        shape = RectangleShape,
+        aspectRatio = 1.2f,
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(1.2f)
     )
     Column(modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {

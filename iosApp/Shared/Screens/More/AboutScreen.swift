@@ -37,7 +37,7 @@ private struct TeamMemberCell: View {
 
     var body: some View {
         HStack {
-            ProfileImage(image: user.image)
+            ProfileImage(image: user.image, isOnline: false)
                 .frame(size: 45)
                 .padding(.trailing)
             VStack(alignment: .leading) {

@@ -126,11 +126,17 @@ internal fun TopLevelFeatureProviderImpl.loggedIn(
         }
         .collectIn(coroutineScope, networkManager::sendFront)
         .asCloseable()
+    val networkStateCloseable = networkManager
+        .isConnectedFlow
+        .collectIn(coroutineScope) {
+            onlineUsersStateFlow.value = emptySet()
+        }.asCloseable()
     listOf(
         webSocketListenerCloseable,
         notifyUsersDBPresenceCloseable(),
         networkManager,
         meetingsPresenceCloseable,
+        networkStateCloseable,
     ).forEach(sessionInfo!!::addCloseableChild)
     dataStore.authInfo = authInfo
 }

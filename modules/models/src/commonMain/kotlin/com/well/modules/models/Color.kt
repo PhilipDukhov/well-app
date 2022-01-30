@@ -46,7 +46,7 @@ data class Color(
         val MediumBlue = Color(0x0064A4)
         val DarkBlue = Color(0x1B3D6D)
         val Green = Color(0x94C83D)
-        val Green10 = Color(0x94C83D, alpha = 0.1f)
+        val Green10 = Green.copy(alpha = 0.1f)
         val DarkGrey = Color(0x555759)
         val BlackP = Color(0x01070E)
         val LightGray = Color(0xC4C4C4)

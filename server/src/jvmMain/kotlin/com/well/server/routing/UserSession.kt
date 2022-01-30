@@ -40,6 +40,7 @@ import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -210,6 +211,13 @@ class UserSession(
             token == null
                     || token.timestamp.daysUntil(Clock.System.now(), TimeZone.currentSystemDefault()) > 10
         }.map {}
+    private val onlineUsersFlow = neededUsersFlow
+        .combine(dependencies.connectedUserSessionsFlow) { neededUsers, connectedUserSessions ->
+            neededUsers.filter { uid ->
+                uid != currentUid && connectedUserSessions.any { it.key.uid == uid }
+            }.toSet()
+        }
+        .distinctUntilChanged()
 
     init {
         listOf(
@@ -221,6 +229,7 @@ class UserSession(
             removedMeetingIdsFlow.map(WebSocketMsg.Back::RemovedMeetings),
             fcmTokenNeededFlow.map { WebSocketMsg.Back.NotificationTokenRequest },
             removedUsersFlow.map(WebSocketMsg.Back::RemovedUsers),
+            onlineUsersFlow.map(WebSocketMsg.Back::OnlineUsersList)
         ).forEach { flow ->
             flow
                 .onEach {

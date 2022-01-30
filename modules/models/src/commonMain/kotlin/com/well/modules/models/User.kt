@@ -27,6 +27,7 @@ data class User(
     val publications: String? = null,
     val twitter: String? = null,
     val doximity: String? = null,
+    val isOnline: Boolean = false,
 ) {
     @Serializable
     @JvmInline
@@ -40,11 +41,6 @@ data class User(
             override fun encode(value: Id): Long =
                 value.value
         }
-
-        object SetColumnAdapter: com.well.modules.utils.dbUtils.SetColumnAdapter<Id>(
-            encodeT = { it.value.toString() },
-            decodeT = { Id(it.toLong()) },
-        )
     }
 
     val completeness: Int
@@ -70,6 +66,7 @@ data class User(
             100 * list.count { it != null && (it as? Collection<*>)?.isEmpty() != true } / list.count()
         }
 
+    @Suppress("unused")
     @Serializable
     enum class Credentials {
         MD,

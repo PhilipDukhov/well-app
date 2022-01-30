@@ -134,7 +134,6 @@ private fun ContentView(
                         .width(width)
                         .height(width / content.aspectRatio)
                 )
-
             }
         }
         is ChatMessage.Content.Text -> {

@@ -112,6 +112,11 @@ sealed class WebSocketMsg {
         ) : Back()
 
         @Serializable
+        data class OnlineUsersList(
+            val ids: Set<User.Id>,
+        ) : Back()
+
+        @Serializable
         object NotificationTokenRequest : Back()
     }
 

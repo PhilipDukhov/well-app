@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.statusBarsPadding
 
@@ -111,9 +112,9 @@ fun SelectionScreen() {
 fun LocalTestScreen() {
     ProfileImage(
         UrlImage("https://s3.us-east-2.amazonaws.com/well-images/profilePictures/3-932c9f30-d066-43ac-beef-a558ea9d07fa..jpeg"),
-        squareCircleShaped = false,
+        shape = RectangleShape,
+        aspectRatio = 1.2f,
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(1.2f)
     )
 }

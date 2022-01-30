@@ -3,7 +3,6 @@ package com.well.modules.features.topLevel.topLevelHandlers
 import com.well.modules.db.chatMessages.chatMessagesFlow
 import com.well.modules.db.chatMessages.insertTmpMessage
 import com.well.modules.db.chatMessages.markRead
-import com.well.modules.db.users.getByIdFlow
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.features.userChat.userChatHandlers.UserChatEffHandler
 import com.well.modules.models.User
@@ -25,7 +24,7 @@ internal class TopUserChatEffHandler(
     private val handler = with(featureProviderImpl) {
         UserChatEffHandler(
             services = UserChatEffHandler.Services(
-                peerUserFlow = usersQueries.getByIdFlow(peerUid),
+                peerUserFlow = getFullUserByIdFlow(peerUid),
                 messagesFlow = messagesDatabase
                     .chatMessagesFlow(
                         currentUid = currentUid,

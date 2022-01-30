@@ -211,7 +211,7 @@ struct MyProfileScreen: View {
     private func currentUserHeader(_ header: UIGroup.Header) -> some View {
         HStack(spacing: 0) {
             if let image = header.image {
-                ProfileImage(image: image)
+                ProfileImage(image: image, isOnline: false)
                     .frame(size: 100)
                     .padding(.trailing)
             } else {
@@ -247,7 +247,7 @@ struct MyProfileScreen: View {
     private func otherUserHeader(_ header: UIGroup.Header) -> some View {
         VStack {
             let profileImageWidth = UIScreen.main.bounds.width
-            ProfileImage(image: header.image, clipCircle: false, aspectRatio: 1.2, contentMode: .fill)
+            ProfileImage(image: header.image, isOnline: state.user?.isOnline ?? false, clipCircle: false, aspectRatio: 1.2, contentMode: .fill)
                 .frame(size: CGSize(width: profileImageWidth, height: profileImageWidth / 1.2))
                 .clipped()
             HStack {

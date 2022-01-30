@@ -20,6 +20,7 @@ import com.well.modules.db.meetings.listFlow
 import com.well.modules.db.meetings.removeAll
 import com.well.modules.db.mobile.DatabaseProvider
 import com.well.modules.db.mobile.createDatabaseProvider
+import com.well.modules.db.users.getByIdFlow
 import com.well.modules.db.users.getByIdsFlow
 import com.well.modules.db.users.insertOrReplace
 import com.well.modules.db.users.toUser
@@ -45,6 +46,7 @@ import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.Eff
 import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.Msg
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.features.welcome.WelcomeFeature
+import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.networking.NetworkManager
 import com.well.modules.puerhBase.ExecutorEffectHandler
@@ -76,6 +78,8 @@ import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -108,6 +112,7 @@ internal class TopLevelFeatureProviderImpl(
     val callCloseableContainer = CloseableContainer()
     var pendingNotifications = AtomicMutableList<RawNotification>()
     private var topScreenHandlerCloseable by AtomicCloseableRef<Closeable>()
+    val onlineUsersStateFlow = MutableStateFlow(emptySet<User.Id>())
 
     private val effectInterpreter: ExecutorEffectsInterpreter<Eff, Msg> =
         interpreter@{ eff, listener ->
@@ -115,6 +120,7 @@ internal class TopLevelFeatureProviderImpl(
                 is FeatureEff.ChatList,
                 is FeatureEff.MyProfile,
                 is FeatureEff.Calendar,
+                is FeatureEff.UpdateRequest,
                 -> Unit
                 is Eff.ShowAlert -> {
                     val alert = eff.alert
@@ -216,6 +222,11 @@ internal class TopLevelFeatureProviderImpl(
                                     .filterIsInstance<WebSocketMsg.Back.ListFilteredExperts>()
                                     .mapProperty(WebSocketMsg.Back.ListFilteredExperts::userIds)
                                     .flatMapLatest(usersQueries::getByIdsFlow)
+                                    .combine(onlineUsersStateFlow) { users, onlineUsers ->
+                                        users.map {
+                                            it.copy(isOnline = onlineUsers.contains(it.id))
+                                        }
+                                    }
                                     .combineWithUnit(networkManager.onConnectedFlow),
                                 updateUsersFilter = {
                                     networkManager.sendFront(WebSocketMsg.Front.SetExpertsFilter(it))
@@ -251,6 +262,7 @@ internal class TopLevelFeatureProviderImpl(
                                     .selectAllFlow(),
                                 getUsersByIdsFlow = usersQueries::getByIdsFlow,
                                 sendFrontWebSocketMsg = networkManager::sendFront,
+                                onlineUsersFlow = onlineUsersStateFlow,
                             ),
                             coroutineScope,
                         ).adapt(
@@ -311,7 +323,9 @@ internal class TopLevelFeatureProviderImpl(
                 is FeatureEff.Welcome -> {
                     when (eff.eff) {
                         WelcomeFeature.Eff.Continue -> {
-//                            dataStore.welcomeShowed = true
+                            if (!Platform.isDebug) {
+                                dataStore.welcomeShowed = true
+                            }
                             listener.invoke(Msg.OpenLoginScreen)
                         }
                     }
@@ -532,6 +546,16 @@ internal class TopLevelFeatureProviderImpl(
                     }
                 }
             }
+            is WebSocketMsg.Back.OnlineUsersList -> {
+                onlineUsersStateFlow.value = msg.ids
+            }
         }
     }
+
+    fun getFullUserByIdFlow(id: User.Id) =
+        usersQueries
+            .getByIdFlow(id)
+            .combine(onlineUsersStateFlow) { user, onlineUsers ->
+                user.copy(isOnline = onlineUsers.contains(id))
+            }
 }

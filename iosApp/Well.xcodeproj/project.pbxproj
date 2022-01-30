@@ -93,7 +93,6 @@
 		4A8280452725EDAB004DF64E /* ProfileImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96351B154D0F87BC97B362E5 /* ProfileImage.swift */; };
 		4A8280462725EDAB004DF64E /* ReducerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC263D727229EEE002BE68B /* ReducerView.swift */; };
 		4A8280472725EDAB004DF64E /* MyProfileScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D556940925D471F10012EA36 /* MyProfileScreen.swift */; };
-		4A8280482725EDAB004DF64E /* PartCircleShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96351144717EC2152B5D829D /* PartCircleShape.swift */; };
 		4A8280492725EDAB004DF64E /* MoreScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D19F97DCC9822CBBE4C71 /* MoreScreen.swift */; };
 		4A82804A2725EDAB004DF64E /* SupportScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347D1015E6F913660F210818 /* SupportScreen.swift */; };
 		4A82804B2725EDAB004DF64E /* HostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963512B5B12B74C258B78937 /* HostingController.swift */; };
@@ -156,7 +155,6 @@
 		D5680323263831DB00CFE16B /* Foundation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D555C1F025D70AB700B4755F /* Foundation.swift */; };
 		D5680324263831DB00CFE16B /* SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963518ED05F25F148D6F5928 /* SwiftUI.swift */; };
 		D5680325263831FC00CFE16B /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9635187200737E866C588DF2 /* Typography.swift */; };
-		D5680326263831FC00CFE16B /* PartCircleShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96351144717EC2152B5D829D /* PartCircleShape.swift */; };
 		D5680327263831FC00CFE16B /* ManualViewUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96351E8E8B0DCF8466BE3A44 /* ManualViewUpdater.swift */; };
 		D56803282638320300CFE16B /* HostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963512B5B12B74C258B78937 /* HostingController.swift */; };
 		D56803292638320300CFE16B /* HVStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = D556940E25D473880012EA36 /* HVStack.swift */; };
@@ -256,7 +254,6 @@
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		963510CBADB952EF5FE43C78 /* ToggleStillButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToggleStillButton.swift; sourceTree = "<group>"; };
 		96351127BC8BE95E698F3507 /* Kotlin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Kotlin.swift; sourceTree = "<group>"; };
-		96351144717EC2152B5D829D /* PartCircleShape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PartCircleShape.swift; sourceTree = "<group>"; };
 		96351161F74FFEEFE8D62B02 /* ColorPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPicker.swift; sourceTree = "<group>"; };
 		963511698F818E07DF430267 /* ImageSharing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageSharing.swift; sourceTree = "<group>"; };
 		963511D84AC7F5AE438A17B1 /* ViewContainer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewContainer.swift; sourceTree = "<group>"; };
@@ -612,7 +609,6 @@
 		96351F9D4EEE832DE9A5D481 /* Shapes */ = {
 			isa = PBXGroup;
 			children = (
-				96351144717EC2152B5D829D /* PartCircleShape.swift */,
 				4A9F38512741EAED004D5EF5 /* RoundedCornerRectangle.swift */,
 			);
 			path = Shapes;
@@ -974,7 +970,6 @@
 				4A8280542725EDAB004DF64E /* WidthSlider.swift in Sources */,
 				4A42E2CF272B4BCF00E839CF /* partialSheet.swift in Sources */,
 				4A82802C2725EDAB004DF64E /* Control.swift in Sources */,
-				4A8280482725EDAB004DF64E /* PartCircleShape.swift in Sources */,
 				4A8280682725F549004DF64E /* HasApply.swift in Sources */,
 				4A82804D2725EDAB004DF64E /* EditingField.swift in Sources */,
 				4A82801B2725EDAB004DF64E /* ExpertsScreen.swift in Sources */,
@@ -1127,7 +1122,6 @@
 				4A0A75F82728AA4E00632E84 /* AvailabilitiesList.swift in Sources */,
 				D568034E26383DA900CFE16B /* SearchBar.swift in Sources */,
 				4A0A75942727440500632E84 /* AppContainer.swift in Sources */,
-				D5680326263831FC00CFE16B /* PartCircleShape.swift in Sources */,
 				D56803412638322500CFE16B /* VideoView.swift in Sources */,
 				D568034A2638323700CFE16B /* UserCell.swift in Sources */,
 				D56803282638320300CFE16B /* HostingController.swift in Sources */,
@@ -1191,7 +1185,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS -Xfrontend -warn-long-function-bodies=100 -Xfrontend -warn-long-expression-type-checking=100";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS";
 				PRODUCT_BUNDLE_IDENTIFIER = com.well.app.localTest;
 				PRODUCT_MODULE_NAME = Well;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1288,6 +1282,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CODE_SIGN_FLAGS = "--generate-entitlement-der";
+				OTHER_SWIFT_FLAGS = "-Xfrontend -warn-long-function-bodies=200 -Xfrontend -warn-long-expression-type-checking=200";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -1379,7 +1374,6 @@
 					"-l\"z\"",
 					"-lsqlite3",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -Xfrontend -warn-long-function-bodies=100 -Xfrontend -warn-long-expression-type-checking=100";
 				PRODUCT_BUNDLE_IDENTIFIER = com.well.well.debug;
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME)";
 				PRODUCT_NAME = "$(TARGET_NAME)_D";

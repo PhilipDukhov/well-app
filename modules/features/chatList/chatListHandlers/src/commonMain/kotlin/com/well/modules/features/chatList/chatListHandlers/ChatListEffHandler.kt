@@ -26,6 +26,7 @@ class ChatListEffHandler(
     data class Services(
         val openUserChat: (id: User.Id) -> Unit,
         val onConnectedFlow: Flow<Unit>,
+        val onlineUsersFlow: Flow<Set<User.Id>>,
         val lastListViewModelFlow: Flow<List<ChatMessageContainer>>,
         val unreadCountsFlow: (List<ChatMessage>) -> Flow<Map<ChatMessage.Id, Long>>,
         val getUsersByIdsFlow: (List<User.Id>) -> Flow<List<User>>,
@@ -39,19 +40,23 @@ class ChatListEffHandler(
         .flatMapLatest { chatMessagesWithStatus ->
             val unreadCountsFlow =
                 services.unreadCountsFlow(chatMessagesWithStatus.map { it.message })
-            services.getUsersByIdsFlow(chatMessagesWithStatus.map { it.message.secondId(currentUid) })
-                .combine(unreadCountsFlow) { users, unreadCounts ->
-                    chatMessagesWithStatus.mapNotNull { messageContainer ->
-                        ChatListFeature.State.ListItem(
-                            user = users.firstOrNull {
-                                it.id == messageContainer.message.secondId(currentUid)
-                            } ?: return@mapNotNull null,
-                            lastMessage = messageContainer.viewModel,
-                            unreadCount = unreadCounts[messageContainer.message.id]?.toInt()
-                                ?: 0,
-                        )
-                    }
+            combine(
+                services.getUsersByIdsFlow(chatMessagesWithStatus.map { it.message.secondId(currentUid) }),
+                unreadCountsFlow,
+                services.onlineUsersFlow,
+            ) { users, unreadCounts, onlineUsers ->
+                chatMessagesWithStatus.mapNotNull { messageContainer ->
+                    val uid = messageContainer.message.secondId(currentUid)
+                    ChatListFeature.State.ListItem(
+                        user = users.firstOrNull { it.id == uid }
+                            ?.copy(isOnline = onlineUsers.contains(uid))
+                            ?: return@mapNotNull null,
+                        lastMessage = messageContainer.viewModel,
+                        unreadCount = unreadCounts[messageContainer.message.id]?.toInt()
+                            ?: 0,
+                    )
                 }
+            }
         }
 
     init {
