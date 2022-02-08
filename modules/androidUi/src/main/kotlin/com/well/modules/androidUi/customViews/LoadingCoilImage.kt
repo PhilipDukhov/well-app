@@ -6,11 +6,16 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import coil.compose.ImagePainter
-import coil.compose.rememberImagePainter
+import androidx.compose.ui.platform.LocalContext
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 
 @Composable
 fun LoadingCoilImage(
@@ -19,11 +24,11 @@ fun LoadingCoilImage(
     contentScale: ContentScale = ContentScale.Fit,
     successProgressIndicatorNeeded: Boolean = false,
 ) {
-    val painter = rememberImagePainter(
-        data,
-        builder = {
-            crossfade(true)
-        }
+    val painter = rememberAsyncImagePainter(
+        ImageRequest.Builder(LocalContext.current)
+            .data(data)
+            .crossfade(true)
+            .build()
     )
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         Image(
@@ -32,19 +37,18 @@ fun LoadingCoilImage(
             contentScale = contentScale,
             modifier = Modifier.matchParentSize()
         )
-        if (
-            painter.state is ImagePainter.State.Loading
-            || (painter.state is ImagePainter.State.Success && successProgressIndicatorNeeded)
-        ) {
-            ProgressIndicator()
+        val progressIndicatorNeeded by remember {
+            derivedStateOf {
+                painter.state is AsyncImagePainter.State.Loading
+                        || (painter.state is AsyncImagePainter.State.Success && successProgressIndicatorNeeded)
+            }
+        }
+        if (progressIndicatorNeeded) {
+            CircularProgressIndicator(
+                Modifier
+                    .fillMaxWidth(0.7F)
+                    .aspectRatio(1f)
+            )
         }
     }
 }
-
-@Composable
-private fun ProgressIndicator() =
-    CircularProgressIndicator(
-        Modifier
-            .fillMaxWidth(0.7F)
-            .aspectRatio(1f)
-    )

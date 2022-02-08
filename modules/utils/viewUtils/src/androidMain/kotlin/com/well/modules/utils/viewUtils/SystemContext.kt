@@ -22,6 +22,11 @@ actual class SystemContext(val activity: ComponentActivity) {
         image: ImageContainer,
         url: String,
     ) {
-        Coil.imageLoader(activity).memoryCache[MemoryCache.Key(url)] = image.getBitmap()
+        Coil.imageLoader(activity)
+            .memoryCache
+            ?.set(
+                MemoryCache.Key(url),
+                MemoryCache.Value(image.getBitmap()),
+            )
     }
 }

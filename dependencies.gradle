@@ -39,9 +39,11 @@ if (ext.properties["kotlin.native.binary.memoryModel"] == "experimental") {
 if (stableCompose) {
     versions["compose"] = "1.1.0-rc03"
     versions["accompanist"] = "0.22.1-rc"
+    versions["coil"] = "1.4.0"
 } else {
     versions["compose"] = "1.2.0-alpha02"
     versions["accompanist"] = "0.24.1-alpha"
+    versions["coil"] = "2.0.0-alpha08"
 }
 
 ext.Versions = versions
@@ -52,7 +54,7 @@ ext.Libs = [
         googleServices      : "com.google.gms:google-services:4.3.10",
         dotenv              : "io.github.cdimascio:dotenv-kotlin:6.2.2",
         sqldelight          : "com.squareup.sqldelight:gradle-plugin:$versions.sqldelight",
-        gradleVersionsPlugin: "com.github.ben-manes:gradle-versions-plugin:0.41.0",
+        gradleVersionsPlugin: "com.github.ben-manes:gradle-versions-plugin:0.42.0",
         buildKonfig         : "com.codingfeline.buildkonfig:buildkonfig-gradle-plugin:0.11.0",
     ],
     kotlin    : [
