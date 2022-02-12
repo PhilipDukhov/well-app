@@ -29,3 +29,10 @@ fun UsersQueries.getByIdsFlow(uids: Collection<User.Id>) =
         .asFlow()
         .mapToList()
         .mapIterable(Users::toUser)
+
+fun UsersQueries.getFavoritesFlow() =
+    getFavorites()
+        .asFlow()
+        .mapToList()
+        .filterNotNull()
+        .mapIterable(Users::toUser)

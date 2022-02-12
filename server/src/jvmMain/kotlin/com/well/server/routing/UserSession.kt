@@ -7,6 +7,7 @@ import com.well.modules.db.server.getAllForUserFlow
 import com.well.modules.db.server.getByIdsFlow
 import com.well.modules.db.server.getByUserIdFlow
 import com.well.modules.db.server.insertChatMessage
+import com.well.modules.db.server.listByOwnerIdFlow
 import com.well.modules.db.server.peerIdsListFlow
 import com.well.modules.db.server.selectByAnyIdFlow
 import com.well.modules.db.server.selectByDeviceIdFlow
@@ -165,6 +166,10 @@ class UserSession(
         .combineToSet(
             dependencies.database.chatMessagesQueries
                 .peerIdsListFlow(id = currentUid)
+        )
+        .combineToSet(
+            dependencies.database.favoritesQueries
+                .listByOwnerIdFlow(currentUid)
         )
         .combineToSet(
             dependencies.database.meetingsQueries

@@ -30,7 +30,7 @@ libDependencies(
     ":modules:utils:viewUtils",
     ":modules:utils:kotlinUtils",
     ":modules:features:_topLevel:topLevelFeature",
-    ":modules:features:more",
+    ":modules:features:more:moreFeature",
     ":modules:features:welcome",
     ":modules:features:myProfile:myProfileFeature",
     ":modules:features:call:callFeature",

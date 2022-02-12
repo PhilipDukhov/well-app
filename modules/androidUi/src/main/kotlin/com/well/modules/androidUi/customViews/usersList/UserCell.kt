@@ -1,4 +1,4 @@
-package com.well.modules.androidUi.composableScreens.experts
+package com.well.modules.androidUi.customViews.usersList
 
 import com.well.modules.androidUi.customViews.ProfileImage
 import com.well.modules.androidUi.customViews.RatingInfoView

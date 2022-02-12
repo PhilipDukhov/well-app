@@ -4,8 +4,8 @@ import com.well.modules.androidUi.R
 import com.well.modules.androidUi.customViews.Control
 import com.well.modules.androidUi.customViews.NavigationBar
 import com.well.modules.androidUi.ext.toColor
-import com.well.modules.features.more.MoreFeature.Msg
-import com.well.modules.features.more.MoreFeature.State
+import com.well.modules.features.more.moreFeature.MoreFeature.Msg
+import com.well.modules.features.more.moreFeature.MoreFeature.State
 import com.well.modules.models.Color
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ColumnScope
@@ -17,8 +17,12 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.SentimentSatisfiedAlt
 import androidx.compose.material.icons.filled.Support
+import androidx.compose.material.icons.outlined.PersonAddAlt1
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -46,6 +50,10 @@ fun ColumnScope.MoreScreen(
                         State.Item.TechnicalSupport -> rememberVectorPainter(Icons.Default.Support)
                         State.Item.About -> rememberVectorPainter(Icons.Default.Info)
                         State.Item.WellAcademy -> painterResource(R.drawable.ic_well_academy)
+                        State.Item.InviteColleague -> rememberVectorPainter(Icons.Outlined.PersonAddAlt1)
+                        State.Item.Favorites -> rememberVectorPainter(Icons.Default.FavoriteBorder)
+                        State.Item.ActivityHistory -> rememberVectorPainter(Icons.Default.History)
+                        State.Item.Donate -> rememberVectorPainter(Icons.Default.SentimentSatisfiedAlt)
                     },
                     contentDescription = null,
                     tint = Color.LightBlue.toColor()

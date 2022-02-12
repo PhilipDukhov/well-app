@@ -38,6 +38,14 @@ SELECT id, lastEdited FROM Users;
 getByIds:
 SELECT * FROM Users WHERE id IN ?;
 
+getFavorites:
+SELECT * FROM Users WHERE favorite = TRUE;
+
+updateFavorite:
+UPDATE Users
+SET favorite = ?
+WHERE id = ?;
+
 getById:
 SELECT * FROM Users WHERE id = ?;
 

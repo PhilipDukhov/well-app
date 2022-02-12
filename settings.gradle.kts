@@ -46,7 +46,7 @@ val withAndroid = System.getProperty("withAndroid")!!.toBoolean()
         ":modules:networking",
         ":modules:puerhBase",
         ":modules:features:welcome",
-        ":modules:features:more",
+        ":modules:features:more:moreFeature",
         ":modules:features:_topLevel:topLevelFeature",
         ":modules:features:_topLevel:topLevelHandlers",
         ":modules:features:myProfile:myProfileFeature",

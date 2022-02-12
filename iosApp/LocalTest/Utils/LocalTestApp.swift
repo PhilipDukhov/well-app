@@ -19,7 +19,7 @@ struct LocalTestApp: App {
     var opened = true
 
     @State
-    var contextHelper: ContextHelper?
+    var systemHelper: SystemHelper?
 
     @State
     var viewController: UIViewController?
@@ -61,13 +61,12 @@ struct LocalTestApp: App {
                     }
                     Spacer().fillMaxHeight()
 
-                    if contextHelper != nil {
+                    if let systemHelper = systemHelper {
                         NavigationLink(isActive: $opened) {
                             AppContainer(
                                 content: TestingScreens(selectedScreen: selectedScreen)
                                     .navigationBarHidden(true)
-                            ).environmentObject(contextHelper!)
-                            
+                            ).environmentObject(systemHelper)
                         } label: {
                             Text("Open")
                         }
@@ -80,8 +79,8 @@ struct LocalTestApp: App {
                     return
                 }
                 self.viewController = viewController
-                contextHelper = ContextHelper(
-                    appContext: AppContext(
+                systemHelper = SystemHelper(
+                    systemContext: .init(
                         rootController: viewController,
                         application: UIApplication.shared,
                         launchOptions: nil,
@@ -93,6 +92,6 @@ struct LocalTestApp: App {
     }
 }
 
-extension ContextHelper: ObservableObject {
+extension SystemHelper: ObservableObject {
     
 }

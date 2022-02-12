@@ -7,6 +7,9 @@ import com.well.modules.androidUi.composableScreens.chatList.ChatListScreen
 import com.well.modules.androidUi.composableScreens.experts.ExpertsScreen
 import com.well.modules.androidUi.composableScreens.login.LoginScreen
 import com.well.modules.androidUi.composableScreens.more.AboutScreen
+import com.well.modules.androidUi.composableScreens.more.ActivityHistoryScreen
+import com.well.modules.androidUi.composableScreens.more.DonateScreen
+import com.well.modules.androidUi.composableScreens.more.FavoritesScreen
 import com.well.modules.androidUi.composableScreens.more.MoreScreen
 import com.well.modules.androidUi.composableScreens.more.SupportScreen
 import com.well.modules.androidUi.composableScreens.more.WellAcademyScreen
@@ -171,6 +174,15 @@ private fun ColumnScope.Screen(screenState: ScreenState, listener: (Feature.Msg)
             listener(screenState.mapMsgToTopLevel(it))
         }
         is ScreenState.UpdateRequest -> UpdateRequestScreen(screenState.state) {
+            listener(screenState.mapMsgToTopLevel(it))
+        }
+        is ScreenState.ActivityHistory -> ActivityHistoryScreen(screenState.state) {
+            listener(screenState.mapMsgToTopLevel(it))
+        }
+        is ScreenState.Donate -> DonateScreen(screenState.state) {
+            listener(screenState.mapMsgToTopLevel(it))
+        }
+        is ScreenState.Favorites -> FavoritesScreen(screenState.state) {
             listener(screenState.mapMsgToTopLevel(it))
         }
     }

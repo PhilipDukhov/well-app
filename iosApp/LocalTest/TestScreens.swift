@@ -17,10 +17,11 @@ enum Screen: String, CaseIterable {
     case filter
     case chatMessagesList
     case calendar
+    case favorites
     
     case local
     
-    static let initial: Screen = .profile
+    static let initial: Screen = .favorites
 }
 
 struct TestingScreens: View {
@@ -88,6 +89,13 @@ struct TestingScreens: View {
             ) {
                 CalendarScreen(state: $0, listener: $1)
             }
+        case .favorites:
+            ReducerView(
+                initial: FavoritesFeature().testState(),
+                reducer: FavoritesFeature().reducer
+            ) {
+                FavoritesScreen(state: $0, listener: $1)
+            }
             
         case .local:
             Image("bubble")
@@ -98,14 +106,14 @@ struct TestingScreens: View {
 
 struct ProfileTestView: View {
     @EnvironmentObject
-    var contextHelper: ContextHelper
+    var systemHelper: SystemHelper
     @AppStorage("ProfileTestView_isCurrent") var isCurrent = false
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack {
                 ViewModelView(
-                    MyProfileTestModel(isCurrent: isCurrent, contextHelper: contextHelper),
+                    MyProfileTestModel(isCurrent: isCurrent, systemHelper: systemHelper),
                     view: MyProfileScreen.init
                 )
                     .id(isCurrent)

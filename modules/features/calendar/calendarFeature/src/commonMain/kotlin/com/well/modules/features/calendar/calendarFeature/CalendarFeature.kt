@@ -115,11 +115,11 @@ object CalendarFeature {
                     )
                 }
                 is Msg.OpenUserProfile -> {
-                    val uid = msg.meeting.otherUser?.id ?: return@state state
+                    val uid = msg.meeting.otherUser.id
                     return@eff Eff.OpenUserProfile(uid)
                 }
                 is Msg.StartCall -> {
-                    val uid = msg.meeting.otherUser?.id ?: return@state state
+                    val uid = msg.meeting.otherUser.id
                     return@eff Eff.StartCall(uid)
                 }
                 is Msg.UpdateMeetingState -> {

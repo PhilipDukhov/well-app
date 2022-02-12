@@ -3,7 +3,7 @@ package com.well.modules.features.topLevel.topLevelFeature
 import com.well.modules.features.calendar.calendarFeature.CalendarFeature
 import com.well.modules.features.chatList.chatListFeature.ChatListFeature
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature
-import com.well.modules.features.more.MoreFeature
+import com.well.modules.features.more.moreFeature.MoreFeature
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature
 import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.Eff
 import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State

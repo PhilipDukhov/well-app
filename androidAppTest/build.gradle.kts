@@ -1,6 +1,3 @@
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-import org.jetbrains.kotlin.gradle.plugin.PLUGIN_CLASSPATH_CONFIGURATION_NAME
-
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -23,7 +20,7 @@ libDependencies(
     ":sharedMobileTest",
     ":modules:androidUi",
     ":modules:utils:viewUtils",
-    ":modules:features:more",
+    ":modules:features:more:moreFeature",
     ":modules:features:welcome",
     ":modules:features:myProfile:myProfileFeature",
     ":modules:features:call:callFeature",

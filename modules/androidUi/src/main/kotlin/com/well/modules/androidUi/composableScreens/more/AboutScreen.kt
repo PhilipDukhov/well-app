@@ -1,14 +1,15 @@
 package com.well.modules.androidUi.composableScreens.more
 
 import com.well.modules.androidUi.R
-import com.well.modules.androidUi.theme.captionLight
 import com.well.modules.androidUi.customViews.Control
+import com.well.modules.androidUi.customViews.ControlItem
 import com.well.modules.androidUi.customViews.NavigationBar
 import com.well.modules.androidUi.customViews.ProfileImage
 import com.well.modules.androidUi.ext.toColor
+import com.well.modules.androidUi.theme.captionLight
+import com.well.modules.features.more.moreFeature.subfeatures.AboutFeature.Msg
+import com.well.modules.features.more.moreFeature.subfeatures.AboutFeature.State
 import com.well.modules.models.Color
-import com.well.modules.features.more.about.AboutFeature.Msg
-import com.well.modules.features.more.about.AboutFeature.State
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -28,7 +29,10 @@ fun ColumnScope.AboutScreen(
     state: State,
     listener: (Msg) -> Unit,
 ) {
-    NavigationBar(title = state.title)
+    NavigationBar(
+        title = state.title,
+        leftItem = ControlItem.back { listener(Msg.Back) }
+    )
     state.teamMembers.forEach { teamMember ->
         Row(
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)

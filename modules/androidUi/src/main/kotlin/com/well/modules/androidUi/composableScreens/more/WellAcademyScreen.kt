@@ -2,8 +2,8 @@ package com.well.modules.androidUi.composableScreens.more
 
 import com.well.modules.androidUi.customViews.NavigationBar
 import com.well.modules.androidUi.theme.body1Light
-import com.well.modules.features.more.wellAcademy.WellAcademyFeature.Msg
-import com.well.modules.features.more.wellAcademy.WellAcademyFeature.State
+import com.well.modules.features.more.moreFeature.subfeatures.WellAcademyFeature.Msg
+import com.well.modules.features.more.moreFeature.subfeatures.WellAcademyFeature.State
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope

@@ -23,7 +23,6 @@ object ExpertsFeature {
     data class State(
         val users: List<User>,
         internal val connectionStatus: ConnectionStatus,
-        val currentUser: User? = null,
         val filterState: FilterFeature.State = FilterFeature.State(filter = UsersFilter()),
         val updatingFilter: Boolean = false,
     ) {
@@ -36,8 +35,6 @@ object ExpertsFeature {
         data class OnUsersUpdated(val users: List<User>) : Msg()
         data class OnUserSelected(val user: User) : Msg()
         data class OnUserFavorite(val user: User) : Msg()
-        object OnCurrentUserSelected : Msg()
-        data class OnCurrentUserUpdated(val user: User?) : Msg()
 
         data class FilterMsg(val msg: FilterFeature.Msg) : Msg()
         data class SetSearchString(val searchString: String) : Msg()
@@ -47,7 +44,6 @@ object ExpertsFeature {
 
     sealed interface Eff {
         data class SelectedUser(val user: User) : Eff
-        data class CallUser(val user: User) : Eff
         data class UpdateList(val filter: UsersFilter) : Eff
         data class SetUserFavorite(val setter: FavoriteSetter) : Eff
         data class FilterEff(val eff: FilterFeature.Eff) : Eff
@@ -76,22 +72,8 @@ object ExpertsFeature {
                 is Msg.OnUserSelected -> {
                     return@eff Eff.SelectedUser(msg.user)
                 }
-                is Msg.OnCurrentUserUpdated -> {
-                    return@state state.copy(currentUser = msg.user)
-                }
-                Msg.OnCurrentUserSelected -> {
-                    return@eff Eff.SelectedUser(state.currentUser!!)
-                }
                 is Msg.OnUserFavorite -> {
-                    val newUser = msg.user.copy(favorite = !msg.user.favorite)
-                    return@reducer state.copy(
-                        users = state.users
-                            .toMutableList()
-                            .also { users ->
-                                val index = users.indexOfFirst { it.id == newUser.id }
-                                users[index] = newUser
-                            }
-                    ) toSetOf Eff.SetUserFavorite(FavoriteSetter(newUser.favorite, newUser.id))
+                    return@eff Eff.SetUserFavorite(FavoriteSetter(!msg.user.favorite, msg.user.id))
                 }
                 is Msg.FilterMsg -> {
                     return@reducer state.reduceFilterMsg(msg.msg)

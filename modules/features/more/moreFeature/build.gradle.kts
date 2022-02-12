@@ -15,6 +15,7 @@ kotlin {
                 ":modules:puerhBase",
                 ":modules:utils:kotlinUtils",
                 ":modules:utils:viewUtils",
+                "kotlin.datetime",
                 "kotlin.stdLib",
                 "shared.napier",
             )

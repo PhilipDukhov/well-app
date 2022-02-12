@@ -3,15 +3,14 @@ package com.well.modules.androidUi.composableScreens.experts
 import com.well.modules.androidUi.composableScreens.experts.filter.FilterScreen
 import com.well.modules.androidUi.customViews.NavigationBar
 import com.well.modules.androidUi.customViews.rememberControlItem
+import com.well.modules.androidUi.customViews.usersList.UsersList
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature.Msg
 import com.well.modules.models.Color
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature as Feature
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -26,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.google.accompanist.insets.navigationBarsPadding
-import androidx.activity.compose.BackHandler
 
 @Composable
 fun ColumnScope.ExpertsScreen(
@@ -93,21 +91,15 @@ private fun ExpertsScreenContent(
             )
         },
     )
-    LazyColumn(modifier = Modifier.navigationBarsPadding()) {
-        if (state.users.isNotEmpty()) {
-            item { Divider() }
-        }
-        items(state.users) { user ->
-            UserCell(
-                user,
-                onSelect = {
-                    listener.invoke(Msg.OnUserSelected(user))
-                },
-                onToggleFavorite = {
-                    listener.invoke(Msg.OnUserFavorite(user))
-                },
-            )
-            Divider()
-        }
-    }
+    UsersList(
+        users = state.users,
+        onSelect = {
+            listener(Msg.OnUserSelected(it))
+        },
+        onToggleFavorite = {
+            listener(Msg.OnUserFavorite(it))
+        },
+        modifier = Modifier
+            .navigationBarsPadding()
+    )
 }

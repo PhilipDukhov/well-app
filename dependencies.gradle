@@ -37,12 +37,12 @@ if (ext.properties["kotlin.native.binary.memoryModel"] == "experimental") {
 }
 
 if (stableCompose) {
-    versions["compose"] = "1.1.0-rc03"
-    versions["accompanist"] = "0.22.1-rc"
+    versions["compose"] = "1.1.0"
+    versions["accompanist"] = "0.23.0"
     versions["coil"] = "1.4.0"
 } else {
-    versions["compose"] = "1.2.0-alpha02"
-    versions["accompanist"] = "0.24.1-alpha"
+    versions["compose"] = "1.2.0-alpha03"
+    versions["accompanist"] = "0.24.2-alpha"
     versions["coil"] = "2.0.0-alpha08"
 }
 
@@ -69,7 +69,7 @@ ext.Libs = [
     ],
     android   : [
         appCompat    : "androidx.appcompat:appcompat:1.4.0",
-        material     : "com.google.android.material:material:1.4.0",
+        material     : "com.google.android.material:material:1.5.0",
         annotation   : "androidx.annotation:annotation:1.1.0",
         activity     : "androidx.activity:activity-ktx:$versions.androidActivity",
         dataStore    : "androidx.datastore:datastore-preferences:1.0.0",
@@ -86,7 +86,7 @@ ext.Libs = [
                 material             : "androidx.compose.material:material:$versions.compose",
                 materialIconsCore    : "androidx.compose.material:material-icons-core:$versions.compose",
                 materialIconsExtended: "androidx.compose.material:material-icons-extended:$versions.compose",
-                constraintLayout     : "androidx.constraintlayout:constraintlayout-compose:1.0.0-rc02",
+                constraintLayout     : "androidx.constraintlayout:constraintlayout-compose:1.0.0",
                 viewModel            : "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0",
                 activity             : "androidx.activity:activity-compose:$versions.androidActivity",
             ],
@@ -173,7 +173,7 @@ ext.iosExportItems = [
     ":modules:utils:flowUtils",
     ":modules:utils:viewUtils",
     ":modules:features:_topLevel:topLevelFeature",
-    ":modules:features:more",
+    ":modules:features:more:moreFeature",
     ":modules:features:welcome",
     ":modules:features:myProfile:myProfileFeature",
     ":modules:features:login:loginFeature",
@@ -196,6 +196,5 @@ if (gradlePluginVersion != null) {
     ext.Libs["build"]["gradle"] = "com.android.tools.build:gradle:$gradlePluginVersion"
 }
 if (material3) {
-    ext.Libs["android"]["material"] = "com.google.android.material:material:1.5.0-alpha05"
-    ext.Libs["android"]["compose"]["material3"] = "androidx.compose.material3:material3:1.0.0-alpha01"
+    ext.Libs["android"]["compose"]["core"]["material3"] = "androidx.compose.material3:material3:1.0.0-alpha05"
 }

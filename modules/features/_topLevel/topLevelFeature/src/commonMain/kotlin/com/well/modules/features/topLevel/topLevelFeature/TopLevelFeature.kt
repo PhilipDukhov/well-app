@@ -6,10 +6,13 @@ import com.well.modules.features.call.callFeature.CallFeature
 import com.well.modules.features.chatList.chatListFeature.ChatListFeature
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature
 import com.well.modules.features.login.loginFeature.LoginFeature
-import com.well.modules.features.more.MoreFeature
-import com.well.modules.features.more.about.AboutFeature
-import com.well.modules.features.more.support.SupportFeature
-import com.well.modules.features.more.wellAcademy.WellAcademyFeature
+import com.well.modules.features.more.moreFeature.MoreFeature
+import com.well.modules.features.more.moreFeature.subfeatures.AboutFeature
+import com.well.modules.features.more.moreFeature.subfeatures.ActivityHistoryFeature
+import com.well.modules.features.more.moreFeature.subfeatures.DonateFeature
+import com.well.modules.features.more.moreFeature.subfeatures.FavoritesFeature
+import com.well.modules.features.more.moreFeature.subfeatures.SupportFeature
+import com.well.modules.features.more.moreFeature.subfeatures.WellAcademyFeature
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature
 import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State.ScreenPosition
 import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State.Tab
@@ -42,6 +45,9 @@ import com.well.modules.utils.viewUtils.SystemContext
         CallFeature::class,
         MoreFeature::class,
         AboutFeature::class,
+        ActivityHistoryFeature::class,
+        FavoritesFeature::class,
+        DonateFeature::class,
         SupportFeature::class,
         WellAcademyFeature::class,
         ChatListFeature::class,
@@ -61,8 +67,6 @@ object TopLevelFeature {
         internal val tabs: Map<Tab, List<ScreenState>>,
         internal val selectedScreenPosition: ScreenPosition,
     ) {
-        @Suppress("unused")
-        val backButtonNeeded = selectedScreenPosition.index > 0
         val currentScreen = run {
             if (listOf(
                     Tab.Overlay,

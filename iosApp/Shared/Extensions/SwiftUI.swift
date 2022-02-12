@@ -39,7 +39,7 @@ extension View {
 
     @inline(__always)
     func frame(
-        size: CGFloat,
+        size: CGFloat?,
         alignment: Alignment = .center
     ) -> some View {
         frame(

@@ -38,7 +38,7 @@ internal fun TopLevelFeatureProviderImpl.createProfileEffHandler(
             loggedIn(nonInitializedAuthInfo.value, listener = listener)
         },
         onPop = { listener(Msg.Pop) },
-        setFavorite = networkManager::setFavorite.launchedIn(coroutineScope),
+        setFavorite = ::updateUserFavorite.launchedIn(coroutineScope),
         onStartCall = listener.map(Msg::StartCall),
         onOpenUserChat = listener.map(Msg::OpenUserChat),
         onLogout = {

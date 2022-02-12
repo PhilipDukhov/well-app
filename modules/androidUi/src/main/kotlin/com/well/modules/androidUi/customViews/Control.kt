@@ -9,7 +9,10 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -53,6 +56,24 @@ data class ControlItem(
         handler,
         { Text(text, color = Color.White) }
     )
+
+    constructor(
+        text: String,
+    ) : this(
+        false,
+        null,
+        { Text(text, color = Color.White) }
+    )
+
+    companion object {
+        fun back(handler: () -> Unit) =
+            ControlItem(
+                handler = handler,
+                view = {
+                    Icon(Icons.Default.ArrowBack, null)
+                }
+            )
+    }
 }
 
 @Composable

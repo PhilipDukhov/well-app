@@ -3,8 +3,8 @@ package com.well.modules.androidUi.composableScreens.more
 import com.well.modules.androidUi.customViews.ActionButton
 import com.well.modules.androidUi.customViews.LimitedCharsTextField
 import com.well.modules.androidUi.customViews.NavigationBar
-import com.well.modules.features.more.support.SupportFeature.Msg
-import com.well.modules.features.more.support.SupportFeature.State
+import com.well.modules.features.more.moreFeature.subfeatures.SupportFeature.Msg
+import com.well.modules.features.more.moreFeature.subfeatures.SupportFeature.State
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope

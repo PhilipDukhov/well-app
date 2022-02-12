@@ -47,6 +47,14 @@
 		4A547538275BA60B0023D006 /* HalfScreenActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A547536275BA60B0023D006 /* HalfScreenActivityView.swift */; };
 		4A6ABABB270F45B900D8621E /* Napier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6ABABA270F45B900D8621E /* Napier.swift */; };
 		4A6ABABF270F544D00D8621E /* HorizontalCapsule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6ABABE270F544D00D8621E /* HorizontalCapsule.swift */; };
+		4A6BFCB127B81ECD001A6ACD /* ActivityHistoryScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BFCB027B81ECD001A6ACD /* ActivityHistoryScreen.swift */; };
+		4A6BFCB227B81ECD001A6ACD /* ActivityHistoryScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BFCB027B81ECD001A6ACD /* ActivityHistoryScreen.swift */; };
+		4A6BFCB427B81ED6001A6ACD /* DonateScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BFCB327B81ED6001A6ACD /* DonateScreen.swift */; };
+		4A6BFCB527B81ED6001A6ACD /* DonateScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BFCB327B81ED6001A6ACD /* DonateScreen.swift */; };
+		4A6BFCB727B81EDF001A6ACD /* FavoritesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BFCB627B81EDF001A6ACD /* FavoritesScreen.swift */; };
+		4A6BFCB827B81EDF001A6ACD /* FavoritesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BFCB627B81EDF001A6ACD /* FavoritesScreen.swift */; };
+		4A6BFCBA27B81F99001A6ACD /* UsersList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BFCB927B81F99001A6ACD /* UsersList.swift */; };
+		4A6BFCBB27B81F99001A6ACD /* UsersList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BFCB927B81F99001A6ACD /* UsersList.swift */; };
 		4A82800E2725EBFB004DF64E /* LocalTestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82800D2725EBFB004DF64E /* LocalTestApp.swift */; };
 		4A8280102725EBFB004DF64E /* VideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82800F2725EBFB004DF64E /* VideoView.swift */; };
 		4A82801B2725EDAB004DF64E /* ExpertsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F0A09B2578AC4D002A55DB /* ExpertsScreen.swift */; };
@@ -224,6 +232,10 @@
 		4A547536275BA60B0023D006 /* HalfScreenActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalfScreenActivityView.swift; sourceTree = "<group>"; };
 		4A6ABABA270F45B900D8621E /* Napier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Napier.swift; sourceTree = "<group>"; };
 		4A6ABABE270F544D00D8621E /* HorizontalCapsule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalCapsule.swift; sourceTree = "<group>"; };
+		4A6BFCB027B81ECD001A6ACD /* ActivityHistoryScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityHistoryScreen.swift; sourceTree = "<group>"; };
+		4A6BFCB327B81ED6001A6ACD /* DonateScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonateScreen.swift; sourceTree = "<group>"; };
+		4A6BFCB627B81EDF001A6ACD /* FavoritesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesScreen.swift; sourceTree = "<group>"; };
+		4A6BFCB927B81F99001A6ACD /* UsersList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersList.swift; sourceTree = "<group>"; };
 		4A82800B2725EBFB004DF64E /* LocalTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LocalTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A82800D2725EBFB004DF64E /* LocalTestApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalTestApp.swift; sourceTree = "<group>"; };
 		4A82800F2725EBFB004DF64E /* VideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoView.swift; sourceTree = "<group>"; };
@@ -338,6 +350,9 @@
 				347D13A469E07DE98EF0A87D /* AboutScreen.swift */,
 				347D1015E6F913660F210818 /* SupportScreen.swift */,
 				4AACB2FF279C2551002C7C9B /* WellAcademyScreen.swift */,
+				4A6BFCB027B81ECD001A6ACD /* ActivityHistoryScreen.swift */,
+				4A6BFCB327B81ED6001A6ACD /* DonateScreen.swift */,
+				4A6BFCB627B81EDF001A6ACD /* FavoritesScreen.swift */,
 			);
 			path = More;
 			sourceTree = "<group>";
@@ -358,6 +373,15 @@
 				347D1C478A9BD7754D97E01A /* ChatMessageCell.swift */,
 			);
 			path = UserChat;
+			sourceTree = "<group>";
+		};
+		4A6BFCBC27B8203A001A6ACD /* UsersList */ = {
+			isa = PBXGroup;
+			children = (
+				D5F0A09D2578AC7A002A55DB /* UserCell.swift */,
+				4A6BFCB927B81F99001A6ACD /* UsersList.swift */,
+			);
+			path = UsersList;
 			sourceTree = "<group>";
 		};
 		4A82800C2725EBFB004DF64E /* LocalTest */ = {
@@ -577,6 +601,7 @@
 				4A42E2CD272B4BCF00E839CF /* partialSheet.swift */,
 				4A98B2FA2757910800E62B8D /* CalendarMonthView.swift */,
 				4A547536275BA60B0023D006 /* HalfScreenActivityView.swift */,
+				4A6BFCBC27B8203A001A6ACD /* UsersList */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -734,7 +759,6 @@
 			children = (
 				4AE3A0F426443813005BB554 /* Filter */,
 				D5F0A09B2578AC4D002A55DB /* ExpertsScreen.swift */,
-				D5F0A09D2578AC7A002A55DB /* UserCell.swift */,
 				347D10162C3E3F617B8B7A24 /* RatingInfoView.swift */,
 			);
 			path = Experts;
@@ -759,6 +783,8 @@
 			dependencies = (
 			);
 			name = LocalTest;
+			packageProductDependencies = (
+			);
 			productName = LocalTest;
 			productReference = 4A82800B2725EBFB004DF64E /* LocalTest.app */;
 			productType = "com.apple.product-type.application";
@@ -812,6 +838,8 @@
 				Base,
 			);
 			mainGroup = 7555FF72242A565900829871;
+			packageReferences = (
+			);
 			productRefGroup = 7555FF7C242A565900829871 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -976,6 +1004,7 @@
 				4A0A75FC2728BBB300632E84 /* AvailabilityEditView.swift in Sources */,
 				4A8280212725EDAB004DF64E /* InactiveOverlay.swift in Sources */,
 				4A82804E2725EDAB004DF64E /* SelectionScreen.swift in Sources */,
+				4A6BFCBB27B81F99001A6ACD /* UsersList.swift in Sources */,
 				4A8280372725EDAB004DF64E /* ViewModelObservable.swift in Sources */,
 				4A8280102725EBFB004DF64E /* VideoView.swift in Sources */,
 				4A8280242725EDAB004DF64E /* ChatListScreen.swift in Sources */,
@@ -996,6 +1025,7 @@
 				4A82804F2725EDAB004DF64E /* ActionButtonStyle.swift in Sources */,
 				4A42E2B127294D5300E839CF /* TabRow.swift in Sources */,
 				4A8280562725EDAB004DF64E /* ColorPicker.swift in Sources */,
+				4A6BFCB527B81ED6001A6ACD /* DonateScreen.swift in Sources */,
 				4A8280262725EDAB004DF64E /* DrawingPanel.swift in Sources */,
 				4A8280512725EDAB004DF64E /* CG.swift in Sources */,
 				4A8280392725EDAB004DF64E /* CallScreen.swift in Sources */,
@@ -1014,7 +1044,9 @@
 				4A8280332725EDAB004DF64E /* DrawShape.swift in Sources */,
 				4A8280492725EDAB004DF64E /* MoreScreen.swift in Sources */,
 				4A98B2FC2757910800E62B8D /* CalendarMonthView.swift in Sources */,
+				4A6BFCB227B81ECD001A6ACD /* ActivityHistoryScreen.swift in Sources */,
 				4A8280522725EDAB004DF64E /* ChatMessageCell.swift in Sources */,
+				4A6BFCB827B81EDF001A6ACD /* FavoritesScreen.swift in Sources */,
 				4A82802F2725EDAB004DF64E /* ToggleStillButton.swift in Sources */,
 				4A8280722727157A004DF64E /* TestScreens.swift in Sources */,
 				4A82805C2725EDAB004DF64E /* UIKit.swift in Sources */,
@@ -1064,6 +1096,8 @@
 				4A547537275BA60B0023D006 /* HalfScreenActivityView.swift in Sources */,
 				4A98B2F827578B0600E62B8D /* CalendarScreen.swift in Sources */,
 				D568031A263831A500CFE16B /* NSError+description.swift in Sources */,
+				4A6BFCB727B81EDF001A6ACD /* FavoritesScreen.swift in Sources */,
+				4A6BFCB127B81ECD001A6ACD /* ActivityHistoryScreen.swift in Sources */,
 				D568034C2638327600CFE16B /* TopLevelView.swift in Sources */,
 				D56803442638322500CFE16B /* WidthSlider.swift in Sources */,
 				4A6ABABF270F544D00D8621E /* HorizontalCapsule.swift in Sources */,
@@ -1076,6 +1110,7 @@
 				4A42E2CE272B4BCF00E839CF /* partialSheet.swift in Sources */,
 				4A9F386827432140004D5EF5 /* PageView.swift in Sources */,
 				4AC2640D272387E7002BE68B /* Flow.swift in Sources */,
+				4A6BFCBA27B81F99001A6ACD /* UsersList.swift in Sources */,
 				4A187CC82760F8A900EEE563 /* TabBarController.swift in Sources */,
 				D568031D263831DB00CFE16B /* EdgeInsets.swift in Sources */,
 				D568034B2638324D00CFE16B /* ExpertsScreen.swift in Sources */,
@@ -1096,6 +1131,7 @@
 				D56803432638322500CFE16B /* CallScreen.swift in Sources */,
 				D568032C2638320300CFE16B /* ViewContainer.swift in Sources */,
 				D5680325263831FC00CFE16B /* Typography.swift in Sources */,
+				4A6BFCB427B81ED6001A6ACD /* DonateScreen.swift in Sources */,
 				D56803452638322500CFE16B /* DrawingPanel.swift in Sources */,
 				D568033E2638322500CFE16B /* DrawShape.swift in Sources */,
 				D5680321263831DB00CFE16B /* ImageSharing.swift in Sources */,

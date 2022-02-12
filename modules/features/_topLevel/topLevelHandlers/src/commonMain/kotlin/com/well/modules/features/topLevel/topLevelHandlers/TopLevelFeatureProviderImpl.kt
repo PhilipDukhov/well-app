@@ -7,6 +7,7 @@ import com.well.modules.atomic.AtomicMutableList
 import com.well.modules.atomic.AtomicRef
 import com.well.modules.atomic.Closeable
 import com.well.modules.atomic.CloseableContainer
+import com.well.modules.atomic.asCloseable
 import com.well.modules.atomic.freeze
 import com.well.modules.db.chatMessages.delete
 import com.well.modules.db.chatMessages.getByIdFlow
@@ -22,6 +23,7 @@ import com.well.modules.db.mobile.DatabaseProvider
 import com.well.modules.db.mobile.createDatabaseProvider
 import com.well.modules.db.users.getByIdFlow
 import com.well.modules.db.users.getByIdsFlow
+import com.well.modules.db.users.getFavoritesFlow
 import com.well.modules.db.users.insertOrReplace
 import com.well.modules.db.users.toUser
 import com.well.modules.features.calendar.calendarHandlers.CalendarEffHandler
@@ -32,10 +34,13 @@ import com.well.modules.features.experts.expertsHandlers.ExpertsApiEffectHandler
 import com.well.modules.features.login.loginFeature.LoginFeature
 import com.well.modules.features.login.loginFeature.SocialNetwork
 import com.well.modules.features.login.loginHandlers.credentialProviders.CredentialProvider
-import com.well.modules.features.more.MoreFeature
-import com.well.modules.features.more.about.AboutFeature
-import com.well.modules.features.more.support.SupportFeature
-import com.well.modules.features.more.wellAcademy.WellAcademyFeature
+import com.well.modules.features.more.moreFeature.MoreFeature
+import com.well.modules.features.more.moreFeature.subfeatures.AboutFeature
+import com.well.modules.features.more.moreFeature.subfeatures.ActivityHistoryFeature
+import com.well.modules.features.more.moreFeature.subfeatures.DonateFeature
+import com.well.modules.features.more.moreFeature.subfeatures.FavoritesFeature
+import com.well.modules.features.more.moreFeature.subfeatures.SupportFeature
+import com.well.modules.features.more.moreFeature.subfeatures.WellAcademyFeature
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature
 import com.well.modules.features.notifications.NotificationHandler
 import com.well.modules.features.topLevel.topLevelFeature.FeatureEff
@@ -46,6 +51,7 @@ import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.Eff
 import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.Msg
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.features.welcome.WelcomeFeature
+import com.well.modules.models.FavoriteSetter
 import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.networking.NetworkManager
@@ -149,9 +155,6 @@ internal class TopLevelFeatureProviderImpl(
                             )
                         )
                     }
-                    is ExpertsFeature.Eff.CallUser -> {
-                        handleCall(expertsEff.user, listener)
-                    }
                 }
                 is FeatureEff.Call -> {
                     handleCallEff(eff.eff, listener, eff.position)
@@ -232,7 +235,7 @@ internal class TopLevelFeatureProviderImpl(
                                     networkManager.sendFront(WebSocketMsg.Front.SetExpertsFilter(it))
                                 },
                                 onConnectedFlow = networkManager.onConnectedFlow,
-                                setFavorite = networkManager::setFavorite,
+                                setFavorite = ::updateUserFavorite,
                             ),
                             coroutineScope,
                         ).adapt(
@@ -348,6 +351,9 @@ internal class TopLevelFeatureProviderImpl(
                         is MoreFeature.Eff.Push -> {
                             error("${eff.eff} should be handler in screen state")
                         }
+                        is MoreFeature.Eff.InviteColleague -> {
+                            TODO()
+                        }
                     }
                 }
                 is FeatureEff.Support -> {
@@ -393,23 +399,25 @@ internal class TopLevelFeatureProviderImpl(
                     }
                 }
                 is Eff.TopScreenAppeared -> {
-                    when (val screen = eff.screen) {
+                    topScreenHandlerCloseable = when (val screen = eff.screen) {
                         is ScreenState.MyProfile -> {
                             if (
                                 screen.state.user?.initialized != false
                                 && screen.position.tab != TopLevelFeature.State.Tab.MyProfile
                             ) {
-                                topScreenHandlerCloseable = wrapWithEffectHandler(
+                                wrapWithEffectHandler(
                                     createProfileEffHandler(
                                         uid = screen.state.uid,
                                         position = eff.position,
                                         listener = listener,
                                     )
                                 )
+                            } else {
+                                null
                             }
                         }
                         is ScreenState.UserChat -> {
-                            topScreenHandlerCloseable = wrapWithEffectHandler(
+                            wrapWithEffectHandler(
                                 TopUserChatEffHandler(
                                     peerUid = screen.state.peerId,
                                     currentUid = sessionInfo!!.uid,
@@ -421,9 +429,18 @@ internal class TopLevelFeatureProviderImpl(
                                 )
                             )
                         }
+                        is ScreenState.Favorites -> {
+                            launch {
+                                usersQueries
+                                    .getFavoritesFlow()
+                                    .map(FavoritesFeature.Msg::UpdateUsers)
+                                    .map(screen::mapMsgToTopLevel)
+                                    .collect(listener)
+                            }.asCloseable()
+                        }
                         else -> {
                             Napier.d("topScreenHandlerCloseable = null $eff")
-                            topScreenHandlerCloseable = null
+                            null
                         }
                     }
                 }
@@ -444,9 +461,6 @@ internal class TopLevelFeatureProviderImpl(
                     permissionsHandler?.run {
                         MainScope().launch {
                             requestPermissions(*PermissionsHandler.Type.values())
-                                .also {
-                                    Napier.i("requestPermissions $it")
-                                }
                         }
                     }
                 }
@@ -455,6 +469,48 @@ internal class TopLevelFeatureProviderImpl(
                         notificationHandler?.handleRawNotification(eff.rawNotification)
                     } else if (dataStore.authInfo != null) {
                         pendingNotifications.add(eff.rawNotification)
+                    }
+                }
+                is FeatureEff.ActivityHistory -> {
+                    when (eff.eff) {
+                        ActivityHistoryFeature.Eff.Back -> {
+                            listener(Msg.Pop)
+                        }
+                    }
+                }
+                is FeatureEff.Donate -> {
+                    when (eff.eff) {
+                        DonateFeature.Eff.Back -> {
+                            listener(Msg.Pop)
+                        }
+                        is DonateFeature.Eff.Donate -> {
+                            TODO()
+                        }
+                    }
+                }
+                is FeatureEff.Favorites -> {
+                    when (val favoritesEff = eff.eff) {
+                        FavoritesFeature.Eff.Back -> {
+                            listener(Msg.Pop)
+                        }
+                        is FavoritesFeature.Eff.SelectedUser -> {
+                            listener.invoke(
+                                Msg.PushMyProfile(
+                                    MyProfileFeature.initialState(
+                                        isCurrent = false,
+                                        uid = favoritesEff.uid,
+                                    )
+                                )
+                            )
+                        }
+                        is FavoritesFeature.Eff.UnFavoriteUser -> {
+                            updateUserFavorite(
+                                FavoriteSetter(
+                                    favorite = false,
+                                    uid = favoritesEff.uid
+                                )
+                            )
+                        }
                     }
                 }
             }
@@ -558,4 +614,20 @@ internal class TopLevelFeatureProviderImpl(
             .combine(onlineUsersStateFlow) { user, onlineUsers ->
                 user.copy(isOnline = onlineUsers.contains(id))
             }
+
+    suspend fun updateUserFavorite(setter: FavoriteSetter) {
+        val uid = setter.uid
+        val original = usersQueries.getById(setter.uid).executeAsOne()
+        usersQueries.updateFavorite(favorite = setter.favorite, id = uid)
+        try {
+            networkManager.setFavorite(setter)
+        } catch (t: Throwable) {
+            usersQueries.transaction {
+                val current = usersQueries.getById(uid).executeAsOne()
+                if (original.lastEdited == current.lastEdited) {
+                    usersQueries.updateFavorite(favorite = original.favorite, id = original.id)
+                }
+            }
+        }
+    }
 }

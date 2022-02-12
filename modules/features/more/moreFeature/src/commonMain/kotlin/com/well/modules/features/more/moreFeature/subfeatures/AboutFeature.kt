@@ -1,6 +1,6 @@
-package com.well.modules.features.more.about
+package com.well.modules.features.more.moreFeature.subfeatures
 
-import com.well.modules.features.more.MoreFeature
+import com.well.modules.features.more.moreFeature.MoreFeature
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
 import com.well.modules.utils.viewUtils.sharedImage.SharedImage

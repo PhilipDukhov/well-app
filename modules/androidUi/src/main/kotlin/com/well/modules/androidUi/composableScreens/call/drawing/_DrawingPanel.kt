@@ -1,10 +1,10 @@
 package com.well.modules.androidUi.composableScreens.call.drawing
 
-import androidx.compose.foundation.Image
 import com.well.modules.androidUi.ext.toColor
-import com.well.modules.models.Size
 import com.well.modules.features.call.callFeature.drawing.DrawingFeature.Msg
 import com.well.modules.features.call.callFeature.drawing.DrawingFeature.State
+import com.well.modules.models.Size
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 
 @Composable
 fun DrawingPanel(
@@ -50,7 +50,7 @@ fun DrawingPanel(
         {
             state.image?.let {
                 Image(
-                    rememberImagePainter(it.coilDataAny),
+                    rememberAsyncImagePainter(it.coilDataAny),
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier

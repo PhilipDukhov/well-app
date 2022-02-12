@@ -28,7 +28,7 @@ kotlin {
                 ":modules:models",
                 ":modules:puerhBase",
 
-                ":modules:features:more",
+                ":modules:features:more:moreFeature",
                 ":modules:features:welcome",
                 ":modules:features:myProfile:myProfileFeature",
                 ":modules:features:login:loginFeature",

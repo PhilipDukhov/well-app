@@ -5,7 +5,6 @@ import com.well.modules.androidUi.customViews.ActionButtonStyle
 import com.well.modules.androidUi.customViews.Control
 import com.well.modules.androidUi.customViews.NavigationBar
 import com.well.modules.androidUi.customViews.rememberControlItem
-import com.well.modules.androidUi.customViews.toNavigationTitleText
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.borderKMM
 import com.well.modules.androidUi.ext.toColor
@@ -94,7 +93,7 @@ private fun FilterScreenContent(
                     contentDescription = null,
                     tint = Color.White.toColor(),
                 )
-                Feature.Strings.filter.toNavigationTitleText()
+                Text(Feature.Strings.filter)
             }
         },
     )

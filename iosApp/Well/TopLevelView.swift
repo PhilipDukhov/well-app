@@ -126,6 +126,21 @@ struct TopLevelView: View {
                 listener(state.mapMsgToTopLevel(msg: $0))
             }
 
+        case let state as ScreenState.Favorites:
+            FavoritesScreen(state: state.state) {
+                listener(state.mapMsgToTopLevel(msg: $0))
+            }
+
+        case let state as ScreenState.ActivityHistory:
+            ActivityHistoryScreen(state: state.state) {
+                listener(state.mapMsgToTopLevel(msg: $0))
+            }
+
+        case let state as ScreenState.Donate:
+            DonateScreen(state: state.state) {
+                listener(state.mapMsgToTopLevel(msg: $0))
+            }
+
         default:
 #if DEBUG
             fatalError("expected screen \(screen)")

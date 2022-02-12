@@ -49,11 +49,11 @@ struct NavigationBar<Title: View, LV: View, RV: View, ExtraContent: View>: View 
     }
     
     init(
-        title: String,
+        title: String?,
         leftItem: NavigationBarItem<LV>?,
         rightItem: NavigationBarItem<RV>?
     ) where Title == Text, ExtraContent == EmptyView {
-        self.title = Self.createTitle(title)
+        self.title = title.map(Self.createTitle)
         self.leftItem = leftItem
         self.rightItem = rightItem
         self.minContentHeight = nil

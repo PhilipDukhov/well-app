@@ -13,6 +13,9 @@ addFavorite:
 INSERT INTO Favourites
 VALUES ?;
 
+listByOwnerId:
+SELECT destination FROM Favourites WHERE owner = ?;
+
 removeFavorite:
 DELETE FROM Favourites WHERE (owner = ? AND destination = ?);
 

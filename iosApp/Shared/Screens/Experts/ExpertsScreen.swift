@@ -61,24 +61,15 @@ struct ExpertsScreen: View {
             Text("No users satisfying the filter")
             Spacer()
         } else {
-            ScrollView {
-                if !state.users.isEmpty {
-                    Divider()
+            UsersList(
+                users: state.users,
+                onSelect: {
+                    listener(Feature.MsgOnUserSelected(user: $0))
+                },
+                onToggleFavorite: {
+                    listener(Feature.MsgOnUserFavorite(user: $0))
                 }
-                Rectangle()
-                    .foregroundColor(.white)
-                    .frame(height: 1)
-                LazyVStack {
-                    ForEach(state.users, id: \.id) { user in
-                        UserCell(user: user) {
-                            listener(Feature.MsgOnUserFavorite(user: user))
-                        }.onTapGesture {
-                            listener(Feature.MsgOnUserSelected(user: user))
-                        }
-                        Divider()
-                    }
-                }
-            }
+            )
         }
     }
 }

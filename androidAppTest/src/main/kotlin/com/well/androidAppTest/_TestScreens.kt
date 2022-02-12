@@ -1,13 +1,22 @@
 package com.well.androidAppTest
 
+import com.well.modules.androidUi.composableScreens.call.CallScreen
+import com.well.modules.androidUi.composableScreens.more.FavoritesScreen
+import com.well.modules.androidUi.composableScreens.userChat.UserChatScreen
 import com.well.modules.androidUi.composableScreens.welcome.WelcomeScreen
 import com.well.modules.androidUi.customViews.ProfileImage
+import com.well.modules.features.call.callFeature.CallFeature
+import com.well.modules.features.more.moreFeature.subfeatures.FavoritesFeature
+import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.features.welcome.WelcomeFeature
+import com.well.modules.models.User
+import com.well.modules.models.chat.ChatMessage
+import com.well.modules.models.chat.ChatMessageViewModel
 import com.well.modules.utils.viewUtils.sharedImage.UrlImage
+import com.well.sharedMobileTest.testState
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -39,9 +48,10 @@ enum class TestScreen {
     Calendar,
     GradientView,
     DoubleCalendar,
+    Favorites,
 }
 
-private var selectedScreen: TestScreen by mutableStateOf(TestScreen.AvailabilityCalendar)
+private var selectedScreen: TestScreen by mutableStateOf(TestScreen.Favorites)
 private var opened by mutableStateOf(true)
 
 @Composable
@@ -54,10 +64,8 @@ fun TestComposeScreen() {
             when (selectedScreen) {
                 TestScreen.Local -> LocalTestScreen()
                 TestScreen.Welcome -> WelcomeScreen(WelcomeFeature.State()) {}
-                TestScreen.Call -> CallTest()
                 TestScreen.MyProfile -> MyProfileTest()
                 TestScreen.Slider -> SliderTest()
-                TestScreen.UserChat -> UserChatTest()
                 TestScreen.UserRating -> UserRatingTest()
                 TestScreen.AvailabilityCalendar -> AvailabilityCalendarTest()
                 TestScreen.Calendar -> CalendarTest()
@@ -69,6 +77,43 @@ fun TestComposeScreen() {
                     Box(Modifier.weight(1f)) {
                         AvailabilityCalendarTest()
                     }
+                }
+                TestScreen.Call -> {
+                    TestScreenReducerView(
+                        initial = CallFeature.testState(CallFeature.State.Status.Ongoing),
+                        reducer = CallFeature::reducer,
+                        screen = { state, listener ->
+                            CallScreen(state, listener)
+                        },
+                    )
+                }
+                TestScreen.UserChat -> {
+                    TestScreenReducerView(
+                        initial = UserChatFeature.State(
+                            peerId = User.Id(0), user = null, backToUser = false,
+                            messages = List(100) {
+                                ChatMessageViewModel(
+                                    id = ChatMessage.Id(it.toLong()),
+                                    creation = 0.0,
+                                    content = ChatMessage.Content.Text("akjsdnasjk"),
+                                    status = ChatMessageViewModel.Status.IncomingRead,
+                                )
+                            }
+                        ),
+                        reducer = UserChatFeature::reducer,
+                        screen = { state, listener ->
+                            UserChatScreen(state, listener)
+                        },
+                    )
+                }
+                TestScreen.Favorites -> {
+                    TestScreenReducerView(
+                        FavoritesFeature.testState(),
+                        FavoritesFeature::reducer,
+                        screen = { state, listener ->
+                            FavoritesScreen(state, listener)
+                        },
+                    )
                 }
             }
         }

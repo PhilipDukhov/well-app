@@ -34,20 +34,27 @@ struct MoreScreen: View {
 }
 
 private extension Feature.StateItem {
-    func icon() -> Image {
+    @ViewBuilder
+    func icon() -> some View {
         switch self {
         case .technicalsupport:
-            return Image(systemName: "wrench")
+            Image(systemName: "wrench")
         case .about:
-            return Image(systemName: "info.circle")
-//            person.badge.plus "Invite a colleague"
+            Image(systemName: "info.circle")
         case .wellacademy:
-            return Image(systemName: "building.columns")
-//            building.columns "WELL Academy"
-//            clock.arrow.circlepath "Activity history"
-//            face.smiling "Sponsor & donate"
-//            wrench "Technical support"
-//            info.circle "About"
+            Image(systemName: "building.columns")
+        case .activityhistory:
+            Image(systemName: "clock.arrow.circlepath")
+        case .favorites:
+            Image(systemName: "heart")
+        case .donate:
+            Image(systemName: "face.smiling")
+        case .invitecolleague:
+            ZStack {
+                // hack to match system image size
+                Image(systemName: "heart").opacity(0)
+                Image("inviteColleague")
+            }
         default:
             fatalError("\(self) MoreFeature.StateItem icon needed ")
         }
