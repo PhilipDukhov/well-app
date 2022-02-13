@@ -9,23 +9,8 @@
 import SwiftUI
 import SharedMobile
 
-enum Screen: String, CaseIterable {
-    case welcome
-    case profile
-    case availabilityCalendar = "Availability Calendar"
-    case call
-    case filter
-    case chatMessagesList
-    case calendar
-    case favorites
-    
-    case local
-    
-    static let initial: Screen = .favorites
-}
-
 struct TestingScreens: View {
-    let selectedScreen: Screen
+    let selectedScreen: TestScreen
     
     let messages = ChatMessageViewModel.companion.getTestMessagesWithStatus(count: 100)
 
@@ -42,7 +27,7 @@ struct TestingScreens: View {
                 view: WelcomeScreen.init
             )
 
-        case .availabilityCalendar:
+        case .availabilitycalendar:
             ReducerView(
                 initial: AvailabilitiesCalendarFeature().testState(count: 0),
                 reducer: AvailabilitiesCalendarFeature().reducer,
@@ -50,7 +35,7 @@ struct TestingScreens: View {
             ).padding(.bottom, padding)
                 .id(padding)
             Slider(value: $padding, in: 0...200)
-        case .profile:
+        case .myprofile:
             ProfileTestView()
 
         case .call:
@@ -59,27 +44,12 @@ struct TestingScreens: View {
                 reducer: CallFeature().reducer,
                 view: CallScreen.init
             )
-        case .filter:
+        case .expertsfilter:
             ReducerView(
-                initial: FilterFeature.State(filter: UsersFilter.Companion().default(searchString: "")),
+                initial: FilterFeature.State(filter: UsersFilter.companion.default(searchString: "")),
                 reducer: FilterFeature().reducer
             ) {
                 FilterScreen(state: $0, listener: $1) {
-                }
-            }
-
-        case .chatMessagesList:
-            ScrollView {
-                LazyVStack {
-                    ForEachIndexed(messages) { i, message in
-                        ChatListCell(
-                            item: .init(
-                                user: User.companion.testUser,
-                                lastMessage: message,
-                                unreadCount: Int32(i - 1) * Int32(i - 1)
-                            )
-                        )
-                    }
                 }
             }
         case .calendar:
@@ -96,10 +66,20 @@ struct TestingScreens: View {
             ) {
                 FavoritesScreen(state: $0, listener: $1)
             }
+        case .donate:
+            ReducerView(
+                initial: DonateFeature.State(),
+                reducer: DonateFeature().reducer
+            ) {
+                DonateScreen(state: $0, listener: $1)
+            }
             
         case .local:
             Image("bubble")
                 .frame(width: 200, height: 100)
+
+        default:
+            fatalError("not implemented \(selectedScreen)")
         }
     }
 }

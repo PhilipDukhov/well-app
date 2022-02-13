@@ -4,6 +4,7 @@ open class GlobalStringsBase {
     val add = "Add"
     val done = "Done"
     val cancel = "Cancel"
+    val `continue` = "Continue"
     val ok = "OK"
     val delete = "Delete"
     val country = "Country"

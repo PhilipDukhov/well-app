@@ -13,7 +13,7 @@ import Introspect
 @main
 struct LocalTestApp: App {
     @State
-    var selectedScreen: Screen = .initial
+    var selectedScreen: TestScreen = .companion.initial
     
     @State
     var opened = true
@@ -36,8 +36,8 @@ struct LocalTestApp: App {
                     ScrollViewReader { scrollViewReader in
                         ScrollView(.horizontal, showsIndicators: false) {
                             LazyHStack {
-                                ForEach(Screen.allCases, id: \.self) { screen in
-                                    Button(screen.rawValue.capitalized) {
+                                ForEach(TestScreen.companion.allCases, id: \.self) { screen in
+                                    Button(screen.name) {
                                         selectedScreen = screen
                                         opened = true
                                     }.padding().background(

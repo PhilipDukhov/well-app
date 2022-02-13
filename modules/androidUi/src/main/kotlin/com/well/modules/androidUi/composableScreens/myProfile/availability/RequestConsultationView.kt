@@ -3,9 +3,7 @@ package com.well.modules.androidUi.composableScreens.myProfile.availability
 import com.well.modules.androidUi.customViews.ActionButton
 import com.well.modules.androidUi.customViews.BottomSheetDialog
 import com.well.modules.androidUi.customViews.InactiveOverlay
-import com.well.modules.androidUi.customViews.clickable
-import com.well.modules.androidUi.ext.backgroundKMM
-import com.well.modules.androidUi.ext.borderKMM
+import com.well.modules.androidUi.customViews.SelectableButton
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.RequestConsultationFeature.Msg
 import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.RequestConsultationFeature.State
@@ -27,11 +25,11 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -42,11 +40,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
@@ -153,37 +148,39 @@ private fun Availabilities(
         verticalArrangement = Arrangement.spacedBy(28.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        BookRow(
-            state = topRowState,
-            items = remember(availabilities) { availabilities.map { it.first } },
-            selectedIndex = selectedDayIndex,
-            setSelectedIndex = setSelectedDayIndex,
-            itemText = { it.localizedDayAndShortMonth(separator = "\n") },
-            textStyle = MaterialTheme.typography.body2,
-            aspectRatio = 1f,
-            fillParentMaxWidthPart = 0.2f
-        )
+        ProvideTextStyle(MaterialTheme.typography.body2) {
+            BookRow(
+                state = topRowState,
+                items = remember(availabilities) { availabilities.map { it.first } },
+                selectedIndex = selectedDayIndex,
+                setSelectedIndex = setSelectedDayIndex,
+                itemText = { it.localizedDayAndShortMonth(separator = "\n") },
+                aspectRatio = 1f,
+                fillParentMaxWidthPart = 0.2f
+            )
+        }
         Divider(Modifier.padding(horizontal = 16.dp))
-        BookRow(
-            items = remember(selectedDayIndex) { availabilities[selectedDayIndex].second },
-            selectedIndex = selectedTimeIndex,
-            setSelectedIndex = { selectedIndex ->
-                Napier.wtf("setSelectedTimeIndex ${topRowState.layoutInfo.visibleItemsInfo.none { it.index == selectedDayIndex }}")
-                setSelectedTimeIndex(selectedIndex)
-                if (topRowState.layoutInfo.visibleItemsInfo.none { it.index == selectedDayIndex }) {
-                    scope.launch {
-                        try {
-                            topRowState.animateScrollToItem(selectedDayIndex)
-                        } catch (t: Throwable) {
+
+        ProvideTextStyle(MaterialTheme.typography.body1) {
+            BookRow(
+                items = remember(selectedDayIndex) { availabilities[selectedDayIndex].second },
+                selectedIndex = selectedTimeIndex,
+                setSelectedIndex = { selectedIndex ->
+                    setSelectedTimeIndex(selectedIndex)
+                    if (topRowState.layoutInfo.visibleItemsInfo.none { it.index == selectedDayIndex }) {
+                        scope.launch {
+                            try {
+                                topRowState.animateScrollToItem(selectedDayIndex)
+                            } catch (_: Throwable) {
+                            }
                         }
                     }
-                }
-            },
-            itemText = { it.startTime.toString() },
-            textStyle = MaterialTheme.typography.body1,
-            aspectRatio = 2f,
-            fillParentMaxWidthPart = 0.33f
-        )
+                },
+                itemText = { it.startTime.toString() },
+                aspectRatio = 2f,
+                fillParentMaxWidthPart = 0.33f
+            )
+        }
     }
     ActionButton(
         state = selectedTimeIndex,
@@ -212,7 +209,6 @@ private fun <T> BookRow(
     selectedIndex: Int?,
     setSelectedIndex: (Int) -> Unit,
     itemText: (T) -> String,
-    textStyle: TextStyle,
     aspectRatio: Float,
     fillParentMaxWidthPart: Float,
 ) {
@@ -223,32 +219,18 @@ private fun <T> BookRow(
         modifier = Modifier.fillMaxWidth()
     ) {
         itemsIndexed(items) { i, item ->
-            val selected = i == selectedIndex
-            val shape = MaterialTheme.shapes.medium
-            Box(
-                contentAlignment = Alignment.Center,
+            SelectableButton(
+                selected = i == selectedIndex,
+                onClick = {
+                    setSelectedIndex(i)
+                },
                 modifier = Modifier
                     .fillParentMaxWidth(fillParentMaxWidthPart)
                     .aspectRatio(aspectRatio)
-                    .clip(shape)
-                    .borderKMM(
-                        if (selected) 0.dp else 2.dp,
-                        color = Color.LightGray,
-                        shape = shape,
-                    )
-                    .backgroundKMM(
-                        if (selected) Color.Green else Color.Transparent,
-                    )
-                    .clickable {
-                        Napier.wtf("clickable $i")
-                        setSelectedIndex(i)
-                    }
             ) {
                 Text(
                     itemText(item),
-                    color = (if (selected) Color.White else Color.DarkGrey).toColor(),
                     textAlign = TextAlign.Center,
-                    style = textStyle,
                 )
             }
         }

@@ -6,7 +6,7 @@ import com.well.modules.utils.viewUtils.GlobalStringsBase
 object DonateFeature {
     object Strings: GlobalStringsBase() {
         const val title = "Donate"
-        const val text = "Adipisicing reprehenderit qui commodo id quis id qui dolor nostrud. Nostrud cupidatat sint ipsum labore amet enim magna cillum labore ad excepteur ad cillum. \n"
+        const val text = "Adipisicing reprehenderit qui commodo id quis id qui dolor nostrud. Nostrud cupidatat sint ipsum labore amet enim magna cillum labore ad excepteur ad cillum."
         const val howMuch = "How much would you like to donate?"
         const val isRecurring = "This is a recurring donation"
     }

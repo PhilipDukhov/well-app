@@ -185,29 +185,19 @@ private struct BookRow<T, ID: Hashable>: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
                 ForEachIndexed(items) { i, item in
-                    let selected = i == selectedIndex
                     let text = itemText(item)
-                    Button(action: {
-                        withAnimation {
-                            selectedIndex = i
-                        }
-                    }) {
-                        Text(text)
+                    SelectableButton(
+                        selected: i == selectedIndex,
+                        onClick: {
+                            withAnimation {
+                                selectedIndex = i
+                            }
+                        },
+                        content: Text(text)
                             .frame(size: itemSize)
                             .textStyle(textStyle)
                             .multilineTextAlignment(.center)
-                            .foregroundColorKMM(selected ? .companion.White : .companion.DarkGrey)
-                    }
-                    .background {
-                        let shape = Shapes.medium
-                        if selected {
-                            shape.foregroundColorKMM(.companion.Green)
-                        } else {
-                            shape.stroke(lineWidth: 2)
-                                .foregroundColorKMM(.companion.LightGray)
-                                .padding(1)
-                        }
-                    }
+                    )
                     .id(text)
                 }
             }.padding(.horizontal)

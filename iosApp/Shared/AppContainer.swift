@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import SharedMobile
 
 struct AppContainer<Content: View>: View {
     let content: Content
@@ -16,6 +17,7 @@ struct AppContainer<Content: View>: View {
             .statusBar(style: .lightContent)
             .accentColor(ColorConstants.Green.toColor())
             .progressViewStyle(CircularProgressViewStyle(tint: .companion.White))
+            .toggleStyle(SwitchToggleStyle(tint: SharedMobile.Color.companion.Green.toColor()))
             .onAppear {
                 UITableView.appearance().separatorInset = .zero
             }

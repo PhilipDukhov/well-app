@@ -1,11 +1,13 @@
 package com.well.androidAppTest
 
 import com.well.modules.androidUi.composableScreens.call.CallScreen
+import com.well.modules.androidUi.composableScreens.more.DonateScreen
 import com.well.modules.androidUi.composableScreens.more.FavoritesScreen
 import com.well.modules.androidUi.composableScreens.userChat.UserChatScreen
 import com.well.modules.androidUi.composableScreens.welcome.WelcomeScreen
 import com.well.modules.androidUi.customViews.ProfileImage
 import com.well.modules.features.call.callFeature.CallFeature
+import com.well.modules.features.more.moreFeature.subfeatures.DonateFeature
 import com.well.modules.features.more.moreFeature.subfeatures.FavoritesFeature
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.features.welcome.WelcomeFeature
@@ -13,6 +15,7 @@ import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
 import com.well.modules.models.chat.ChatMessageViewModel
 import com.well.modules.utils.viewUtils.sharedImage.UrlImage
+import com.well.sharedMobileTest.TestScreen
 import com.well.sharedMobileTest.testState
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
@@ -35,23 +38,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.statusBarsPadding
 
-enum class TestScreen {
-    Local,
-
-    Welcome,
-    Call,
-    MyProfile,
-    Slider,
-    UserChat,
-    UserRating,
-    AvailabilityCalendar,
-    Calendar,
-    GradientView,
-    DoubleCalendar,
-    Favorites,
-}
-
-private var selectedScreen: TestScreen by mutableStateOf(TestScreen.Favorites)
+private var selectedScreen: TestScreen by mutableStateOf(TestScreen.initial)
 private var opened by mutableStateOf(true)
 
 @Composable
@@ -115,6 +102,15 @@ fun TestComposeScreen() {
                         },
                     )
                 }
+                TestScreen.Donate -> {
+                    TestScreenReducerView(
+                        DonateFeature.State,
+                        DonateFeature::reducer,
+                        screen = { state, listener ->
+                            DonateScreen(state, listener)
+                        },
+                    )
+                }
             }
         }
     } else {
@@ -131,7 +127,7 @@ fun SelectionScreen() {
             .statusBarsPadding()
     ) {
         ScrollableTabRow(
-            selectedTabIndex = TestScreen.values().indexOf(selectedScreen),
+            selectedTabIndex = TestScreen.allCases.indexOf(selectedScreen),
             modifier = Modifier.align(Alignment.TopCenter)
         ) {
             TestScreen.values().forEach { screen ->

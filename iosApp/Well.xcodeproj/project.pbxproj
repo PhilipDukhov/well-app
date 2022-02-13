@@ -55,6 +55,8 @@
 		4A6BFCB827B81EDF001A6ACD /* FavoritesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BFCB627B81EDF001A6ACD /* FavoritesScreen.swift */; };
 		4A6BFCBA27B81F99001A6ACD /* UsersList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BFCB927B81F99001A6ACD /* UsersList.swift */; };
 		4A6BFCBB27B81F99001A6ACD /* UsersList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BFCB927B81F99001A6ACD /* UsersList.swift */; };
+		4A6BFCC127B9600E001A6ACD /* SelectableButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BFCC027B9600E001A6ACD /* SelectableButton.swift */; };
+		4A6BFCC227B9600E001A6ACD /* SelectableButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A6BFCC027B9600E001A6ACD /* SelectableButton.swift */; };
 		4A82800E2725EBFB004DF64E /* LocalTestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82800D2725EBFB004DF64E /* LocalTestApp.swift */; };
 		4A8280102725EBFB004DF64E /* VideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A82800F2725EBFB004DF64E /* VideoView.swift */; };
 		4A82801B2725EDAB004DF64E /* ExpertsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5F0A09B2578AC4D002A55DB /* ExpertsScreen.swift */; };
@@ -236,6 +238,7 @@
 		4A6BFCB327B81ED6001A6ACD /* DonateScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonateScreen.swift; sourceTree = "<group>"; };
 		4A6BFCB627B81EDF001A6ACD /* FavoritesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesScreen.swift; sourceTree = "<group>"; };
 		4A6BFCB927B81F99001A6ACD /* UsersList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersList.swift; sourceTree = "<group>"; };
+		4A6BFCC027B9600E001A6ACD /* SelectableButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableButton.swift; sourceTree = "<group>"; };
 		4A82800B2725EBFB004DF64E /* LocalTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LocalTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A82800D2725EBFB004DF64E /* LocalTestApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalTestApp.swift; sourceTree = "<group>"; };
 		4A82800F2725EBFB004DF64E /* VideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoView.swift; sourceTree = "<group>"; };
@@ -602,6 +605,7 @@
 				4A98B2FA2757910800E62B8D /* CalendarMonthView.swift */,
 				4A547536275BA60B0023D006 /* HalfScreenActivityView.swift */,
 				4A6BFCBC27B8203A001A6ACD /* UsersList */,
+				4A6BFCC027B9600E001A6ACD /* SelectableButton.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1049,6 +1053,7 @@
 				4A6BFCB827B81EDF001A6ACD /* FavoritesScreen.swift in Sources */,
 				4A82802F2725EDAB004DF64E /* ToggleStillButton.swift in Sources */,
 				4A8280722727157A004DF64E /* TestScreens.swift in Sources */,
+				4A6BFCC227B9600E001A6ACD /* SelectableButton.swift in Sources */,
 				4A82805C2725EDAB004DF64E /* UIKit.swift in Sources */,
 				4A8280272725EDAB004DF64E /* HVStack.swift in Sources */,
 				4A82805D2725EDAB004DF64E /* ChatListCell.swift in Sources */,
@@ -1124,6 +1129,7 @@
 				D568032B2638320300CFE16B /* ProfileImage.swift in Sources */,
 				D568031F263831DB00CFE16B /* Color.swift in Sources */,
 				4A0A75FB2728BBB300632E84 /* AvailabilityEditView.swift in Sources */,
+				4A6BFCC127B9600E001A6ACD /* SelectableButton.swift in Sources */,
 				D568033A2638320F00CFE16B /* GoogleProvider.swift in Sources */,
 				D568031E263831DB00CFE16B /* Models.swift in Sources */,
 				4A42E2B027294D5300E839CF /* TabRow.swift in Sources */,
