@@ -24,11 +24,15 @@ fun LoadingCoilImage(
     contentScale: ContentScale = ContentScale.Fit,
     successProgressIndicatorNeeded: Boolean = false,
 ) {
+    val context = LocalContext.current
     val painter = rememberAsyncImagePainter(
-        ImageRequest.Builder(LocalContext.current)
-            .data(data)
-            .crossfade(true)
-            .build()
+        remember(data) {
+            ImageRequest.Builder(context)
+                .data(data)
+                .memoryCacheKey(data as? String)
+                .crossfade(true)
+                .build()
+        }
     )
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         Image(

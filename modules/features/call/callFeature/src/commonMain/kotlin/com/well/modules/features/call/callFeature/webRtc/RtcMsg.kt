@@ -1,7 +1,7 @@
 package com.well.modules.features.call.callFeature.webRtc
 
 import com.well.modules.features.call.callFeature.CallFeature
-import com.well.modules.models.Path
+import com.well.modules.models.DrawingPath
 import com.well.modules.models.Size
 import com.well.modules.models.date.Date
 import com.well.modules.models.prepareToDebug
@@ -34,7 +34,7 @@ sealed class RtcMsg {
             data class NotifyClear(val saveHistory: Boolean, val date: Date): Msg()
 
             @Serializable
-            data class UpdatePaths(val paths: List<Path>) : Msg()
+            data class UpdatePaths(val paths: List<DrawingPath>) : Msg()
 
             @Serializable
             object ConfirmUpdatePaths : Msg()

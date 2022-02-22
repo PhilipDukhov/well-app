@@ -15,5 +15,5 @@ fun NSError.toThrowable(): Throwable =
 fun Throwable.toNSError(): NSError =
     NSError(domain = "com.well.modules.utils", code = 0, userInfo = mapOf(throwableUserInfoKey to this))
 
-fun <T> Continuation<T>.resumeWithException(exception: NSError) =
-    resumeWithException(exception.toThrowable())
+fun <T> Continuation<T>.resumeWithError(error: NSError) =
+    resumeWithException(error.toThrowable())

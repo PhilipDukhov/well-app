@@ -1,8 +1,7 @@
 package com.well.modules.networking.webSocketManager
 
 import io.github.aakira.napier.Napier
-import com.well.modules.utils.viewUtils.resumeWithException
-import com.well.modules.utils.viewUtils.toNSData
+import com.well.modules.utils.viewUtils.resumeWithError
 import com.well.modules.utils.viewUtils.toThrowable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -29,7 +28,7 @@ actual class WebSocketSession(
         suspendCancellableCoroutine<Unit> { continuation ->
             webSocket.sendMessage(message, { error: NSError? ->
                 if (error != null) {
-                    continuation.resumeWithException(error)
+                    continuation.resumeWithError(error)
                 } else {
                     continuation.resume(Unit)
                 }

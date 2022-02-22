@@ -30,7 +30,7 @@ internal fun TopLevelFeatureProviderImpl.createProfileEffHandler(
         showThrowableAlert = {
             listener(
                 Msg.ShowAlert(
-                    Alert.Error.fixDescription(it)
+                    Alert.Error.throwableAlert(it)
                 )
             )
         },

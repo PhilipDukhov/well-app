@@ -1,7 +1,7 @@
 package com.well.modules.features.call.callFeature.drawing
 
 import com.well.modules.models.Color
-import com.well.modules.models.Path
+import com.well.modules.models.DrawingPath
 import com.well.modules.models.Point
 import com.well.modules.models.Size
 import com.well.modules.models.date.Date
@@ -24,10 +24,10 @@ object DrawingFeature {
         val lineWidth: Float = 4F,
         val nativeStrokeStyle: StrokeStyle = StrokeStyle.default,
         val selectedBrush: Brush = Brush.Pen,
-        internal val drawingPaths: List<Path> = emptyList(),
-        internal val pathsHistory: List<List<Path>> = listOf(listOf()),
+        internal val drawingPaths: List<DrawingPath> = emptyList(),
+        internal val pathsHistory: List<List<DrawingPath>> = listOf(listOf()),
         internal val pathsHistoryIndex: Int = 0,
-        internal val remotePaths: List<Path> = listOf(),
+        internal val remotePaths: List<DrawingPath> = listOf(),
         val lastReduceDurations: List<Duration> = listOf(),
     ) {
         private val historyEditingAvailable = pathsHistory.isNotEmpty()
@@ -138,7 +138,7 @@ object DrawingFeature {
         data class NewDragPoint(val point: Point) : Msg()
         data class SelectBrush(val brush: State.Brush) : Msg()
         object EndDrag : Msg()
-        data class UpdatePaths(val paths: List<Path>) : Msg()
+        data class UpdatePaths(val paths: List<DrawingPath>) : Msg()
         object Undo : Msg()
         object Redo : Msg()
         data class LocalClear(val saveHistory: Boolean) : Msg()
@@ -158,7 +158,7 @@ object DrawingFeature {
         ) : Eff
 
         data class UploadPaths(
-            val paths: List<Path>,
+            val paths: List<DrawingPath>,
         ) : Eff
 
         data class NotifyClear(
@@ -256,7 +256,7 @@ object DrawingFeature {
         copy(
             pathsHistory = pathsHistory.subList(0, pathsHistoryIndex + 1),
             drawingPaths = listOf(
-                Path(
+                DrawingPath(
                     listOf(point),
                     currentColor,
                     lineWidth,
@@ -348,7 +348,7 @@ object DrawingFeature {
             )
         }
 
-    private fun List<Path>.newer(date: Date?): List<Path> =
+    private fun List<DrawingPath>.newer(date: Date?): List<DrawingPath> =
         if (date != null) filter { it.date > date } else listOf()
 
     private fun Size.nativeScaled(): Size =

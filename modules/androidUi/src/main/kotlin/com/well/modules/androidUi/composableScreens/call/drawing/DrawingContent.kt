@@ -59,7 +59,7 @@ fun DrawingContent(
 
 @Composable
 private fun PathCanvas(
-    path: com.well.modules.models.Path,
+    path: com.well.modules.models.DrawingPath,
     cap: StrokeCap,
     join: StrokeJoin,
 ) {

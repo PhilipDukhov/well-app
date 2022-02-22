@@ -20,13 +20,11 @@ import com.well.modules.networking.webSocketManager.WebSocketSession
 import com.well.modules.networking.webSocketManager.ws
 import com.well.modules.utils.kotlinUtils.tryF
 import com.well.modules.utils.viewUtils.platform.Platform
+import com.well.modules.utils.viewUtils.platform.fileSystem
 import com.well.modules.utils.viewUtils.platform.isLocalServer
 import io.github.aakira.napier.Napier
 import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
 import io.ktor.http.*
-import io.ktor.util.*
-import io.ktor.utils.io.core.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -40,6 +38,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import okio.Path
 
 class NetworkManager(
     token: String,
@@ -63,7 +62,6 @@ class NetworkManager(
         }
     )
     private val client get() = clientWrapper.client
-
 
     private val webSocketScope = CoroutineScope(Dispatchers.Default)
 
@@ -122,6 +120,11 @@ class NetworkManager(
         }.apply(::addCloseableChild)
     }
 
+    override fun close() {
+        super.close()
+        clientWrapper.client.close()
+    }
+
     suspend fun sendFront(msg: WebSocketMsg.Front) = send(msg as WebSocketMsg)
 
     suspend fun sendCall(msg: WebSocketMsg.Call) = send(msg as WebSocketMsg)
@@ -147,7 +150,9 @@ class NetworkManager(
         data: ByteArray,
     ) = tryCheckAuth {
         client.post<String>("user/uploadProfilePicture") {
-            body = data.toMultiPartFormDataContent()
+            multipartFormBody {
+                appendByteArrayInput(data)
+            }
         }
     }
 
@@ -155,28 +160,28 @@ class NetworkManager(
         data: ByteArray,
     ) = tryCheckAuth {
         client.post<String>("uploadMessageMedia") {
-            body = data.toMultiPartFormDataContent()
+            multipartFormBody {
+                appendByteArrayInput(data)
+            }
         }
     }
 
-    private fun ByteArray.toMultiPartFormDataContent(key: String? = null) =
-        MultiPartFormDataContent(
-            formData {
-                appendInput(
-                    key ?: "key",
-                    Headers.build {
-                        @OptIn(InternalAPI::class)
-                        append(
-                            HttpHeaders.ContentDisposition,
-                            "filename=uploadUserProfile.jpg"
-                        )
-                    },
-                    size.toLong()
-                ) {
-                    buildPacket { writeFully(this@toMultiPartFormDataContent) }
+    suspend fun sendTechSupportMessage(
+        message: String,
+        path: Path? = null,
+    ) = tryCheckAuth {
+        client.post<String>("techSupportMessage") {
+            multipartFormBody {
+                if (path != null) {
+                    val data = Platform.fileSystem.read(path) {
+                        readByteArray()
+                    }
+                    appendByteArrayInput(data, filename = path.name)
                 }
+                append("message", message)
             }
-        )
+        }
+    }
 
     suspend fun putUser(user: User) = tryCheckAuth {
         client.put<Unit>("user") {
@@ -247,34 +252,4 @@ class NetworkManager(
 
     suspend fun deleteProfile(): Unit =
         client.delete("user")
-}
-
-private fun Throwable.toResponseException(): Throwable =
-    when (this) {
-        is io.ktor.client.features.RedirectResponseException -> RedirectResponseException(this)
-        is io.ktor.client.features.ClientRequestException -> ClientRequestException(this)
-        is io.ktor.client.features.ServerResponseException -> ServerResponseException(this)
-        else -> this
-    }
-
-fun getThrowable(httpStatusCode: Int): Throwable? {
-    val code = HttpStatusCode.fromValue(httpStatusCode)
-    return when (httpStatusCode) {
-        in 300..399 -> RedirectResponseException(code)
-        in 400..499 -> ClientRequestException(code)
-        in 500..599 -> ServerResponseException(code)
-        else -> null
-    }
-}
-
-data class RedirectResponseException(val status: HttpStatusCode) : Exception() {
-    constructor(exception: io.ktor.client.features.RedirectResponseException) : this(exception.response.status)
-}
-
-data class ClientRequestException(val status: HttpStatusCode) : Exception() {
-    constructor(exception: io.ktor.client.features.ClientRequestException) : this(exception.response.status)
-}
-
-data class ServerResponseException(val status: HttpStatusCode) : Exception() {
-    constructor(exception: io.ktor.client.features.ServerResponseException) : this(exception.response.status)
 }

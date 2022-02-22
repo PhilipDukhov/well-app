@@ -15,8 +15,6 @@ import com.well.modules.utils.flowUtils.MutableSetStateFlow
 import com.well.modules.utils.ktorUtils.createBaseHttpClient
 import com.well.server.routing.UserSession
 import com.well.server.utils.notifications.sendNotification
-import ch.qos.logback.core.util.Loader
-import com.eatthepath.pushy.apns.ApnsClient
 import com.eatthepath.pushy.apns.ApnsClientBuilder
 import com.eatthepath.pushy.apns.auth.ApnsSigningKey
 import com.google.auth.oauth2.GoogleCredentials
@@ -35,12 +33,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 import kotlin.time.Duration.Companion.seconds
-import java.io.File
-import java.io.FileInputStream
 import java.io.InputStream
-import java.net.URL
 import java.util.*
-import java.util.stream.Stream
 
 
 class Dependencies(app: Application) {
@@ -151,7 +145,10 @@ class Dependencies(app: Application) {
             }
             println("clientsToDeliver $clientsToDeliver")
             val notification = lazy {
-                val senderName = database.usersQueries.getById(message.fromId).executeAsOne().fullName
+                val senderName = database.usersQueries
+                    .getById(message.fromId)
+                    .executeAsOne()
+                    .fullName
                 val chatUnreadCount = database.chatMessagesQueries.unreadCount(
                     fromId = message.fromId,
                     peerId = message.peerId,
@@ -227,7 +224,10 @@ class Dependencies(app: Application) {
                 it to ClientKey(it.deviceId, meeting.expertUid)
             }
             val notification = lazy {
-                val senderName = database.usersQueries.getById(meeting.creatorUid).executeAsOne().fullName
+                val senderName = database.usersQueries
+                    .getById(meeting.creatorUid)
+                    .executeAsOne()
+                    .fullName
                 Notification.Meeting(
                     meetingId = id,
                     senderName = senderName,

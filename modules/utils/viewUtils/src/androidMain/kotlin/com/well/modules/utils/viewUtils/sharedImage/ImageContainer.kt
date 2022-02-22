@@ -26,7 +26,7 @@ actual class ImageContainer(private val content: Content) : SharedImage() {
 
     constructor(
         uri: Uri,
-        context: Context
+        context: Context,
     ) : this(Content.Uri(uri, context))
 
     constructor(bitmap: Bitmap) : this(Content.Bitmap(bitmap))

@@ -15,7 +15,8 @@ fun sendEmail(
 ) {
     AmazonSimpleEmailServiceClientBuilder
         .standard()
-        .build().sendEmail(
+        .build()
+        .sendEmail(
             SendEmailRequest()
                 .withSource(source)
                 .withDestination(

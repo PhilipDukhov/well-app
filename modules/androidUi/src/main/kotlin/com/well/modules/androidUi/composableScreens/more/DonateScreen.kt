@@ -4,11 +4,10 @@ import com.well.modules.androidUi.customViews.ActionButton
 import com.well.modules.androidUi.customViews.ControlItem
 import com.well.modules.androidUi.customViews.NavigationBar
 import com.well.modules.androidUi.customViews.SelectableButton
-import com.well.modules.androidUi.ext.toColor
+import com.well.modules.androidUi.customViews.SwitchRow
 import com.well.modules.androidUi.theme.body1Light
 import com.well.modules.features.more.moreFeature.subfeatures.DonateFeature.Msg
 import com.well.modules.features.more.moreFeature.subfeatures.DonateFeature.State
-import com.well.modules.models.Color
 import com.well.modules.features.more.moreFeature.subfeatures.DonateFeature as Feature
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,10 +16,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Switch
-import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -73,24 +69,11 @@ fun ColumnScope.DonateScreen(
             }
         }
         Spacer(Modifier.weight(31f))
-        TextButton(
-            onClick = { isRecurring = !isRecurring }
-        ) {
-            Text(
-                Feature.Strings.isRecurring,
-                color = Color.Black.toColor(),
-                style = MaterialTheme.typography.body1
-            )
-            Spacer(Modifier.weight(1f))
-            Switch(
-                checked = isRecurring,
-                onCheckedChange = { isRecurring = !isRecurring },
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = Color.Green.toColor(),
-                    uncheckedThumbColor = Color.LightGray.toColor(),
-                )
-            )
-        }
+        SwitchRow(
+            text = Feature.Strings.isRecurring,
+            checked = isRecurring,
+            onCheckedChange = { isRecurring = !isRecurring },
+        )
         Spacer(Modifier.weight(50f))
         ActionButton(
             onClick = {

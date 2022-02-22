@@ -4,7 +4,7 @@ import com.well.modules.models.date.Date
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Path(
+data class DrawingPath(
     val points: List<Point>,
     val color: Color,
     val lineWidth: Float,

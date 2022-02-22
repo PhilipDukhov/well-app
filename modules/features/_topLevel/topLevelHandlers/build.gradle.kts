@@ -51,6 +51,7 @@ kotlin {
                 "kotlin.stdLib",
                 "sqldelight.coroutinesExtensions",
                 "shared.napier",
+                "shared.okio",
                 "kotlin.datetime",
             )
         }

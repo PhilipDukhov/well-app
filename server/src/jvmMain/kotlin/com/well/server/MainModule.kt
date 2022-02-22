@@ -14,6 +14,7 @@ import com.well.server.routing.auth.sendSms
 import com.well.server.routing.auth.twitterLogin
 import com.well.server.routing.bookAvailability
 import com.well.server.routing.deleteAvailability
+import com.well.server.routing.handleTechSupportMessage
 import com.well.server.routing.listBookingAvailabilities
 import com.well.server.routing.listCurrentAvailabilities
 import com.well.server.routing.mainWebSocket
@@ -277,6 +278,7 @@ fun Application.initializedModule(dependencies: Dependencies) {
                 mainWebSocket(dependencies, DeviceId(call.parameters["deviceId"]!!))
             }
             post("uploadMessageMedia") { uploadMessageMedia(dependencies) }
+            post("techSupportMessage") { handleTechSupportMessage(dependencies) }
             route("user") {
                 put { updateUser(dependencies) }
                 post("uploadProfilePicture") { uploadProfilePicture(dependencies) }

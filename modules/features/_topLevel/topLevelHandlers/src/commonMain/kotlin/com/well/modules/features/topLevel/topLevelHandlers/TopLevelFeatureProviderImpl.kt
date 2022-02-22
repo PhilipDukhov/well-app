@@ -71,6 +71,7 @@ import com.well.modules.utils.viewUtils.RawNotification
 import com.well.modules.utils.viewUtils.SystemContext
 import com.well.modules.utils.viewUtils.WebAuthenticator
 import com.well.modules.utils.viewUtils.dataStore.AuthInfo
+import com.well.modules.utils.viewUtils.dataStore.DataStore
 import com.well.modules.utils.viewUtils.dataStore.authInfo
 import com.well.modules.utils.viewUtils.dataStore.notificationToken
 import com.well.modules.utils.viewUtils.dataStore.notificationTokenNotified
@@ -101,15 +102,14 @@ internal class TopLevelFeatureProviderImpl(
     Dispatchers.Default,
 ), DatabaseProvider by createDatabaseProvider(applicationContext) {
     init {
-        NapierProxy.initializeLogging()
+        NapierProxy.initializeLogging(applicationContext)
     }
 
     var sessionInfo by AtomicCloseableRef<SessionInfo>()
     private var systemService by AtomicRef<SystemService?>()
     val socialNetworkService get() = systemService?.socialNetworkService
-    private val platform = Platform(applicationContext)
     var notificationHandler by AtomicRef<NotificationHandler?>()
-    val dataStore get() = platform.dataStore
+    val dataStore = DataStore(applicationContext)
     val permissionsHandler get() = systemService?.permissionsHandler
     val coroutineScope = CoroutineScope(coroutineContext)
     val systemHelper get() = systemService?.context?.helper
@@ -357,12 +357,22 @@ internal class TopLevelFeatureProviderImpl(
                     }
                 }
                 is FeatureEff.Support -> {
-                    when (eff.eff) {
+                    when (val supportEff = eff.eff) {
                         SupportFeature.Eff.Back -> {
                             listener(Msg.Pop)
                         }
                         is SupportFeature.Eff.Send -> {
-                            listener(Msg.Pop)
+                            try {
+                                if (supportEff.includeLogs) {
+                                    val logs = applicationContext.collectLogs()
+                                    networkManager.sendTechSupportMessage(supportEff.text, logs)
+                                } else {
+                                    networkManager.sendTechSupportMessage(supportEff.text)
+                                }
+                                listener(Msg.Pop)
+                            } catch (t: Throwable) {
+                                listener(Msg.ShowAlert(Alert.Error.throwableAlert(t)))
+                            }
                         }
                     }
                 }

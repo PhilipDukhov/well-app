@@ -11,6 +11,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder
 import com.amazonaws.services.s3.transfer.Upload
 import com.amazonaws.services.s3.transfer.model.UploadResult
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -24,10 +25,11 @@ class AwsManager(
     secretAccessKey: String,
     private val bucketName: String,
 ) {
+    private val _region = "us-east-2"
     private val s3Client = (AmazonS3Client.builder()
         .withCredentials(AWSStaticCredentialsProvider(BasicAWSCredentials(accessKeyId, secretAccessKey)))
         .apply {
-            setEndpointConfiguration(AwsClientBuilder.EndpointConfiguration("s3.us-east-2.amazonaws.com", "us-east-2"))
+            setEndpointConfiguration(AwsClientBuilder.EndpointConfiguration("s3.us-east-2.amazonaws.com", _region))
             isPathStyleAccessEnabled = true
         }
         .build() as AmazonS3Client)
@@ -35,6 +37,12 @@ class AwsManager(
     private val transferManager = TransferManagerBuilder.standard()
         .withS3Client(s3Client)
         .build()
+
+    val simpleEmailService = AmazonSimpleEmailServiceClientBuilder.standard()
+        .apply {
+            region = _region
+        }
+        .build()!!
 
     suspend fun upload(
         data: ByteArray,

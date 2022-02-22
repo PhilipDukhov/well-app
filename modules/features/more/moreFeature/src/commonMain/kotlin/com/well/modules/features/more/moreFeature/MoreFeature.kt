@@ -52,7 +52,7 @@ object MoreFeature {
                     when (msg.item) {
                         State.Item.InviteColleague -> return@eff Eff.InviteColleague
 
-                        State.Item.TechnicalSupport -> MoreScreenState.Support(SupportFeature.State)
+                        State.Item.TechnicalSupport -> MoreScreenState.Support(SupportFeature.State())
                         State.Item.About -> MoreScreenState.About(AboutFeature.State())
                         State.Item.WellAcademy -> MoreScreenState.WellAcademy(WellAcademyFeature.State)
                         State.Item.Favorites -> MoreScreenState.Favorites(FavoritesFeature.State())

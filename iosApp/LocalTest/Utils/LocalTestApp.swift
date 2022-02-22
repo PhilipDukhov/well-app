@@ -25,7 +25,9 @@ struct LocalTestApp: App {
     var viewController: UIViewController?
 
     init() {
-        NapierProxy.shared.initializeLogging()
+
+        NapierProxy.shared
+            .initializeLogging(platform: Platform(applicationContext: ApplicationContext(application: UIApplication.shared)))
         UINavigationController.swizzleIsNavigationBarHiddenImplementation
     }
     

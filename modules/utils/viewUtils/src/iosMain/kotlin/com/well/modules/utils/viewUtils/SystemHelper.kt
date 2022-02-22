@@ -103,7 +103,7 @@ actual class SystemHelper actual constructor(actual val systemContext: SystemCon
                         ) {
                             continuation.cancel()
                         } else if (error != null) {
-                            continuation.resumeWithException(error)
+                            continuation.resumeWithError(error)
                         } else {
                             continuation.resume(callbackUrl!!.absoluteString!!)
                         }

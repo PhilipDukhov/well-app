@@ -87,7 +87,7 @@ ext.Libs = [
                 materialIconsCore    : "androidx.compose.material:material-icons-core:$versions.compose",
                 materialIconsExtended: "androidx.compose.material:material-icons-extended:$versions.compose",
                 constraintLayout     : "androidx.constraintlayout:constraintlayout-compose:1.0.0",
-                viewModel            : "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0",
+                viewModel            : "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1",
                 activity             : "androidx.activity:activity-compose:$versions.androidActivity",
             ],
             composeMaterialDialogs: [
@@ -142,6 +142,8 @@ ext.Libs = [
         mysqlConnectorJava: "mysql:mysql-connector-java:8.0.26",
         firebaseAdmin     : "com.google.firebase:firebase-admin:8.1.0",
         pushy             : "com.eatthepath:pushy:0.14.1",
+        javaxMail         : "com.sun.mail:javax.mail:1.6.2",
+        javaxBind         : "javax.xml.bind:jaxb-api:2.3.1",
         aws               : [
             s3 : "com.amazonaws:aws-java-sdk-s3:$versions.aws",
             sns: "com.amazonaws:aws-java-sdk-sns:$versions.aws",
@@ -162,6 +164,7 @@ ext.Libs = [
     ],
     shared    : [
         napier: "io.github.aakira:napier:$versions.napier",
+        okio  : "com.squareup.okio:okio:3.0.0",
     ],
     tests     : [
         junit: "junit:junit:4.13.2",

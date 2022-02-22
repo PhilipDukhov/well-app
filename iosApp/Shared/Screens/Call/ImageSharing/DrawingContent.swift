@@ -10,14 +10,13 @@ import SwiftUI
 import SharedMobile
 
 struct DrawingContent: View {
-    typealias Listener = (DrawingFeature.Msg) -> Void
     let state: DrawingFeature.State
     let enabled: Bool
-    let listener: Listener
+    let listener: (DrawingFeature.Msg) -> Void
     
     var body: some View {
         ZStack {
-            ForEach(state.canvasPaths, id: \.self) { (path: SharedMobile.Path) in
+            ForEach(state.canvasPaths, id: \.self) { path in
                 DrawShape(
                     points: path.points.map {
                         $0.toCGPoint()

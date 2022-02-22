@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class Screen(
     val hostId: String,
     val imageURL: String? = null,
-    val paths: List<Path> = listOf(),
+    val paths: List<DrawingPath> = listOf(),
 )

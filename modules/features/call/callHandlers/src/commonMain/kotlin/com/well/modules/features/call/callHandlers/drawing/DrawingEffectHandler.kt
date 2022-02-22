@@ -1,7 +1,7 @@
 package com.well.modules.features.call.callHandlers.drawing
 
 import com.well.modules.atomic.AtomicRef
-import com.well.modules.models.Path
+import com.well.modules.models.DrawingPath
 import com.well.modules.utils.viewUtils.sharedImage.asImageContainer
 import com.well.modules.features.call.callFeature.CallFeature
 import com.well.modules.features.call.callFeature.drawing.DrawingFeature.Eff
@@ -15,7 +15,7 @@ internal class DrawingEffectHandler(
     val onRequestImageUpdate: (Eff.RequestImageUpdate) -> Unit
 ) {
     private var waitingForPathConfirmation by AtomicRef(false)
-    private var pendingPaths by AtomicRef<List<Path>?>()
+    private var pendingPaths by AtomicRef<List<DrawingPath>?>()
 
     fun handleEffect(eff: Eff) {
         when (eff) {

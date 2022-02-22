@@ -25,6 +25,7 @@ kotlin {
                 "ktor.client.logging",
                 "ktor.utils",
                 "shared.napier",
+                "shared.okio",
             )
         }
         if (withAndroid) {

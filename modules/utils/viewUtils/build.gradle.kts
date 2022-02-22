@@ -10,6 +10,7 @@ kotlin {
     androidWithAndroid()
     iosWithSimulator(project = project)
     sourceSets {
+        optIns()
         val commonMain by getting {
             libDependencies(
                 ":modules:utils:flowUtils",
@@ -21,6 +22,7 @@ kotlin {
                 "kotlin.datetime",
                 "kotlin.stdLib",
                 "shared.napier",
+                "shared.okio",
                 "sqldelight.coroutinesExtensions",
             )
         }

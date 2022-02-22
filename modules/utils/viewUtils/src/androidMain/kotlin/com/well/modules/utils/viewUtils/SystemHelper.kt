@@ -17,7 +17,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-actual class SystemHelper actual constructor(actual val systemContext: SystemContext) : WebAuthenticator {
+actual class SystemHelper actual constructor(
+    actual val systemContext: SystemContext,
+) : WebAuthenticator {
     actual fun showAlert(alert: Alert) {
         AlertDialog.Builder(systemContext.activity)
             .setTitle(alert.title)

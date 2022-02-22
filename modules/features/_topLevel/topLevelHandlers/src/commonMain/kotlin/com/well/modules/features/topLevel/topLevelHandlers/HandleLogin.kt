@@ -37,7 +37,7 @@ internal suspend fun TopLevelFeatureProviderImpl.socialNetworkLogin(
         }
     } catch (t: Throwable) {
         if (t !is CancellationException && t.message?.contains("com.well.modules.utils error 0") != true) {
-            listener.invoke(TopLevelFeature.Msg.ShowAlert(Alert.Error.fixDescription(t)))
+            listener.invoke(TopLevelFeature.Msg.ShowAlert(Alert.Error.throwableAlert(t)))
         }
     } finally {
         listener.invoke(

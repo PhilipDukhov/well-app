@@ -40,3 +40,13 @@ dependencies {
     implementation(gradleApi())
     implementation(dotEnv)
 }
+
+subprojects.plus(project).forEach {
+    it.configurations.all {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "org.jetbrains.kotlin") {
+                useVersion(kotlinVersion)
+            }
+        }
+    }
+}

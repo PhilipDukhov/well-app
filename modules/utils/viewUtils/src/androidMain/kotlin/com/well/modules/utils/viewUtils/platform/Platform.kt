@@ -1,13 +1,16 @@
 package com.well.modules.utils.viewUtils.platform
 
-import com.well.modules.models.Size
 import com.well.modules.utils.viewUtils.BuildConfig
+import okio.FileSystem
 
-actual val Platform.Companion.isDebug: Boolean
+actual val Platform.isDebug
     get() = BuildConfig.DEBUG
 
-actual val Platform.Companion.nativeScale: Float
+actual val Platform.nativeScale
     get() = 1F
 
-actual val Platform.Companion.current: Platform.Platform
+actual val Platform.current
     get() = Platform.Platform.Android
+
+actual val Platform.fileSystem
+    get() = FileSystem.SYSTEM

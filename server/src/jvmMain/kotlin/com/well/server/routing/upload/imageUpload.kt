@@ -36,15 +36,16 @@ private suspend fun PipelineContext<*, ApplicationCall>.uploadMultipartFile(
         .forEachPart { part ->
             if (part !is PartData.FileItem) throw IllegalStateException("unexpected part $part")
             val fileBytes = part.streamProvider().readBytes()
+            val fileName = part.originalFileName!!
+            part.dispose()
             val url = dependencies.awsManager.run {
                 var path: String
-                val ext = File(part.originalFileName!!).extension
+                val ext = File(fileName).extension
                 do {
                     path = pathGenerator(ext)
                 } while (exists(path))
                 upload(fileBytes, path)
             }
             call.respond(url.toString())
-            part.dispose()
         }
 }
