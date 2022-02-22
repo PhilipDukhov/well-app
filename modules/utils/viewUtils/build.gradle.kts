@@ -1,13 +1,11 @@
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
-    if (withAndroid) {
-        id("com.android.library")
-    }
+    id("com.android.library")
 }
 
 kotlin {
-    androidWithAndroid()
+    android()
     iosWithSimulator(project = project)
     sourceSets {
         optIns()
@@ -26,18 +24,16 @@ kotlin {
                 "sqldelight.coroutinesExtensions",
             )
         }
-        if (withAndroid) {
-            val androidMain by getting {
-                libDependencies(
-                    "android.coil",
-                    "android.dataStore",
-                    "android.material",
-                    "android.activity",
-                    "android.browser",
-                )
-                dependencies {
-                    api(libAt("firebase.messaging"))
-                }
+        val androidMain by getting {
+            libDependencies(
+                "android.coil",
+                "android.dataStore",
+                "android.material",
+                "android.activity",
+                "android.browser",
+            )
+            dependencies {
+                api(libAt("firebase.messaging"))
             }
         }
         val iosMain by getting {

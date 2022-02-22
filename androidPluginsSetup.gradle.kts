@@ -11,7 +11,7 @@ object Constants {
 subprojects {
     plugins.matching { it is AppPlugin || it is LibraryPlugin }.whenPluginAdded {
         configure<BaseExtension> {
-            setCompileSdkVersion(32)
+            setCompileSdkVersion(31)
             buildToolsVersion = "30.0.3"
 
             defaultConfig {

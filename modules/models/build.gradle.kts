@@ -1,16 +1,12 @@
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
-    if (withAndroid) {
-        id("com.android.library")
-    } else {
-        `java-library`
-    }
+    id("com.android.library")
 }
 
 kotlin {
     iosWithSimulator(project = project)
-    androidWithAndroid()
+    android()
     jvm()
     sourceSets {
         optIns(OptIn.Serialization)
@@ -26,14 +22,10 @@ kotlin {
         val jvmMain by getting {
 
         }
-        if (withAndroid) {
-            val androidMain by getting {
-                kotlin.srcDir("src/jvmMain/kotlin")
-            }
+        val androidMain by getting {
+            kotlin.srcDir("src/jvmMain/kotlin")
         }
     }
 }
 
-if (withAndroid) {
-    apply(from = "${rootDir}/androidEnableDesugaring.gradle.kts")
-}
+apply(from = "${rootDir}/androidEnableDesugaring.gradle.kts")

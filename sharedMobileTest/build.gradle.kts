@@ -1,16 +1,11 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
-    if (withAndroid) {
-        id("com.android.library")
-    }
+    id("com.android.library")
 }
 
 kotlin {
-    androidWithAndroid()
+    android()
     val frameworkName = "SharedMobile"
     iosWithSimulator(project = project) {
         binaries {
@@ -40,12 +35,6 @@ kotlin {
                 "shared.napier",
                 "kotlin.datetime",
             )
-        }
-        if (withAndroid) {
-            val androidMain by getting {
-                libDependencies(
-                )
-            }
         }
         val iosMain by getting {
             libDependencies(

@@ -1,13 +1,11 @@
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
-    if (withAndroid) {
-        id("com.android.library")
-    }
+    id("com.android.library")
 }
 
 kotlin {
-    androidWithAndroid()
+    android()
     iosWithSimulator(project = project)
     jvm()
     sourceSets {
@@ -18,10 +16,8 @@ kotlin {
                 "kotlin.reflect",
             )
         }
-        if (withAndroid) {
-            val androidMain by getting {
-                kotlin.srcDir("src/jvmMain/kotlin")
-            }
+        val androidMain by getting {
+            kotlin.srcDir("src/jvmMain/kotlin")
         }
     }
 }

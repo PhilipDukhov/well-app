@@ -2,9 +2,7 @@ import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 
 plugins {
     kotlin("multiplatform")
-    if (withAndroid) {
-        id("com.android.library")
-    }
+    id("com.android.library")
     id("com.codingfeline.buildkonfig")
 }
 
@@ -24,7 +22,7 @@ buildkonfig {
 }
 
 kotlin {
-    androidWithAndroid()
+    android()
     iosWithSimulator(project = project)
     sourceSets {
         val commonMain by getting {
@@ -39,14 +37,12 @@ kotlin {
                 "shared.napier",
             )
         }
-        if (withAndroid) {
-            val androidMain by getting {
-                libDependencies(
-                    "android.facebookLogin",
-                    "google.playServicesAuth",
-                    "kotlin.coroutines.playServices",
-                )
-            }
+        val androidMain by getting {
+            libDependencies(
+                "android.facebookLogin",
+                "google.playServicesAuth",
+                "kotlin.coroutines.playServices",
+            )
         }
         val iosMain by getting {
             libDependencies(

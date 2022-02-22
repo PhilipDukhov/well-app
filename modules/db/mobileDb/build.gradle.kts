@@ -1,12 +1,10 @@
 plugins {
     kotlin("multiplatform")
-    if (withAndroid) {
-        id("com.android.library")
-    }
+    id("com.android.library")
 }
 
 kotlin {
-    androidWithAndroid()
+    android()
     iosWithSimulator(project = project)
     sourceSets {
         val commonMain by getting {
@@ -25,14 +23,12 @@ kotlin {
                 "shared.napier",
             )
         }
-        if (withAndroid) {
-            val androidMain by getting {
-                libDependencies(
-                    "sqldelight.androidDriver",
-                    // TODO: issue not imported from :modules:utils
-                    "android.activity",
-                )
-            }
+        val androidMain by getting {
+            libDependencies(
+                "sqldelight.androidDriver",
+                // TODO: issue not imported from :modules:utils
+                "android.activity",
+            )
         }
         val iosMain by getting {
             libDependencies(

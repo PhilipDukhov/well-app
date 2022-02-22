@@ -311,10 +311,8 @@ fun Project.subprojectsConfigurationsResolutionStrategy(vararg strategies: Resol
 private fun ModuleVersionSelector.groupToName() = group to name
 
 fun RepositoryHandler.addSnapshots(uri: (Any) -> java.net.URI, project: Project) {
-    if (executor == Executor.CocoapodsArm64Simulator) {
-        maven {
-            url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-        }
+    maven {
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
     }
     if (project.extra.properties["kotlin.native.binary.memoryModel"] as? String == "experimental") {
         maven {

@@ -1,9 +1,7 @@
 plugins {
     kotlin("multiplatform")
     id("com.squareup.sqldelight")
-    if (withAndroid) {
-        id("com.android.library")
-    }
+    id("com.android.library")
 }
 
 sqldelight {
@@ -13,7 +11,7 @@ sqldelight {
 }
 
 kotlin {
-    androidWithAndroid()
+    android()
     iosWithSimulator(project = project)
     jvm()
     sourceSets {
@@ -30,13 +28,11 @@ kotlin {
                 "sqldelight.runtime",
             )
         }
-        if (withAndroid) {
-            val androidMain by getting {
-                libDependencies(
-                    "sqldelight.androidDriver",
-                    "android.activity",
-                )
-            }
+        val androidMain by getting {
+            libDependencies(
+                "sqldelight.androidDriver",
+                "android.activity",
+            )
         }
         val iosMain by getting {
             libDependencies(

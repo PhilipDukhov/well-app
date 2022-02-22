@@ -1,14 +1,10 @@
 plugins {
     kotlin("multiplatform")
-    if (withAndroid) {
-        id("com.android.library")
-    } else {
-        `java-library`
-    }
+    id("com.android.library")
 }
 
 kotlin {
-    androidWithAndroid()
+    android()
     iosWithSimulator(project = project)
     jvm()
     sourceSets {

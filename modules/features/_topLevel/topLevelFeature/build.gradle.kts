@@ -1,8 +1,6 @@
 plugins {
     kotlin("multiplatform")
-    if (withAndroid) {
-        id("com.android.library")
-    }
+    id("com.android.library")
     kotlin("kapt")
 }
 
@@ -15,7 +13,7 @@ kapt {
 }
 
 kotlin {
-    androidWithAndroid()
+    android()
     iosWithSimulator(project = project)
     sourceSets {
         optIns(OptIn.Coroutines)
@@ -46,9 +44,7 @@ kotlin {
             )
 
             // Workaround for lack of Kapt support in multiplatform project:
-            if (withAndroid) {
-                dependencies.add("kapt", project(":modules:annotationProcessor"))
-            }
+            dependencies.add("kapt", project(":modules:annotationProcessor"))
             kotlin.srcDir(generatedKotlinSources)
         }
         val iosMain by getting {

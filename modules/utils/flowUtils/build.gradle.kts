@@ -1,14 +1,10 @@
 plugins {
     kotlin("multiplatform")
-    if (withAndroid) {
-        id("com.android.library")
-    } else {
-        `java-library`
-    }
+    id("com.android.library")
 }
 
 kotlin {
-    androidWithAndroid()
+    android()
     iosWithSimulator(project = project)
     jvm()
     sourceSets {
@@ -19,12 +15,10 @@ kotlin {
                 "shared.napier",
             )
         }
-        if (withAndroid) {
-            val androidMain by getting {
-                libDependencies(
-                    "ktor.client.engine.cio",
-                )
-            }
+        val androidMain by getting {
+            libDependencies(
+                "ktor.client.engine.cio",
+            )
         }
         val iosMain by getting {
             libDependencies(

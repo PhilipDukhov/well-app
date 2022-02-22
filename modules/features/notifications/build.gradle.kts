@@ -1,13 +1,11 @@
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
-    if (withAndroid) {
-        id("com.android.library")
-    }
+    id("com.android.library")
 }
 
 kotlin {
-    androidWithAndroid()
+    android()
     iosWithSimulator(project = project)
     sourceSets {
         optIns(OptIn.Coroutines)
@@ -21,12 +19,10 @@ kotlin {
                 "shared.napier",
             )
         }
-        if (withAndroid) {
-            val androidMain by getting {
-                libDependencies(
-                    "android.appCompat",
-                )
-            }
+        val androidMain by getting {
+            libDependencies(
+                "android.appCompat",
+            )
         }
         val iosMain by getting {
             libDependencies(

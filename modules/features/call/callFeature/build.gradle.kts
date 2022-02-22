@@ -1,13 +1,11 @@
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
-    if (withAndroid) {
-        id("com.android.library")
-    }
+    id("com.android.library")
 }
 
 kotlin {
-    androidWithAndroid()
+    android()
     iosWithSimulator(project = project)
     sourceSets {
         optIns()
@@ -30,19 +28,17 @@ kotlin {
                 implementation(kotlin("test-annotations-common"))
             }
         }
-        if (withAndroid) {
-            val androidMain by getting {
-                libDependencies(
-                    "android.webrtc",
-                )
-            }
-            val androidTest by getting {
-                libDependencies(
-                    "tests.junit",
-                )
-                dependencies {
-                    implementation(kotlin("test-junit"))
-                }
+        val androidMain by getting {
+            libDependencies(
+                "android.webrtc",
+            )
+        }
+        val androidTest by getting {
+            libDependencies(
+                "tests.junit",
+            )
+            dependencies {
+                implementation(kotlin("test-junit"))
             }
         }
         val iosMain by getting {

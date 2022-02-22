@@ -1,13 +1,11 @@
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
-    if (withAndroid) {
-        id("com.android.library")
-    }
+    id("com.android.library")
 }
 
 kotlin {
-    androidWithAndroid()
+    android()
     val frameworkName = "SharedMobile"
     iosWithSimulator(project = project) {
         binaries {

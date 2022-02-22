@@ -60,9 +60,7 @@ allprojects {
     apply(from = "${rootDir}/dependencies.gradle")
 }
 
-if (withAndroid) {
-    apply(from = "${rootDir}/androidPluginsSetup.gradle.kts")
-}
+apply(from = "${rootDir}/androidPluginsSetup.gradle.kts")
 
 subprojects {
     group = Constants.group
@@ -121,27 +119,27 @@ if (dependencyUpdatesNeeded != null) {
         // Example 1: reject all non stable versions
         rejectVersionIf {
             isNonStable(candidate.version)
-        }
+            }
 
-        // Example 2: disallow release candidates as upgradable versions from stable versions
-        rejectVersionIf {
-            isNonStable(candidate.version) && !isNonStable(currentVersion)
-        }
+            // Example 2: disallow release candidates as upgradable versions from stable versions
+            rejectVersionIf {
+                isNonStable(candidate.version) && !isNonStable(currentVersion)
+            }
 
-        // Example 3: using the full syntax
-        resolutionStrategy {
-            componentSelection {
-                all {
-                    if (isNonStable(candidate.version) && !isNonStable(currentVersion)) {
-                        reject("Release candidate")
+            // Example 3: using the full syntax
+            resolutionStrategy {
+                componentSelection {
+                    all {
+                        if (isNonStable(candidate.version) && !isNonStable(currentVersion)) {
+                            reject("Release candidate")
+                        }
                     }
                 }
             }
-        }
 
-        checkForGradleUpdate = true
-        outputFormatter = "json"
-        outputDir = "build/dependencyUpdates"
-        reportfileName = "report"
-    }
+            checkForGradleUpdate = true
+            outputFormatter = "json"
+            outputDir = "build/dependencyUpdates"
+            reportfileName = "report"
+        }
 }
