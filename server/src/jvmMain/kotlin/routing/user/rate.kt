@@ -28,8 +28,8 @@ suspend fun PipelineContext<*, ApplicationCall>.rate(
                 Ratings(
                     owner = currentUid,
                     destination = request.uid,
-                    value_ = request.rating.value,
-                    text = request.rating.text
+                    value_ = request.review.value,
+                    text = request.review.text
                 )
             )
         val userRatingInfo = database

@@ -4,8 +4,12 @@ import com.well.modules.atomic.AtomicMutableMap
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.State.EditingStatus
 import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.AvailabilitiesCalendarFeature
 import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.RequestConsultationFeature
+import com.well.modules.features.myProfile.myProfileFeature.helpers.Strings
+import com.well.modules.features.myProfile.myProfileFeature.helpers.UIGroup
+import com.well.modules.features.myProfile.myProfileFeature.helpers.editingGroups
+import com.well.modules.features.myProfile.myProfileFeature.helpers.previewGroups
 import com.well.modules.models.FavoriteSetter
-import com.well.modules.models.Rating
+import com.well.modules.models.Review
 import com.well.modules.models.RatingRequest
 import com.well.modules.models.User
 import com.well.modules.puerhBase.toSetOf
@@ -200,7 +204,7 @@ object MyProfileFeature {
         data class UpdateImage(val imageContainer: ImageContainer?) : Msg()
         data class UserUploadFinished(val throwable: Throwable?) : Msg()
         data class UpdateHasAvailableAvailabilities(val hasAvailableAvailabilities: Boolean) : Msg()
-        data class Rate(val rating: Rating) : Msg()
+        data class Rate(val review: Review) : Msg()
         data class AvailabilityMsg(val msg: AvailabilitiesCalendarFeature.Msg) : Msg()
         object RequestConsultation : Msg()
         object CloseConsultationRequest : Msg()
@@ -319,13 +323,13 @@ object MyProfileFeature {
                     return@reducer state.copy(
                         user = state.user!!.copy(
                             ratingInfo = state.user.ratingInfo.copy(
-                                currentUserRating = msg.rating,
+                                currentUserReview = msg.review,
                             ),
                         )
                     ) toSetOf Eff.RatingRequest(
                         ratingRequest = RatingRequest(
                             uid = state.user.id,
-                            rating = msg.rating,
+                            review = msg.review,
                         )
                     )
                 }

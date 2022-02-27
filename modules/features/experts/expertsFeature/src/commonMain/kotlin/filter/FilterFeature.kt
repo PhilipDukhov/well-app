@@ -13,7 +13,7 @@ object FilterFeature {
         const val withReviews = "With reviews"
         const val clearAll = "clear all"
         const val show = "Show"
-        const val rating = "Rating"
+        const val rating = "Review"
     }
 
     data class State(

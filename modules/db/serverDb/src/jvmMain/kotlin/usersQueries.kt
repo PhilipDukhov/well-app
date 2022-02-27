@@ -90,11 +90,11 @@ fun Users.toUser(
         ratingInfo = User.RatingInfo(
             count = ratingsCount,
             average = averageRating,
-            currentUserRating = ifTrueOrNull(!isCurrent) {
+            currentUserReview = ifTrueOrNull(!isCurrent) {
                 database.ratingQueries.get(
                     owner = currentUid,
                     destination = id,
-                ).executeAsOneOrNull()?.toRating()
+                ).executeAsOneOrNull()?.toReview()
             }
         ),
         profileImageUrl = profileImageUrl,

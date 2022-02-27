@@ -8,7 +8,7 @@ import com.well.modules.androidUi.customViews.ProfileImage
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.androidUi.ext.widthDp
 import com.well.modules.models.Color
-import com.well.modules.models.Rating
+import com.well.modules.models.Review
 import com.well.modules.models.User
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
@@ -43,11 +43,11 @@ import com.google.accompanist.insets.statusBarsPadding
 fun RatingScreen(
     user: User,
     maxCharacters: Int,
-    rate: (Rating) -> Unit,
+    rate: (Review) -> Unit,
 ) {
-    var ratingValue by remember { mutableStateOf(user.ratingInfo.currentUserRating?.value ?: 0) }
+    var ratingValue by remember { mutableStateOf(user.ratingInfo.currentUserReview?.value ?: 0) }
     val ratingTextFieldValueState = remember {
-        mutableStateOf(user.ratingInfo.currentUserRating?.text ?: "")
+        mutableStateOf(user.ratingInfo.currentUserReview?.text ?: "")
     }
     val profileImageSize = LocalContext.current.resources.displayMetrics.widthDp * 0.42f
     val imageTopPadding = 20.dp
@@ -77,7 +77,7 @@ fun RatingScreen(
                     )
                     Spacer(modifier = Modifier.height(18.dp))
                     Text(
-                        if (user.ratingInfo.currentUserRating != null)
+                        if (user.ratingInfo.currentUserReview != null)
                             "Update your review"
                         else
                             "Please write a review about",
@@ -118,7 +118,7 @@ fun RatingScreen(
             ActionButton(
                 enabled = text.isNotBlank(),
                 onClick = {
-                    rate(Rating(ratingValue, text))
+                    rate(Review(ratingValue, text))
                 },
                 modifier = Modifier
                     .navigationBarsWithImePadding()

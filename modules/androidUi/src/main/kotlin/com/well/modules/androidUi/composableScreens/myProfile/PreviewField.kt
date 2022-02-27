@@ -3,7 +3,7 @@ package com.well.modules.androidUi.composableScreens.myProfile
 import com.well.modules.androidUi.R
 import com.well.modules.androidUi.customViews.ActionButton
 import com.well.modules.androidUi.ext.toColor
-import com.well.modules.features.myProfile.myProfileFeature.UIPreviewField
+import com.well.modules.features.myProfile.myProfileFeature.helpers.UIPreviewField
 import com.well.modules.models.Color
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column

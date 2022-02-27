@@ -14,7 +14,7 @@ import com.well.modules.androidUi.ext.toColor
 import com.well.modules.androidUi.ext.visibility
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Msg
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.State
-import com.well.modules.features.myProfile.myProfileFeature.UIGroup
+import com.well.modules.features.myProfile.myProfileFeature.helpers.UIGroup
 import com.well.modules.models.Color
 import com.well.modules.models.User
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature as Feature

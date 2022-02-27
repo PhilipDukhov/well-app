@@ -1,4 +1,4 @@
-package com.well.modules.features.myProfile.myProfileFeature
+package com.well.modules.features.myProfile.myProfileFeature.helpers
 
 data class UIPreviewField(
     val title: String = "",

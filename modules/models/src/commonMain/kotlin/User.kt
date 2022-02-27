@@ -1,5 +1,6 @@
 package com.well.modules.models
 
+import com.well.modules.models.formatters.initialsFromName
 import kotlinx.serialization.Serializable
 import kotlin.jvm.JvmInline
 
@@ -133,9 +134,8 @@ data class User(
     data class RatingInfo(
         val count: Int,
         val average: Double,
-        val currentUserRating: Rating? = null,
+        val currentUserReview: Review? = null,
     )
 
-    val initials = fullName.split(" ").mapNotNull { it.firstOrNull()?.uppercaseChar() }
-        .joinToString(separator = "")
+    val initials = fullName.initialsFromName()
 }

@@ -52,7 +52,7 @@ fun ColumnScope.RatingInfoView(
 private fun Stars(
     ratingInfo: User.RatingInfo,
 ) {
-    val value = ratingInfo.currentUserRating?.value?.toDouble() ?: ratingInfo.average
+    val value = ratingInfo.currentUserReview?.value?.toDouble() ?: ratingInfo.average
     Row {
         for (star in 1..5) {
             Icon(
@@ -60,7 +60,7 @@ private fun Stars(
                 contentDescription = null,
                 tint = (
                         if (star <= value)
-                            if (ratingInfo.currentUserRating !== null)
+                            if (ratingInfo.currentUserReview !== null)
                                 Color.Supernova
                             else
                                 Color.Green

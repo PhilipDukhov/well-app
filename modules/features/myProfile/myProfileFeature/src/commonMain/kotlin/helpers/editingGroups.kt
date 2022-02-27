@@ -1,4 +1,4 @@
-package com.well.modules.features.myProfile.myProfileFeature
+package com.well.modules.features.myProfile.myProfileFeature.helpers
 
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Msg
 import com.well.modules.models.User

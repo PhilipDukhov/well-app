@@ -1,5 +1,6 @@
-package com.well.modules.features.myProfile.myProfileFeature
+package com.well.modules.features.myProfile.myProfileFeature.helpers
 
+import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature
 import com.well.modules.models.User
 import com.well.modules.utils.kotlinUtils.ifTrueOrNull
 import com.well.modules.utils.viewUtils.UIEditingField
