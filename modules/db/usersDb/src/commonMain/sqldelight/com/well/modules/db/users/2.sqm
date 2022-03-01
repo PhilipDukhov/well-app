@@ -1,0 +1,27 @@
+DROP TABLE Users;
+
+CREATE TABLE Users (
+    id INTEGER AS User.Id NOT NULL PRIMARY KEY,
+    initialized INTEGER AS Boolean NOT NULL,
+    lastEdited REAL NOT NULL,
+    fullName TEXT NOT NULL,
+    type TEXT AS User.Type NOT NULL,
+    favorite INTEGER AS Boolean NOT NULL,
+    email TEXT,
+    profileImageUrl TEXT,
+    phoneNumber TEXT,
+    timeZoneIdentifier TEXT,
+    credentials TEXT AS User.Credentials,
+    academicRank TEXT AS User.AcademicRank,
+    languages TEXT AS Set<User.Language> NOT NULL,
+    skills TEXT AS Set<User.Skill> NOT NULL,
+    bio TEXT,
+    education TEXT,
+    professionalMemberships TEXT,
+    publications TEXT,
+    twitter TEXT,
+    doximity TEXT,
+
+    countryCode TEXT,
+    reviewInfo TEXT AS User.ReviewInfo NOT NULL
+);

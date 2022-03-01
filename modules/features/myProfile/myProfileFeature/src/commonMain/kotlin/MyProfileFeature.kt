@@ -104,7 +104,7 @@ object MyProfileFeature {
                     name = ifTrueOrNull(user.initialized && editingStatus == EditingStatus.Preview) { user.fullName },
                     credentials = user.credentials,
                     favorite = user.favorite,
-                    ratingInfo = user.ratingInfo,
+                    reviewInfo = user.reviewInfo,
                     completeness = if (user.initialized) user.completeness else null,
                     accountType = if (user.initialized) user.type else null,
                     twitterLink = user.twitter?.let(UrlUtil::urlIfValidOrNull),
@@ -322,7 +322,7 @@ object MyProfileFeature {
                 is Msg.Rate -> {
                     return@reducer state.copy(
                         user = state.user!!.copy(
-                            ratingInfo = state.user.ratingInfo.copy(
+                            reviewInfo = state.user.reviewInfo.copy(
                                 currentUserReview = msg.review,
                             ),
                         )

@@ -113,8 +113,8 @@ struct MyProfileScreen: View {
             }
         }.sheet(isPresented: $editingRating) {
             state.user.map { user in
-                RatingScreen(user: user) { rating in
-                    listener(Feature.MsgRate(rating: rating))
+                ReviewScreen(user: user) { review in
+                    listener(Feature.MsgRate(review: review))
                     editingRating = false
                 }
             }
@@ -288,7 +288,7 @@ struct MyProfileScreen: View {
                 Text($0)
                     .textStyle(.h4)
             }
-            RatingInfoView(ratingInfo: header.ratingInfo) {
+            ReviewInfoView(reviewInfo: header.reviewInfo) {
                 editingRating = true
             }.padding()
         }
@@ -309,8 +309,8 @@ private extension User.Type_ {
     }
 }
 
-extension User.RatingInfo: Identifiable {
+extension User.ReviewInfo: Identifiable {
     public var id: String {
-        "\(String(describing: currentUserRating?.value))"
+        "\(String(describing: currentUserReview?.value))"
     }
 }

@@ -96,9 +96,7 @@ fun TopLevelScreen(
                                 }
                             },
                             label = {
-                                AutoSizeText(
-                                    text = tabScreen.tab.spacedName(),
-                                )
+                                AutoSizeText(tabScreen.tab.spacedName())
                             },
                             selectedContentColor = Color.DarkBlue.toColor(),
                             unselectedContentColor = Color.LightGray.toColor(),

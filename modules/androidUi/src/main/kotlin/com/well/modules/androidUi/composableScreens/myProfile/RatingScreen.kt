@@ -45,9 +45,9 @@ fun RatingScreen(
     maxCharacters: Int,
     rate: (Review) -> Unit,
 ) {
-    var ratingValue by remember { mutableStateOf(user.ratingInfo.currentUserReview?.value ?: 0) }
+    var ratingValue by remember { mutableStateOf(user.reviewInfo.currentUserReview?.value ?: 0) }
     val ratingTextFieldValueState = remember {
-        mutableStateOf(user.ratingInfo.currentUserReview?.text ?: "")
+        mutableStateOf(user.reviewInfo.currentUserReview?.text ?: "")
     }
     val profileImageSize = LocalContext.current.resources.displayMetrics.widthDp * 0.42f
     val imageTopPadding = 20.dp
@@ -77,7 +77,7 @@ fun RatingScreen(
                     )
                     Spacer(modifier = Modifier.height(18.dp))
                     Text(
-                        if (user.ratingInfo.currentUserReview != null)
+                        if (user.reviewInfo.currentUserReview != null)
                             "Update your review"
                         else
                             "Please write a review about",

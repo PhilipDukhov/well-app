@@ -25,7 +25,7 @@ fun UsersQueries.insertOrReplace(user: User) =
         twitter = user.twitter,
         doximity = user.doximity,
         countryCode = user.countryCode,
-        ratingInfo = user.ratingInfo,
+        reviewInfo = user.reviewInfo,
     )
 
 fun Users.toUser() = User(
@@ -36,7 +36,7 @@ fun Users.toUser() = User(
     fullName = fullName,
     type = type,
     email = email,
-    ratingInfo = ratingInfo,
+    reviewInfo = reviewInfo,
     profileImageUrl = profileImageUrl,
     phoneNumber = phoneNumber,
     countryCode = countryCode,

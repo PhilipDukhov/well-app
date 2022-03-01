@@ -7,7 +7,7 @@ import com.well.modules.androidUi.customViews.Control
 import com.well.modules.androidUi.customViews.InactiveOverlay
 import com.well.modules.androidUi.customViews.ModeledNavigationBar
 import com.well.modules.androidUi.customViews.ProfileImage
-import com.well.modules.androidUi.customViews.RatingInfoView
+import com.well.modules.androidUi.customViews.ReviewInfoView
 import com.well.modules.androidUi.customViews.ToggleFavoriteButton
 import com.well.modules.androidUi.ext.findRoot
 import com.well.modules.androidUi.ext.toColor
@@ -398,7 +398,7 @@ private fun OtherUserHeader(
             }
         }
         header.nameWithCredentials?.let { Text(it, style = MaterialTheme.typography.h4) }
-        RatingInfoView(header.ratingInfo, viewAll = editRating)
+        ReviewInfoView(header.reviewInfo, viewAll = editRating)
     }
 }
 

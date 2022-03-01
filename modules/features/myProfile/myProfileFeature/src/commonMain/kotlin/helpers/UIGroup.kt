@@ -28,7 +28,7 @@ sealed class UIGroup {
         val name: String?,
         val credentials: User.Credentials?,
         val favorite: Boolean,
-        val ratingInfo: User.RatingInfo,
+        val reviewInfo: User.ReviewInfo,
         val completeness: Int?,
         val accountType: User.Type?,
         val twitterLink: String?,

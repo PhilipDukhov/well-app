@@ -17,42 +17,42 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun RatingInfoView(
-    ratingInfo: User.RatingInfo,
+fun ReviewInfoView(
+    reviewInfo: User.ReviewInfo,
     viewAll: () -> Unit,
 ) {
     Control(onClick = viewAll) {
         Row {
-            Stars(ratingInfo)
+            Stars(reviewInfo)
             Spacer(modifier = Modifier.weight(1f))
-            ReviewsText(ratingInfo)
+            ReviewsText(reviewInfo)
         }
     }
 }
 
 @Composable
-fun RowScope.RatingInfoView(
-    ratingInfo: User.RatingInfo,
+fun RowScope.ReviewInfoView(
+    reviewInfo: User.ReviewInfo,
 ) {
-    Stars(ratingInfo)
+    Stars(reviewInfo)
     Spacer(modifier = Modifier.weight(1f))
-    ReviewsText(ratingInfo)
+    ReviewsText(reviewInfo)
 }
 
 @Composable
-fun ColumnScope.RatingInfoView(
-    ratingInfo: User.RatingInfo,
+fun ColumnScope.ReviewInfoView(
+    reviewInfo: User.ReviewInfo,
 ) {
-    Stars(ratingInfo)
+    Stars(reviewInfo)
     Spacer(modifier = Modifier.weight(1f))
-    ReviewsText(ratingInfo)
+    ReviewsText(reviewInfo)
 }
 
 @Composable
 private fun Stars(
-    ratingInfo: User.RatingInfo,
+    reviewInfo: User.ReviewInfo,
 ) {
-    val value = ratingInfo.currentUserReview?.value?.toDouble() ?: ratingInfo.average
+    val value = reviewInfo.currentUserReview?.value?.toDouble() ?: reviewInfo.average
     Row {
         for (star in 1..5) {
             Icon(
@@ -60,7 +60,7 @@ private fun Stars(
                 contentDescription = null,
                 tint = (
                         if (star <= value)
-                            if (ratingInfo.currentUserReview !== null)
+                            if (reviewInfo.currentUserReview !== null)
                                 Color.Supernova
                             else
                                 Color.Green
@@ -74,10 +74,10 @@ private fun Stars(
 
 @Composable
 private fun ReviewsText(
-    ratingInfo: User.RatingInfo,
+    reviewInfo: User.ReviewInfo,
 ) {
     Text(
-        text = "reviews (${ratingInfo.count})",
+        text = "reviews (${reviewInfo.count})",
         color = Color.MediumBlue.toColor(),
         style = MaterialTheme.typography.captionLight,
     )

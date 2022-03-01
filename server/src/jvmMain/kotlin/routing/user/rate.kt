@@ -32,7 +32,7 @@ suspend fun PipelineContext<*, ApplicationCall>.rate(
                     text = request.review.text
                 )
             )
-        val userRatingInfo = database
+        val userReviewInfo = database
             .ratingQueries
             .userRating(request.uid)
             .executeAsOne()
@@ -40,8 +40,8 @@ suspend fun PipelineContext<*, ApplicationCall>.rate(
             .usersQueries
             .updateRating(
                 id = request.uid,
-                average = userRatingInfo.AVG ?: 0.0,
-                count = userRatingInfo.COUNT.toInt(),
+                average = userReviewInfo.AVG ?: 0.0,
+                count = userReviewInfo.COUNT.toInt(),
             )
     }
     call.respond(HttpStatusCode.OK)

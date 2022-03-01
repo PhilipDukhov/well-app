@@ -46,7 +46,7 @@ val User.Companion.testUser
             User.Skill.RoboticRenalSurgery,
             User.Skill.PercutaneousNephrolithotomy
         ),
-        ratingInfo = User.RatingInfo(
+        reviewInfo = User.ReviewInfo(
             count = 0,
             average = 0.0,
         ),

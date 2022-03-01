@@ -5,9 +5,9 @@
 import SwiftUI
 import SharedMobile
 
-struct RatingScreen: View {
+struct ReviewScreen: View {
     let user: User
-    let send: (Rating) -> Void
+    let send: (Review) -> Void
 
     @Environment(\.presentationMode)
     private var presentationMode
@@ -18,12 +18,12 @@ struct RatingScreen: View {
 
     init(
         user: User,
-        send: @escaping (Rating) -> Void
+        send: @escaping (Review) -> Void
     ) {
         self.user = user
         self.send = send
-        _selectedRating = .init(wrappedValue: user.ratingInfo.currentUserRating?.value.toInt() ?? 0)
-        _text = .init(wrappedValue: user.ratingInfo.currentUserRating?.text ?? "")
+        _selectedRating = .init(wrappedValue: user.reviewInfo.currentUserReview?.value.toInt() ?? 0)
+        _text = .init(wrappedValue: user.reviewInfo.currentUserReview?.text ?? "")
     }
 
     var body: some View {
@@ -45,7 +45,7 @@ struct RatingScreen: View {
                     .frame(size: profileImageSize)
                 Spacer().frame(height: 18)
                 ScrollView {
-                    Text(user.ratingInfo.currentUserRating != nil ? "Update your review" : "Please write a review about")
+                    Text(user.reviewInfo.currentUserReview != nil ? "Update your review" : "Please write a review about")
                         .textStyle(.body2)
                     Text(user.fullName)
                         .textStyle(.h4)
@@ -55,7 +55,7 @@ struct RatingScreen: View {
                     ProjectTextEditor(placeholder: "Tell us about your experience", text: $text)
                     Spacer().frame(minHeight: 70)
                     Button {
-                        send(Rating(value: Int32(selectedRating), text: text))
+                        send(Review(value: Int32(selectedRating), text: text))
                     } label: {
                         Text("Send")
                     }

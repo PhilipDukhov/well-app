@@ -6,6 +6,8 @@ import com.well.modules.utils.dbUtils.adaptedIntersectionRegex
 import com.well.modules.utils.kotlinUtils.ifTrueOrNull
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 fun UsersQueries.filterFlow(
     uid: User.Id,
@@ -50,10 +52,12 @@ fun UsersQueries.updateUser(user: User) = user.apply {
     )
 }
 
-fun UsersQueries.getByIdsFlow(ids: Collection<User.Id>) =
-    getByIds(ids)
+fun UsersQueries.getByIdsFlow(ids: Collection<User.Id>): Flow<List<Users>> {
+    if (ids.isEmpty()) return emptyFlow()
+    return getByIds(ids)
         .asFlow()
         .mapToList()
+}
 
 private fun Boolean.toDbLong(): Long = if (this) 1 else 0
 
@@ -87,7 +91,7 @@ fun Users.toUser(
             -> User.Type.Doctor
         },
         email = email,
-        ratingInfo = User.RatingInfo(
+        reviewInfo = User.ReviewInfo(
             count = ratingsCount,
             average = averageRating,
             currentUserReview = ifTrueOrNull(!isCurrent) {

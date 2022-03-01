@@ -1,7 +1,7 @@
 package com.well.modules.androidUi.customViews.usersList
 
 import com.well.modules.androidUi.customViews.ProfileImage
-import com.well.modules.androidUi.customViews.RatingInfoView
+import com.well.modules.androidUi.customViews.ReviewInfoView
 import com.well.modules.androidUi.customViews.ToggleFavoriteButton
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.androidUi.theme.captionLight
@@ -78,7 +78,7 @@ fun UserCell(
     }
     Spacer(modifier = Modifier.weight(1f))
     Column(horizontalAlignment = Alignment.End) {
-        RatingInfoView(ratingInfo = user.ratingInfo)
+        ReviewInfoView(reviewInfo = user.reviewInfo)
         ToggleFavoriteButton(favorite = user.favorite, toggle = onToggleFavorite)
     }
 }

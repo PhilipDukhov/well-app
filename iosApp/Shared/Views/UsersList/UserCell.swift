@@ -36,7 +36,7 @@ struct UserCell: View {
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 0) {
-                RatingInfoView(ratingInfo: user.ratingInfo)
+                ReviewInfoView(reviewInfo: user.reviewInfo)
                 Spacer()
                 ToggleFavoriteButton(favorite: user.favorite, action: toggleFavorite)
             }

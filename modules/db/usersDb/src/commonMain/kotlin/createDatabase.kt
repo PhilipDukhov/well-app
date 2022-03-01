@@ -14,7 +14,7 @@ fun UsersDatabase.Companion.create(driver: SqlDriver) = UsersDatabase(
         academicRankAdapter = EnumColumnAdapter(),
         languagesAdapter = SetEnumColumnAdapter(),
         skillsAdapter = SetEnumColumnAdapter(),
-        ratingInfoAdapter = SerializableColumnAdapter(),
+        reviewInfoAdapter = SerializableColumnAdapter(),
         idAdapter = User.Id.ColumnAdapter,
     )
 )

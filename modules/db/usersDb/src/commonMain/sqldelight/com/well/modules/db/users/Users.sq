@@ -24,12 +24,12 @@ CREATE TABLE Users (
     doximity TEXT,
 
     countryCode TEXT,
-    ratingInfo TEXT AS User.RatingInfo NOT NULL
+    reviewInfo TEXT AS User.ReviewInfo NOT NULL
 );
 
 insertOrReplace:
 INSERT OR REPLACE
-INTO Users (id, initialized, lastEdited, fullName, type, favorite, email, profileImageUrl, phoneNumber, timeZoneIdentifier, credentials, academicRank, languages, skills, bio, education, professionalMemberships, publications, twitter, doximity, countryCode, ratingInfo)
+INTO Users (id, initialized, lastEdited, fullName, type, favorite, email, profileImageUrl, phoneNumber, timeZoneIdentifier, credentials, academicRank, languages, skills, bio, education, professionalMemberships, publications, twitter, doximity, countryCode, reviewInfo)
 VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 getAllIdsWithEdited:

@@ -5,12 +5,12 @@
 import SwiftUI
 import SharedMobile
 
-struct RatingInfoView: View {
-    let ratingInfo: User.RatingInfo
+struct ReviewInfoView: View {
+    let reviewInfo: User.ReviewInfo
     let viewAll: (() -> Void)?
 
-    init(ratingInfo: User.RatingInfo, viewAll: (() -> Void)? = nil) {
-        self.ratingInfo = ratingInfo
+    init(reviewInfo: User.ReviewInfo, viewAll: (() -> Void)? = nil) {
+        self.reviewInfo = reviewInfo
         self.viewAll = viewAll
     }
 
@@ -28,19 +28,19 @@ struct RatingInfoView: View {
 
     @ViewBuilder
     var content: some View {
-        let value = ratingInfo.currentUserRating?.value.toDouble() ?? ratingInfo.average
+        let value = reviewInfo.currentUserReview?.value.toDouble() ?? reviewInfo.average
         HStack {
             ForEach(1...5, id: \.self) { star in
                 Image(systemName: "star.fill")
                     .foregroundColorKMM(
                         Double(star) <= value ?
-                        (ratingInfo.currentUserRating != nil ? .companion.Supernova : .companion.Green)
+                        (reviewInfo.currentUserReview != nil ? .companion.Supernova : .companion.Green)
                         : .companion.LightGray
                     )
             }
         }   
         Spacer()
-        Text("reviews (\(Int(ratingInfo.count)))")
+        Text("reviews (\(Int(reviewInfo.count)))")
             .foregroundColorKMM(.companion.MediumBlue)
             .textStyle(.captionLight)
     }

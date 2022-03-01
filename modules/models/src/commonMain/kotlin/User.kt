@@ -13,7 +13,7 @@ data class User(
     val fullName: String,
     val type: Type,
     val email: String? = null,
-    val ratingInfo: RatingInfo,
+    val reviewInfo: ReviewInfo,
     val profileImageUrl: String? = null,
     val phoneNumber: String? = null,
     val countryCode: String? = null,
@@ -131,7 +131,7 @@ data class User(
     }
 
     @Serializable
-    data class RatingInfo(
+    data class ReviewInfo(
         val count: Int,
         val average: Double,
         val currentUserReview: Review? = null,
