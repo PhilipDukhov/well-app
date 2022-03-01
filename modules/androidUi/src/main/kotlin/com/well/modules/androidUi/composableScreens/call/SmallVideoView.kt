@@ -6,7 +6,6 @@ import com.well.modules.androidWebrtc.VideoTextureView
 import androidx.compose.foundation.Image
 import io.github.aakira.napier.Napier
 import com.well.modules.features.call.callFeature.CallFeature
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 
@@ -23,11 +21,11 @@ import androidx.compose.ui.res.painterResource
 fun VideoViewContainer(
     view: CallFeature.State.VideoView,
     onFlip: (() -> Unit)?,
-    containerModifier: Modifier,
+    contentModifier: Modifier,
     modifier: Modifier,
 ) {
     Box(
-        modifier = Modifier.background(Color.Red).then(containerModifier)
+        modifier = modifier
             .alpha(if (view.hidden) 0F else 1F)
             .onSizeChanged {
                 // testing position of flip button
@@ -37,7 +35,7 @@ fun VideoViewContainer(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Box(
-                modifier = modifier
+                modifier = contentModifier
             ) {
                 VideoTextureView(
                     view.context,

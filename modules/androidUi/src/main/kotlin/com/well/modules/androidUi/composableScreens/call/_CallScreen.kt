@@ -141,13 +141,13 @@ fun CallScreen(
         VideoViewContainer(
             view = this,
             onFlip = null,
-            containerModifier = Modifier.videoContainerModifier(
+            contentModifier = Modifier
+                .videoModifier(position = position),
+            modifier = Modifier.videoContainerModifier(
                 position,
                 reference = remoteVideoView,
                 bottomTopReference = bottomView,
-            ),
-            modifier = Modifier
-                .videoModifier(position = position),
+            )
         )
     }
     state.localVideoView?.apply {
@@ -159,13 +159,13 @@ fun CallScreen(
                     { listener(state.localDeviceState.toggleIsFrontCameraMsg()) }
                 }
             },
-            containerModifier = Modifier.videoContainerModifier(
+            contentModifier = Modifier
+                .videoModifier(position = position),
+            modifier = Modifier.videoContainerModifier(
                 position,
                 reference = localVideoView,
                 bottomTopReference = bottomView,
-            ),
-            modifier = Modifier
-                .videoModifier(position = position),
+            )
         )
     }
     DrawingContent(
