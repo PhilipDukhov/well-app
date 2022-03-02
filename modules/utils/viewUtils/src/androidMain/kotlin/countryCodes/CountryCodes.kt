@@ -19,4 +19,4 @@ actual fun currentCountryCode(systemContext: SystemContext): String? =
         }?.country?.ifEmpty { null }
 
 actual fun nameForCountryCode(countryCode: String): String =
-    Locale("", countryCode).country
+    Locale("", countryCode).displayName

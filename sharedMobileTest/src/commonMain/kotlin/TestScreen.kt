@@ -20,7 +20,7 @@ enum class TestScreen {
     ;
 
     companion object {
-        val initial = Donate
+        val initial = MyProfile
         val allCases = values().toList()
     }
 }

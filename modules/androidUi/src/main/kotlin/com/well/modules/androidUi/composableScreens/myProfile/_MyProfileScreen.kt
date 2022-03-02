@@ -77,90 +77,81 @@ fun ColumnScope.MyProfileScreen(
     var selectedTab by rememberSaveable(availabilityState != null) {
         mutableStateOf(state.tabs.first())
     }
-    state.navigationBarModelForTab(selectedTab)?.let {
-        ModeledNavigationBar(
-            it,
-            listener,
-            rightItemBeforeAction = rightItemBeforeAction,
-            extraContent = {
-                if (state.tabs.count() > 1) {
-                    TabRow(
-                        selectedTabIndex = state.tabs.indexOf(selectedTab),
-                        backgroundColor = Color.Transparent.toColor(),
-                        contentColor = Color.White.toColor(),
-                    ) {
-                        Feature.ProfileTab.values().forEach { tab ->
-                            Tab(
-                                text = {
-                                    Text(
-                                        tab.title,
-                                        style = MaterialTheme.typography.body2,
-                                    )
-                                },
-                                selected = selectedTab == tab,
-                                onClick = { selectedTab = tab },
-                            )
-                        }
-                    }
-                    Divider()
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-        )
-    }
-    when (selectedTab) {
-        Feature.ProfileTab.ProfileInformation -> {
-            ProfileInformation(state, listener, setRightItemBeforeAction)
-        }
-        Feature.ProfileTab.Availability -> {
-            availabilityState?.let {
-                AvailabilitiesCalendarView(state = availabilityState) {
-                    listener(Msg.AvailabilityMsg(it))
-                }
-            }
-        }
-        Feature.ProfileTab.Settings -> {
-            state.settingsState?.let {
-                SettingsScreen(it) {
-                    listener(Msg.SettingsMsg(it))
-                }
-            }
-        }
-    }
-    if (state.requestConsultationState != null) {
-        RequestConsultationBottomSheet(
-            state = state.requestConsultationState!!,
-            listener = {
-                listener(Msg.RequestConsultationMsg(it))
-            }
-        )
-    }
-}
-
-@Composable
-private fun ProfileInformation(
-    state: State,
-    listener: (Msg) -> Unit,
-    setRightItemBeforeAction: ((() -> Unit)?) -> Unit,
-) {
-    var modalContent by remember { mutableStateOf<(@Composable () -> Unit)?>(null) }
+    val (modalContent, setModalContent) = remember { mutableStateOf<(@Composable () -> Unit)?>(null) }
 
     Box(Modifier.fillMaxSize()) {
-        Content(
-            state = state,
-            listener = listener,
-            setRightItemBeforeAction = setRightItemBeforeAction,
-            showModalContent = {
-                modalContent = it
-            },
-            modifier = Modifier.visibility(visible = modalContent == null)
-        )
+        Column {
+            state.navigationBarModelForTab(selectedTab)?.let {
+                ModeledNavigationBar(
+                    it,
+                    listener,
+                    rightItemBeforeAction = rightItemBeforeAction,
+                    extraContent = {
+                        if (state.tabs.count() > 1) {
+                            TabRow(
+                                selectedTabIndex = state.tabs.indexOf(selectedTab),
+                                backgroundColor = Color.Transparent.toColor(),
+                                contentColor = Color.White.toColor(),
+                            ) {
+                                Feature.ProfileTab.values().forEach { tab ->
+                                    Tab(
+                                        text = {
+                                            Text(
+                                                tab.title,
+                                                style = MaterialTheme.typography.body2,
+                                            )
+                                        },
+                                        selected = selectedTab == tab,
+                                        onClick = { selectedTab = tab },
+                                    )
+                                }
+                            }
+                            Divider()
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
+            when (selectedTab) {
+                Feature.ProfileTab.ProfileInformation -> {
+                    Content(
+                        state = state,
+                        listener = listener,
+                        setRightItemBeforeAction = setRightItemBeforeAction,
+                        showModalContent = setModalContent,
+                        modifier = Modifier.visibility(visible = modalContent == null)
+                    )
+                }
+                Feature.ProfileTab.Availability -> {
+                    availabilityState?.let {
+                        AvailabilitiesCalendarView(state = availabilityState) {
+                            listener(Msg.AvailabilityMsg(it))
+                        }
+                    }
+                }
+                Feature.ProfileTab.Settings -> {
+                    state.settingsState?.let {
+                        SettingsScreen(it) {
+                            listener(Msg.SettingsMsg(it))
+                        }
+                    }
+                }
+            }
+            if (state.requestConsultationState != null) {
+                RequestConsultationBottomSheet(
+                    state = state.requestConsultationState!!,
+                    listener = {
+                        listener(Msg.RequestConsultationMsg(it))
+                    }
+                )
+            }
+        }
         if (modalContent != null) {
             BackHandler {
-                modalContent = null
+                setModalContent(null)
             }
-            modalContent?.invoke()
+            modalContent()
         }
     }
 }

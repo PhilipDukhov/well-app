@@ -8,6 +8,7 @@ import com.well.modules.models.formatters.format
 import com.well.modules.utils.kotlinUtils.ifTrueOrNull
 import com.well.modules.utils.kotlinUtils.letIfTrueOrNull
 import com.well.modules.utils.kotlinUtils.spacedUppercaseName
+import com.well.modules.utils.viewUtils.countryCodes.nameForCountryCode
 
 internal fun User.previewGroups(isCurrent: Boolean, hasAvailableAvailabilities: Boolean?) =
     listOfNotNull(
@@ -52,7 +53,7 @@ internal fun User.previewGroups(isCurrent: Boolean, hasAvailableAvailabilities: 
             countryCode?.let {
                 UIPreviewField(
                     title = Strings.country,
-                    text = it,
+                    text = nameForCountryCode(it),
                     icon = UIPreviewField.Icon.Location
                 )
             },

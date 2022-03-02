@@ -5,7 +5,7 @@ import com.well.modules.utils.viewUtils.countryCodes.countryCodesList
 import com.well.modules.utils.viewUtils.countryCodes.emojiFlagForCountryCode
 import com.well.modules.utils.viewUtils.countryCodes.nameForCountryCode
 
-data class UIEditingField<Content, Msg>  constructor(
+data class UIEditingField<Content, Msg> constructor(
     val placeholder: String,
     val content: Content,
     val updateMsg: (Content) -> Msg,
@@ -24,7 +24,7 @@ data class UIEditingField<Content, Msg>  constructor(
             updateValue(it.selectedItems.firstOrNull())
         }
 
-         inline fun <reified T : Enum<T>, Msg> createMultipleSelectionList(
+        inline fun <reified T : Enum<T>, Msg> createMultipleSelectionList(
             placeholder: String,
             selection: Set<T>,
             crossinline updateValue: (Set<T>) -> Msg,
@@ -82,8 +82,8 @@ data class UIEditingField<Content, Msg>  constructor(
         }
 
         @Suppress("DataClassPrivateConstructor")
-        data class List<Item>  constructor(
-             val selectedItems: Set<Item>,
+        data class List<Item> constructor(
+            val selectedItems: Set<Item>,
             private val items: Set<Item>,
             private val descriptor: (Item) -> String,
             private val sortBy: (Item, String) -> String = { _, description -> description },
@@ -91,7 +91,7 @@ data class UIEditingField<Content, Msg>  constructor(
         ) : Content() {
             val itemDescriptions: kotlin.collections.List<String>
             val selectionIndices: Set<Int>
-            val itemsList: kotlin.collections.List<Item>
+            private val itemsList: kotlin.collections.List<Item>
 
             fun doCopy(selectionIndices: Set<Int>) = copy(selectedItems = itemsList.slice(selectionIndices).toSet())
 
@@ -118,8 +118,8 @@ data class UIEditingField<Content, Msg>  constructor(
             )
 
             override fun toString(): String =
-                items.filterIndexed { index, _ -> selectionIndices.contains(index) }
-                    .joinToString(", ") { descriptor(it) }
+                itemDescriptions.filterIndexed { index, _ -> selectionIndices.contains(index) }
+                    .joinToString(", ")
 
             companion object {
                 fun countryCodesList(selectedCountryCode: String?) =
@@ -147,7 +147,7 @@ data class UIEditingField<Content, Msg>  constructor(
                     descriptor = { enumValue: T -> enumValue.spacedUppercaseName() },
                 )
 
-                 inline fun <reified T : Enum<T>> createMultipleSelection(
+                inline fun <reified T : Enum<T>> createMultipleSelection(
                     selection: Set<T>,
                 ) = List(
                     selectedItems = selection,

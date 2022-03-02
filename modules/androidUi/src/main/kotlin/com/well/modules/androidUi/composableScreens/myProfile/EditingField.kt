@@ -146,17 +146,16 @@ private fun EditingTextField(
             .onFocusChanged {
                 if (isFocused == it.isFocused) return@onFocusChanged
                 isFocused = it.isFocused
-                println("onFocusChanged $text $isFocused")
                 if (onClick != null) {
                     if (isFocused) {
                         onClick()
+                        focusManager.clearFocus()
                     }
                 } else {
                     if (isFocused) {
                         onTextInputEditingHandler(finishEditing)
                     } else {
                         onTextInputEditingHandler(null)
-//                        finishEditing()
                     }
                 }
             }
