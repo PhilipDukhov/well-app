@@ -107,7 +107,7 @@ class MyProfileEffHandler(
             is Eff.SetUserFavorite -> services.setFavorite(eff.setter)
             is Eff.ShowError -> services.showThrowableAlert(eff.throwable)
             is Eff.Back -> services.onPop()
-            is Eff.InitializationFinished -> services.onInitializationFinished
+            is Eff.InitializationFinished -> services.onInitializationFinished()
             is Eff.Call -> services.onStartCall(eff.user)
             is Eff.Message -> services.onOpenUserChat(eff.uid)
             is Eff.BecomeExpert -> services.requestBecomeExpert()

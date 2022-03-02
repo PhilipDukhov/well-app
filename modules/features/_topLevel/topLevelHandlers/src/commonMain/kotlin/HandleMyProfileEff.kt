@@ -15,16 +15,18 @@ import com.well.modules.utils.kotlinUtils.launchedIn
 import com.well.modules.utils.kotlinUtils.map
 import com.well.modules.utils.viewUtils.Alert
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
 internal fun TopLevelFeatureProviderImpl.createProfileEffHandler(
     uid: User.Id,
+    user: User?,
     isCurrent: Boolean = false,
     position: State.ScreenPosition,
     listener: Listener<Msg>,
 ): EffectHandler<Eff, Msg> = MyProfileEffHandler(
     services = MyProfileEffHandler.Services(
-        userFlow = getFullUserByIdFlow(uid),
+        userFlow = if (user?.initialized == false) flowOf(user) else getFullUserByIdFlow(uid),
         putUser = networkManager::putUser,
         uploadProfilePicture = networkManager::uploadProfilePicture,
         showThrowableAlert = {

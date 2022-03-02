@@ -176,9 +176,12 @@ internal class TopLevelFeatureProviderImpl(
                     listOf(
                         createProfileEffHandler(
                             uid = uid,
+                            user = null,
                             isCurrent = true,
-                            position = TopLevelFeature.State.ScreenPosition(tab = TopLevelFeature.State.Tab.MyProfile,
-                                index = 0),
+                            position = TopLevelFeature.State.ScreenPosition(
+                                tab = TopLevelFeature.State.Tab.MyProfile,
+                                index = 0
+                            ),
                             listener = listener,
                         ),
                         CalendarEffHandler(
@@ -412,12 +415,15 @@ internal class TopLevelFeatureProviderImpl(
                     topScreenHandlerCloseable = when (val screen = eff.screen) {
                         is ScreenState.MyProfile -> {
                             if (
-                                screen.state.user?.initialized != false
-                                && screen.position.tab != TopLevelFeature.State.Tab.MyProfile
+                                screen.position != TopLevelFeature.State.ScreenPosition(
+                                    tab = TopLevelFeature.State.Tab.MyProfile,
+                                    index = 0
+                                )
                             ) {
                                 wrapWithEffectHandler(
                                     createProfileEffHandler(
                                         uid = screen.state.uid,
+                                        user = screen.state.user,
                                         position = eff.position,
                                         listener = listener,
                                     )
