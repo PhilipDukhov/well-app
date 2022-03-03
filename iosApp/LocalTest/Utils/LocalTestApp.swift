@@ -13,7 +13,8 @@ import Introspect
 @main
 struct LocalTestApp: App {
     @State
-    var selectedScreen: TestScreen = .companion.initial
+    var selectedScreen: TestScreen = .welcome
+//    var selectedScreen: TestScreen = .companion.initial
     
     @State
     var opened = true
@@ -25,9 +26,8 @@ struct LocalTestApp: App {
     var viewController: UIViewController?
 
     init() {
-
         NapierProxy.shared
-            .initializeLogging(platform: Platform(applicationContext: ApplicationContext(application: UIApplication.shared)))
+            .initializeLogging(applicationContext: ApplicationContext(application: UIApplication.shared))
         UINavigationController.swizzleIsNavigationBarHiddenImplementation
     }
     

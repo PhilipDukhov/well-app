@@ -28,7 +28,7 @@ struct WelcomeScreen: View {
     var topImagesView: some View {
         GeometryReader { geometry in
             let offset: CGFloat = geometry.safeAreaInsets.top
-            let height: CGFloat = max(geometry.size.width * 1084.0 / 929.0, geometry.size.height) + offset + cornerRadius
+            let height: CGFloat = max(geometry.size.width * 1084.0 / 929.0, geometry.size.height) + offset * 2 + cornerRadius
             let size = CGSize(
                 width: geometry.size.width,
                 height: height
@@ -38,6 +38,7 @@ struct WelcomeScreen: View {
                     Image("welcome/welcome_\(i)")
                         .resizable()
                         .scaledToFill()
+                        .frame(width: size.width)
                         .clipped()
                         .offset(y: -offset)
                 }

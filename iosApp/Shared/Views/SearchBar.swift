@@ -24,6 +24,7 @@ struct SearchBar: View {
                     }
             }.padding().background(Color(.systemGray6))
             .cornerRadius(8)
+            .animation(.default)
             
             if isEditing {
                 Button {
@@ -34,7 +35,7 @@ struct SearchBar: View {
                     Text("Cancel")
                 }
                 .padding(.trailing, 10)
-                .transition(.move(edge: .trailing))
+                .transition(.move(edge: .trailing).combined(with: .offset(x: 18, y: 0)))
                 .animation(.default)
             }
         }

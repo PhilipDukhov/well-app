@@ -47,7 +47,6 @@ struct TopLevelView: View {
                     }
                 }
             ).ignoresSafeArea()
-
                 .accentColor(SwiftUI.Color(hex: 0x1B3D6D))
 
         default:

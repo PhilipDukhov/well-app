@@ -36,7 +36,7 @@ if (stableCompose) {
 } else {
     versions["compose"] = "1.2.0-alpha04"
     versions["accompanist"] = "0.24.3-alpha"
-    versions["coil"] = "2.0.0-alpha08"
+    versions["coil"] = "2.0.0-rc01"
 }
 
 ext.Versions = versions
