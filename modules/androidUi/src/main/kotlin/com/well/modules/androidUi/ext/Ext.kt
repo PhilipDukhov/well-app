@@ -5,10 +5,16 @@ import com.well.modules.models.Point
 import android.util.DisplayMetrics
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.alpha
@@ -17,6 +23,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -29,8 +36,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.rememberInsetsPaddingValues
 
 fun Size(size: Float): Size = Size(size, size)
 
@@ -95,11 +100,20 @@ fun TextKMM(
 fun Modifier.heightPlusBottomSystemBars(height: Dp) =
     composed {
         height(
-            height + rememberInsetsPaddingValues(
-                insets = LocalWindowInsets.current.systemBars
-            )
-                .calculateBottomPadding()
+            height + WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
         )
+    }
+
+val WindowInsets.Companion.isImeVisible: Boolean
+    @Composable
+    get() {
+        val density = LocalDensity.current
+        val ime = this.ime
+        return remember {
+            derivedStateOf {
+                ime.getBottom(density) > 0
+            }
+        }.value
     }
 
 fun Modifier.visibility(visible: Boolean) =
@@ -107,6 +121,8 @@ fun Modifier.visibility(visible: Boolean) =
         .zIndex(if (visible) 1F else 0F)
 
 fun Modifier.thenOrNull(other: Modifier?) = other?.let { then(it) } ?: this
+
+fun Modifier.thenIf(condition: Boolean, other: Modifier) = if (condition) then(other) else this
 
 fun Dp.toPx(density: Density) = with(density) { toPx() }
 

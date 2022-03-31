@@ -7,6 +7,7 @@ import com.well.modules.features.more.moreFeature.subfeatures.FavoritesFeature.M
 import com.well.modules.features.more.moreFeature.subfeatures.FavoritesFeature.State
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -22,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import com.google.accompanist.insets.navigationBarsPadding
 
 @Composable
 fun ColumnScope.FavoritesScreen(

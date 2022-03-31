@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
@@ -26,7 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.navigationBarsWithImePadding
 
 @Composable
 fun ColumnScope.SupportScreen(
@@ -40,7 +41,8 @@ fun ColumnScope.SupportScreen(
                 verticalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .padding(10.dp)
-                    .navigationBarsWithImePadding()
+                    .navigationBarsPadding()
+                    .imePadding()
             ) {
                 val textFieldValueState = remember { mutableStateOf("") }
                 var includeLogs by remember { mutableStateOf(true) }

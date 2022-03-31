@@ -13,22 +13,25 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.core.view.WindowCompat
-import com.google.accompanist.insets.ProvideWindowInsets
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        NapierProxy.initializeLogging(ApplicationContext(applicationContext, R.drawable.ic_100tb, MainActivity::class.java))
+        NapierProxy.initializeLogging(
+            ApplicationContext(
+                context = applicationContext,
+                notificationResId = R.drawable.ic_100tb,
+                activityClass = MainActivity::class.java,
+            )
+        )
         val systemHelper = SystemHelper(SystemContext(this))
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             Theme {
-                ProvideWindowInsets {
-                    CompositionLocalProvider(
-                        LocalSystemHelper provides systemHelper
-                    ) {
-                        TestComposeScreen()
-                    }
+                CompositionLocalProvider(
+                    LocalSystemHelper provides systemHelper
+                ) {
+                    TestComposeScreen()
                 }
             }
         }

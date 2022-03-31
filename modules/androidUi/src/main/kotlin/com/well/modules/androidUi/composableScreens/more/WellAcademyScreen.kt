@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -20,7 +22,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.navigationBarsWithImePadding
 
 @Composable
 fun ColumnScope.WellAcademyScreen(
@@ -32,7 +33,8 @@ fun ColumnScope.WellAcademyScreen(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .padding(10.dp)
-            .navigationBarsWithImePadding()
+            .navigationBarsPadding()
+            .imePadding()
     ) {
         Text(
             state.text,

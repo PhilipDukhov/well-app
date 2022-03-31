@@ -8,6 +8,7 @@ import com.well.modules.androidUi.customViews.rememberPreference
 import com.well.sharedMobileTest.MyProfileTestModel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -17,7 +18,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.datastore.preferences.core.booleanPreferencesKey
-import com.google.accompanist.insets.navigationBarsPadding
 
 @Composable
 internal fun MyProfileTest() {

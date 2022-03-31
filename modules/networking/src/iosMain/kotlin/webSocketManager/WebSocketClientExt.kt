@@ -1,8 +1,8 @@
 package com.well.modules.networking.webSocketManager
 
 import com.well.modules.atomic.freeze
-import com.well.modules.utils.viewUtils.toThrowable
 import com.well.modules.networking.getThrowable
+import com.well.modules.utils.viewUtils.toThrowable
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope

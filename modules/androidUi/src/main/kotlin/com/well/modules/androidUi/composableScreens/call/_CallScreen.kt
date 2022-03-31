@@ -5,6 +5,8 @@ import com.well.modules.androidUi.composableScreens.call.drawing.DrawingPanel
 import com.well.modules.androidUi.customViews.GradientView
 import com.well.modules.androidUi.customViews.ProfileImage
 import com.well.modules.androidUi.customViews.controlMinSize
+import com.well.modules.androidUi.ext.thenIf
+import com.well.modules.androidUi.ext.thenOrNull
 import com.well.modules.androidUi.ext.visibility
 import com.well.modules.androidUi.ext.widthDp
 import com.well.modules.features.call.callFeature.CallFeature.Msg
@@ -21,8 +23,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -35,8 +39,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstrainedLayoutReference
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.google.accompanist.insets.navigationBarsPadding
-import com.google.accompanist.insets.statusBarsPadding
 
 @Composable
 fun CallScreen(
@@ -186,7 +188,7 @@ fun CallScreen(
                 bottom.linkTo(parent.bottom)
             }
             .fillMaxWidth()
-            .navigationBarsPadding(bottom = !ongoing)
+            .thenIf(condition = !ongoing, Modifier.navigationBarsPadding())
             .visibility(state.controlSet == State.ControlSet.Call)
     ) {
         if (state.viewPoint == State.ViewPoint.Mine) {

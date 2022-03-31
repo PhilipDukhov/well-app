@@ -28,8 +28,11 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -48,6 +51,7 @@ import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.ChatBubble
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,7 +67,6 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.LocalWindowInsets
 
 @Composable
 fun ColumnScope.MyProfileScreen(
@@ -171,11 +174,13 @@ private fun Content(
         val paddingModifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
         Box {
             val density = LocalDensity.current
-            val bottomIme = with(density) { LocalWindowInsets.current.ime.bottom.toDp() }
             val (editingIndex, updateEditingIndex) = remember { mutableStateOf<Int?>(null) }
             var bottomOffsetInRoot by remember { mutableStateOf(0.dp) }
-            val bottomOffset = remember(bottomIme, bottomOffsetInRoot) {
-                (bottomIme - bottomOffsetInRoot).coerceAtLeast(0.dp)
+            val ime = WindowInsets.ime.asPaddingValues()
+            val bottomOffset by remember {
+                derivedStateOf {
+                    (ime.calculateBottomPadding() - bottomOffsetInRoot).coerceAtLeast(0.dp)
+                }
             }
             val lazyState = rememberLazyListState()
             if (editingIndex != null) {

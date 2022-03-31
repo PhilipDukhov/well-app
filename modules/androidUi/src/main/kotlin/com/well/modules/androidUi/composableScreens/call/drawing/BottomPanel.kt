@@ -1,5 +1,10 @@
 package com.well.modules.androidUi.composableScreens.call.drawing
 
+import com.well.modules.androidUi.ext.backgroundKMM
+import com.well.modules.androidUi.ext.borderKMM
+import com.well.modules.features.call.callFeature.drawing.DrawingFeature.Msg
+import com.well.modules.features.call.callFeature.drawing.DrawingFeature.State
+import com.well.modules.models.Color
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -7,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ripple.rememberRipple
@@ -16,12 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.well.modules.androidUi.ext.backgroundKMM
-import com.well.modules.androidUi.ext.borderKMM
-import com.well.modules.models.Color
-import com.well.modules.features.call.callFeature.drawing.DrawingFeature.Msg
-import com.well.modules.features.call.callFeature.drawing.DrawingFeature.State
-import com.google.accompanist.insets.navigationBarsPadding
 
 @Composable
 fun BottomPanel(
@@ -35,7 +35,7 @@ fun BottomPanel(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-     ) {
+    ) {
         State.drawingColors
             .forEach { color ->
                 val selected = state.currentColor == color

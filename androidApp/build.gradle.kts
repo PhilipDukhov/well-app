@@ -14,7 +14,6 @@ libDependencies(
     "android.appCompat",
     "android.webrtc",
     "android.compose.core.activity",
-    "android.compose.accompanist.insets",
 
     "firebase.analytics",
     "firebase.messaging",

@@ -26,6 +26,7 @@ import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature as Fea
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material.Badge
 import androidx.compose.material.BadgedBox
 import androidx.compose.material.BottomNavigation
@@ -41,7 +42,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
-import com.google.accompanist.insets.navigationBarsPadding
 
 @Composable
 fun TopLevelScreen(

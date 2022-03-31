@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.view.WindowCompat
-import com.google.accompanist.insets.ProvideWindowInsets
 
 class MainActivity : AppCompatActivity() {
     private lateinit var systemContext: SystemContext
@@ -30,10 +29,8 @@ class MainActivity : AppCompatActivity() {
         })
         setContent {
             Theme {
-                ProvideWindowInsets {
-                    val state by featureProvider.state.collectAsState()
-                    TopLevelScreen(state, featureProvider::accept)
-                }
+                val state by featureProvider.state.collectAsState()
+                TopLevelScreen(state, featureProvider::accept)
             }
         }
         systemContext = SystemContext(this)

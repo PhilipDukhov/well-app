@@ -15,19 +15,16 @@ object ReviewsListFeature {
 
     data class State(
         val currentUserReview: Review?,
-        val reviews: List<ExistingReview>,
+        val reviews: List<ExistingReview> = listOf(),
     )
 
     sealed class Msg {
         object LeaveReview: Msg()
-        object EditReview: Msg()
+        data class UpdateReviews(val reviews: List<ExistingReview>): Msg()
     }
 
     sealed interface Eff {
-        object RequestAvailabilities : Eff
-        data class Add(val availability: Availability) : Eff
-        data class Remove(val availabilityId: Availability.Id) : Eff
-        data class Update(val availability: Availability) : Eff
+        object LeaveReview: Eff
     }
 
     fun reducer(
@@ -35,9 +32,14 @@ object ReviewsListFeature {
         state: State,
     ): Pair<State, Set<Eff>> = run state@{
         return@reducer state toSetOf (run eff@{
-//            when (msg) {
-                TODO()
-//            }
+            when (msg) {
+                is Msg.LeaveReview -> {
+                    return@eff Eff.LeaveReview
+                }
+                is Msg.UpdateReviews -> {
+                    return@state state.copy(reviews = msg.reviews)
+                }
+            }
         })
     }.withEmptySet()
 }

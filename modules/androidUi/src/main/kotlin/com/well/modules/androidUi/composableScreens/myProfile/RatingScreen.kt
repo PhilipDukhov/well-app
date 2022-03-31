@@ -5,6 +5,7 @@ import com.well.modules.androidUi.customViews.Control
 import com.well.modules.androidUi.customViews.LimitedCharsTextField
 import com.well.modules.androidUi.customViews.NavigationBar
 import com.well.modules.androidUi.customViews.ProfileImage
+import com.well.modules.androidUi.ext.isImeVisible
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.androidUi.ext.widthDp
 import com.well.modules.models.Color
@@ -15,11 +16,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -35,9 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.insets.LocalWindowInsets
-import com.google.accompanist.insets.navigationBarsWithImePadding
-import com.google.accompanist.insets.statusBarsPadding
 
 @Composable
 fun RatingScreen(
@@ -65,7 +67,7 @@ fun RatingScreen(
                 .fillMaxSize()
         ) {
             AnimatedVisibility(
-                visible = !LocalWindowInsets.current.ime.isVisible,
+                visible = !WindowInsets.isImeVisible,
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -121,7 +123,8 @@ fun RatingScreen(
                     rate(Review(ratingValue, text))
                 },
                 modifier = Modifier
-                    .navigationBarsWithImePadding()
+                    .navigationBarsPadding()
+                    .imePadding()
                     .padding(10.dp)
             ) {
                 Text("Send")

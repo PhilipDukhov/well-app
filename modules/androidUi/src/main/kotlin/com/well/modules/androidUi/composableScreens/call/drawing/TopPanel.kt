@@ -1,19 +1,19 @@
 package com.well.modules.androidUi.composableScreens.call.drawing
 
+import com.well.modules.androidUi.R
+import com.well.modules.androidUi.customViews.Control
+import com.well.modules.features.call.callFeature.drawing.DrawingFeature.Msg
+import com.well.modules.features.call.callFeature.drawing.DrawingFeature.State
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.well.modules.androidUi.R
-import com.well.modules.androidUi.customViews.Control
-import com.well.modules.features.call.callFeature.drawing.DrawingFeature.Msg
-import com.well.modules.features.call.callFeature.drawing.DrawingFeature.State
-import com.google.accompanist.insets.statusBarsPadding
 
 @Composable
 fun TopPanel(

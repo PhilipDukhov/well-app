@@ -30,9 +30,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -193,7 +193,7 @@ private fun AvailabilitiesList(
         includeFirst = selectedItem == null,
     ) { size ->
         LazyVerticalGrid(
-            cells = GridCells.Fixed(State.availabilityCellsCount),
+            columns = GridCells.Fixed(State.availabilityCellsCount),
             verticalArrangement = Arrangement.spacedBy(spacing),
             horizontalArrangement = Arrangement.spacedBy(spacing),
             contentPadding = PaddingValues(vertical = spacing),
