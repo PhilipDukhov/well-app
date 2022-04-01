@@ -12,7 +12,7 @@ import com.well.modules.utils.kotlinUtils.spacedUppercaseName
 object MoreFeature {
     class State {
         val title = "More"
-        val items = Item.values().toList()
+        val items = Item.values().toList().filter { it != Item.Donate }
 
         enum class Item {
             InviteColleague,
