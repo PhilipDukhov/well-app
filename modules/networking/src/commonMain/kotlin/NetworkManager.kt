@@ -23,6 +23,7 @@ import com.well.modules.utils.viewUtils.platform.Platform
 import com.well.modules.utils.viewUtils.platform.fileSystem
 import com.well.modules.utils.viewUtils.platform.isLocalServer
 import io.github.aakira.napier.Napier
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.CoroutineScope
@@ -82,7 +83,7 @@ class NetworkManager(
                 try {
                     _connectionStatus.value = Connecting
                     Napier.i("Connecting")
-                    clientWrapper.ws("/mainWebSocket/${deviceId}") {
+                    clientWrapper.ws("mainWebSocket/${deviceId}") {
                         webSocketSession = this
                         _connectionStatus.value = Connected
                         Napier.i("Connected")
@@ -148,29 +149,29 @@ class NetworkManager(
 
     suspend fun uploadProfilePicture(
         data: ByteArray,
-    ) = tryCheckAuth {
-        client.post<String>("user/uploadProfilePicture") {
+    ): String = tryCheckAuth {
+        client.post("user/uploadProfilePicture") {
             multipartFormBody {
                 appendByteArrayInput(data)
             }
-        }
+        }.body()
     }
 
     suspend fun uploadMessagePicture(
         data: ByteArray,
-    ) = tryCheckAuth {
-        client.post<String>("uploadMessageMedia") {
+    ): String = tryCheckAuth {
+        client.post("uploadMessageMedia") {
             multipartFormBody {
                 appendByteArrayInput(data)
             }
-        }
+        }.body()
     }
 
     suspend fun sendTechSupportMessage(
         message: String,
         path: Path? = null,
-    ) = tryCheckAuth {
-        client.post<String>("techSupportMessage") {
+    ): String = tryCheckAuth {
+        client.post("techSupportMessage") {
             multipartFormBody {
                 if (path != null) {
                     val data = Platform.fileSystem.read(path) {
@@ -180,31 +181,31 @@ class NetworkManager(
                 }
                 append("message", message)
             }
+        }.body()
+    }
+
+    suspend fun putUser(user: User): Unit = tryCheckAuth {
+        client.put("user") {
+            contentType(ContentType.Application.Json)
+            setBody(user)
         }
     }
 
-    suspend fun putUser(user: User) = tryCheckAuth {
-        client.put<Unit>("user") {
+    suspend fun setFavorite(favoriteSetter: FavoriteSetter): Unit = tryCheckAuth {
+        client.post("user/setFavorite") {
             contentType(ContentType.Application.Json)
-            body = user
+            setBody(favoriteSetter)
         }
     }
 
-    suspend fun setFavorite(favoriteSetter: FavoriteSetter) = tryCheckAuth {
-        client.post<Unit>("user/setFavorite") {
-            contentType(ContentType.Application.Json)
-            body = favoriteSetter
-        }
+    suspend fun requestBecomeExpert(): Unit = tryCheckAuth {
+        client.post("user/requestBecomeExpert")
     }
 
-    suspend fun requestBecomeExpert() = tryCheckAuth {
-        client.post<Unit>("user/requestBecomeExpert")
-    }
-
-    suspend fun rate(ratingRequest: RatingRequest) = tryCheckAuth {
-        client.post<Unit>("user/rate") {
+    suspend fun rate(ratingRequest: RatingRequest): Unit = tryCheckAuth {
+        client.post("user/rate") {
             contentType(ContentType.Application.Json)
-            body = ratingRequest
+            setBody(ratingRequest)
         }
     }
 
@@ -226,30 +227,32 @@ class NetworkManager(
     }
 
     suspend fun listCurrentUserAvailabilities(): List<Availability> =
-        client.get("availabilities/listCurrent")
+        client.get("availabilities/listCurrent").body()
 
     suspend fun removeAvailability(availabilityId: Availability.Id) {
-        client.delete<Unit>("availabilities/${availabilityId.value}")
+        client.delete("availabilities/${availabilityId.value}")
     }
 
     suspend fun putAvailability(availability: Availability): Availability =
         client.put("availabilities") {
             contentType(ContentType.Application.Json)
-            body = availability
-        }
+            setBody(availability)
+        }.body()
 
     suspend fun userHasAvailableAvailabilities(userId: User.Id): Boolean =
-        client.get("availabilities/userHasAvailable/${userId.value}")
+        client.get("availabilities/userHasAvailable/${userId.value}").body()
 
-    suspend fun book(availability: BookingAvailability): Unit =
+    suspend fun book(availability: BookingAvailability) {
         client.post("availabilities/book") {
             contentType(ContentType.Application.Json)
-            body = availability
+            setBody(availability)
         }
+    }
 
     suspend fun getAvailabilities(userId: User.Id): BookingAvailabilitiesListByDay =
-        client.get("availabilities/listByUser/${userId.value}")
+        client.get("availabilities/listByUser/${userId.value}").body()
 
-    suspend fun deleteProfile(): Unit =
+    suspend fun deleteProfile() {
         client.delete("user")
+    }
 }

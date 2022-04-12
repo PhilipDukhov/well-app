@@ -1,16 +1,17 @@
 package com.well.modules.utils.ktorUtils
 
 import io.ktor.client.*
-import io.ktor.client.features.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.features.logging.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
 import io.ktor.client.statement.*
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
 
 fun createBaseHttpClient(): HttpClient = HttpClient {
-    install(JsonFeature) {
-        serializer = KotlinxSerializer(
-            kotlinx.serialization.json.Json {
+    install(ContentNegotiation) {
+        json(
+            Json {
                 ignoreUnknownKeys = true
             }
         )
@@ -23,12 +24,7 @@ fun createBaseHttpClient(): HttpClient = HttpClient {
             val status = response.status
             if (status.value < 300) return@validateResponse
 
-            val content = if (response.content.availableForRead > 0) {
-                response.readBytes()
-                    .toString()
-            } else {
-                ""
-            }
+            val content = response.bodyAsText()
             throw Throwable("HttpResponseValidator ${response.request.url} $status $content")
         }
     }

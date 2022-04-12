@@ -33,27 +33,28 @@ import com.well.server.utils.configProperty
 import com.well.server.utils.createPrincipal
 import com.well.server.utils.sendEmail
 import com.auth0.jwk.JwkProviderBuilder
-import io.ktor.application.*
-import io.ktor.auth.*
-import io.ktor.auth.jwt.*
-import io.ktor.client.features.logging.*
+import io.ktor.client.call.*
+import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.forms.*
-import io.ktor.features.*
 import io.ktor.http.*
-import io.ktor.http.cio.websocket.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
-import io.ktor.serialization.*
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
+import io.ktor.server.plugins.callloging.*
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.plugins.statuspages.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
+import io.ktor.server.websocket.*
 import io.ktor.util.*
-import io.ktor.websocket.*
 import org.slf4j.event.Level
 import java.net.URL
 import java.time.Duration
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-@Suppress("unused") // Referenced in application.conf
 fun Application.module() {
     val dbConfig = environment.config.config("database")
     val username = dbConfig.property("username").getString()
@@ -98,10 +99,10 @@ fun Application.initializedModule(dependencies: Dependencies) {
     }
 
     install(StatusPages) {
-        exception<ForbiddenException> {
+        exception<ForbiddenException> { call, cause ->
             call.respond(HttpStatusCode.Forbidden)
         }
-        exception<Throwable> { cause ->
+        exception<Throwable> { call, cause ->
             println("StatusPages failed $cause")
             println(cause.stackTraceToString())
             call.respond(HttpStatusCode.InternalServerError, cause.toString())
@@ -144,8 +145,8 @@ fun Application.initializedModule(dependencies: Dependencies) {
                 "https://appleid.apple.com"
             )
             validate { credentials ->
-                log.debug("$credentials")
-                log.debug("${credentials.payload}")
+                this@initializedModule.log.debug("$credentials")
+                this@initializedModule.log.debug("${credentials.payload}")
                 JWTPrincipal(credentials.payload)
             }
         }
@@ -154,8 +155,6 @@ fun Application.initializedModule(dependencies: Dependencies) {
     install(WebSockets) {
         pingPeriod = Duration.ofSeconds(15)
         timeout = Duration.ofSeconds(15)
-        maxFrameSize = Long.MAX_VALUE
-        masking = false
     }
 
 //    val appMicrometerRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
@@ -201,11 +200,12 @@ fun Application.initializedModule(dependencies: Dependencies) {
                 println("$code $params ${call.request.headers.flattenEntries()}")
 
                 val appleOauthResponse = application.environment.run {
-                    dependencies.client.config {
+                    val client = dependencies.client.config {
                         install(Logging) {
                             level = LogLevel.ALL
                         }
-                    }.submitForm<AppleOauthResponse>(
+                    }
+                    client.submitForm(
                         url = "https://appleid.apple.com/auth/token",
                         formParameters = Parameters.build(
                             listOf(
@@ -217,15 +217,14 @@ fun Application.initializedModule(dependencies: Dependencies) {
                                     keyId = configProperty("social.apple.serviceKeyId"),
                                     privateKeyString = String(
                                         Base64.getDecoder()
-                                            .decode(environment.configProperty("social.apple.privateKey"))
+                                            .decode(this@initializedModule.environment.configProperty("social.apple.privateKey"))
                                     ),
                                     teamId = configProperty("social.apple.teamId")
                                 ),
                             ).map { pair -> pair.second.let { pair.first to it } }
                         ),
                         encodeInQuery = false,
-//                        block = { header("user-agent", "cheer-with-me") }
-                    )
+                    ).body<AppleOauthResponse>()
                 }
 
                 println("RESPONSE $appleOauthResponse")
@@ -274,7 +273,7 @@ fun Application.initializedModule(dependencies: Dependencies) {
 //            }
 //        }
         authenticate(AuthName.Main) {
-            webSocket(path = "mainWebSocket/{deviceId}") {
+            webSocket("mainWebSocket/{deviceId}") {
                 mainWebSocket(dependencies, DeviceId(call.parameters["deviceId"]!!))
             }
             post("uploadMessageMedia") { uploadMessageMedia(dependencies) }

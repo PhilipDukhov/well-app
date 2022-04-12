@@ -8,7 +8,7 @@ import com.well.modules.utils.viewUtils.AndroidRequestCodes
 import com.well.modules.utils.viewUtils.SystemHelper
 import com.well.modules.utils.viewUtils.platform.Platform
 import com.well.modules.utils.viewUtils.platform.isLocalServer
-import io.ktor.client.features.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.CancellableContinuation
@@ -43,7 +43,7 @@ internal class OAuthHelper(
 
     suspend fun getRequestTokenAndFollowRedirect(): AuthCredential =
         try {
-            client.post<Unit>("login/$name")
+            client.post("login/$name")
             throw IllegalStateException("Redirect expected")
         } catch (redirect: RedirectResponseException) {
             suspendCancellableCoroutine { continuation ->

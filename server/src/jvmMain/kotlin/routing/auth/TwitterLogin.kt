@@ -2,14 +2,14 @@ package com.well.server.routing.auth
 
 import com.well.modules.models.User
 import com.well.server.utils.Dependencies
-import io.ktor.application.*
-import io.ktor.auth.*
 import io.ktor.http.*
-import io.ktor.response.*
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.response.*
 import io.ktor.util.pipeline.*
 
 suspend fun PipelineContext<*, ApplicationCall>.twitterLogin(
-    dependencies: Dependencies
+    dependencies: Dependencies,
 ) = dependencies.run {
     val principal = call.authentication.principal<OAuthAccessTokenResponse>()
         ?: throw IllegalStateException("principal missing in twitter response: ${call.response}")

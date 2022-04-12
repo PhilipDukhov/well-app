@@ -29,6 +29,7 @@ data class MeetingViewModel(
         Meeting.State.Rejected -> {
             "Meeting rejected"
         }
+        is Meeting.State.Canceled -> TODO()
     }
 
     val status

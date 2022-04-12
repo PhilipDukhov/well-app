@@ -1,8 +1,9 @@
 package com.well.server
 
-import io.ktor.auth.*
-import io.ktor.auth.jwt.*
-import io.ktor.routing.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
+import io.ktor.server.routing.*
+
 
 enum class AuthName {
     Twitter,
@@ -21,12 +22,12 @@ fun Route.authenticate(
     configurations = authConfigurations.map { it.name }.toTypedArray()
 )
 
-fun Authentication.Configuration.oauth(
+fun AuthenticationConfig.oauth(
     name: AuthName? = null,
-    configure: OAuthAuthenticationProvider.Configuration.() -> Unit
+    configure: OAuthAuthenticationProvider.Config.() -> Unit
 ) = oauth(name?.name, configure)
 
-fun Authentication.Configuration.jwt(
+fun AuthenticationConfig.jwt(
     name: AuthName? = null,
-    configure: JWTAuthenticationProvider.Configuration.() -> Unit
+    configure: JWTAuthenticationProvider.Config.() -> Unit
 ) = jwt(name?.name, configure)

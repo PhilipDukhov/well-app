@@ -11,12 +11,12 @@ import com.well.modules.utils.kotlinUtils.mapSecond
 import com.well.server.utils.Dependencies
 import com.well.server.utils.ForbiddenException
 import com.well.server.utils.authUid
-import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
 import io.ktor.util.pipeline.*
-import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
 
 suspend fun PipelineContext<*, ApplicationCall>.listCurrentAvailabilities(
     dependencies: Dependencies,
@@ -51,7 +51,7 @@ private fun getBookingAvailabilities(
         .createWithAvailabilities(
             availabilities = allAvailabilities,
             days = 30,
-            minInterval = Duration.hours(1)
+            minInterval = 1.hours
         )
     with(database.meetingsQueries) {
         transactionWithResult {

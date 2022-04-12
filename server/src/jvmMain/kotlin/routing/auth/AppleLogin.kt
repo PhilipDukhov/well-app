@@ -2,14 +2,15 @@ package com.well.server.routing.auth
 
 import com.well.modules.models.User
 import com.well.server.utils.Dependencies
-import io.ktor.application.*
-import io.ktor.auth.*
-import io.ktor.auth.jwt.*
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
 import io.ktor.util.*
 import io.ktor.util.pipeline.*
 
@@ -92,12 +93,12 @@ class Oauth2Service(val client: HttpClient) {
         }
 
         println("Sending form with data: $data")
-        val body = client.submitForm<AppleOauthResponse>(
+        val body = client.submitForm(
             url = tokenUrl,
             formParameters = data,
             encodeInQuery = false,
 //            block = { header("user-agent", "cheer-with-me") }
-        )
+        ).body<AppleOauthResponse>()
 
         println(body)
         return body
@@ -112,7 +113,6 @@ data class AppleOauthResponse(
     val token_type: String,
 )
 
-@OptIn(InternalAPI::class)
 fun Parameters.Companion.build(list: List<Pair<String, String>>) =
     build {
         list.forEach {

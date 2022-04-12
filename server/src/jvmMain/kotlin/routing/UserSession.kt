@@ -37,7 +37,7 @@ import com.well.server.utils.CallInfo
 import com.well.server.utils.ClientKey
 import com.well.server.utils.Dependencies
 import com.well.server.utils.send
-import io.ktor.http.cio.websocket.*
+import io.ktor.websocket.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine

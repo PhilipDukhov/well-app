@@ -6,7 +6,7 @@ import io.ktor.http.*
 import io.ktor.utils.io.core.*
 
 internal fun HttpRequestBuilder.multipartFormBody(builder: FormBuilder.() -> Unit) {
-    body = MultiPartFormDataContent(formData(builder))
+    setBody(MultiPartFormDataContent(formData(builder)))
 }
 
 internal fun FormBuilder.appendByteArrayInput(

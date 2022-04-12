@@ -24,8 +24,8 @@ import com.squareup.sqldelight.db.SqlDriver
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.util.DriverDataSource
-import io.ktor.application.*
 import io.ktor.client.*
+import io.ktor.server.application.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory
 import kotlin.time.Duration.Companion.seconds
 import java.io.InputStream
 import java.util.*
-
 
 class Dependencies(app: Application) {
     val environment = app.environment

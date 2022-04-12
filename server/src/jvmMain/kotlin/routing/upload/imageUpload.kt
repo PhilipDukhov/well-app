@@ -2,10 +2,10 @@ package com.well.server.routing.upload
 
 import com.well.server.utils.Dependencies
 import com.well.server.utils.authUid
-import io.ktor.application.*
 import io.ktor.http.content.*
-import io.ktor.request.*
-import io.ktor.response.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
 import io.ktor.util.pipeline.*
 import java.io.File
 import java.util.*

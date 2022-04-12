@@ -1,7 +1,7 @@
 package com.well.server.utils
 
-import io.ktor.application.*
 import io.ktor.http.*
+import io.ktor.server.application.*
 import io.ktor.util.*
 
 fun ApplicationEnvironment.configProperty(path: String): String =

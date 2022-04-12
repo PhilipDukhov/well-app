@@ -1,7 +1,7 @@
 package com.well.server.utils
 
 import com.well.modules.models.WebSocketMsg
-import io.ktor.http.cio.websocket.*
+import io.ktor.websocket.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 

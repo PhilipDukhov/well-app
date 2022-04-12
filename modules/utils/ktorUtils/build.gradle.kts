@@ -13,7 +13,8 @@ kotlin {
             libDependencies(
                 "kotlin.coroutines.core",
                 "ktor.client.core",
-                "ktor.client.serialization",
+                "ktor.client.contentNegotiation",
+                "ktor.serialization",
                 "ktor.client.logging",
                 "kotlin.stdLib",
             )
@@ -26,7 +27,7 @@ kotlin {
         val iosMain by getting {
             libDependencies(
                 "kotlin.coroutines.core-strictly",
-                "ktor.client.engine.ios"
+                "ktor.client.engine.darwin"
             )
         }
     }

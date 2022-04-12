@@ -8,7 +8,7 @@ import com.squareup.sqldelight.db.SqlDriver
 import com.squareup.sqldelight.sqlite.driver.asJdbcDriver
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import io.ktor.application.*
+import io.ktor.server.application.*
 import java.io.File
 
 fun initialiseDatabase(app: Application): Pair<Database, SqlDriver> {

@@ -12,6 +12,7 @@ import com.amazonaws.services.s3.transfer.TransferManagerBuilder
 import com.amazonaws.services.s3.transfer.Upload
 import com.amazonaws.services.s3.transfer.model.UploadResult
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -86,7 +87,7 @@ class AwsManager(
 suspend fun Dependencies.uploadToS3FromUrl(
     url: Url,
     path: String,
-) = client.get<HttpStatement>(url)
+) = client.get(url).body<HttpStatement>()
     .execute { response ->
         val fileExtension = response.contentType()
             ?.let { contentType ->

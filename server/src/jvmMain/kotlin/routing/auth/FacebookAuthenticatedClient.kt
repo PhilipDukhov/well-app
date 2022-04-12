@@ -5,7 +5,8 @@ import com.well.server.utils.append
 import com.well.server.utils.configProperty
 import com.well.server.utils.getPrimitiveContent
 import io.ktor.client.*
-import io.ktor.client.features.*
+import io.ktor.client.call.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.serialization.json.JsonElement
@@ -28,7 +29,7 @@ suspend fun Dependencies.getFacebookAuthenticatedClient(): HttpClient {
         }
     }
     val accessTokenKey = "access_token"
-    val appAccessToken = client.get<JsonElement>(
+    val appAccessToken = client.get(
         "oauth/access_token"
     ) {
         url.parameters.append(
@@ -36,12 +37,13 @@ suspend fun Dependencies.getFacebookAuthenticatedClient(): HttpClient {
             "client_secret" to appSecret,
             "grant_type" to "client_credentials"
         )
-    }.jsonObject
+    }.body<JsonElement>().jsonObject
         .getPrimitiveContent(accessTokenKey)
+
     facebookAuthenticatedClient = client.config {
         defaultRequest {
             if (url.host == host) {
-                parameter(accessTokenKey, appAccessToken)
+                parametersOf(accessTokenKey, appAccessToken)
             }
         }
     }

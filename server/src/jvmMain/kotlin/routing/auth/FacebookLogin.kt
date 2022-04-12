@@ -5,11 +5,12 @@ import com.well.server.utils.Dependencies
 import com.well.server.utils.append
 import com.well.server.utils.getPrimitiveContent
 import com.well.server.utils.uploadToS3FromUrl
-import io.ktor.application.*
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.request.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.util.pipeline.*
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -36,14 +37,14 @@ suspend fun PipelineContext<*, ApplicationCall>.facebookLogin(
 }
 
 private suspend fun HttpClient.getUid(token: String): String =
-    get<JsonElement>(
+    get(
         "debug_token?input_token=$token"
-    ).jsonObject
+    ).body<JsonElement>().jsonObject
         .getValue("data")
         .jsonObject.getPrimitiveContent("user_id")
 
 private suspend fun HttpClient.getUserInfo(uid: String): JsonObject =
-    get<JsonElement>(uid) {
+    get(uid) {
         parameter(
             "fields",
             UserFields
@@ -51,17 +52,17 @@ private suspend fun HttpClient.getUserInfo(uid: String): JsonObject =
                 .map(UserFields::key)
                 .joinToString(","),
         )
-    }.jsonObject
+    }.body<JsonElement>().jsonObject
 
 private suspend fun HttpClient.getProfilePicture(uid: String) =
-    get<JsonElement>("$uid/picture") {
+    get("$uid/picture") {
         val pictureSize = 1000
         url.parameters.append(
             "height" to "$pictureSize",
             "width" to "$pictureSize",
             "redirect" to "0",
         )
-    }.jsonObject["data"]
+    }.body<JsonElement>().jsonObject["data"]
         ?.jsonObject
         ?.let {
             if (it["is_silhouette"]?.jsonPrimitive?.booleanOrNull != false) null

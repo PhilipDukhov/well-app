@@ -1,6 +1,7 @@
 package com.well.modules.networking.webSocketManager
 
-import io.ktor.client.features.websocket.*
+import io.ktor.client.plugins.websocket.*
+import io.ktor.http.*
 import kotlinx.coroutines.coroutineScope
 
 internal actual suspend fun WebSocketClient.ws(
@@ -8,8 +9,12 @@ internal actual suspend fun WebSocketClient.ws(
     block: suspend WebSocketSession.() -> Unit,
 ) {
     client.ws(path, request = {
-        url.protocol = config.webSocketProtocol
+//        url.protocol = config.webSocketProtocol
+        url.protocol = URLProtocol.WS
     }) {
+//    client.ws(
+//        urlString = "ws://dukhovwellserver-new.com:8090/$path",
+//    ) {
         try {
             val session = this
             coroutineScope {
