@@ -27,7 +27,7 @@ repositories {
 }
 
 plugins {
-    id("com.gradleup.auto.manifest") version "1.0.4"
+    id("com.gradleup.auto.manifest") version "1.1.1"
 }
 
 autoManifest {

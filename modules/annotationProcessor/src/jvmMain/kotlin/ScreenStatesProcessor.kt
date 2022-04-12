@@ -306,7 +306,7 @@ class ContainerInfo(
                         ParameterSpec.builder(
                             "baseState",
                             Any::class
-                        ).addModifiers(KModifier.INTERNAL).build()
+                        ).build()
                     ).build()
             )
             .addProperty(

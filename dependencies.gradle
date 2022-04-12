@@ -18,10 +18,10 @@ def versions = [
     ktor               : "1.6.8",
     sqldelight         : "1.5.3",
     bouncycastle       : "1.70",
-    aws                : "1.12.131",
+    aws                : "1.12.192",
     kotlin             : "1.6.10",
     kotlinBuildSrc     : "1.6.0",
-    napier             : "2.4.0",
+    napier             : "2.5.0",
 ]
 
 if (ext.properties["kotlin.native.binary.memoryModel"] == "experimental") {
@@ -34,9 +34,9 @@ if (stableCompose) {
     versions["accompanist"] = "0.23.1"
     versions["coil"] = "1.4.0"
 } else {
-    versions["compose"] = "1.2.0-alpha06"
-    versions["accompanist"] = "0.24.5-alpha"
-    versions["coil"] = "2.0.0-rc01"
+    versions["compose"] = "1.2.0-alpha07"
+    versions["accompanist"] = "0.24.6-alpha"
+    versions["coil"] = "2.0.0-rc03"
 }
 
 ext.Versions = versions
@@ -55,13 +55,14 @@ ext.Libs = [
         reflect          : "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin",
         coroutines       : [
             core        : "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.kotlinCoroutines",
+            core        : "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.kotlinCoroutines",
             playServices: "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$versions.kotlinCoroutines",
         ],
         serializationJson: "org.jetbrains.kotlinx:kotlinx-serialization-json:$versions.kotlinSerialization",
-        datetime         : "org.jetbrains.kotlinx:kotlinx-datetime:0.3.1",
+        datetime         : "org.jetbrains.kotlinx:kotlinx-datetime:0.3.2",
     ],
     android   : [
-        appCompat    : "androidx.appcompat:appcompat:1.4.0",
+        appCompat    : "androidx.appcompat:appcompat:1.4.1",
         material     : "com.google.android.material:material:1.5.0",
         annotation   : "androidx.annotation:annotation:1.1.0",
         activity     : "androidx.activity:activity-ktx:$versions.androidActivity",
@@ -69,7 +70,7 @@ ext.Libs = [
         browser      : "androidx.browser:browser:1.4.0",
         coil         : "io.coil-kt:coil:$versions.coil",
         webrtc       : "org.webrtc:google-webrtc:1.0.32006",
-        facebookLogin: "com.facebook.android:facebook-login:12.2.0",
+        facebookLogin: "com.facebook.android:facebook-login:13.1.0",
         compose      : [
             core                  : [
                 ui                   : "androidx.compose.ui:ui:$versions.compose",
@@ -84,7 +85,7 @@ ext.Libs = [
                 activity             : "androidx.activity:activity-compose:$versions.androidActivity",
             ],
             composeMaterialDialogs: [
-                datetime: "io.github.vanpra.compose-material-dialogs:datetime:0.6.2",
+                datetime: "io.github.vanpra.compose-material-dialogs:datetime:0.7.0",
             ],
             accompanist           : [
                 flowlayout     : "com.google.accompanist:accompanist-flowlayout:$versions.accompanist",
@@ -95,18 +96,18 @@ ext.Libs = [
         ],
     ],
     google    : [
-        playServicesAuth  : "com.google.android.gms:play-services-auth:20.0.0",
-        apiClient         : "com.google.api-client:google-api-client:1.32.2",
-        httpClientApacheV2: "com.google.http-client:google-http-client-apache-v2:1.40.1",
+        playServicesAuth  : "com.google.android.gms:play-services-auth:20.1.0",
+        apiClient         : "com.google.api-client:google-api-client:1.33.4",
+        httpClientApacheV2: "com.google.http-client:google-http-client-apache-v2:1.41.5",
     ],
     firebase  : [
-        bom      : "com.google.firebase:firebase-bom:29.0.3",
+        bom      : "com.google.firebase:firebase-bom:29.3.0",
         analytics: "com.google.firebase:firebase-analytics-ktx",
         messaging: "com.google.firebase:firebase-messaging-ktx",
     ],
     ktor      : [
         server       : [
-            netty            : "io.ktor:ktor-server-netty:$versions.ktor",
+            netty             : "io.ktor:ktor-server-netty:$versions.ktor",
             core             : "io.ktor:ktor-server-core:$versions.ktor",
             metricsMicrometer: "io.ktor:ktor-metrics-micrometer:$versions.ktor",
         ],
@@ -128,12 +129,12 @@ ext.Libs = [
         utils        : "io.ktor:ktor-utils:$versions.ktor",
     ],
     server    : [
-        logback           : "ch.qos.logback:logback-classic:1.2.10",
-        hikariCP          : "com.zaxxer:HikariCP:5.0.0",
+        logback           : "ch.qos.logback:logback-classic:1.2.11",
+        hikariCP          : "com.zaxxer:HikariCP:5.0.1",
         h2database        : "com.h2database:h2:1.4.200",
-        mysqlConnectorJava: "mysql:mysql-connector-java:8.0.26",
+        mysqlConnectorJava: "mysql:mysql-connector-java:8.0.28",
         firebaseAdmin     : "com.google.firebase:firebase-admin:8.1.0",
-        pushy             : "com.eatthepath:pushy:0.14.1",
+        pushy             : "com.eatthepath:pushy:0.15.1",
         javaxMail         : "com.sun.mail:javax.mail:1.6.2",
         javaxBind         : "javax.xml.bind:jaxb-api:2.3.1",
         aws               : [
@@ -191,5 +192,5 @@ if (gradlePluginVersion != null) {
     ext.Libs["build"]["gradle"] = "com.android.tools.build:gradle:$gradlePluginVersion"
 }
 if (material3) {
-    ext.Libs["android"]["compose"]["core"]["material3"] = "androidx.compose.material3:material3:1.0.0-alpha05"
+    ext.Libs["android"]["compose"]["core"]["material3"] = "androidx.compose.material3:material3:1.0.0-alpha09"
 }
