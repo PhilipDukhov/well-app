@@ -37,8 +37,6 @@ final class FacebookProvider: CredentialProvider {
 
             case .cancelled:
                 completionHandler(nil, KotlinCancellationException().toNSError())
-            @unknown default:
-                fatalError()
             }
         }
     }

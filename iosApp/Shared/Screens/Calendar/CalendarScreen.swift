@@ -237,6 +237,9 @@ private struct RequestedMeetingCard: View {
     let onSelectUser: () -> Void
     let onUpdateState: (Meeting.State) -> Void
 
+    @State
+    private var rejectionReasonDialogShowed = false
+
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 10) {
@@ -244,34 +247,45 @@ private struct RequestedMeetingCard: View {
                     HStack {
                         Button(action: onSelectUser) {
                             Text(meeting.otherUser.fullName)
-                                .textStyle(.subtitle2)
-                                .foregroundColorKMM(.companion.Green)
+                                    .textStyle(.subtitle2)
+                                    .foregroundColorKMM(.companion.Green)
                         }
                         Text(Feature.Strings.shared.needsYourHelp)
-                            .textStyle(.subtitle2)
+                                .textStyle(.subtitle2)
                     }
                 } else {
                     Text(meeting.title)
-                        .textStyle(.subtitle2)
-                        .foregroundColor(.black)
+                            .textStyle(.subtitle2)
+                            .foregroundColor(.black)
                 }
                 Text("\(Feature.Strings.shared.bookingTime): \(meeting.startTime)")
-                    .textStyle(.caption)
+                        .textStyle(.caption)
                 HStack {
                     Button(action: {
-                        onUpdateState(Meeting.State.confirmed)
+                        onUpdateState(Meeting.StateConfirmed.shared)
                     }) {
                         Text(Feature.Strings.shared.confirm)
-                            .textStyle(.subtitle2)
-                            .foregroundColorKMM(.companion.MediumBlue)
+                                .textStyle(.subtitle2)
+                                .foregroundColorKMM(.companion.MediumBlue)
                     }
                     Button(action: {
-                        onUpdateState(Meeting.State.rejected)
+                        rejectionReasonDialogShowed = true
                     }) {
                         Text(Feature.Strings.shared.reject)
-                            .textStyle(.subtitle2)
-                            .foregroundColorKMM(.companion.Pink)
+                                .textStyle(.subtitle2)
+                                .foregroundColorKMM(.companion.Pink)
                     }
+                    .textFieldAlertController(
+                        isPresented: $rejectionReasonDialogShowed,
+                        info: .init(
+                            title: Feature.Strings.shared.rejectionTitle,
+                            placeholder: Feature.Strings.shared.rejectionLabel
+                        ),
+                        alertConfirmed: {
+                            onUpdateState(Meeting.StateRejected(reason: $0))
+                        }
+                    )
+
                 }
             }.layoutPriority(1)
             Spacer().fillMaxWidth()

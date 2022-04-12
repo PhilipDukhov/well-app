@@ -13,35 +13,37 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.core.text.trimmedLength
 
 @Composable
 fun LimitedCharsTextField(
-    valueState: MutableState<String>,
+    value: String,
+    onValueChange: (String) -> Unit,
     labelText: String,
     maxCharacters: Int,
     modifier: Modifier = Modifier,
+    maxLines: Int = Int.MAX_VALUE,
 ) {
     Column(
         modifier
     ) {
         OutlinedTextField(
-            value = valueState.value,
-            onValueChange = {
-                valueState.value = it
-            },
+            value = value,
+            onValueChange = onValueChange,
             textStyle = MaterialTheme.typography.body1,
             label = { Text(labelText) },
+            maxLines = maxLines,
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
                 .clearFocusOnKeyboardDismiss()
         )
-        val count = valueState.value.count()
+        val count = value.trimmedLength()
         Text(
             "$count/$maxCharacters",
             style = MaterialTheme.typography.captionLight,
             color = when {
-                count == 0 -> Color.LightGray
+                value.isBlank() -> Color.LightGray
                 count <= maxCharacters -> Color.Green
                 else -> Color.RadicalRed
             }.toColor(),

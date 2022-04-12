@@ -41,7 +41,7 @@ import java.util.*
 @Immutable
 class BottomDialogProperties(
     val dismissOnBackPress: Boolean = true,
-    val dismissOnClickOutside: Boolean = true
+    val dismissOnClickOutside: Boolean = true,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -64,7 +64,7 @@ class BottomDialogProperties(
 fun BottomSheetDialog(
     onDismissRequest: () -> Unit,
     properties: BottomDialogProperties = BottomDialogProperties(),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val view = LocalView.current
     val density = LocalDensity.current
@@ -123,7 +123,7 @@ private class BottomSheetDialogWrapper(
     composeView: View,
     layoutDirection: LayoutDirection,
     density: Density,
-    dialogId: UUID
+    dialogId: UUID,
 ) : BottomSheetDialog(composeView.context), ViewRootForInspector {
 
     private val bottomDialogLayout: BottomDialogLayout
@@ -231,7 +231,7 @@ private class BottomDialogLayout(
 @Composable
 private fun BottomDialogLayout(
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Layout(
         content = content,

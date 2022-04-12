@@ -3,6 +3,7 @@ package com.well.modules.db.meetings
 import com.well.modules.models.Meeting
 import com.well.modules.models.User
 import com.well.modules.utils.dbUtils.InstantColumnAdapter
+import com.well.modules.utils.dbUtils.SerializableColumnAdapter
 import com.well.modules.utils.flowUtils.mapIterable
 import com.squareup.sqldelight.EnumColumnAdapter
 import com.squareup.sqldelight.db.SqlDriver
@@ -63,6 +64,6 @@ fun MeetingsDatabase.Companion.create(driver: SqlDriver) =
             startInstantAdapter = InstantColumnAdapter,
             expertUidAdapter = User.Id.ColumnAdapter,
             creatorUidAdapter = User.Id.ColumnAdapter,
-            stateAdapter = EnumColumnAdapter(),
+            stateAdapter = SerializableColumnAdapter(),
         )
     )

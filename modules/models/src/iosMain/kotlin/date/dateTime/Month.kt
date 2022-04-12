@@ -4,7 +4,8 @@ import kotlinx.datetime.Month
 import platform.Foundation.NSCalendar
 
 actual val Month.localizedShortName
-    get() = NSCalendar.currentCalendar.shortMonthSymbols[ordinal] as String
+    get() = NSCalendar.currentCalendar.shortStandaloneMonthSymbols[ordinal] as String
 
 actual val Month.localizedName
-    get() = NSCalendar.currentCalendar.monthSymbols[ordinal] as String
+    get() = (NSCalendar.currentCalendar.standaloneMonthSymbols[ordinal] as String)
+        .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }

@@ -13,6 +13,9 @@ fun NotificationHandler.handleNotificationResponse(response: UNNotificationRespo
             is Notification.ChatMessage -> {
                 services.openChat(notification.message.fromId)
             }
+            is Notification.Meeting -> {
+                TODO()
+            }
         }
     } catch (t: Throwable) {
         Napier.e("handleNotificationResponse", t)

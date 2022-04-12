@@ -17,17 +17,17 @@ sealed class Alert(
     ) : Alert(title, description, positiveAction, negativeAction)
     object MicDenied : Alert(
         title = Strings.micDenied,
-        positiveAction = Action.Ok,
+        positiveAction = Action.Ok(),
         negativeAction = Action.Settings
     )
     object CameraDenied : Alert(
         title = Strings.cameraDenied,
-        positiveAction = Action.Ok,
+        positiveAction = Action.Ok(),
         negativeAction = Action.Settings
     )
     object CallDenied : Alert(
         title = Strings.callDenied,
-        positiveAction = Action.Ok,
+        positiveAction = Action.Ok(),
         negativeAction = Action.Settings
     )
 
@@ -37,7 +37,7 @@ sealed class Alert(
     ) : Alert(
         title = errorDescription,
         description = if (Platform.isDebug) "${errorDescription::class} $errorDescription" else "",
-        positiveAction = Action.Ok
+        positiveAction = Action.Ok()
     ) {
         constructor(
             throwable: Throwable,
@@ -52,9 +52,9 @@ sealed class Alert(
     }
 
     sealed class Action(val title: String) {
-        object Ok : Action(Strings.ok)
+        class Ok(val action: () -> Unit = {}): Action(Strings.ok)
         object Cancel : Action(Strings.cancel)
         object Settings : Action(Strings.settings)
-        class Custom(title: String, val action: () -> Unit, ): Action(title)
+        class Custom(title: String, val action: () -> Unit): Action(title)
     }
 }

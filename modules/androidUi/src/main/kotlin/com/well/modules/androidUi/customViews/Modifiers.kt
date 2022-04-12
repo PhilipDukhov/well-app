@@ -57,8 +57,11 @@ fun Modifier.gesturesDisabled(disabled: Boolean = true) =
         }
     }
 
-fun Modifier.clickable(onClick: (() -> Unit)?): Modifier =
-    this.clickable(onClick = { onClick?.invoke() }, enabled = onClick != null)
+fun Modifier.clickable(
+    onClick: (() -> Unit)?,
+    enabled: Boolean = true,
+): Modifier =
+    this.clickable(onClick = { onClick?.invoke() }, enabled = enabled && onClick != null)
 
 fun Modifier.badgeLayout() =
     layout { measurable, constraints ->

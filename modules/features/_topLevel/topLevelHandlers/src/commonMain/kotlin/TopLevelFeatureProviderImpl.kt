@@ -52,6 +52,7 @@ import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.Msg
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.features.welcome.WelcomeFeature
 import com.well.modules.models.FavoriteSetter
+import com.well.modules.models.Meeting
 import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.networking.NetworkManager
@@ -81,6 +82,7 @@ import com.well.modules.utils.viewUtils.permissionsHandler.PermissionsHandler
 import com.well.modules.utils.viewUtils.permissionsHandler.requestPermissions
 import com.well.modules.utils.viewUtils.platform.Platform
 import com.well.modules.utils.viewUtils.platform.isDebug
+import com.well.modules.utils.viewUtils.showSheetThreadSafe
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -211,7 +213,10 @@ internal class TopLevelFeatureProviderImpl(
                                     coroutineScope.launch {
                                         networkManager.sendFront(WebSocketMsg.Front.UpdateMeetingState(id, state))
                                     }
-                                }
+                                },
+                                showSheet = { actions, title ->
+                                    systemHelper?.showSheetThreadSafe(actions = actions, title = title)
+                                },
                             ),
                             parentCoroutineScope = coroutineScope,
                         ).adapt(

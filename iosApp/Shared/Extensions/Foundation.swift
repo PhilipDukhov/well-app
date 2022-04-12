@@ -44,10 +44,25 @@ extension Sequence {
         }
         return nil
     }
+
+    func anySatisfy(_ predicate: (Element) throws -> Bool) rethrows -> Bool {
+        for char in self {
+            if try predicate(char) {
+                return true
+            }
+        }
+        return false
+    }
 }
 
 extension CustomStringConvertible {
     func toString() -> String {
         String(describing: self)
+    }
+}
+
+extension String {
+    var isNotBlank: Bool {
+        !isEmpty && anySatisfy { !$0.isWhitespace }
     }
 }

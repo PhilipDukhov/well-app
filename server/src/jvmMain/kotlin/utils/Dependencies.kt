@@ -130,40 +130,85 @@ class Dependencies(app: Application) {
             database = database,
         )
 
-    val messagesToDeliver = MutableSetStateFlow<Pair<DeviceId, ChatMessage.Id>>()
-    fun deliverMessageNotificationIfNeeded(id: ChatMessage.Id) {
-        coroutineScope.launch {
-            val message = database.chatMessagesQueries
-                .getById(id)
-                .executeAsOne()
-                .toChatMessage(database)
-            val tokens = database.notificationTokensQueries
-                .selectTokenByUid(message.peerId)
-                .executeAsList()
-            val clientsToDeliver = tokens.map {
-                it to ClientKey(it.deviceId, message.peerId)
-            }
-            println("clientsToDeliver $clientsToDeliver")
-            val notification = lazy {
-                val senderName = database.usersQueries
-                    .getById(message.fromId)
+    data class PendingNotificationId(val deviceId: DeviceId, val itemId: ItemId) {
+        sealed interface ItemId {
+            data class Meeting(val meetingId: com.well.modules.models.Meeting.Id) : ItemId
+            data class ChatMessage(val chatMessageId: com.well.modules.models.chat.ChatMessage.Id) : ItemId
+        }
+    }
+
+    fun deliverMessageNotification(id: ChatMessage.Id) {
+        deliverNotificationIfNeeded(
+            getItem = {
+                database.chatMessagesQueries
+                    .getById(id)
                     .executeAsOne()
-                    .fullName
+                    .toChatMessage(database)
+            },
+            itemId = PendingNotificationId.ItemId.ChatMessage(id),
+            getPeerId = ChatMessage::peerId,
+            senderId = ChatMessage::fromId,
+            buildNotification = { message, senderName, totalUnreadCount ->
                 val chatUnreadCount = database.chatMessagesQueries.unreadCount(
                     fromId = message.fromId,
                     peerId = message.peerId,
                 ).executeAsOne().toInt()
-
                 Notification.ChatMessage(
                     message = message,
                     senderName = senderName,
                     chatUnreadCount = chatUnreadCount,
-                    totalUnreadCount = totalUnreadCount(message.peerId),
+                    totalUnreadCount = totalUnreadCount,
                 )
             }
-            clientsToDeliver.forEach {
+        )
+    }
+
+    fun deliverMeetingNotification(id: Meeting.Id, senderId: User.Id) {
+        deliverNotificationIfNeeded(
+            getItem = {
+                database.meetingsQueries
+                    .getById(id)
+                    .executeAsOne()
+                    .toMeeting()
+            },
+            itemId = PendingNotificationId.ItemId.Meeting(id),
+            getPeerId = { if (senderId == expertUid) creatorUid else expertUid },
+            senderId = { senderId },
+            buildNotification = Notification::Meeting,
+        )
+    }
+
+    val pendingNotificationIds = MutableSetStateFlow<PendingNotificationId>()
+    private fun <Item, N : Notification> deliverNotificationIfNeeded(
+        getItem: () -> Item,
+        itemId: PendingNotificationId.ItemId,
+        getPeerId: Item.() -> User.Id,
+        senderId: Item.() -> User.Id,
+        buildNotification: (Item, senderName: String, unreadCount: Int) -> N,
+    ) {
+        val item = getItem()
+        val peerId = item.getPeerId()
+        val tokens = database.notificationTokensQueries
+            .selectTokenByUid(peerId)
+            .executeAsList()
+        val clientsToDeliver = tokens.map {
+            it to ClientKey(it.deviceId, peerId)
+        }
+        println("clientsToDeliver $clientsToDeliver")
+        val notification = lazy {
+            buildNotification(
+                item,
+                database.usersQueries
+                    .getById(item.senderId())
+                    .executeAsOne()
+                    .fullName,
+                totalUnreadCount(peerId)
+            )
+        }
+        clientsToDeliver.forEach {
+            coroutineScope.launch {
                 deliver(
-                    id = id,
+                    itemId = itemId,
                     clientKey = it.second,
                     tokenInfo = it.first,
                     notification = notification,
@@ -173,18 +218,18 @@ class Dependencies(app: Application) {
     }
 
     private suspend fun CoroutineScope.deliver(
-        id: ChatMessage.Id,
+        itemId: PendingNotificationId.ItemId,
         clientKey: ClientKey,
         tokenInfo: SelectTokenByUid,
         notification: Lazy<Notification>,
     ) {
         if (connectedUserSessionsFlow.contains(clientKey)) {
             println("deliver token: waiting socket to deliver")
-            val messageToDeliver = clientKey.deviceId to id
-            messagesToDeliver.add(messageToDeliver)
+            val messageToDeliver = PendingNotificationId(clientKey.deviceId, itemId)
+            pendingNotificationIds.add(messageToDeliver)
             val checkingJob = launch checkingJob@{
                 val collectingJob = launch {
-                    messagesToDeliver.collect {
+                    pendingNotificationIds.collect {
                         if (!it.contains(messageToDeliver)) {
                             this@checkingJob.cancel()
                         }
@@ -198,81 +243,7 @@ class Dependencies(app: Application) {
                 println("deliver token: socket delivered")
                 return
             }
-            messagesToDeliver.remove(messageToDeliver)
-            println("deliver token: socket not delivered - delivering")
-        } else {
-            println("deliver token: client not connected - delivering")
-        }
-        sendNotification(
-            notification = notification.value,
-            tokenInfo = tokenInfo,
-            dependencies = this@Dependencies
-        )
-    }
-
-    val meetingsToDeliver = MutableSetStateFlow<Pair<DeviceId, Meeting.Id>>()
-    fun deliverMeetingNotificationIfNeeded(id: Meeting.Id) {
-        coroutineScope.launch {
-            val meeting = database.meetingsQueries
-                .getById(id)
-                .executeAsOne()
-                .toMeeting()
-            val tokens = database.notificationTokensQueries
-                .selectTokenByUid(meeting.expertUid)
-                .executeAsList()
-            val clientsToDeliver = tokens.map {
-                it to ClientKey(it.deviceId, meeting.expertUid)
-            }
-            val notification = lazy {
-                val senderName = database.usersQueries
-                    .getById(meeting.creatorUid)
-                    .executeAsOne()
-                    .fullName
-                Notification.Meeting(
-                    meetingId = id,
-                    senderName = senderName,
-                    chatUnreadCount = 0,
-                    totalUnreadCount = totalUnreadCount(meeting.expertUid),
-                )
-            }
-            clientsToDeliver.forEach {
-                deliver(
-                    id = id,
-                    clientKey = it.second,
-                    tokenInfo = it.first,
-                    notification = notification,
-                )
-            }
-        }
-    }
-
-    private suspend fun CoroutineScope.deliver(
-        id: Meeting.Id,
-        clientKey: ClientKey,
-        tokenInfo: SelectTokenByUid,
-        notification: Lazy<Notification>,
-    ) {
-        if (connectedUserSessionsFlow.contains(clientKey)) {
-            println("deliver token: waiting socket to deliver")
-            val meetingToDeliver = clientKey.deviceId to id
-            meetingsToDeliver.add(meetingToDeliver)
-            val checkingJob = launch checkingJob@{
-                val collectingJob = launch {
-                    meetingsToDeliver.collect {
-                        if (!it.contains(meetingToDeliver)) {
-                            this@checkingJob.cancel()
-                        }
-                    }
-                }
-                delay(10.seconds)
-                collectingJob.cancel()
-            }
-            checkingJob.join()
-            if (checkingJob.isCancelled) {
-                println("deliver token: socket delivered")
-                return
-            }
-            meetingsToDeliver.remove(meetingToDeliver)
+            pendingNotificationIds.remove(messageToDeliver)
             println("deliver token: socket not delivered - delivering")
         } else {
             println("deliver token: client not connected - delivering")

@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 expect class SystemHelper(systemContext: SystemContext) : WebAuthenticator {
     val systemContext: SystemContext
     fun showAlert(alert: Alert)
-    fun showSheet(actions: List<Action>): Closeable
+    fun showSheet(actions: List<Action>, title: String?): Closeable
     fun openUrl(url: String)
     override suspend fun webAuthenticate(url: String, requestCode: Int): String
     suspend fun pickSystemImage(): LocalImage
@@ -19,15 +19,19 @@ expect class SystemHelper(systemContext: SystemContext) : WebAuthenticator {
 
 fun SystemHelper.showSheetThreadSafe(
     vararg actions: SuspendAction,
+    title: String = "",
 ) {
     MainScope().launch {
-        showSheet(actions.map {
-            Action(it.title) {
-                CoroutineScope(Dispatchers.Default).launch {
-                    it.block()
+        showSheet(
+            title = title,
+            actions = actions.map {
+                Action(it.title) {
+                    CoroutineScope(Dispatchers.Default).launch {
+                        it.action()
+                    }
                 }
-            }
-        })
+            },
+        )
     }
 }
 

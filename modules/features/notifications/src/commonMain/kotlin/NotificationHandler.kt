@@ -80,19 +80,10 @@ class NotificationHandler(
                 .filterIsInstance<Notification.ChatMessage>()
                 .map { notification ->
                     services.getMessageByIdFlow(notification.message.id)
-                        .print {
-                            "currentNotificationsStateFlow getMessageByIdFlow $it"
-                        }
                         .filter { it.viewModel.status == ChatMessageViewModel.Status.IncomingRead }
                         .map { notification }
-                        .print {
-                            "currentNotificationsStateFlow filter.map $it"
-                        }
                 }
                 .flattenFlow()
-                .print {
-                    "currentNotificationsStateFlow flattenFlow $it"
-                }
         }
 
     init {
@@ -143,7 +134,9 @@ class NotificationHandler(
                     notificationHelper.updateMessageNotification(notification)
                 }
             }
-            is Notification.Meeting -> TODO()
+            is Notification.Meeting -> {
+
+            }
         }
         currentNotificationsStateFlow.add(notification)
         Napier.i("currentNotificationsStateFlow ${currentNotificationsStateFlow.value}")

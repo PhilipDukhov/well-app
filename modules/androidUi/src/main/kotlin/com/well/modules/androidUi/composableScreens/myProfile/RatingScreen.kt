@@ -48,7 +48,7 @@ fun RatingScreen(
     rate: (Review) -> Unit,
 ) {
     var ratingValue by remember { mutableStateOf(user.reviewInfo.currentUserReview?.value ?: 0) }
-    val ratingTextFieldValueState = remember {
+    var ratingTextFieldValue by remember {
         mutableStateOf(user.reviewInfo.currentUserReview?.text ?: "")
     }
     val profileImageSize = LocalContext.current.resources.displayMetrics.widthDp * 0.42f
@@ -108,19 +108,19 @@ fun RatingScreen(
             }
             Spacer(modifier = Modifier.height(50.dp))
             LimitedCharsTextField(
-                valueState = ratingTextFieldValueState,
+                value = ratingTextFieldValue,
+                onValueChange = { ratingTextFieldValue = it },
                 maxCharacters = maxCharacters,
                 labelText = "Tell us about your experience",
                 modifier = Modifier
                     .padding(10.dp)
                     .heightIn(min = 150.dp)
-                    .weight(1f)
+                    .weight(1f),
             )
-            val text = ratingTextFieldValueState.value
             ActionButton(
-                enabled = text.isNotBlank(),
+                enabled = ratingTextFieldValue.isNotBlank(),
                 onClick = {
-                    rate(Review(ratingValue, text))
+                    rate(Review(ratingValue, ratingTextFieldValue))
                 },
                 modifier = Modifier
                     .navigationBarsPadding()

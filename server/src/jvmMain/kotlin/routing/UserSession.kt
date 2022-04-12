@@ -281,9 +281,11 @@ class UserSession(
             }
             is WebSocketMsg.Front.SetChatMessagePresence -> {
                 messagesPresenceInfoFlow.value = msg.messagePresenceId
-                dependencies.messagesToDeliver
+                dependencies.pendingNotificationIds
                     .removeAll {
-                        it.second <= msg.messagePresenceId
+                        it.itemId is Dependencies.PendingNotificationId.ItemId.ChatMessage &&
+                                it.deviceId == deviceId &&
+                                it.itemId.chatMessageId <= msg.messagePresenceId
                     }
             }
             is WebSocketMsg.Front.ChatMessageRead -> {
@@ -325,9 +327,11 @@ class UserSession(
             }
             is WebSocketMsg.Front.SetMeetingsPresence -> {
                 meetingIdsPresenceFlow.value = msg.meetingsPresence
-                dependencies.meetingsToDeliver
-                    .removeAll { toDeliver ->
-                        msg.meetingsPresence.any { it.first == toDeliver.second }
+                dependencies.pendingNotificationIds
+                    .removeAll { pendingId ->
+                        pendingId.itemId is Dependencies.PendingNotificationId.ItemId.Meeting &&
+                                pendingId.deviceId == deviceId &&
+                                msg.meetingsPresence.any { it.first == pendingId.itemId.meetingId }
                     }
             }
             is WebSocketMsg.Front.Logout -> {
@@ -342,7 +346,14 @@ class UserSession(
                 )
             }
             is WebSocketMsg.Front.UpdateMeetingState -> {
-                dependencies.database.meetingsQueries.updateState(state = msg.state, id = msg.meetingId)
+                dependencies.database.meetingsQueries.run {
+                    val meeting = getById(msg.meetingId).executeAsOne()
+                    if (meeting.state != Meeting.State.Requested || msg.state != Meeting.State.Canceled) {
+                        throw IllegalStateException("Meetings state cannot be updated from ${meeting.state} to ${msg.state}")
+                    }
+                    updateState(state = msg.state, id = msg.meetingId)
+                }
+                dependencies.deliverMeetingNotification(msg.meetingId, currentUid)
             }
         }
     }
@@ -380,7 +391,7 @@ class UserSession(
                 )
                 finalMessageId
             }
-            dependencies.deliverMessageNotificationIfNeeded(id)
+            dependencies.deliverMessageNotification(id)
         }
     }
 

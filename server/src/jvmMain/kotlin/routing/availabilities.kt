@@ -17,6 +17,7 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.util.pipeline.*
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
 
 suspend fun PipelineContext<*, ApplicationCall>.listCurrentAvailabilities(
     dependencies: Dependencies,
@@ -51,7 +52,7 @@ private fun getBookingAvailabilities(
         .createWithAvailabilities(
             availabilities = allAvailabilities,
             days = 30,
-            minInterval = Duration.hours(1)
+            minInterval = 1.hours
         )
     with(database.meetingsQueries) {
         transactionWithResult {
@@ -125,14 +126,14 @@ suspend fun PipelineContext<*, ApplicationCall>.bookAvailability(
         ) {
             return@transactionWithResult false
         }
-        val attendeeId = call.authUid
+        val currentUid = call.authUid
         val newMeetingId = database.meetingsQueries
             .insert(
                 availability = availability,
                 bookingAvailability = bookingRequest,
-                attendeeId = attendeeId,
+                attendeeId = currentUid,
             )
-        database.meetingsQueries
+        dependencies.deliverMeetingNotification(newMeetingId, currentUid)
         return@transactionWithResult true
     }
     call.respond(if (success) HttpStatusCode.Created else HttpStatusCode.NotFound)

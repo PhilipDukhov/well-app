@@ -13,8 +13,8 @@ import Introspect
 @main
 struct LocalTestApp: App {
     @State
-    var selectedScreen: TestScreen = .welcome
-//    var selectedScreen: TestScreen = .companion.initial
+//    var selectedScreen: TestScreen = .welcome
+    var selectedScreen: TestScreen = .companion.initial
     
     @State
     var opened = true

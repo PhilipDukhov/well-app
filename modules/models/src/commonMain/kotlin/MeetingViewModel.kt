@@ -26,10 +26,12 @@ data class MeetingViewModel(
         Meeting.State.Confirmed -> {
             "Meeting"
         }
-        Meeting.State.Rejected -> {
-            "Meeting rejected"
+        is Meeting.State.Rejected -> {
+            "Meeting rejected with reason:"
         }
     }
+    val rejectionReason = (state as? Meeting.State.Rejected)?.reason
+    val otherUserButtonTitle = (if (state is Meeting.State.Rejected) "by " else "with ") + otherUser.fullName
 
     val status
         get() = when {

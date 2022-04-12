@@ -55,9 +55,9 @@ actual class SystemHelper actual constructor(actual val systemContext: SystemCon
         )
     }
 
-    actual fun showSheet(actions: List<Action>): Closeable {
+    actual fun showSheet(actions: List<Action>, title: String?): Closeable {
         val alertController = UIAlertController.alertControllerWithTitle(
-            null,
+            title,
             null,
             UIAlertControllerStyleActionSheet
         ).apply {
@@ -65,7 +65,7 @@ actual class SystemHelper actual constructor(actual val systemContext: SystemCon
                 UIAlertAction.actionWithTitle(
                     action.title,
                     UIAlertActionStyleDefault,
-                ) { action.block() }
+                ) { action.action() }
             } + UIAlertAction.actionWithTitle(
                 GlobalStringsBase.shared.cancel,
                 UIAlertActionStyleCancel,
@@ -138,14 +138,13 @@ actual class SystemHelper actual constructor(actual val systemContext: SystemCon
 
     private fun Alert.Action.handle() {
         when (this) {
-            Alert.Action.Ok,
-            Alert.Action.Cancel,
-            -> Unit
+            Alert.Action.Cancel -> Unit
             Alert.Action.Settings -> {
                 UIApplication
                     .sharedApplication
                     .openURL(NSURL(string = UIApplicationOpenSettingsURLString))
             }
+            is Alert.Action.Ok -> action()
             is Alert.Action.Custom -> action()
         }
     }

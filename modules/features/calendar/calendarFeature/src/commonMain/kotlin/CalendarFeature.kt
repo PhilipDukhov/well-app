@@ -19,6 +19,9 @@ object CalendarFeature {
         const val confirm = "Confirm"
         const val reject = "Reject"
         const val needsYourHelp = "needs your help"
+        @Suppress("unused")
+        const val rejectionTitle = "Add a reason for rejection"
+        const val rejectionLabel = "Rejection reason"
     }
 
     data class State(
@@ -78,6 +81,7 @@ object CalendarFeature {
         data class UpdateMeetings(val meetings: List<MeetingViewModel>) : Msg()
         data class OpenUserProfile(val meeting: MeetingViewModel) : Msg()
         data class StartCall(val meeting: MeetingViewModel) : Msg()
+        data class DeleteMeeting(val meeting: MeetingViewModel) : Msg()
         data class UpdateMeetingState(val meeting: MeetingViewModel, val state: Meeting.State) : Msg()
 
         internal data class CalendarInfoMsg(val msg: CalendarInfoFeature.Msg) : Msg()
@@ -96,6 +100,7 @@ object CalendarFeature {
         data class OpenUserProfile(val uid: User.Id) : Eff
         data class StartCall(val uid: User.Id) : Eff
         data class UpdateMeetingState(val meetingId: Meeting.Id, val state: Meeting.State) : Eff
+        data class DeleteMeeting(val meetingId: Meeting.Id) : Eff
     }
 
     fun reducer(
@@ -132,6 +137,9 @@ object CalendarFeature {
                         return@state state
                     }
                     return@eff Eff.UpdateMeetingState(msg.meeting.id, msg.state)
+                }
+                is Msg.DeleteMeeting -> {
+                    return@eff Eff.DeleteMeeting(msg.meeting.id)
                 }
             }
         })

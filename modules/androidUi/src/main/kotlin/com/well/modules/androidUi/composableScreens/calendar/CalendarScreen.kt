@@ -2,6 +2,7 @@ package com.well.modules.androidUi.composableScreens.calendar
 
 import com.well.modules.androidUi.customViews.CalendarMonthView
 import com.well.modules.androidUi.customViews.CalendarTitleScope
+import com.well.modules.androidUi.customViews.LimitedCharsTextField
 import com.well.modules.androidUi.customViews.ProfileImage
 import com.well.modules.androidUi.customViews.gradientBackground
 import com.well.modules.androidUi.ext.minus
@@ -19,9 +20,11 @@ import com.well.modules.utils.viewUtils.CalendarMonthViewColors
 import com.well.modules.utils.viewUtils.Gradient
 import com.well.modules.features.calendar.calendarFeature.CalendarFeature as Feature
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -29,8 +32,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -43,20 +48,26 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 
 @Composable
 fun CalendarScreen(
@@ -86,7 +97,7 @@ fun CalendarScreen(
         )
         val (dialogMeeting, setDialogMeeting) = remember { mutableStateOf<MeetingViewModel?>(null) }
         MeetingsList(
-            state.selectedItemMeetings?.let(::listOf)
+            meetings = state.selectedItemMeetings?.let(::listOf)
                 ?: state.upcomingMeetings,
             onSelectMeeting = setDialogMeeting,
             onStartCall = {
@@ -97,6 +108,9 @@ fun CalendarScreen(
             },
             onUpdateState = { meeting, state ->
                 listener(Msg.UpdateMeetingState(meeting, state))
+            },
+            onDeleteMeeting = {
+                listener(Msg.DeleteMeeting(it))
             },
         )
     }
@@ -173,6 +187,7 @@ private fun MeetingsList(
     onSelectMeeting: (MeetingViewModel) -> Unit,
     onStartCall: (MeetingViewModel) -> Unit,
     onSelectUser: (MeetingViewModel) -> Unit,
+    onDeleteMeeting: (MeetingViewModel) -> Unit,
     onUpdateState: (MeetingViewModel, Meeting.State) -> Unit,
 ) {
     LazyColumn(
@@ -215,6 +230,9 @@ private fun MeetingsList(
                         onSelectUser = {
                             onSelectUser(meeting)
                         },
+                        onDelete = {
+                            onDeleteMeeting(meeting)
+                        },
                     )
                 }
             }
@@ -228,6 +246,7 @@ private fun ConfirmedMeetingCard(
     onSelect: () -> Unit,
     onSelectUser: () -> Unit,
     onStartCall: () -> Unit,
+    onDelete: () -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -237,12 +256,13 @@ private fun ConfirmedMeetingCard(
                 onClick = onSelect,
             )
     ) {
-        Box(
-            Modifier
-                .padding(15.dp)
-                .padding(start = 12.dp)
-        ) {
-            Column {
+        Row {
+            Column(
+                Modifier
+                    .padding(15.dp)
+                    .padding(start = 12.dp)
+                    .weight(1f)
+            ) {
                 ProvideTextStyle(value = MaterialTheme.typography.caption) {
                     if (meeting.status == MeetingViewModel.Status.Ongoing) {
                         Text(
@@ -262,16 +282,24 @@ private fun ConfirmedMeetingCard(
                 Text(
                     meeting.title,
                     style = MaterialTheme.typography.subtitle2,
-                    color = Color.Black.toColor(),
-                    modifier = Modifier.padding(top = 3.dp, bottom = 9.dp)
+                    color = (if (meeting.rejectionReason == null) Color.Black else Color.RadicalRed).toColor(),
+                    modifier = Modifier.padding(top = 3.dp)
                 )
+                meeting.rejectionReason?.let {
+                    Text(
+                        it,
+                        style = MaterialTheme.typography.subtitle2,
+                        color = Color.Black.toColor(),
+                        modifier = Modifier.padding(top = 3.dp)
+                    )
+                }
+                Spacer(Modifier.size(9.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
+                        .padding(top = 3.dp)
                         .clip(CircleShape)
-                        .clickable {
-                            onSelectUser()
-                        }
+                        .clickable(onClick = onSelectUser)
                 ) {
                     ProfileImage(
                         user = meeting.otherUser,
@@ -280,7 +308,7 @@ private fun ConfirmedMeetingCard(
                             .size(20.dp)
                     )
                     Text(
-                        "with ${meeting.otherUser.fullName}",
+                        meeting.otherUserButtonTitle,
                         style = MaterialTheme.typography.caption,
                         color = Color.LightBlue.toColor()
                     )
@@ -290,12 +318,24 @@ private fun ConfirmedMeetingCard(
                 IconButton(
                     onClick = onStartCall,
                     modifier = Modifier
-                        .align(Alignment.CenterEnd)
+                        .align(Alignment.CenterVertically)
                 ) {
                     Icon(
                         Icons.Rounded.Call,
                         contentDescription = null,
                         tint = Color.Green.toColor(),
+                    )
+                }
+            } else {
+                IconButton(
+                    onClick = onDelete,
+                    modifier = Modifier
+                        .align(Alignment.Top)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = null,
+                        tint = Color.RadicalRed.toColor(),
                     )
                 }
             }
@@ -318,7 +358,6 @@ private fun RequestedMeetingCard(
                 .padding(
                     PaddingValues(15.dp) + PaddingValues(start = 12.dp) - ButtonDefaults.TextButtonContentPadding
                 )
-                .fillMaxWidth()
         ) {
             if (meeting.isExpert) {
                 Row(
@@ -360,14 +399,89 @@ private fun RequestedMeetingCard(
                     )
                 }
                 Spacer(Modifier.width(10.dp))
+                var rejectionReasonDialogShowed by remember { mutableStateOf(false) }
                 TextButton(onClick = {
-                    onUpdateState(Meeting.State.Rejected)
+                    rejectionReasonDialogShowed = true
                 }) {
                     Text(
                         Feature.Strings.reject,
                         style = MaterialTheme.typography.subtitle2,
                         color = Color.Pink.toColor(),
                     )
+                }
+                if (rejectionReasonDialogShowed) {
+                    RejectionDialog(
+                        send = {
+                            onUpdateState(Meeting.State.Rejected(it))
+                        },
+                        hide = {
+                            rejectionReasonDialogShowed = false
+                        },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun RejectionDialog(
+    send: (String) -> Unit,
+    hide: () -> Unit,
+) {
+    var text by rememberSaveable { mutableStateOf("") }
+    Dialog(
+        onDismissRequest = hide,
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = hide,
+                )
+        ) {
+            Surface(
+                shape = MaterialTheme.shapes.medium,
+                color = MaterialTheme.colors.surface,
+                elevation = 24.dp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .sizeIn(maxWidth = 560.dp)
+                    .padding(16.dp)
+                    .imePadding()
+            ) {
+                Column(horizontalAlignment = Alignment.End) {
+                    LimitedCharsTextField(
+                        value = text,
+                        onValueChange = { text = it },
+                        labelText = Feature.Strings.rejectionLabel,
+                        maxCharacters = 150,
+                        modifier = Modifier
+                            .padding(15.dp)
+                            .height(IntrinsicSize.Min)
+                            .weight(1f, fill = false)
+                    )
+                    Row {
+                        TextButton(
+                            onClick = {
+                                hide()
+                            },
+                        ) {
+                            Text(Feature.Strings.cancel)
+                        }
+                        TextButton(
+                            onClick = {
+                                send(text)
+                                hide()
+                            },
+                            enabled = text.isNotBlank(),
+                        ) {
+                            Text(Feature.Strings.send)
+                        }
+                    }
                 }
             }
         }

@@ -282,7 +282,7 @@ private fun TitleView(
     onLeft: () -> Unit,
     onRight: () -> Unit,
 ) {
-    Row {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Spacer(Modifier.weight(1f))
         IconButton(onClick = onLeft) {
             Icon(Icons.Default.ArrowBack, contentDescription = "")

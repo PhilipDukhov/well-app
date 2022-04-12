@@ -1,7 +1,7 @@
 package com.well.server.utils.notifications
 
 import com.well.modules.db.server.SelectTokenByUid
-import com.well.modules.db.server.toMeeting
+import com.well.modules.models.Meeting
 import com.well.modules.models.Notification
 import com.well.modules.models.NotificationToken
 import com.well.modules.models.date.dateTime.localizedDayAndShortMonth
@@ -74,21 +74,10 @@ private suspend fun sendApnsNotification(
     dependencies: Dependencies,
 ) {
     val payloadBuilder = SimpleApnsPayloadBuilder()
-    payloadBuilder.setAlertBody("Example updated!")
-    when (notification) {
-        is Notification.ChatMessage -> {
-            payloadBuilder.setAlertTitle(notification.senderName)
-            payloadBuilder.setAlertBody(notification.message.content.descriptionText)
-        }
-        is Notification.Meeting -> {
-            val meeting = dependencies.database.meetingsQueries.getById(notification.meetingId).executeAsOne().toMeeting()
-            payloadBuilder.setAlertTitle(
-                "${notification.senderName} has requested a meeting on ${meeting.startDay.localizedDayAndShortMonth()} at ${meeting.startTime}"
-            )
-        }
-    }
+    payloadBuilder.setAlertTitle(notification.alertTitle)
+    payloadBuilder.setAlertBody(notification.alertBody)
     payloadBuilder.setBadgeNumber(notification.totalUnreadCount)
-    payloadBuilder.addCustomProperty(Notification.payloadDataKey, Json.encodeToString<Notification>(notification))
+    payloadBuilder.addCustomProperty(Notification.payloadDataKey, Json.encodeToString(notification))
     val payload = payloadBuilder.build()
     val pushNotification = SimpleApnsPushNotification(
         /* token = */

@@ -26,10 +26,9 @@ data class BottomSheetDialogBuilder(val context: Context) {
         textView.text = action.title
         textView.minHeight = 50.toDp(context)
         textView.gravity = Gravity.CENTER_VERTICAL
-//        textView.setCompoundDrawablesRelativeWithIntrinsicBounds(operation.drawableId, 0, 0, 0)
         textView.setOnClickListener {
             dismiss()
-            action.block.invoke()
+            action.action.invoke()
         }
         linearLayout.addView(textView)
     }

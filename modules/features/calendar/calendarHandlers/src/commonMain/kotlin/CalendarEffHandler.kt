@@ -7,7 +7,7 @@ import com.well.modules.models.MeetingViewModel
 import com.well.modules.models.User
 import com.well.modules.puerhBase.EffectHandler
 import com.well.modules.utils.flowUtils.collectIn
-import com.well.modules.utils.flowUtils.print
+import com.well.modules.utils.viewUtils.SuspendAction
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -24,11 +24,11 @@ class CalendarEffHandler(
         val openUserProfile: (User.Id) -> Unit,
         val startCall: (User.Id) -> Unit,
         val updateMeetingState: (Meeting.Id, Meeting.State) -> Unit,
+        val showSheet: (actions: Array<SuspendAction>, title: String) -> Unit,
     )
 
     private val meetingsFlow = services
         .meetingsFlow
-        .print { "meetingsFlow $it" }
         .flatMapLatest { meetings ->
             services
                 .getUsersByIdsFlow(
@@ -36,7 +36,6 @@ class CalendarEffHandler(
                         .map { it.otherUid(services.currentUserId) }
                         .toSet()
                 )
-                .print { "getUsersByIdsFlow $it" }
                 .map { users ->
                     val groupedUsers = users
                         .groupBy(User::id)
@@ -54,7 +53,7 @@ class CalendarEffHandler(
                         )
                     }
                         .filter {
-                            !it.isExpert || it.state != Meeting.State.Rejected
+                            !it.isExpert || it.state !is Meeting.State.Rejected
                         }
                 }
         }
@@ -62,7 +61,6 @@ class CalendarEffHandler(
     init {
         meetingsFlow
             .map(Msg::UpdateMeetings)
-            .print { "final meetingsFlow $it" }
             .collectIn(effHandlerScope, ::listener)
     }
 
@@ -76,6 +74,23 @@ class CalendarEffHandler(
             }
             is Eff.UpdateMeetingState -> {
                 services.updateMeetingState(eff.meetingId, eff.state)
+            }
+            is Eff.DeleteMeeting -> {
+                services.showSheet(
+                    arrayOf(
+                        SuspendAction(
+                            title = "Delete event",
+                            action = {
+                                TODO()
+//                                services.updateMeetingState(eff.meetingId, Meeting.State.Canceled(""))
+                            },
+                        ),
+                        SuspendAction(
+                            title = "Cancel",
+                        ),
+                    ),
+                    "Are you sure you want to delete this event?",
+                )
             }
         }
     }
