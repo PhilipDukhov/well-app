@@ -2,6 +2,7 @@ package com.well.modules.features.notifications
 
 import com.well.modules.atomic.CloseableContainer
 import com.well.modules.atomic.asCloseable
+import com.well.modules.models.Meeting
 import com.well.modules.models.Notification
 import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
@@ -39,8 +40,9 @@ class NotificationHandler(
         val lastListViewModelFlow: Flow<List<ChatMessageContainer>>,
         val unreadCountsFlow: (List<ChatMessage>) -> Flow<Map<ChatMessage.Id, Long>>,
         val getUsersByIdsFlow: (List<User.Id>) -> Flow<List<User>>,
-        val getMessageByIdFlow: (ChatMessage.Id) -> Flow<ChatMessageContainer>,
+        val getMessageByIdFlow: (ChatMessage.Id) -> Flow<ChatMessageContainer?>,
         val openChat: (User.Id) -> Unit,
+        val openMeeting: (Meeting.Id) -> Unit,
     )
 
     private val notificationHelper = SystemNotificationHelper(applicationContext)
@@ -80,7 +82,7 @@ class NotificationHandler(
                 .filterIsInstance<Notification.ChatMessage>()
                 .map { notification ->
                     services.getMessageByIdFlow(notification.message.id)
-                        .filter { it.viewModel.status == ChatMessageViewModel.Status.IncomingRead }
+                        .filter { it?.viewModel?.status == ChatMessageViewModel.Status.IncomingRead }
                         .map { notification }
                 }
                 .flattenFlow()

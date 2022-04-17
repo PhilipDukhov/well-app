@@ -1,12 +1,11 @@
 package com.well.modules.androidUi.composableScreens.call
 
+import com.well.modules.androidUi.components.GradientView
+import com.well.modules.androidUi.components.ProfileImage
+import com.well.modules.androidUi.components.controlMinSize
 import com.well.modules.androidUi.composableScreens.call.drawing.DrawingContent
 import com.well.modules.androidUi.composableScreens.call.drawing.DrawingPanel
-import com.well.modules.androidUi.customViews.GradientView
-import com.well.modules.androidUi.customViews.ProfileImage
-import com.well.modules.androidUi.customViews.controlMinSize
 import com.well.modules.androidUi.ext.thenIf
-import com.well.modules.androidUi.ext.thenOrNull
 import com.well.modules.androidUi.ext.visibility
 import com.well.modules.androidUi.ext.widthDp
 import com.well.modules.features.call.callFeature.CallFeature.Msg

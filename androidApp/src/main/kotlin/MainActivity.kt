@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         featureProvider.handleOnNewIntent(intent)
     }
 
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun onActivityResult(
         requestCode: Int,
         resultCode: Int,

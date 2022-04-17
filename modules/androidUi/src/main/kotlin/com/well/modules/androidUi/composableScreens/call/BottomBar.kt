@@ -1,7 +1,7 @@
 package com.well.modules.androidUi.composableScreens.call
 
 import com.well.modules.androidUi.R
-import com.well.modules.androidUi.customViews.GradientView
+import com.well.modules.androidUi.components.GradientView
 import com.well.modules.androidUi.ext.Size
 import com.well.modules.androidUi.ext.heightPlusBottomSystemBars
 import com.well.modules.androidUi.ext.toPx
@@ -112,7 +112,7 @@ private data class BottomShape(
     override fun createOutline(
         size: Size,
         layoutDirection: LayoutDirection,
-        density: Density
+        density: Density,
     ) = Outline.Generic(Path().apply {
         fillType = PathFillType.EvenOdd
         addRect(Rect(Offset.Zero, size))

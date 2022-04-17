@@ -30,7 +30,7 @@ internal class TopUserChatEffHandler(
                         currentUid = currentUid,
                         peerUid = peerUid,
                     )
-                    .toChatMessageContainerFlow(currentUid, featureProviderImpl),
+                    .toChatMessagesContainerFlow(currentUid, featureProviderImpl),
                 pickSystemImage = systemHelper!!::pickSystemImage,
                 markRead = messagesDatabase::markRead,
                 sendImage = ::sendImage.launchedIn(parentCoroutineScope),

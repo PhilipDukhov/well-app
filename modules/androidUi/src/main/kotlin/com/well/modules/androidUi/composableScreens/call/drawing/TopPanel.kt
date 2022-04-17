@@ -1,7 +1,7 @@
 package com.well.modules.androidUi.composableScreens.call.drawing
 
 import com.well.modules.androidUi.R
-import com.well.modules.androidUi.customViews.Control
+import com.well.modules.androidUi.components.Control
 import com.well.modules.features.call.callFeature.drawing.DrawingFeature.Msg
 import com.well.modules.features.call.callFeature.drawing.DrawingFeature.State
 import androidx.compose.foundation.background

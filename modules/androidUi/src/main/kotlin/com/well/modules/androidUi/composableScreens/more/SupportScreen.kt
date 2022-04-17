@@ -1,9 +1,9 @@
 package com.well.modules.androidUi.composableScreens.more
 
-import com.well.modules.androidUi.customViews.ActionButton
-import com.well.modules.androidUi.customViews.LimitedCharsTextField
-import com.well.modules.androidUi.customViews.NavigationBar
-import com.well.modules.androidUi.customViews.SwitchRow
+import com.well.modules.androidUi.components.ActionButton
+import com.well.modules.androidUi.components.LimitedCharsTextField
+import com.well.modules.androidUi.components.NavigationBar
+import com.well.modules.androidUi.components.SwitchRow
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.features.more.moreFeature.subfeatures.SupportFeature.Msg
 import com.well.modules.features.more.moreFeature.subfeatures.SupportFeature.State

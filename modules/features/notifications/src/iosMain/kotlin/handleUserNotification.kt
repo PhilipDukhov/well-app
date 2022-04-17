@@ -6,15 +6,12 @@ import platform.UserNotifications.UNNotificationResponse
 
 fun NotificationHandler.handleNotificationResponse(response: UNNotificationResponse) {
     try {
-        Napier.i("1")
-        val notification = parseRawNotification(response.notification)
-        Napier.i("parsed $notification")
-        when (notification) {
+        when (val notification = parseRawNotification(response.notification)) {
             is Notification.ChatMessage -> {
                 services.openChat(notification.message.fromId)
             }
             is Notification.Meeting -> {
-                TODO()
+                services.openMeeting(notification.meeting.id)
             }
         }
     } catch (t: Throwable) {

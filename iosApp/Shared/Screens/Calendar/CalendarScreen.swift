@@ -19,7 +19,7 @@ struct CalendarScreen: View {
     private var dialogMeeting: MeetingViewModel?
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             CalendarMonthView(
                 state: state.infoState,
                 title: {
@@ -37,6 +37,9 @@ struct CalendarScreen: View {
                 onSelectMeeting: {
                     dialogMeeting = $0
                 },
+                onDeleteMeeting: {
+                    listener(Feature.MsgUpdateMeetingState(meeting: $0, state: $1))
+                },
                 onStartCall: {
                     listener(Feature.MsgStartCall(meeting: $0))
                 },
@@ -45,11 +48,9 @@ struct CalendarScreen: View {
                 }) {
                     listener(Feature.MsgUpdateMeetingState(meeting: $0, state: $1))
                 }
-            Spacer()
         }.padding(.horizontal)
             .fillMaxSize()
             .background(GradientView(gradient: .main).ignoresSafeArea(edges: .top))
-
     }
 
     func showNextMonth() {
@@ -131,20 +132,21 @@ private struct CalendarTitleView: View {
             title.first?.toString() ?? ""
             : title
         )
-            .opacity(0.2)
-            .textStyle(.h5)
+        .opacity(0.2)
+        .textStyle(.h5)
     }
 }
 
 private struct MeetingsList: View {
     let meetings: [Feature.StateDayMeetings]
     let onSelectMeeting: (MeetingViewModel) -> Void
+    let onDeleteMeeting: (MeetingViewModel, Meeting.StateCanceled) -> Void
     let onStartCall: (MeetingViewModel) -> Void
     let onSelectUser: (MeetingViewModel) -> Void
     let onUpdateState: (MeetingViewModel, Meeting.State) -> Void
 
     var body: some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             LazyVStack(spacing: 15) {
                 ForEach(meetings, id: \.day) { dayMeetings in
                     Text(dayMeetings.day.localizedRelatedDescription())
@@ -172,12 +174,15 @@ private struct MeetingsList: View {
                                 },
                                 onSelectUser: {
                                     onSelectUser(meeting)
+                                },
+                                onDelete: { state in
+                                    onDeleteMeeting(meeting, state)
                                 }
                             )
                         }
                     }
                 }
-            }.padding(.vertical, 15).padding(.trailing)
+            }.padding(.vertical, 15)
         }
     }
 }
@@ -188,9 +193,14 @@ private struct ConfirmedMeetingCard: View {
     let onSelect: () -> Void
     let onStartCall: () -> Void
     let onSelectUser: () -> Void
+    let onDelete: (Meeting.StateCanceled) -> Void
+
+    @State
+    private var deletionReasonDialogShowing = false
 
     var body: some View {
-        ZStack(alignment: .trailing) {
+        let isOngoing = meeting.status == .ongoing
+        ZStack(alignment: isOngoing ? .trailing : .topTrailing) {
             HStack {
                 VStack(alignment: .leading, spacing: 0) {
                     let ongoing = meeting.status == .ongoing
@@ -203,7 +213,16 @@ private struct ConfirmedMeetingCard: View {
                         .textStyle(.subtitle2)
                         .foregroundColor(.black)
                         .padding(.top, 3)
-                        .padding(.bottom, 9)
+                        .padding(.bottom, meeting.rejectionReason == nil ? 9 : 0)
+
+                    meeting.rejectionReason.map {
+                        Text($0)
+                            .textStyle(.subtitle2)
+                            .foregroundColor(.black)
+                            .padding(.top, 3)
+                            .padding(.bottom, 9)
+                    }
+
                     Button(action: onSelectUser) {
                         HStack {
                             ProfileImage(meeting.otherUser)
@@ -215,19 +234,41 @@ private struct ConfirmedMeetingCard: View {
                         }
                     }
                 }
-                Spacer().fillMaxWidth()
-            }
-            if meeting.status  == .ongoing {
+            }.fillMaxWidth(alignment: .leading).padding(15).padding(.leading, 12)
+            if isOngoing {
                 Button(action: onStartCall) {
                     Image(systemName: "phone.fill")
                         .font(.system(size: 20))
                         .foregroundColorKMM(.companion.Green)
                         .padding()
                 }
+            } else {
+                Button {
+                    if meeting.rejectionReason != nil {
+                        onDelete(Meeting.StateCanceled(reason: ""))
+                    } else {
+                        deletionReasonDialogShowing = true
+                    }
+                } label: {
+                    Image(systemName: "trash.fill")
+                        .font(.system(size: 20))
+                        .foregroundColorKMM(.companion.RadicalRed)
+                        .padding()
+                }
+                .textFieldAlertController(
+                    isPresented: $deletionReasonDialogShowing,
+                    info: .init(
+                        title: Feature.Strings.shared.deletionTitle,
+                        placeholder: Feature.Strings.shared.deletionLabel
+                    ),
+                    alertConfirmed: {
+                        onDelete(Meeting.StateCanceled(reason: $0))
+                    }
+                )
             }
-        }.padding(15).padding(.leading, 12)
-            .background(Shapes.medium.foregroundColor(.white))
-            .onTapGesture(perform: onSelect)
+        }
+        .background(Shapes.medium.foregroundColor(.white))
+        .onTapGesture(perform: onSelect)
     }
 }
 
@@ -238,7 +279,7 @@ private struct RequestedMeetingCard: View {
     let onUpdateState: (Meeting.State) -> Void
 
     @State
-    private var rejectionReasonDialogShowed = false
+    private var rejectionReasonDialogShowing = false
 
     var body: some View {
         HStack {
@@ -247,36 +288,36 @@ private struct RequestedMeetingCard: View {
                     HStack {
                         Button(action: onSelectUser) {
                             Text(meeting.otherUser.fullName)
-                                    .textStyle(.subtitle2)
-                                    .foregroundColorKMM(.companion.Green)
+                                .textStyle(.subtitle2)
+                                .foregroundColorKMM(.companion.Green)
                         }
                         Text(Feature.Strings.shared.needsYourHelp)
-                                .textStyle(.subtitle2)
+                            .textStyle(.subtitle2)
                     }
                 } else {
                     Text(meeting.title)
-                            .textStyle(.subtitle2)
-                            .foregroundColor(.black)
+                        .textStyle(.subtitle2)
+                        .foregroundColor(.black)
                 }
                 Text("\(Feature.Strings.shared.bookingTime): \(meeting.startTime)")
-                        .textStyle(.caption)
+                    .textStyle(.caption)
                 HStack {
                     Button(action: {
                         onUpdateState(Meeting.StateConfirmed.shared)
                     }) {
                         Text(Feature.Strings.shared.confirm)
-                                .textStyle(.subtitle2)
-                                .foregroundColorKMM(.companion.MediumBlue)
+                            .textStyle(.subtitle2)
+                            .foregroundColorKMM(.companion.MediumBlue)
                     }
                     Button(action: {
-                        rejectionReasonDialogShowed = true
+                        rejectionReasonDialogShowing = true
                     }) {
                         Text(Feature.Strings.shared.reject)
-                                .textStyle(.subtitle2)
-                                .foregroundColorKMM(.companion.Pink)
+                            .textStyle(.subtitle2)
+                            .foregroundColorKMM(.companion.Pink)
                     }
                     .textFieldAlertController(
-                        isPresented: $rejectionReasonDialogShowed,
+                        isPresented: $rejectionReasonDialogShowing,
                         info: .init(
                             title: Feature.Strings.shared.rejectionTitle,
                             placeholder: Feature.Strings.shared.rejectionLabel
@@ -285,7 +326,6 @@ private struct RequestedMeetingCard: View {
                             onUpdateState(Meeting.StateRejected(reason: $0))
                         }
                     )
-
                 }
             }.layoutPriority(1)
             Spacer().fillMaxWidth()

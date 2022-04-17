@@ -49,18 +49,20 @@ sealed class Notification {
 
         override val alertBody: String
             get() {
-                val date = "on ${meeting.startDay.localizedDayAndShortMonth()} at ${meeting.startTime}"
+                val dateTimeDescription = meeting.dateTimeDescription
                 return when (meeting.state) {
                     MeetingState.Requested -> {
-                        "$senderName sent a request for a meeting $date.\nAccept it now!"
+                        "$senderName sent a request for a meeting $dateTimeDescription.\nAccept it now!"
                     }
                     MeetingState.Confirmed -> {
-                        "$senderName confirmed a meeting with you $date"
+                        "$senderName confirmed a meeting with you $dateTimeDescription"
                     }
                     is MeetingState.Rejected -> {
-                        "$senderName rejected a meeting with you $date with the following reason: ${meeting.state.reason}"
+                        "$senderName rejected a meeting with you $dateTimeDescription with the following reason: ${meeting.state.reason}"
                     }
-                    is MeetingState.Canceled -> TODO()
+                    is MeetingState.Canceled -> {
+                        "$senderName cancelled a meeting with you $dateTimeDescription with the following reason: ${meeting.state.reason}"
+                    }
                 }
             }
     }

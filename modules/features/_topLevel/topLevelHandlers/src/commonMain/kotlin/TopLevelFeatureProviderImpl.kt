@@ -52,7 +52,6 @@ import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.Msg
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.features.welcome.WelcomeFeature
 import com.well.modules.models.FavoriteSetter
-import com.well.modules.models.Meeting
 import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.networking.NetworkManager
@@ -63,7 +62,6 @@ import com.well.modules.puerhBase.SyncFeature
 import com.well.modules.puerhBase.adapt
 import com.well.modules.puerhBase.wrapWithEffectHandler
 import com.well.modules.utils.flowUtils.combineWithUnit
-import com.well.modules.utils.flowUtils.filterNotEmpty
 import com.well.modules.utils.flowUtils.mapProperty
 import com.well.modules.utils.kotlinUtils.map
 import com.well.modules.utils.viewUtils.Alert
@@ -91,6 +89,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
@@ -259,7 +258,7 @@ internal class TopLevelFeatureProviderImpl(
                                 onConnectedFlow = networkManager.onConnectedFlow,
                                 lastListViewModelFlow = messagesDatabase
                                     .lastListFlow(uid)
-                                    .toChatMessageContainerFlow(uid, this@TopLevelFeatureProviderImpl),
+                                    .toChatMessagesContainerFlow(uid, this@TopLevelFeatureProviderImpl),
                                 unreadCountsFlow = { messages ->
                                     messagesDatabase
                                         .chatMessagesQueries
@@ -287,7 +286,7 @@ internal class TopLevelFeatureProviderImpl(
                         services = NotificationHandler.Services(
                             lastListViewModelFlow = messagesDatabase
                                 .lastListFlow(uid)
-                                .toChatMessageContainerFlow(uid, this@TopLevelFeatureProviderImpl),
+                                .toChatMessagesContainerFlow(uid, this@TopLevelFeatureProviderImpl),
                             unreadCountsFlow = { messages ->
                                 messagesDatabase
                                     .chatMessagesQueries
@@ -297,15 +296,22 @@ internal class TopLevelFeatureProviderImpl(
                             getMessageByIdFlow = { id ->
                                 messagesDatabase
                                     .getByIdFlow(id)
-                                    .map { listOf(it) }
-                                    .toChatMessageContainerFlow(uid, this@TopLevelFeatureProviderImpl)
-                                    .filterNotEmpty()
-                                    .map { it.first() }
+                                    .flatMapLatest { message ->
+                                        if (message != null) {
+                                            listOf(message)
+                                                .toChatMessagesContainerFlow(uid, this@TopLevelFeatureProviderImpl)
+                                                .map { it.firstOrNull() }
+                                        } else {
+                                            flowOf(null)
+                                        }
+                                    }
                             },
                             openChat = {
-                                Napier.d("openChat $it")
                                 listener(Msg.OpenUserChat(uid = it))
                             },
+                            openMeeting = {
+                                listener(Msg.OpenMeeting(it))
+                            }
                         ),
                         parentCoroutineScope = coroutineScope,
                     )

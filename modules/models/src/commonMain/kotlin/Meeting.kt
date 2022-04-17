@@ -1,5 +1,6 @@
 package com.well.modules.models
 
+import com.well.modules.models.date.dateTime.localizedDayAndShortMonth
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import kotlin.jvm.JvmInline
@@ -41,6 +42,8 @@ data class Meeting(
         @Serializable
         data class Canceled(val reason: String) : State()
     }
+
+    val dateTimeDescription = "on ${startDay.localizedDayAndShortMonth()} at $startTime"
 
     fun otherUid(currentUid: User.Id) =
         if (expertUid == currentUid)

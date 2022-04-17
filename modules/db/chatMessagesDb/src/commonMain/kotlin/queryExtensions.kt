@@ -9,6 +9,7 @@ import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import com.squareup.sqldelight.runtime.coroutines.mapToOne
 import com.squareup.sqldelight.runtime.coroutines.mapToOneOrDefault
+import com.squareup.sqldelight.runtime.coroutines.mapToOneOrNull
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -172,9 +173,9 @@ fun ChatMessagesDatabase.getByIdFlow(id: ChatMessage.Id) =
     chatMessagesQueries
         .getById(id)
         .asFlow()
-        .mapToOne()
+        .mapToOneOrNull()
         .map {
-            it.toChatMessage(database = this)
+            it?.toChatMessage(database = this)
         }
 
 fun ChatMessagesQueries.unreadCountFlow(uid: User.Id, message: ChatMessage) =

@@ -1,9 +1,9 @@
 package com.well.modules.androidUi.composableScreens.myProfile.availability
 
-import com.well.modules.androidUi.customViews.ActionButton
-import com.well.modules.androidUi.customViews.BottomSheetDialog
-import com.well.modules.androidUi.customViews.InactiveOverlay
-import com.well.modules.androidUi.customViews.SelectableButton
+import com.well.modules.androidUi.components.ActionButton
+import com.well.modules.androidUi.components.BottomSheetDialog
+import com.well.modules.androidUi.components.InactiveOverlay
+import com.well.modules.androidUi.components.SelectableButton
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.RequestConsultationFeature.Msg
 import com.well.modules.features.myProfile.myProfileFeature.availabilitiesCalendar.RequestConsultationFeature.State

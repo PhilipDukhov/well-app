@@ -1,11 +1,11 @@
 package com.well.androidAppTest
 
+import com.well.modules.androidUi.components.ProfileImage
 import com.well.modules.androidUi.composableScreens.call.CallScreen
 import com.well.modules.androidUi.composableScreens.more.DonateScreen
 import com.well.modules.androidUi.composableScreens.more.FavoritesScreen
 import com.well.modules.androidUi.composableScreens.userChat.UserChatScreen
 import com.well.modules.androidUi.composableScreens.welcome.WelcomeScreen
-import com.well.modules.androidUi.customViews.ProfileImage
 import com.well.modules.features.call.callFeature.CallFeature
 import com.well.modules.features.more.moreFeature.subfeatures.DonateFeature
 import com.well.modules.features.more.moreFeature.subfeatures.FavoritesFeature

@@ -194,7 +194,6 @@ class Dependencies(app: Application) {
         val clientsToDeliver = tokens.map {
             it to ClientKey(it.deviceId, peerId)
         }
-        println("clientsToDeliver $clientsToDeliver")
         val notification = lazy {
             buildNotification(
                 item,
@@ -217,7 +216,7 @@ class Dependencies(app: Application) {
         }
     }
 
-    private suspend fun CoroutineScope.deliver(
+    private suspend fun deliver(
         itemId: PendingNotificationId.ItemId,
         clientKey: ClientKey,
         tokenInfo: SelectTokenByUid,
@@ -227,8 +226,8 @@ class Dependencies(app: Application) {
             println("deliver token: waiting socket to deliver")
             val messageToDeliver = PendingNotificationId(clientKey.deviceId, itemId)
             pendingNotificationIds.add(messageToDeliver)
-            val checkingJob = launch checkingJob@{
-                val collectingJob = launch {
+            val checkingJob = coroutineScope.launch checkingJob@{
+                val collectingJob = coroutineScope.launch {
                     pendingNotificationIds.collect {
                         if (!it.contains(messageToDeliver)) {
                             this@checkingJob.cancel()

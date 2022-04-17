@@ -1,10 +1,10 @@
 package com.well.modules.androidUi.composableScreens.myProfile
 
-import com.well.modules.androidUi.customViews.ActionButton
-import com.well.modules.androidUi.customViews.Control
-import com.well.modules.androidUi.customViews.LimitedCharsTextField
-import com.well.modules.androidUi.customViews.NavigationBar
-import com.well.modules.androidUi.customViews.ProfileImage
+import com.well.modules.androidUi.components.ActionButton
+import com.well.modules.androidUi.components.Control
+import com.well.modules.androidUi.components.LimitedCharsTextField
+import com.well.modules.androidUi.components.NavigationBar
+import com.well.modules.androidUi.components.ProfileImage
 import com.well.modules.androidUi.ext.isImeVisible
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.androidUi.ext.widthDp

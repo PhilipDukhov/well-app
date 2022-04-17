@@ -12,35 +12,15 @@ extension CGRect {
     }
 }
 
-extension Int32 {
-    func toCGFloat() -> CGFloat {
-        CGFloat(self)
-    }
-}
-
-extension NSNumber {
-    func toCGFloat() -> CGFloat {
-        CGFloat(truncating: self)
-    }
-}
-
-extension Int32 {
-    func toDouble() -> Double {
-        Double(self)
-    }
-
-    func toInt() -> Int {
-        Int(self)
-    }
-}
-
 extension CGSize {
     init(size: CGFloat) {
         self.init(width: size, height: size)
     }
-}
 
-extension CGSize {
+    var maxDimension: CGFloat {
+        max(width, height)
+    }
+    
     var aspectRatio: CGFloat {
         width / height
     }
@@ -59,5 +39,27 @@ extension Float {
 
     func toDouble() -> Double {
         Double(self)
+    }
+}
+
+extension Int32 {
+    func toCGFloat() -> CGFloat {
+        CGFloat(self)
+    }
+}
+
+extension Int32 {
+    func toDouble() -> Double {
+        Double(self)
+    }
+
+    func toInt() -> Int {
+        Int(self)
+    }
+}
+
+extension NSNumber {
+    func toCGFloat() -> CGFloat {
+        CGFloat(truncating: self)
     }
 }

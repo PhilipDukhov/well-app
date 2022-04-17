@@ -1,11 +1,10 @@
 package com.well.modules.androidUi.composableScreens.call
 
 import com.well.modules.androidUi.R
-import com.well.modules.androidUi.customViews.Control
+import com.well.modules.androidUi.components.Control
 import com.well.modules.androidWebrtc.VideoTextureView
-import androidx.compose.foundation.Image
-import io.github.aakira.napier.Napier
 import com.well.modules.features.call.callFeature.CallFeature
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
+import io.github.aakira.napier.Napier
 
 @Suppress("ModifierParameter")
 @Composable

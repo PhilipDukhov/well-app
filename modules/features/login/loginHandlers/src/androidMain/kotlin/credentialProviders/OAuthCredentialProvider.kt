@@ -29,9 +29,9 @@ actual class OAuthCredentialProvider actual constructor(
     override fun handleActivityResult(
         requestCode: Int,
         resultCode: Int,
-        data: Intent?
+        data: Intent?,
     ): Boolean {
-        if (requestCode == com.well.modules.utils.viewUtils.AndroidRequestCodes.OAuthHelper.code && resultCode == RESULT_CANCELED) {
+        if (requestCode == AndroidRequestCodes.OAuthHelper.code && resultCode == RESULT_CANCELED) {
             handleActivityResultCancelJob = CoroutineScope(Dispatchers.Default).launch {
                 delay(100)
                 oAuthHelper.cancel()

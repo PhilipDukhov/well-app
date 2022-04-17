@@ -1,10 +1,10 @@
 package com.well.modules.androidUi.composableScreens.calendar
 
-import com.well.modules.androidUi.customViews.CalendarMonthView
-import com.well.modules.androidUi.customViews.CalendarTitleScope
-import com.well.modules.androidUi.customViews.LimitedCharsTextField
-import com.well.modules.androidUi.customViews.ProfileImage
-import com.well.modules.androidUi.customViews.gradientBackground
+import com.well.modules.androidUi.components.CalendarMonthView
+import com.well.modules.androidUi.components.CalendarTitleScope
+import com.well.modules.androidUi.components.ProfileImage
+import com.well.modules.androidUi.components.TextFieldDialog
+import com.well.modules.androidUi.components.gradientBackground
 import com.well.modules.androidUi.ext.minus
 import com.well.modules.androidUi.ext.plus
 import com.well.modules.androidUi.ext.start
@@ -20,11 +20,9 @@ import com.well.modules.utils.viewUtils.CalendarMonthViewColors
 import com.well.modules.utils.viewUtils.Gradient
 import com.well.modules.features.calendar.calendarFeature.CalendarFeature as Feature
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -32,10 +30,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -48,7 +44,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
@@ -67,7 +62,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 
 @Composable
 fun CalendarScreen(
@@ -108,9 +102,6 @@ fun CalendarScreen(
             },
             onUpdateState = { meeting, state ->
                 listener(Msg.UpdateMeetingState(meeting, state))
-            },
-            onDeleteMeeting = {
-                listener(Msg.DeleteMeeting(it))
             },
         )
     }
@@ -187,7 +178,6 @@ private fun MeetingsList(
     onSelectMeeting: (MeetingViewModel) -> Unit,
     onStartCall: (MeetingViewModel) -> Unit,
     onSelectUser: (MeetingViewModel) -> Unit,
-    onDeleteMeeting: (MeetingViewModel) -> Unit,
     onUpdateState: (MeetingViewModel, Meeting.State) -> Unit,
 ) {
     LazyColumn(
@@ -231,7 +221,7 @@ private fun MeetingsList(
                             onSelectUser(meeting)
                         },
                         onDelete = {
-                            onDeleteMeeting(meeting)
+                            onUpdateState(meeting, it)
                         },
                     )
                 }
@@ -246,7 +236,7 @@ private fun ConfirmedMeetingCard(
     onSelect: () -> Unit,
     onSelectUser: () -> Unit,
     onStartCall: () -> Unit,
-    onDelete: () -> Unit,
+    onDelete: (Meeting.State.Canceled) -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -282,7 +272,7 @@ private fun ConfirmedMeetingCard(
                 Text(
                     meeting.title,
                     style = MaterialTheme.typography.subtitle2,
-                    color = (if (meeting.rejectionReason == null) Color.Black else Color.RadicalRed).toColor(),
+                    color = Color.Black.toColor(),
                     modifier = Modifier.padding(top = 3.dp)
                 )
                 meeting.rejectionReason?.let {
@@ -327,15 +317,30 @@ private fun ConfirmedMeetingCard(
                     )
                 }
             } else {
+                var deletionReasonDialogShowing by rememberSaveable { mutableStateOf(false) }
                 IconButton(
-                    onClick = onDelete,
+                    onClick = { deletionReasonDialogShowing = true },
                     modifier = Modifier
                         .align(Alignment.Top)
+                        .padding(top = 5.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = null,
                         tint = Color.RadicalRed.toColor(),
+                    )
+                }
+                if (deletionReasonDialogShowing) {
+                    TextFieldDialog(
+                        send = {
+                            onDelete(Meeting.State.Canceled(it))
+                        },
+                        onDismissRequest = {
+                            deletionReasonDialogShowing = false
+                        },
+                        sendButtonText = Feature.Strings.send,
+                        titleText = Feature.Strings.deletionTitle,
+                        labelText = Feature.Strings.deletionLabel,
                     )
                 }
             }
@@ -399,9 +404,9 @@ private fun RequestedMeetingCard(
                     )
                 }
                 Spacer(Modifier.width(10.dp))
-                var rejectionReasonDialogShowed by remember { mutableStateOf(false) }
+                var rejectionReasonDialogShowing by rememberSaveable { mutableStateOf(false) }
                 TextButton(onClick = {
-                    rejectionReasonDialogShowed = true
+                    rejectionReasonDialogShowing = true
                 }) {
                     Text(
                         Feature.Strings.reject,
@@ -409,79 +414,18 @@ private fun RequestedMeetingCard(
                         color = Color.Pink.toColor(),
                     )
                 }
-                if (rejectionReasonDialogShowed) {
-                    RejectionDialog(
+                if (rejectionReasonDialogShowing) {
+                    TextFieldDialog(
                         send = {
                             onUpdateState(Meeting.State.Rejected(it))
                         },
-                        hide = {
-                            rejectionReasonDialogShowed = false
+                        onDismissRequest = {
+                            rejectionReasonDialogShowing = false
                         },
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun RejectionDialog(
-    send: (String) -> Unit,
-    hide: () -> Unit,
-) {
-    var text by rememberSaveable { mutableStateOf("") }
-    Dialog(
-        onDismissRequest = hide,
-    ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = hide,
-                )
-        ) {
-            Surface(
-                shape = MaterialTheme.shapes.medium,
-                color = MaterialTheme.colors.surface,
-                elevation = 24.dp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .sizeIn(maxWidth = 560.dp)
-                    .padding(16.dp)
-                    .imePadding()
-            ) {
-                Column(horizontalAlignment = Alignment.End) {
-                    LimitedCharsTextField(
-                        value = text,
-                        onValueChange = { text = it },
+                        sendButtonText = Feature.Strings.send,
+                        titleText = Feature.Strings.rejectionTitle,
                         labelText = Feature.Strings.rejectionLabel,
-                        maxCharacters = 150,
-                        modifier = Modifier
-                            .padding(15.dp)
-                            .height(IntrinsicSize.Min)
-                            .weight(1f, fill = false)
                     )
-                    Row {
-                        TextButton(
-                            onClick = {
-                                hide()
-                            },
-                        ) {
-                            Text(Feature.Strings.cancel)
-                        }
-                        TextButton(
-                            onClick = {
-                                send(text)
-                                hide()
-                            },
-                            enabled = text.isNotBlank(),
-                        ) {
-                            Text(Feature.Strings.send)
-                        }
-                    }
                 }
             }
         }

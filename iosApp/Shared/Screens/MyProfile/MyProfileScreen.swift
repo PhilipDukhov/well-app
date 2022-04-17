@@ -104,7 +104,11 @@ struct MyProfileScreen: View {
                 }
             }.edgesIgnoringSafeArea(state.isCurrent ? Edge.Set() : .top)
             if !state.isCurrent {
-                Control(Image(systemName: "chevron.left").foregroundColor(.white).shadow(color: .black, radius: 3.5)) {
+                Control(
+                    Image.systemChevronLeft
+                        .foregroundColor(.white)
+                        .shadow(color: .black, radius: 3.5)
+                ) {
                     listener(Feature.MsgBack())
                 }
             }

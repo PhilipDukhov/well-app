@@ -1,6 +1,7 @@
 package com.well.modules.androidUi.composableScreens
 
 import com.well.modules.androidUi.R
+import com.well.modules.androidUi.components.AutoSizeText
 import com.well.modules.androidUi.composableScreens.calendar.CalendarScreen
 import com.well.modules.androidUi.composableScreens.call.CallScreen
 import com.well.modules.androidUi.composableScreens.chatList.ChatListScreen
@@ -17,7 +18,6 @@ import com.well.modules.androidUi.composableScreens.myProfile.MyProfileScreen
 import com.well.modules.androidUi.composableScreens.updateRequest.UpdateRequestScreen
 import com.well.modules.androidUi.composableScreens.userChat.UserChatScreen
 import com.well.modules.androidUi.composableScreens.welcome.WelcomeScreen
-import com.well.modules.androidUi.customViews.AutoSizeText
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.features.topLevel.topLevelFeature.ScreenState
 import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State.Tab

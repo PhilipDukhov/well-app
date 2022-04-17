@@ -19,6 +19,7 @@ import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State.
 import com.well.modules.features.updateRequest.UpdateRequestFeature
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.features.welcome.WelcomeFeature
+import com.well.modules.models.Meeting
 import com.well.modules.models.NotificationToken
 import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
@@ -67,7 +68,7 @@ object TopLevelFeature {
         internal val tabs: Map<Tab, List<ScreenState>>,
         internal val selectedScreenPosition: ScreenPosition,
     ) {
-        val currentScreen = run {
+        val currentScreen: Screen = run {
             if (listOf(
                     Tab.Overlay,
                     Tab.Login
@@ -155,6 +156,7 @@ object TopLevelFeature {
         object OpenLoginScreen : Msg()
         object OpenWelcomeScreen : Msg()
         data class OpenUserChat(val uid: User.Id) : Msg()
+        data class OpenMeeting(val meetingId: Meeting.Id) : Msg()
         object Back : Msg()
         object Pop : Msg()
         data class UpdateNotificationToken(val token: NotificationToken) : Msg()
@@ -207,12 +209,7 @@ object TopLevelFeature {
                     return@reducer if (state.selectedScreenPosition.tab == msg.tab)
                         state.copyPopToRoot().reduceScreenChanged()
                     else
-                        state.copy(
-                            selectedScreenPosition = ScreenPosition(
-                                tab = msg.tab,
-                                index = state.tabs[msg.tab]!!.indices.last
-                            ),
-                        ).reduceScreenChanged()
+                        state.selectTab(msg.tab).reduceScreenChanged()
                 }
                 is Msg.LoggedIn -> {
                     val newState = state.copy(
@@ -286,6 +283,18 @@ object TopLevelFeature {
                         )
                     }
                     return@reducer newState.reduceScreenChanged()
+                }
+                is Msg.OpenMeeting -> {
+                    val calendarState = (state.tabs[Tab.Calendar]?.first() as? ScreenState.Calendar)?.state
+                        ?: CalendarFeature.State()
+                    return@reducer state
+                        .selectTab(Tab.Calendar)
+                        .copyPopToRoot()
+                        .copyReplace(
+                            state = calendarState.copy(selectedMeetingId = msg.meetingId),
+                            createScreen = ScreenState::Calendar,
+                        )
+                        .reduceScreenChanged()
                 }
                 is Msg.UpdateNotificationToken -> {
                     return@eff Eff.UpdateNotificationToken(msg.token)

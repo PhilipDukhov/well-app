@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     coreLibraryDesugaring()
+    libsAt("android.composeDebug").forEach(::debugImplementation)
 }
 
 libDependencies(

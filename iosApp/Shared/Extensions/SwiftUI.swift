@@ -13,18 +13,18 @@ extension View {
     }
 
     @inline(__always)
-    func fillMaxSize() -> some View {
-        frame(maxWidth: .infinity, maxHeight: .infinity)
+    func fillMaxSize(alignment: Alignment = .center) -> some View {
+        frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
     }
 
     @inline(__always)
-    func fillMaxWidth() -> some View {
-        frame(maxWidth: .infinity)
+    func fillMaxWidth(alignment: Alignment = .center) -> some View {
+        frame(maxWidth: .infinity, alignment: alignment)
     }
 
     @inline(__always)
-    func fillMaxHeight() -> some View {
-        frame(maxHeight: .infinity)
+    func fillMaxHeight(alignment: Alignment = .center) -> some View {
+        frame(maxHeight: .infinity, alignment: alignment)
     }
     
     @inline(__always)
@@ -33,8 +33,8 @@ extension View {
     }
     
     @inline(__always)
-    func width(_ height: CGFloat) -> some View {
-        frame(width: height)
+    func width(_ width: CGFloat) -> some View {
+        frame(width: width)
     }
 
     @inline(__always)
@@ -89,11 +89,12 @@ extension View {
     
     func sizeReader(_ block: @escaping (CGSize) -> Void) -> some View {
         background(
-            GeometryReader { geometry -> SwiftUI.Color in
-                DispatchQueue.main.async { // to avoid warning
-                    block(geometry.size)
-                }
-                return SwiftUI.Color.clear
+            GeometryReader { geometry in
+                SwiftUI.Color.clear
+					.onAppear {
+						block(geometry.size)
+					}
+					.onChange(of: geometry.size, perform: block)
             }
         )
     }

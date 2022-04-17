@@ -71,8 +71,7 @@ struct UserChatScreen: View {
             Control(action: {
                 listener(UserChatFeature.MsgBack())
             }) {
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 20))
+                Image.systemChevronLeft
                     .foregroundColorKMM(.companion.White)
                     .padding()
             }

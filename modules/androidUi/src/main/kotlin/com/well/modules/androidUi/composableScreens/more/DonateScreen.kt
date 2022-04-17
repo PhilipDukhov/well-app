@@ -1,10 +1,10 @@
 package com.well.modules.androidUi.composableScreens.more
 
-import com.well.modules.androidUi.customViews.ActionButton
-import com.well.modules.androidUi.customViews.ControlItem
-import com.well.modules.androidUi.customViews.NavigationBar
-import com.well.modules.androidUi.customViews.SelectableButton
-import com.well.modules.androidUi.customViews.SwitchRow
+import com.well.modules.androidUi.components.ActionButton
+import com.well.modules.androidUi.components.ControlItem
+import com.well.modules.androidUi.components.NavigationBar
+import com.well.modules.androidUi.components.SelectableButton
+import com.well.modules.androidUi.components.SwitchRow
 import com.well.modules.androidUi.theme.body1Light
 import com.well.modules.features.more.moreFeature.subfeatures.DonateFeature.Msg
 import com.well.modules.features.more.moreFeature.subfeatures.DonateFeature.State

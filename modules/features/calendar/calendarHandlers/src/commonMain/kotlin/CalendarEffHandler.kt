@@ -7,9 +7,11 @@ import com.well.modules.models.MeetingViewModel
 import com.well.modules.models.User
 import com.well.modules.puerhBase.EffectHandler
 import com.well.modules.utils.flowUtils.collectIn
+import com.well.modules.utils.flowUtils.mapIterable
 import com.well.modules.utils.viewUtils.SuspendAction
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
@@ -53,7 +55,8 @@ class CalendarEffHandler(
                         )
                     }
                         .filter {
-                            !it.isExpert || it.state !is Meeting.State.Rejected
+                            it.state !is Meeting.State.Canceled
+                                    && (!it.isExpert || it.state !is Meeting.State.Rejected)
                         }
                 }
         }
@@ -74,23 +77,6 @@ class CalendarEffHandler(
             }
             is Eff.UpdateMeetingState -> {
                 services.updateMeetingState(eff.meetingId, eff.state)
-            }
-            is Eff.DeleteMeeting -> {
-                services.showSheet(
-                    arrayOf(
-                        SuspendAction(
-                            title = "Delete event",
-                            action = {
-                                TODO()
-//                                services.updateMeetingState(eff.meetingId, Meeting.State.Canceled(""))
-                            },
-                        ),
-                        SuspendAction(
-                            title = "Cancel",
-                        ),
-                    ),
-                    "Are you sure you want to delete this event?",
-                )
             }
         }
     }

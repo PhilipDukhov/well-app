@@ -1,9 +1,9 @@
 package com.well.modules.androidUi.composableScreens.myProfile
 
-import com.well.modules.androidUi.customViews.ControlItem
-import com.well.modules.androidUi.customViews.NavigationBar
-import com.well.modules.androidUi.customViews.clearFocusOnKeyboardDismiss
-import com.well.modules.androidUi.customViews.rememberControlItem
+import com.well.modules.androidUi.components.ControlItem
+import com.well.modules.androidUi.components.NavigationBar
+import com.well.modules.androidUi.components.clearFocusOnKeyboardDismiss
+import com.well.modules.androidUi.components.rememberControlItem
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature.Msg
 import com.well.modules.utils.viewUtils.GlobalStringsBase
 import com.well.modules.utils.viewUtils.UIEditingField
