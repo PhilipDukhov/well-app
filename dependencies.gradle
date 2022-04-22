@@ -19,7 +19,6 @@ def versions = [
     sqldelight         : "1.5.3",
     bouncycastle       : "1.70",
     aws                : "1.12.192",
-    kotlin             : "1.6.10",
     kotlinBuildSrc     : "1.6.0",
     napier             : "2.5.0",
 ]
@@ -33,10 +32,12 @@ if (stableCompose) {
     versions["compose"] = "1.1.1"
     versions["accompanist"] = "0.23.1"
     versions["coil"] = "1.4.0"
+    versions["kotlin"] = "1.6.10"
 } else {
-    versions["compose"] = "1.2.0-alpha07"
-    versions["accompanist"] = "0.24.6-alpha"
+    versions["compose"] = "1.2.0-alpha08"
+    versions["accompanist"] = "0.24.7-alpha"
     versions["coil"] = "2.0.0-rc03"
+    versions["kotlin"] = "1.6.20"
 }
 
 ext.Versions = versions

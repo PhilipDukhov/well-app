@@ -52,7 +52,7 @@ fun Modifier.gesturesDisabled(disabled: Boolean = true) =
             while (true) {
                 awaitPointerEvent(pass = PointerEventPass.Initial)
                     .changes
-                    .forEach(PointerInputChange::consumeAllChanges)
+                    .forEach(PointerInputChange::consume)
             }
         }
     }
