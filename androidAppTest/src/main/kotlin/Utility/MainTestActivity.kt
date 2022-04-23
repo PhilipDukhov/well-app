@@ -20,7 +20,7 @@ class MainTestActivity : AppCompatActivity() {
         NapierProxy.initializeLogging(
             ApplicationContext(
                 context = applicationContext,
-                notificationResId = R.drawable.ic_100tb,
+                notificationResId = R.drawable.ic_calendar_gradient,
                 activityClass = MainTestActivity::class.java,
             )
         )

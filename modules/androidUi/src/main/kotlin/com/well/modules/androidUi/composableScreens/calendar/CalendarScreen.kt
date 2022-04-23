@@ -89,7 +89,7 @@ fun CalendarScreen(
                 listener(Msg.PrevMonth)
             },
         )
-        val (dialogMeeting, setDialogMeeting) = remember { mutableStateOf<MeetingViewModel?>(null) }
+        val (_, setDialogMeeting) = remember { mutableStateOf<MeetingViewModel?>(null) }
         MeetingsList(
             meetings = state.selectedItemMeetings?.let(::listOf)
                 ?: state.upcomingMeetings,
@@ -103,6 +103,9 @@ fun CalendarScreen(
             onUpdateState = { meeting, state ->
                 listener(Msg.UpdateMeetingState(meeting, state))
             },
+            onDeleteRequest = {
+                listener(Msg.DeleteRequest(it))
+            }
         )
     }
 }
@@ -179,6 +182,7 @@ private fun MeetingsList(
     onStartCall: (MeetingViewModel) -> Unit,
     onSelectUser: (MeetingViewModel) -> Unit,
     onUpdateState: (MeetingViewModel, Meeting.State) -> Unit,
+    onDeleteRequest: (MeetingViewModel) -> Unit,
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(15.dp),
@@ -220,6 +224,9 @@ private fun MeetingsList(
                         onSelectUser = {
                             onSelectUser(meeting)
                         },
+                        onDeleteRequest = {
+                            onDeleteRequest(meeting)
+                        },
                         onDelete = {
                             onUpdateState(meeting, it)
                         },
@@ -236,6 +243,7 @@ private fun ConfirmedMeetingCard(
     onSelect: () -> Unit,
     onSelectUser: () -> Unit,
     onStartCall: () -> Unit,
+    onDeleteRequest: () -> Unit,
     onDelete: (Meeting.State.Canceled) -> Unit,
 ) {
     Card(
@@ -319,7 +327,7 @@ private fun ConfirmedMeetingCard(
             } else {
                 var deletionReasonDialogShowing by rememberSaveable { mutableStateOf(false) }
                 IconButton(
-                    onClick = { deletionReasonDialogShowing = true },
+                    onClick = onDeleteRequest,
                     modifier = Modifier
                         .align(Alignment.Top)
                         .padding(top = 5.dp)

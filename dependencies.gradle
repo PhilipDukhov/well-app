@@ -19,7 +19,6 @@ def versions = [
     sqldelight         : "1.5.3",
     bouncycastle       : "1.70",
     aws                : "1.12.192",
-    kotlinBuildSrc     : "1.6.0",
     napier             : "2.5.0",
 ]
 
@@ -39,6 +38,7 @@ if (stableCompose) {
     versions["coil"] = "2.0.0-rc03"
     versions["kotlin"] = "1.6.20"
 }
+versions["kotlinBuildSrc"] = versions["kotlin"]
 
 ext.Versions = versions
 ext.Libs = [

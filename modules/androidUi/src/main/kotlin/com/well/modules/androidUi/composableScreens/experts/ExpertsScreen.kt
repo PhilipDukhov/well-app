@@ -33,9 +33,6 @@ fun ColumnScope.ExpertsScreen(
 ) {
     var filterScreenVisible by remember { mutableStateOf(false) }
     if (!filterScreenVisible) {
-        BackHandler {
-            filterScreenVisible = false
-        }
         ExpertsScreenContent(
             state,
             listener,
@@ -43,6 +40,9 @@ fun ColumnScope.ExpertsScreen(
                 filterScreenVisible = true
             })
     } else {
+        BackHandler {
+            filterScreenVisible = false
+        }
         FilterScreen(
             state = state.filterState,
             listener = {

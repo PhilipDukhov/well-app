@@ -3,14 +3,6 @@ plugins {
     groovy
 }
 
-buildscript {
-    repositories {
-        gradlePluginPortal()
-        google()
-        mavenCentral()
-    }
-}
-
 repositories {
     gradlePluginPortal()
     google()

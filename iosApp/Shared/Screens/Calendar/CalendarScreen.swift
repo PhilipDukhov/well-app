@@ -45,9 +45,14 @@ struct CalendarScreen: View {
                 },
                 onSelectUser: {
                     listener(Feature.MsgOpenUserProfile(meeting: $0))
-                }) {
-                    listener(Feature.MsgUpdateMeetingState(meeting: $0, state: $1))
-                }
+                },
+				onDeleteRequest: {
+					listener(Feature.MsgDeleteRequest(meeting: $0))
+				},
+				onUpdateState: {
+					listener(Feature.MsgUpdateMeetingState(meeting: $0, state: $1))
+				}
+			)
         }.padding(.horizontal)
             .fillMaxSize()
             .background(GradientView(gradient: .main).ignoresSafeArea(edges: .top))
@@ -143,6 +148,7 @@ private struct MeetingsList: View {
     let onDeleteMeeting: (MeetingViewModel, Meeting.StateCanceled) -> Void
     let onStartCall: (MeetingViewModel) -> Void
     let onSelectUser: (MeetingViewModel) -> Void
+	let onDeleteRequest: (MeetingViewModel) -> Void
     let onUpdateState: (MeetingViewModel, Meeting.State) -> Void
 
     var body: some View {
@@ -175,9 +181,12 @@ private struct MeetingsList: View {
                                 onSelectUser: {
                                     onSelectUser(meeting)
                                 },
+								onDeleteRequest: {
+									onDeleteRequest(meeting)
+								},
                                 onDelete: { state in
                                     onDeleteMeeting(meeting, state)
-                                }
+								}
                             )
                         }
                     }
@@ -193,6 +202,7 @@ private struct ConfirmedMeetingCard: View {
     let onSelect: () -> Void
     let onStartCall: () -> Void
     let onSelectUser: () -> Void
+	let onDeleteRequest: () -> Void
     let onDelete: (Meeting.StateCanceled) -> Void
 
     @State
