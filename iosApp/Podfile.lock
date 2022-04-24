@@ -63,8 +63,8 @@ SPEC CHECKSUMS:
   GTMAppAuth: ad5c2b70b9a8689e1a04033c9369c4915bfcbe89
   GTMSessionFetcher: 43748f93435c2aa068b1cbe39655aaf600652e91
   Introspect: b62c4dd2063072327c21d618ef2bedc3c87bc366
-  sharedMobileTest: 38b979cc30c9ba2988284668ca221d17e5ce7ac7
-  topLevelHandlers: dff2b7a99345500742f2bc9b2da2ff73ac752fac
+  sharedMobileTest: edbdaf0d4ce1d18c54d8ff3faf9b4ed19c31c743
+  topLevelHandlers: 04f702b55e5b4525252c208d34bf6166ccdb4c51
   WebRTC-lib: 508fe02efa0c1a3a8867082a77d24c9be5d29aeb
 
 PODFILE CHECKSUM: 4f9ecfab213da7021b2396ebeee2d290b48bf722

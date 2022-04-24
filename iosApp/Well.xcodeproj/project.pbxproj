@@ -145,6 +145,7 @@
 		4AACB301279C2551002C7C9B /* WellAcademyScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AACB2FF279C2551002C7C9B /* WellAcademyScreen.swift */; };
 		4AACB303279D82BB002C7C9B /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AACB302279D82BB002C7C9B /* SettingsScreen.swift */; };
 		4AACB304279D82BB002C7C9B /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AACB302279D82BB002C7C9B /* SettingsScreen.swift */; };
+		4AAE5DC22815626D00DAB855 /* LocalAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4AAE5DC12815626D00DAB855 /* LocalAssets.xcassets */; };
 		4AC263D827229EEE002BE68B /* ReducerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC263D727229EEE002BE68B /* ReducerView.swift */; };
 		4AC263DB27229F4E002BE68B /* AvailabilitiesCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC263DA27229F4E002BE68B /* AvailabilitiesCalendarView.swift */; };
 		4AC2640D272387E7002BE68B /* Flow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC2640C272387E7002BE68B /* Flow.swift */; };
@@ -246,7 +247,6 @@
 		4A82800F2725EBFB004DF64E /* VideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoView.swift; sourceTree = "<group>"; };
 		4A8280692725FA3C004DF64E /* detectVolumeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = detectVolumeButton.swift; sourceTree = "<group>"; };
 		4A82806B2725FC81004DF64E /* SharedMobile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SharedMobile.h; path = ../../sharedMobileTest/build/cocoapods/framework/SharedMobile.framework/Headers/SharedMobile.h; sourceTree = "<group>"; };
-		4A82806C2725FCA0004DF64E /* SharedMobile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SharedMobile.h; path = ../../sharedMobile/build/cocoapods/framework/SharedMobile.framework/Headers/SharedMobile.h; sourceTree = "<group>"; };
 		4A82806D272714AB004DF64E /* typealiases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = typealiases.swift; sourceTree = "<group>"; };
 		4A8280712727157A004DF64E /* TestScreens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScreens.swift; sourceTree = "<group>"; };
 		4A84852627A5308C00B0F956 /* UpdateRequestScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateRequestScreen.swift; sourceTree = "<group>"; };
@@ -257,6 +257,8 @@
 		4A9F386727432140004D5EF5 /* PageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageView.swift; sourceTree = "<group>"; };
 		4AACB2FF279C2551002C7C9B /* WellAcademyScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WellAcademyScreen.swift; sourceTree = "<group>"; };
 		4AACB302279D82BB002C7C9B /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
+		4AAE5DC0281556B700DAB855 /* SharedMobile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SharedMobile.h; path = ../../modules/features/_topLevel/topLevelHandlers/build/cocoapods/framework/SharedMobile.framework/Headers/SharedMobile.h; sourceTree = "<group>"; };
+		4AAE5DC12815626D00DAB855 /* LocalAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = LocalAssets.xcassets; sourceTree = "<group>"; };
 		4AC263D727229EEE002BE68B /* ReducerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReducerView.swift; sourceTree = "<group>"; };
 		4AC263DA27229F4E002BE68B /* AvailabilitiesCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailabilitiesCalendarView.swift; sourceTree = "<group>"; };
 		4AC2640C272387E7002BE68B /* Flow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Flow.swift; sourceTree = "<group>"; };
@@ -445,6 +447,7 @@
 				4A82800D2725EBFB004DF64E /* LocalTestApp.swift */,
 				4A8280692725FA3C004DF64E /* detectVolumeButton.swift */,
 				4A278EFB2743520D00A612C1 /* ForceNavControllerBarHidden.swift */,
+				4AAE5DC12815626D00DAB855 /* LocalAssets.xcassets */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -516,7 +519,7 @@
 		7555FF7D242A565900829871 /* Well */ = {
 			isa = PBXGroup;
 			children = (
-				4A82806C2725FCA0004DF64E /* SharedMobile.h */,
+				4AAE5DC0281556B700DAB855 /* SharedMobile.h */,
 				7555FF7E242A565900829871 /* AppDelegate.swift */,
 				D5916FBB2598ABA900B549FF /* TopLevelView.swift */,
 				4A828073272716FD004DF64E /* Ext */,
@@ -863,6 +866,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4AAE5DC22815626D00DAB855 /* LocalAssets.xcassets in Resources */,
 				4A8280612725F124004DF64E /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1219,7 +1223,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6AADA08291E3DC99A62DC1D6 /* Pods-LocalTest.debug.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconTest;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1248,7 +1252,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4B61DAA76C7C5AEBDC61E5EF /* Pods-LocalTest.release.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconTest;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1402,7 +1406,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BE7BB08AC1C3EC928622AE74 /* Pods-Well.debug.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDebug;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "Well/Supporting files/Well.entitlements";
 				FACEBOOK_APP_ID = "$(SHARED_FACEBOOK_APP_ID)";
@@ -1422,7 +1426,7 @@
 					"-l\"z\"",
 					"-lsqlite3",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.well.well.debug;
+				PRODUCT_BUNDLE_IDENTIFIER = com.well.app.debug;
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME)";
 				PRODUCT_NAME = "$(TARGET_NAME)_D";
 				SUPPORTS_MACCATALYST = NO;
