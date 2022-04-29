@@ -8,6 +8,8 @@
 
 import Foundation
 import SharedMobile
+
+#if !DEBUG || canImport(WebRTC)
 import WebRTC
 import AVFoundation
 
@@ -488,3 +490,44 @@ extension CMVideoDimensions {
         Size(width: width, height: height)
     }
 }
+#else
+final class WebRtcManager: NSObject, WebRtcManagerI {
+	init(
+		iceServers: [String],
+		listener: WebRtcManagerIListener
+	) {
+	}
+
+	func acceptAnswer(webRTCSessionDescriptor: String) {
+
+	}
+
+	func acceptCandidate(candidate: WebSocketMsg.CallCandidate) {
+
+	}
+
+	func acceptOffer(webRTCSessionDescriptor: String) {
+
+	}
+
+	func sendData(data: KotlinByteArray) {
+
+	}
+
+	func sendOffer() {
+
+	}
+
+	func syncDeviceState(deviceState: LocalDeviceState) {
+
+	}
+
+	var localVideoContext: VideoViewContext { VideoViewContext(videoTrackAny: 0) }
+
+	var manyCamerasAvailable = false
+
+	func close() {
+
+	}
+}
+#endif

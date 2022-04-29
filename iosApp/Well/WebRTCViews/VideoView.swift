@@ -7,8 +7,10 @@
 //
 
 import SwiftUI
-import WebRTC
 import SharedMobile
+
+#if !DEBUG || canImport(WebRTC)
+import WebRTC
 
 extension VideoViewContext {
     // hack to decrease build time
@@ -100,5 +102,17 @@ final class UIVideoView: UIView {
         super.layoutSubviews()
         videoView.frame = bounds
     }
+}
+#endif
+#else
+struct VideoView: UIViewRepresentable {
+
+	let context: VideoViewContext?
+
+	func makeUIView(context: Context) -> UIView {
+		UIView()
+	}
+	
+	func updateUIView(_ uiView: UIView, context: Context) {}
 }
 #endif
