@@ -1,8 +1,8 @@
 package com.well.modules.androidUi.composableScreens.more
 
-import com.well.modules.androidUi.customViews.ControlItem
-import com.well.modules.androidUi.customViews.NavigationBar
-import com.well.modules.androidUi.customViews.usersList.UsersList
+import com.well.modules.androidUi.components.ControlItem
+import com.well.modules.androidUi.components.NavigationBar
+import com.well.modules.androidUi.components.usersList.UsersList
 import com.well.modules.features.more.moreFeature.subfeatures.FavoritesFeature.Msg
 import com.well.modules.features.more.moreFeature.subfeatures.FavoritesFeature.State
 import androidx.compose.foundation.layout.ColumnScope

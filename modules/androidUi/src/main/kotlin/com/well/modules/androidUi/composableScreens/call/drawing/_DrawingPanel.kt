@@ -26,66 +26,68 @@ fun DrawingPanel(
     state: State,
     modifier: Modifier,
     listener: (Msg) -> Unit,
-) = Column(
-    modifier = modifier
-        .fillMaxSize()
 ) {
-    TopPanel(
-        state = state,
-        listener = listener,
-        modifier = Modifier
-            .fillMaxWidth()
-    )
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .weight(1F)
+    Column(
+        modifier = modifier
+            .fillMaxSize()
     ) {
-        BoxWithConstraints(
+        TopPanel(
+            state = state,
+            listener = listener,
             modifier = Modifier
-                .fillMaxSize()
-                .onSizeChanged {
-                    listener(Msg.UpdateLocalImageContainerSize(Size(it.width, it.height)))
-                })
-        {
-            state.image?.let {
-                Image(
-                    rememberAsyncImagePainter(it.coilDataAny),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
+                .fillMaxWidth()
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1F)
+        ) {
+            BoxWithConstraints(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .onSizeChanged {
+                        listener(Msg.UpdateLocalImageContainerSize(Size(it.width, it.height)))
+                    })
+            {
+                state.image?.let {
+                    Image(
+                        rememberAsyncImagePainter(it.coilDataAny),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black)
+                    )
+                    DrawingContent(
+                        state, listener,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                Spacer(modifier = Modifier.weight(1f))
+                val lineWidth = remember { mutableStateOf(state.lineWidth) }
+                WidthSlider(
+                    lineWidth,
+                    previewThumbColor = state.currentColor.toColor(),
+                    thumbRadiusRange = State.lineWidthRange,
+                    onValueChangeEnd = {
+                        listener(Msg.UpdateLineWidth(lineWidth.value))
+                    },
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black)
+                        .weight(4f)
+                        .fillMaxWidth(0.5F)
                 )
-                DrawingContent(
-                    state, listener,
-                    modifier = Modifier.fillMaxSize()
-                )
+                Spacer(modifier = Modifier.weight(1f))
             }
         }
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            Spacer(modifier = Modifier.weight(1f))
-            val lineWidth = remember { mutableStateOf(state.lineWidth) }
-            WidthSlider(
-                lineWidth,
-                previewThumbColor = state.currentColor.toColor(),
-                thumbRadiusRange = State.lineWidthRange,
-                onValueChangeEnd = {
-                    listener(Msg.UpdateLineWidth(lineWidth.value))
-                },
-                modifier = Modifier
-                    .weight(4f)
-                    .fillMaxWidth(0.5F)
-            )
-            Spacer(modifier = Modifier.weight(1f))
-        }
+        BottomPanel(
+            state = state,
+            listener = listener,
+        )
     }
-    BottomPanel(
-        state = state,
-        listener = listener,
-    )
-} // Column
+}

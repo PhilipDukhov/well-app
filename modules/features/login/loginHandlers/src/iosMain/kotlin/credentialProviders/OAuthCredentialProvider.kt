@@ -16,7 +16,7 @@ actual class OAuthCredentialProvider actual constructor(
     override fun application(
         app: UIApplication,
         openURL: NSURL,
-        options: Map<Any?, *>
+        options: Map<Any?, *>,
     ): Boolean {
         return oAuthHelper.handleCallbackUrl(openURL.absoluteString ?: return false)
     }

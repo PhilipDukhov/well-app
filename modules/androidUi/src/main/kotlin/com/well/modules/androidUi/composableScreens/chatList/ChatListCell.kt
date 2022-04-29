@@ -1,7 +1,7 @@
 package com.well.modules.androidUi.composableScreens.chatList
 
-import com.well.modules.androidUi.customViews.ProfileImage
-import com.well.modules.androidUi.customViews.badgeLayout
+import com.well.modules.androidUi.components.ProfileImage
+import com.well.modules.androidUi.components.badgeLayout
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.androidUi.theme.captionLight

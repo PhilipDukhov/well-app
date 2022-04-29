@@ -14,13 +14,11 @@ def versions = [
     androidActivity    : "1.4.0",
     kotlinSerialization: "1.3.2",
     coil               : "1.4.0",
-    kotlinCoroutines   : "1.6.0-native-mt",
+    kotlinCoroutines   : "1.6.1-native-mt",
     ktor               : "2.0.0",
     sqldelight         : "1.5.3",
     bouncycastle       : "1.70",
     aws                : "1.12.192",
-    kotlin             : "1.6.10",
-    kotlinBuildSrc     : "1.6.0",
     napier             : "2.5.0",
 ]
 
@@ -33,11 +31,14 @@ if (stableCompose) {
     versions["compose"] = "1.1.1"
     versions["accompanist"] = "0.23.1"
     versions["coil"] = "1.4.0"
+    versions["kotlin"] = "1.6.10"
 } else {
-    versions["compose"] = "1.2.0-alpha07"
-    versions["accompanist"] = "0.24.6-alpha"
+    versions["compose"] = "1.2.0-alpha08"
+    versions["accompanist"] = "0.24.7-alpha"
     versions["coil"] = "2.0.0-rc03"
+    versions["kotlin"] = "1.6.20"
 }
+versions["kotlinBuildSrc"] = versions["kotlin"]
 
 ext.Versions = versions
 ext.Libs = [
@@ -88,11 +89,18 @@ ext.Libs = [
                 datetime: "io.github.vanpra.compose-material-dialogs:datetime:0.7.0",
             ],
             accompanist           : [
+                insets         : "com.google.accompanist:accompanist-insets:$versions.accompanist",
                 flowlayout     : "com.google.accompanist:accompanist-flowlayout:$versions.accompanist",
                 pager          : "com.google.accompanist:accompanist-pager:$versions.accompanist",
                 pagerIndicators: "com.google.accompanist:accompanist-pager-indicators:$versions.accompanist",
             ],
             coil                  : "io.coil-kt:coil-compose:$versions.coil",
+        ],
+        composeDebug : [
+            tooling                   : "androidx.compose.ui:ui-tooling:$versions.compose",
+            toolingPreview            : "androidx.compose.ui:ui-tooling-preview:$versions.compose",
+            customview                : "androidx.customview:customview:1.2.0-alpha01",
+            customviewPoolingcontainer: "androidx.customview:customview-poolingcontainer:1.0.0-alpha01",
         ],
     ],
     google    : [

@@ -65,6 +65,6 @@ operator fun Database.Companion.invoke(driver: SqlDriver) =
             startInstantAdapter = InstantColumnAdapter,
             expertUidAdapter = User.Id.ColumnAdapter,
             creatorUidAdapter = User.Id.ColumnAdapter,
-            stateAdapter = EnumColumnAdapter(),
+            stateAdapter = SerializableColumnAdapter(),
         ),
     )

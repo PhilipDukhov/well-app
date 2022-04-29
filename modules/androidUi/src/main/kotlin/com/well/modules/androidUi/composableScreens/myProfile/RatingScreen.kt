@@ -1,10 +1,10 @@
 package com.well.modules.androidUi.composableScreens.myProfile
 
-import com.well.modules.androidUi.customViews.ActionButton
-import com.well.modules.androidUi.customViews.Control
-import com.well.modules.androidUi.customViews.LimitedCharsTextField
-import com.well.modules.androidUi.customViews.NavigationBar
-import com.well.modules.androidUi.customViews.ProfileImage
+import com.well.modules.androidUi.components.ActionButton
+import com.well.modules.androidUi.components.Control
+import com.well.modules.androidUi.components.LimitedCharsTextField
+import com.well.modules.androidUi.components.NavigationBar
+import com.well.modules.androidUi.components.ProfileImage
 import com.well.modules.androidUi.ext.isImeVisible
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.androidUi.ext.widthDp
@@ -48,7 +48,7 @@ fun RatingScreen(
     rate: (Review) -> Unit,
 ) {
     var ratingValue by remember { mutableStateOf(user.reviewInfo.currentUserReview?.value ?: 0) }
-    val ratingTextFieldValueState = remember {
+    var ratingTextFieldValue by remember {
         mutableStateOf(user.reviewInfo.currentUserReview?.text ?: "")
     }
     val profileImageSize = LocalContext.current.resources.displayMetrics.widthDp * 0.42f
@@ -108,19 +108,19 @@ fun RatingScreen(
             }
             Spacer(modifier = Modifier.height(50.dp))
             LimitedCharsTextField(
-                valueState = ratingTextFieldValueState,
+                value = ratingTextFieldValue,
+                onValueChange = { ratingTextFieldValue = it },
                 maxCharacters = maxCharacters,
                 labelText = "Tell us about your experience",
                 modifier = Modifier
                     .padding(10.dp)
                     .heightIn(min = 150.dp)
-                    .weight(1f)
+                    .weight(1f),
             )
-            val text = ratingTextFieldValueState.value
             ActionButton(
-                enabled = text.isNotBlank(),
+                enabled = ratingTextFieldValue.isNotBlank(),
                 onClick = {
-                    rate(Review(ratingValue, text))
+                    rate(Review(ratingValue, ratingTextFieldValue))
                 },
                 modifier = Modifier
                     .navigationBarsPadding()

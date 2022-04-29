@@ -17,35 +17,27 @@ internal fun <ChildState> State.copyReplace(
     tab: Tab = selectedScreenPosition.tab,
     state: ChildState,
     createScreen: (ScreenPosition, ChildState) -> ScreenState,
-): State {
-    val (tabs, screenPosition) = tabs.replace(tab, state, createScreen)
-    return copy(
-        tabs = tabs,
-        selectedScreenPosition = screenPosition
+): State =
+    copy(
+        tabs.replace(tab, state, createScreen)
     )
-}
 
 internal fun <ChildState> State.copyPush(
     tab: Tab = selectedScreenPosition.tab,
     state: ChildState,
     createScreen: (ScreenPosition, ChildState) -> ScreenState,
-): State {
-    val (tabs, screenPosition) = tabs.push(tab, state, createScreen)
-    return copy(
-        tabs = tabs,
-        selectedScreenPosition = screenPosition
+): State =
+    copy(
+        tabs.push(tab, state, createScreen)
     )
-}
 
 internal fun State.copyPopToRoot(
     tab: Tab = selectedScreenPosition.tab,
-): State {
-    val (tabs, screenPosition) = tabs.popToRoot(tab)
-    return copy(
-        tabs = tabs,
-        selectedScreenPosition = screenPosition
-    )
-}
+): State =
+    if (tabs[tab]!!.count() > 1)
+        copy(tabs.popToRoot(tab))
+    else
+        this
 
 internal fun State.copyPop(
     tab: Tab = selectedScreenPosition.tab,
@@ -54,25 +46,29 @@ internal fun State.copyPop(
     if (selectedScreenPosition.index == 0 && tab.isTabBar()) {
         return this
     }
-    val (tabs, screenPosition) = tabs.pop(tab, fallbackTab)
-    return copy(
-        tabs = tabs,
-        selectedScreenPosition = screenPosition
-    )
+    return copy(tabs.pop(tab, fallbackTab))
 }
 
 internal fun State.copyHideTab(
     tab: Tab,
     fallbackTab: Tab = Tab.Experts,
-): State {
-    val (tabs, screenPosition) = tabs.modify(tab, fallbackTab) {
-        listOf()
-    }
-    return copy(
-        tabs = tabs,
-        selectedScreenPosition = screenPosition
+): State =
+    copy(
+        tabs.modify(tab, fallbackTab) {
+            listOf<ScreenState>().toList()
+        }
     )
-}
+
+internal fun State.selectTab(tab: Tab) =
+    copy(
+        selectedScreenPosition = ScreenPosition(
+            tab = tab,
+            index = tabs[tab]!!.indices.last
+        ),
+    )
+
+private fun State.copy(pair: Pair<Map<Tab, List<ScreenState>>, ScreenPosition>) =
+    copy(tabs = pair.first, selectedScreenPosition = pair.second)
 
 private fun <ChildState> Map<Tab, List<ScreenState>>.push(
     tab: Tab,

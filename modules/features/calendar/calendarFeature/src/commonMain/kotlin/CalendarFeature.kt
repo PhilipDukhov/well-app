@@ -8,7 +8,6 @@ import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
 import com.well.modules.utils.viewUtils.CalendarInfoFeature
 import com.well.modules.utils.viewUtils.GlobalStringsBase
-import io.github.aakira.napier.Napier
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 
@@ -19,10 +18,16 @@ object CalendarFeature {
         const val confirm = "Confirm"
         const val reject = "Reject"
         const val needsYourHelp = "needs your help"
+        const val rejectionTitle = "Add a reason for rejection"
+        const val rejectionLabel = "Rejection reason"
+        const val deletionTitle = "Add a reason for deletion"
+        const val deletionLabel = "Deletion reason"
     }
 
     data class State(
         internal val meetings: List<MeetingViewModel> = emptyList(),
+        val selectedMeetingId: Meeting.Id? = null,
+        val deletionReasonRequested: Boolean = false,
         val infoState: CalendarInfoFeature.State<MeetingViewModel> = CalendarInfoFeature.State(
             monthOffset = 0,
             selectedDate = null,
@@ -79,6 +84,7 @@ object CalendarFeature {
         data class OpenUserProfile(val meeting: MeetingViewModel) : Msg()
         data class StartCall(val meeting: MeetingViewModel) : Msg()
         data class UpdateMeetingState(val meeting: MeetingViewModel, val state: Meeting.State) : Msg()
+        data class DeleteRequest(val meeting: MeetingViewModel) : Msg()
 
         internal data class CalendarInfoMsg(val msg: CalendarInfoFeature.Msg) : Msg()
 
@@ -123,15 +129,14 @@ object CalendarFeature {
                     return@eff Eff.StartCall(uid)
                 }
                 is Msg.UpdateMeetingState -> {
-                    if (
-                        !msg.meeting.isExpert
-                        || msg.meeting.state != Meeting.State.Requested
-                        || msg.state == Meeting.State.Requested
-                    ) {
-                        Napier.e("unexpected state update")
-                        return@state state
-                    }
                     return@eff Eff.UpdateMeetingState(msg.meeting.id, msg.state)
+                }
+                is Msg.DeleteRequest -> {
+                    if (msg.meeting.state is Meeting.State.Rejected) {
+                        return@eff Eff.UpdateMeetingState(msg.meeting.id, Meeting.State.Canceled(""))
+                    } else {
+                        return@state state.copy(deletionReasonRequested = true)
+                    }
                 }
             }
         })

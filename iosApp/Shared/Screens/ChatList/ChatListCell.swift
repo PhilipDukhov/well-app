@@ -22,9 +22,8 @@ struct ChatListCell: View {
                         .foregroundColorKMM(.companion.DarkGrey)
                 }
                 HStack(spacing: 7) {
-                    Text(
-                        item.lastMessage.content.descriptionText
-                    )
+                    Text(item.lastMessage.content.descriptionText)
+                        .lineLimit(1)
                         .textStyle(.captionLight)
                         .foregroundColorKMM(.companion.DarkGrey)
                     Spacer()

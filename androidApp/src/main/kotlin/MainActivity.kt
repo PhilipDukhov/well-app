@@ -16,8 +16,6 @@ import androidx.compose.runtime.getValue
 import androidx.core.view.WindowCompat
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var systemContext: SystemContext
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -33,16 +31,11 @@ class MainActivity : AppCompatActivity() {
                 TopLevelScreen(state, featureProvider::accept)
             }
         }
-        systemContext = SystemContext(this)
+        featureProvider.accept(TopLevelFeature.Msg.UpdateSystemContext(SystemContext(this)))
     }
 
-    override fun onStart() {
-        super.onStart()
-        featureProvider.accept(TopLevelFeature.Msg.UpdateSystemContext(systemContext))
-    }
-
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroy() {
+        super.onDestroy()
         featureProvider.accept(TopLevelFeature.Msg.UpdateSystemContext(null))
     }
 
@@ -51,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         featureProvider.handleOnNewIntent(intent)
     }
 
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun onActivityResult(
         requestCode: Int,
         resultCode: Int,

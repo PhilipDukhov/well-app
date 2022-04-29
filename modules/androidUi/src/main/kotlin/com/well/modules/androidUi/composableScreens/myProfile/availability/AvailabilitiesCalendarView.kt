@@ -1,8 +1,8 @@
 package com.well.modules.androidUi.composableScreens.myProfile.availability
 
-import com.well.modules.androidUi.customViews.AutoSizeText
-import com.well.modules.androidUi.customViews.CalendarMonthView
-import com.well.modules.androidUi.customViews.InactiveOverlay
+import com.well.modules.androidUi.components.AutoSizeText
+import com.well.modules.androidUi.components.CalendarMonthView
+import com.well.modules.androidUi.components.InactiveOverlay
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.thenOrNull
 import com.well.modules.androidUi.ext.toColor
@@ -282,7 +282,7 @@ private fun TitleView(
     onLeft: () -> Unit,
     onRight: () -> Unit,
 ) {
-    Row {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Spacer(Modifier.weight(1f))
         IconButton(onClick = onLeft) {
             Icon(Icons.Default.ArrowBack, contentDescription = "")

@@ -119,11 +119,12 @@ private struct CallTimePassedLabel: View {
 //                    style: .body1,
 //                    textColor: .white
 //                )
-                Text(info.secondsPassedFormatted).onReceive(timer) { _ in
-                    if visible {
-                        manualViewUpdater.update()
+                Text(info.secondsPassedFormatted)
+                    .onReceive(timer) { _ in
+                        if visible {
+                            manualViewUpdater.update()
+                        }
                     }
-                }
             }
         }.frame(maxWidth: .infinity)
     }

@@ -281,9 +281,11 @@ class UserSession(
             }
             is WebSocketMsg.Front.SetChatMessagePresence -> {
                 messagesPresenceInfoFlow.value = msg.messagePresenceId
-                dependencies.messagesToDeliver
+                dependencies.pendingNotificationIds
                     .removeAll {
-                        it.second <= msg.messagePresenceId
+                        it.itemId is Dependencies.PendingNotificationId.ItemId.ChatMessage &&
+                                it.deviceId == deviceId &&
+                                it.itemId.chatMessageId <= msg.messagePresenceId
                     }
             }
             is WebSocketMsg.Front.ChatMessageRead -> {
@@ -325,9 +327,11 @@ class UserSession(
             }
             is WebSocketMsg.Front.SetMeetingsPresence -> {
                 meetingIdsPresenceFlow.value = msg.meetingsPresence
-                dependencies.meetingsToDeliver
-                    .removeAll { toDeliver ->
-                        msg.meetingsPresence.any { it.first == toDeliver.second }
+                dependencies.pendingNotificationIds
+                    .removeAll { pendingId ->
+                        pendingId.itemId is Dependencies.PendingNotificationId.ItemId.Meeting &&
+                                pendingId.deviceId == deviceId &&
+                                msg.meetingsPresence.any { it.first == pendingId.itemId.meetingId }
                     }
             }
             is WebSocketMsg.Front.Logout -> {
@@ -342,7 +346,32 @@ class UserSession(
                 )
             }
             is WebSocketMsg.Front.UpdateMeetingState -> {
-                dependencies.database.meetingsQueries.updateState(state = msg.state, id = msg.meetingId)
+                val dbMeeting = dependencies.database.meetingsQueries.getById(msg.meetingId).executeAsOne()
+                if (dbMeeting.state != Meeting.State.Requested && msg.state !is Meeting.State.Canceled) {
+                    throw IllegalStateException("Meetings state cannot be updated from ${dbMeeting.state} to ${msg.state}")
+                }
+                val cancelledState = msg.state as? Meeting.State.Canceled
+                if (cancelledState != null) {
+                    dependencies.database.meetingsQueries.markDeleted(dbMeeting.id)
+
+                    when (dbMeeting.state) {
+                        is Meeting.State.Requested,
+                        is Meeting.State.Rejected,
+                        -> return
+                        else -> Unit
+                    }
+
+                    val meeting = dbMeeting.toMeeting()
+                    val messageId = dependencies.database.insertChatMessage(
+                        fromId = currentUid,
+                        peerId = meeting.otherUid(currentUid),
+                        content = ChatMessage.Content.Text("I've cancelled our meeting ${meeting.dateTimeDescription} because: ${cancelledState.reason}")
+                    )
+                    dependencies.deliverMessageNotification(messageId)
+                } else {
+                    dependencies.database.meetingsQueries.updateState(id = msg.meetingId, state = msg.state)
+                    dependencies.deliverMeetingNotification(msg.meetingId, currentUid)
+                }
             }
         }
     }
@@ -380,7 +409,7 @@ class UserSession(
                 )
                 finalMessageId
             }
-            dependencies.deliverMessageNotificationIfNeeded(id)
+            dependencies.deliverMessageNotification(id)
         }
     }
 

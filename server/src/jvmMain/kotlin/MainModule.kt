@@ -31,6 +31,7 @@ import com.well.server.utils.Dependencies
 import com.well.server.utils.ForbiddenException
 import com.well.server.utils.configProperty
 import com.well.server.utils.createPrincipal
+import com.well.server.utils.executeQueryAndPrettify
 import com.well.server.utils.sendEmail
 import com.auth0.jwk.JwkProviderBuilder
 import io.ktor.client.call.*
@@ -85,6 +86,8 @@ fun Application.module() {
     }
 }
 
+private object AdminPrincipal: Principal
+
 fun Application.initializedModule(dependencies: Dependencies) {
     install(CallLogging) {
         level = Level.INFO
@@ -120,6 +123,16 @@ fun Application.initializedModule(dependencies: Dependencies) {
     )
 
     install(Authentication) {
+        basic(AuthName.Admin) {
+            val adminPassword = environment.config.config("social").property("adminPassword").getString()
+            validate {
+                if (adminPassword.isNotBlank() && it.password == adminPassword) {
+                    AdminPrincipal
+                } else {
+                    null
+                }
+            }
+        }
         jwt(AuthName.Main) {
             verifier(dependencies.jwtConfig.verifier)
             realm = dependencies.jwtConfig.issuer
@@ -176,14 +189,6 @@ fun Application.initializedModule(dependencies: Dependencies) {
 //    }
 
     routing {
-//        post("testNotification") {
-////            sendFcmNotification(dependencies, call.receive())
-//            call.respond(HttpStatusCode.OK)
-//        }
-//        post("testAppleNotification") {
-//            sendApnsNotification(dependencies, call.receive())
-//            call.respond(HttpStatusCode.OK)
-//        }
         route("login") {
             post("facebook") { facebookLogin(dependencies) }
             post("google") { googleLogin(dependencies) }
@@ -250,28 +255,34 @@ fun Application.initializedModule(dependencies: Dependencies) {
         post("email") { sendEmail(dependencies) }
         post("sms") { sendSms(dependencies) }
 
-//        authenticate(AuthName.Admin) {
-//            post("executeQuerySql") {
-//                val request = call.receive<String>()
-//                println("\nexecuteSql ${call.authUid} $request")
-//                val result = dependencies.dbDriver.executeQueryAndPrettify(request)
-//                    .also(::print)
-//                println("")
-//                call.respond(HttpStatusCode.OK, result)
-//
-//                execute
+        authenticate(AuthName.Admin) {
+            post("executeQuerySql") {
+                val request = call.receive<String>()
+                println("\nexecuteSql ${call.authUid} $request")
+                val result = dependencies.dbDriver.executeQueryAndPrettify(request)
+                    .also(::print)
+                println("")
+                call.respond(HttpStatusCode.OK, result)
+            }
+            post("executeSql") {
+                val request = call.receive<String>()
+                println("\nexecuteSql ${call.authUid} $request")
+                val result = dependencies.dbDriver.execute(
+                    null,
+                    request,
+                    0
+                )
+                call.respond(HttpStatusCode.OK, result)
+            }
+//            post("testNotification") {
+////            sendFcmNotification(dependencies, call.receive())
+//                call.respond(HttpStatusCode.OK)
 //            }
-//            post("executeSql") {
-//                val request = call.receive<String>()
-//                println("\nexecuteSql ${call.authUid} $request")
-//                val result = dependencies.dbDriver.execute(
-//                    null,
-//                    request,
-//                    0
-//                )
-//                call.respond(HttpStatusCode.OK, result)
+//            post("testAppleNotification") {
+//                sendVoipApnsNotification(call.receive(), dependencies = dependencies)
+//                call.respond(HttpStatusCode.OK)
 //            }
-//        }
+        }
         authenticate(AuthName.Main) {
             webSocket("mainWebSocket/{deviceId}") {
                 mainWebSocket(dependencies, DeviceId(call.parameters["deviceId"]!!))

@@ -1,10 +1,10 @@
 package com.well.modules.androidUi.composableScreens.more
 
 import com.well.modules.androidUi.R
-import com.well.modules.androidUi.customViews.Control
-import com.well.modules.androidUi.customViews.ControlItem
-import com.well.modules.androidUi.customViews.NavigationBar
-import com.well.modules.androidUi.customViews.ProfileImage
+import com.well.modules.androidUi.components.Control
+import com.well.modules.androidUi.components.ControlItem
+import com.well.modules.androidUi.components.NavigationBar
+import com.well.modules.androidUi.components.ProfileImage
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.androidUi.theme.captionLight
 import com.well.modules.features.more.moreFeature.subfeatures.AboutFeature.Msg

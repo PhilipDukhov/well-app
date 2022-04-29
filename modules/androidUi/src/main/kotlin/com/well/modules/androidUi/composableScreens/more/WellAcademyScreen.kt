@@ -1,6 +1,6 @@
 package com.well.modules.androidUi.composableScreens.more
 
-import com.well.modules.androidUi.customViews.NavigationBar
+import com.well.modules.androidUi.components.NavigationBar
 import com.well.modules.androidUi.theme.body1Light
 import com.well.modules.features.more.moreFeature.subfeatures.WellAcademyFeature.Msg
 import com.well.modules.features.more.moreFeature.subfeatures.WellAcademyFeature.State

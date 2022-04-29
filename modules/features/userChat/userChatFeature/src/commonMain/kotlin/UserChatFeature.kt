@@ -1,23 +1,13 @@
 package com.well.modules.features.userChat.userChatFeature
 
-import com.well.modules.models.Meeting
 import com.well.modules.models.User
 import com.well.modules.models.chat.ChatMessage
 import com.well.modules.models.chat.ChatMessageViewModel
-import com.well.modules.models.date.dateTime.localizedDayAndShortMonth
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
-import com.well.modules.utils.viewUtils.GlobalStringsBase
 import com.well.modules.utils.viewUtils.sharedImage.LocalImage
 
 object UserChatFeature {
-    object Strings: GlobalStringsBase() {
-        const val meetingScheduled = "Meeting scheduled"
-
-        fun meetingStars(meeting: Meeting) =
-            "on ${meeting.startDay.localizedDayAndShortMonth()} at ${meeting.startTime}"
-    }
-
     data class State(
         val peerId: User.Id,
         val user: User? = null,

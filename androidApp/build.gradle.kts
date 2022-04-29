@@ -46,6 +46,9 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = project.version("compose")
     }
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+    }
     signingConfigs {
         val localProps = gradleLocalProperties(rootDir)
         val storeFilePath: String by localProps

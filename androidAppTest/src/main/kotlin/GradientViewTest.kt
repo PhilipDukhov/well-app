@@ -1,7 +1,7 @@
 package com.well.androidAppTest
 
 import com.well.androidApp.R
-import com.well.modules.androidUi.customViews.GradientView
+import com.well.modules.androidUi.components.GradientView
 import com.well.modules.androidUi.ext.denormalize
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.androidUi.ext.toOffset

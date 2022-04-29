@@ -18,14 +18,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.invoke
 
 class SocialNetworkService(private val providerGenerator: (SocialNetwork) -> CredentialProvider) {
-    val credentialProviders = AtomicMutableMap<SocialNetwork, CredentialProvider>()
+    private val _credentialProviders = AtomicMutableMap<SocialNetwork, CredentialProvider>()
+    val credentialProviders = _credentialProviders.asMap()
+
     private val client = createBaseServerClient()
 
     suspend fun login(
         network: SocialNetwork,
     ) = Dispatchers.Main.invoke {
         getToken(
-            credentialProviders.getOrPut(network) {
+            _credentialProviders.getOrPut(network) {
                 providerGenerator(network)
             }.getCredentials()
         )

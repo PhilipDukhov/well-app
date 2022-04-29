@@ -59,8 +59,7 @@ class MyProfileEffHandler(
         val hasAvailableAvailabilities: suspend () -> Boolean,
         val book: suspend (BookingAvailability) -> Unit,
         val getUserAvailabilitiesToBook: suspend () -> BookingAvailabilitiesListByDay,
-
-        )
+    )
 
     private var requestConsultationEffHandler by AtomicCloseableRef<RequestConsultationEffHandler>()
 

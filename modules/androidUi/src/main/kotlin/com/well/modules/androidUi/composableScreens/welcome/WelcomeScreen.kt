@@ -1,9 +1,9 @@
 package com.well.modules.androidUi.composableScreens.welcome
 
-import com.well.modules.androidUi.customViews.ActionButton
-import com.well.modules.androidUi.customViews.ActionButtonStyle
-import com.well.modules.androidUi.customViews.GradientView
-import com.well.modules.androidUi.customViews.gesturesDisabled
+import com.well.modules.androidUi.components.ActionButton
+import com.well.modules.androidUi.components.ActionButtonStyle
+import com.well.modules.androidUi.components.GradientView
+import com.well.modules.androidUi.components.gesturesDisabled
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.features.welcome.WelcomeFeature.Msg
@@ -30,6 +30,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -131,8 +132,10 @@ fun WelcomeScreen(
             color = Color.DarkBlue.toColor(),
         )
         val pagerState = rememberPagerState()
-        val pagePart = remember(pagerState.currentPage, pagerState.currentPageOffset) {
-            pagerState.currentPage + pagerState.currentPageOffset
+        val pagePart by remember {
+            derivedStateOf {
+                pagerState.currentPage + pagerState.currentPageOffset
+            }
         }
         LaunchedEffect(pagePart) {
             val divideAndRemainder = BigDecimal.valueOf(pagePart.toDouble())

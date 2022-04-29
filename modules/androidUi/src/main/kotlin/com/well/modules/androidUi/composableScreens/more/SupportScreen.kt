@@ -1,13 +1,14 @@
 package com.well.modules.androidUi.composableScreens.more
 
-import com.well.modules.androidUi.customViews.ActionButton
-import com.well.modules.androidUi.customViews.LimitedCharsTextField
-import com.well.modules.androidUi.customViews.NavigationBar
-import com.well.modules.androidUi.customViews.SwitchRow
+import com.well.modules.androidUi.components.ActionButton
+import com.well.modules.androidUi.components.LimitedCharsTextField
+import com.well.modules.androidUi.components.NavigationBar
+import com.well.modules.androidUi.components.SwitchRow
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.features.more.moreFeature.subfeatures.SupportFeature.Msg
 import com.well.modules.features.more.moreFeature.subfeatures.SupportFeature.State
 import com.well.modules.models.Color
+import com.well.modules.utils.viewUtils.GlobalStringsBase
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,7 +45,7 @@ fun ColumnScope.SupportScreen(
                     .navigationBarsPadding()
                     .imePadding()
             ) {
-                val textFieldValueState = remember { mutableStateOf("") }
+                var text by remember { mutableStateOf("") }
                 var includeLogs by remember { mutableStateOf(true) }
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
@@ -52,12 +53,13 @@ fun ColumnScope.SupportScreen(
                         style = MaterialTheme.typography.body1
                     )
                     LimitedCharsTextField(
-                        valueState = textFieldValueState,
+                        value = text,
+                        onValueChange = { text = it },
                         maxCharacters = state.maxCharacters,
                         labelText = "Please write your message",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 10.dp)
+                            .padding(bottom = 10.dp),
                     )
                 }
                 SwitchRow(
@@ -66,12 +68,12 @@ fun ColumnScope.SupportScreen(
                     onCheckedChange = { includeLogs = it },
                 )
                 ActionButton(
-                    enabled = textFieldValueState.value.isNotBlank(),
+                    enabled = text.isNotBlank(),
                     onClick = {
-                        listener(Msg.Send(textFieldValueState.value, includeLogs = includeLogs))
+                        listener(Msg.Send(text, includeLogs = includeLogs))
                     },
                 ) {
-                    Text("Send")
+                    Text(GlobalStringsBase.shared.send)
                 }
             }
         }

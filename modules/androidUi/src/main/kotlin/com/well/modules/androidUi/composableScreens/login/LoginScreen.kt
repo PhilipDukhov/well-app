@@ -1,9 +1,9 @@
 package com.well.modules.androidUi.composableScreens.login
 
 import com.well.modules.androidUi.R
-import com.well.modules.androidUi.customViews.Control
-import com.well.modules.androidUi.customViews.GradientView
-import com.well.modules.androidUi.customViews.InactiveOverlay
+import com.well.modules.androidUi.components.Control
+import com.well.modules.androidUi.components.GradientView
+import com.well.modules.androidUi.components.InactiveOverlay
 import com.well.modules.features.login.loginFeature.LoginFeature.Msg
 import com.well.modules.features.login.loginFeature.LoginFeature.State
 import com.well.modules.features.login.loginFeature.SocialNetwork

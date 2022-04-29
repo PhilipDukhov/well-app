@@ -4,7 +4,7 @@ package com.well.androidAppTest
 
 import com.well.androidAppTest.Utility.LocalSystemHelper
 import com.well.modules.androidUi.composableScreens.myProfile.MyProfileScreen
-import com.well.modules.androidUi.customViews.rememberPreference
+import com.well.modules.androidUi.components.rememberPreference
 import com.well.sharedMobileTest.MyProfileTestModel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

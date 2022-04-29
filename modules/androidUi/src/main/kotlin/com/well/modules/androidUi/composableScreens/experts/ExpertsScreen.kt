@@ -1,9 +1,9 @@
 package com.well.modules.androidUi.composableScreens.experts
 
 import com.well.modules.androidUi.composableScreens.experts.filter.FilterScreen
-import com.well.modules.androidUi.customViews.NavigationBar
-import com.well.modules.androidUi.customViews.rememberControlItem
-import com.well.modules.androidUi.customViews.usersList.UsersList
+import com.well.modules.androidUi.components.NavigationBar
+import com.well.modules.androidUi.components.rememberControlItem
+import com.well.modules.androidUi.components.usersList.UsersList
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature.Msg
 import com.well.modules.models.Color
@@ -33,9 +33,6 @@ fun ColumnScope.ExpertsScreen(
 ) {
     var filterScreenVisible by remember { mutableStateOf(false) }
     if (!filterScreenVisible) {
-        BackHandler {
-            filterScreenVisible = false
-        }
         ExpertsScreenContent(
             state,
             listener,
@@ -43,6 +40,9 @@ fun ColumnScope.ExpertsScreen(
                 filterScreenVisible = true
             })
     } else {
+        BackHandler {
+            filterScreenVisible = false
+        }
         FilterScreen(
             state = state.filterState,
             listener = {

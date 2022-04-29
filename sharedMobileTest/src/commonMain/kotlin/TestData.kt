@@ -123,23 +123,23 @@ fun Availability.Companion.testValues(count: Int) = List(count) { i ->
 }
 
 fun MeetingViewModel.Companion.testValues(count: Int) = List(count) { i ->
-    if (i < 4) {
-        MeetingViewModel(
-            id = Meeting.Id(value = i.toLong()),
-            startInstant = Clock.System.now() + ((i - 1) * 20).minutes,
-            durationMinutes = 15,
-            otherUser = User.testUser,
-            state = Meeting.State.Requested,
-            isExpert = false
-        )
-    } else {
-        MeetingViewModel(
-            id = Meeting.Id(value = i.toLong()),
-            startInstant = Clock.System.now() + i.days + Random.nextInt(-10, 10).hours,
-            durationMinutes = Random.nextInt(10, 90),
-            otherUser = User.testUser,
-            state = Meeting.State.Requested,
-            isExpert = true
-        )
+    val state = when (i % 3) {
+        0 -> Meeting.State.Requested
+        1 -> Meeting.State.Confirmed
+        else -> Meeting.State.Rejected("Some rejection")
     }
+    val startInstant = if (i < 4) {
+        Clock.System.now() + ((i - 1) * 20).minutes
+    } else {
+        Clock.System.now() + i.days + Random.nextInt(-10, 10).hours
+    }
+    val durationMinutes = if (i < 4) 15 else Random.nextInt(10, 90)
+    MeetingViewModel(
+        id = Meeting.Id(value = i.toLong()),
+        startInstant = startInstant,
+        durationMinutes = durationMinutes,
+        otherUser = User.testUser,
+        state = state,
+        isExpert = true
+    )
 }

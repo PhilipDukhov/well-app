@@ -1,9 +1,10 @@
 package com.well.modules.androidUi.composableScreens.calendar
 
-import com.well.modules.androidUi.customViews.CalendarMonthView
-import com.well.modules.androidUi.customViews.CalendarTitleScope
-import com.well.modules.androidUi.customViews.ProfileImage
-import com.well.modules.androidUi.customViews.gradientBackground
+import com.well.modules.androidUi.components.CalendarMonthView
+import com.well.modules.androidUi.components.CalendarTitleScope
+import com.well.modules.androidUi.components.ProfileImage
+import com.well.modules.androidUi.components.TextFieldDialog
+import com.well.modules.androidUi.components.gradientBackground
 import com.well.modules.androidUi.ext.minus
 import com.well.modules.androidUi.ext.plus
 import com.well.modules.androidUi.ext.start
@@ -46,11 +47,15 @@ import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -84,9 +89,9 @@ fun CalendarScreen(
                 listener(Msg.PrevMonth)
             },
         )
-        val (dialogMeeting, setDialogMeeting) = remember { mutableStateOf<MeetingViewModel?>(null) }
+        val (_, setDialogMeeting) = remember { mutableStateOf<MeetingViewModel?>(null) }
         MeetingsList(
-            state.selectedItemMeetings?.let(::listOf)
+            meetings = state.selectedItemMeetings?.let(::listOf)
                 ?: state.upcomingMeetings,
             onSelectMeeting = setDialogMeeting,
             onStartCall = {
@@ -98,6 +103,9 @@ fun CalendarScreen(
             onUpdateState = { meeting, state ->
                 listener(Msg.UpdateMeetingState(meeting, state))
             },
+            onDeleteRequest = {
+                listener(Msg.DeleteRequest(it))
+            }
         )
     }
 }
@@ -174,6 +182,7 @@ private fun MeetingsList(
     onStartCall: (MeetingViewModel) -> Unit,
     onSelectUser: (MeetingViewModel) -> Unit,
     onUpdateState: (MeetingViewModel, Meeting.State) -> Unit,
+    onDeleteRequest: (MeetingViewModel) -> Unit,
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(15.dp),
@@ -215,6 +224,12 @@ private fun MeetingsList(
                         onSelectUser = {
                             onSelectUser(meeting)
                         },
+                        onDeleteRequest = {
+                            onDeleteRequest(meeting)
+                        },
+                        onDelete = {
+                            onUpdateState(meeting, it)
+                        },
                     )
                 }
             }
@@ -228,6 +243,8 @@ private fun ConfirmedMeetingCard(
     onSelect: () -> Unit,
     onSelectUser: () -> Unit,
     onStartCall: () -> Unit,
+    onDeleteRequest: () -> Unit,
+    onDelete: (Meeting.State.Canceled) -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -237,12 +254,13 @@ private fun ConfirmedMeetingCard(
                 onClick = onSelect,
             )
     ) {
-        Box(
-            Modifier
-                .padding(15.dp)
-                .padding(start = 12.dp)
-        ) {
-            Column {
+        Row {
+            Column(
+                Modifier
+                    .padding(15.dp)
+                    .padding(start = 12.dp)
+                    .weight(1f)
+            ) {
                 ProvideTextStyle(value = MaterialTheme.typography.caption) {
                     if (meeting.status == MeetingViewModel.Status.Ongoing) {
                         Text(
@@ -263,15 +281,23 @@ private fun ConfirmedMeetingCard(
                     meeting.title,
                     style = MaterialTheme.typography.subtitle2,
                     color = Color.Black.toColor(),
-                    modifier = Modifier.padding(top = 3.dp, bottom = 9.dp)
+                    modifier = Modifier.padding(top = 3.dp)
                 )
+                meeting.rejectionReason?.let {
+                    Text(
+                        it,
+                        style = MaterialTheme.typography.subtitle2,
+                        color = Color.Black.toColor(),
+                        modifier = Modifier.padding(top = 3.dp)
+                    )
+                }
+                Spacer(Modifier.size(9.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
+                        .padding(top = 3.dp)
                         .clip(CircleShape)
-                        .clickable {
-                            onSelectUser()
-                        }
+                        .clickable(onClick = onSelectUser)
                 ) {
                     ProfileImage(
                         user = meeting.otherUser,
@@ -280,7 +306,7 @@ private fun ConfirmedMeetingCard(
                             .size(20.dp)
                     )
                     Text(
-                        "with ${meeting.otherUser.fullName}",
+                        meeting.otherUserButtonTitle,
                         style = MaterialTheme.typography.caption,
                         color = Color.LightBlue.toColor()
                     )
@@ -290,12 +316,39 @@ private fun ConfirmedMeetingCard(
                 IconButton(
                     onClick = onStartCall,
                     modifier = Modifier
-                        .align(Alignment.CenterEnd)
+                        .align(Alignment.CenterVertically)
                 ) {
                     Icon(
                         Icons.Rounded.Call,
                         contentDescription = null,
                         tint = Color.Green.toColor(),
+                    )
+                }
+            } else {
+                var deletionReasonDialogShowing by rememberSaveable { mutableStateOf(false) }
+                IconButton(
+                    onClick = onDeleteRequest,
+                    modifier = Modifier
+                        .align(Alignment.Top)
+                        .padding(top = 5.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = null,
+                        tint = Color.RadicalRed.toColor(),
+                    )
+                }
+                if (deletionReasonDialogShowing) {
+                    TextFieldDialog(
+                        send = {
+                            onDelete(Meeting.State.Canceled(it))
+                        },
+                        onDismissRequest = {
+                            deletionReasonDialogShowing = false
+                        },
+                        sendButtonText = Feature.Strings.send,
+                        titleText = Feature.Strings.deletionTitle,
+                        labelText = Feature.Strings.deletionLabel,
                     )
                 }
             }
@@ -318,7 +371,6 @@ private fun RequestedMeetingCard(
                 .padding(
                     PaddingValues(15.dp) + PaddingValues(start = 12.dp) - ButtonDefaults.TextButtonContentPadding
                 )
-                .fillMaxWidth()
         ) {
             if (meeting.isExpert) {
                 Row(
@@ -360,13 +412,27 @@ private fun RequestedMeetingCard(
                     )
                 }
                 Spacer(Modifier.width(10.dp))
+                var rejectionReasonDialogShowing by rememberSaveable { mutableStateOf(false) }
                 TextButton(onClick = {
-                    onUpdateState(Meeting.State.Rejected)
+                    rejectionReasonDialogShowing = true
                 }) {
                     Text(
                         Feature.Strings.reject,
                         style = MaterialTheme.typography.subtitle2,
                         color = Color.Pink.toColor(),
+                    )
+                }
+                if (rejectionReasonDialogShowing) {
+                    TextFieldDialog(
+                        send = {
+                            onUpdateState(Meeting.State.Rejected(it))
+                        },
+                        onDismissRequest = {
+                            rejectionReasonDialogShowing = false
+                        },
+                        sendButtonText = Feature.Strings.send,
+                        titleText = Feature.Strings.rejectionTitle,
+                        labelText = Feature.Strings.rejectionLabel,
                     )
                 }
             }

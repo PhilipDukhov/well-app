@@ -1,10 +1,10 @@
 package com.well.modules.androidUi.composableScreens.experts.filter
 
-import com.well.modules.androidUi.customViews.ActionButton
-import com.well.modules.androidUi.customViews.ActionButtonStyle
-import com.well.modules.androidUi.customViews.Control
-import com.well.modules.androidUi.customViews.NavigationBar
-import com.well.modules.androidUi.customViews.rememberControlItem
+import com.well.modules.androidUi.components.ActionButton
+import com.well.modules.androidUi.components.ActionButtonStyle
+import com.well.modules.androidUi.components.Control
+import com.well.modules.androidUi.components.NavigationBar
+import com.well.modules.androidUi.components.rememberControlItem
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.borderKMM
 import com.well.modules.androidUi.ext.toColor

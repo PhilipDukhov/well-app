@@ -30,7 +30,7 @@ actual class SystemHelper actual constructor(
             .show()
     }
 
-    actual fun showSheet(actions: List<Action>): Closeable {
+    actual fun showSheet(actions: List<Action>, title: String?): Closeable {
         val builder = BottomSheetDialogBuilder(systemContext.activity)
         actions.forEach(builder::add)
         builder.show()
@@ -88,9 +88,7 @@ actual class SystemHelper actual constructor(
         }
 
     private fun Alert.Action.handle() = when (this) {
-        Alert.Action.Cancel,
-        Alert.Action.Ok,
-        -> Unit
+        Alert.Action.Cancel -> Unit
         Alert.Action.Settings ->
             systemContext.activity.startActivity(
                 Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
@@ -101,6 +99,7 @@ actual class SystemHelper actual constructor(
                     )
                 }
             )
+        is Alert.Action.Ok -> action()
         is Alert.Action.Custom -> action()
     }
 

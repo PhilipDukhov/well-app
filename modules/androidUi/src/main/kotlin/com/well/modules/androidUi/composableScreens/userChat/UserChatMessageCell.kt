@@ -1,6 +1,6 @@
 package com.well.modules.androidUi.composableScreens.userChat
 
-import com.well.modules.androidUi.customViews.LoadingCoilImage
+import com.well.modules.androidUi.components.LoadingCoilImage
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.androidUi.ext.widthDp

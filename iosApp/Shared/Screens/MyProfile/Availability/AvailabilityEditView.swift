@@ -129,7 +129,7 @@ private struct Content: View {
                                         }
                                     }
                                 )
-                            )
+                            ).toggleStyle(.automatic)
                         }
                     },
                     label: {

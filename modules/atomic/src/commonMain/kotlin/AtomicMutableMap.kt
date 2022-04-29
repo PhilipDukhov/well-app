@@ -3,6 +3,8 @@ package com.well.modules.atomic
 class AtomicMutableMap<K, V>(value: Map<K, V>) : AbstractMap<K, V>() {
     constructor() : this(mapOf())
 
+    fun asMap(): Map<K, V> = this
+
     private var atomicReference by AtomicRef(value)
 
     override val entries: Set<Map.Entry<K, V>>

@@ -1,6 +1,6 @@
 package com.well.modules.androidUi.composableScreens.myProfile.availability
 
-import com.well.modules.androidUi.customViews.rememberAndroidDialog
+import com.well.modules.androidUi.components.rememberAndroidDialog
 import com.well.modules.androidUi.ext.backgroundKMM
 import com.well.modules.androidUi.ext.featureListener
 import com.well.modules.androidUi.ext.toColor
