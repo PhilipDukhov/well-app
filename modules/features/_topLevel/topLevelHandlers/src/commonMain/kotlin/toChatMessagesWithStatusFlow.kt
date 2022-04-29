@@ -11,14 +11,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
-fun Flow<List<ChatMessage>>.toChatMessagesContainerFlow(
+internal fun Flow<List<ChatMessage>>.toChatMessagesContainerFlow(
     currentUid: User.Id,
     databaseProvider: DatabaseProvider,
 ): Flow<List<ChatMessageContainer>> = flatMapLatest {
     it.toChatMessagesContainerFlow(currentUid, databaseProvider)
 }
 
-fun List<ChatMessage>.toChatMessagesContainerFlow(
+internal fun List<ChatMessage>.toChatMessagesContainerFlow(
     currentUid: User.Id,
     databaseProvider: DatabaseProvider,
 ): Flow<List<ChatMessageContainer>> {

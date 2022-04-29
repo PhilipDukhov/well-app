@@ -17,9 +17,10 @@ struct HalfScreenActivityView: UIViewControllerRepresentable {
         ActivityViewWrapper(
             activityItems: activityItems,
             applicationActivities: applicationActivities,
-            isPresented: isPresented) {
-                $isPresented.wrappedValue = $0
-            }
+            isPresented: isPresented
+		) {
+            $isPresented.wrappedValue = $0
+        }
     }
 
     func updateUIViewController(_ uiViewController: ActivityViewWrapper, context: Context) {

@@ -30,3 +30,8 @@ fun Authentication.Configuration.jwt(
     name: AuthName? = null,
     configure: JWTAuthenticationProvider.Configuration.() -> Unit
 ) = jwt(name?.name, configure)
+
+fun Authentication.Configuration.basic(
+    name: AuthName? = null,
+    configure: BasicAuthenticationProvider.Configuration.() -> Unit
+) = basic(name?.name, configure)
