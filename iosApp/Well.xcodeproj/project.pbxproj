@@ -1414,6 +1414,7 @@
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GOOGLE_APP_ID_PREFIX = "$(IOS_GOOGLE_APP_ID_DEV_PREFIX)";
 				INFOPLIST_FILE = "well/Supporting files/Info.plist";
+				IOS_GOOGLE_CLIENT_ID_SUFIX = "$(IOS_GOOGLE_CLIENT_ID_DEV_SUFIX)";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1448,6 +1449,7 @@
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GOOGLE_APP_ID_PREFIX = "$(IOS_GOOGLE_APP_ID_PROD_PREFIX)";
 				INFOPLIST_FILE = "well/Supporting files/Info.plist";
+				IOS_GOOGLE_CLIENT_ID_SUFIX = "$(IOS_GOOGLE_CLIENT_ID_PROD_SUFIX)";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
