@@ -6,7 +6,7 @@ import com.well.modules.utils.kotlinUtils.ifTrueOrNull
 import com.well.modules.utils.viewUtils.UIEditingField
 import com.well.modules.utils.viewUtils.sharedImage.SharedImage
 
-sealed class UIGroup {
+sealed class UIGroup(val id: String) {
     companion object {
         fun Preview(vararg fields: UIPreviewField?) =
             fields.filterNotNull().let {
@@ -16,12 +16,12 @@ sealed class UIGroup {
 
     data class Preview(
         val fields: List<UIPreviewField>,
-    ) : UIGroup()
+    ) : UIGroup(fields.joinToString { it.title })
 
     data class Editing(
         val title: String,
         val fields: List<UIEditingField<*, MyProfileFeature.Msg>>,
-    ) : UIGroup()
+    ) : UIGroup(title)
 
     data class Header(
         val image: SharedImage?,
@@ -33,7 +33,7 @@ sealed class UIGroup {
         val accountType: User.Type?,
         val twitterLink: String?,
         val doximityLink: String?,
-    ) : UIGroup() {
+    ) : UIGroup(name ?: "header") {
         val initiateImageUpdateText = name ?: if (image != null) "Update image" else "Select image"
         val nameWithCredentials = name?.let {
             "$name${credentials?.let { ", $it" } ?: ""}"

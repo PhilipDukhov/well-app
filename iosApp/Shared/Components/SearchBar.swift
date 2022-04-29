@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import SharedMobile
 
 struct SearchBar: View {
     @Binding var text: String
@@ -32,7 +33,7 @@ struct SearchBar: View {
                     self.text = ""
                     UIApplication.shared.endEditing()
                 } label: {
-                    Text("Cancel")
+                    Text(GlobalStringsBase.companion.shared.cancel)
                 }
                 .padding(.trailing, 10)
                 .transition(.move(edge: .trailing).combined(with: .offset(x: 18, y: 0)))

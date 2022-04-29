@@ -98,7 +98,7 @@ struct MyProfileScreen: View {
     func profileInformation() -> some View{
         ZStack(alignment: .topLeading) {
             ScrollView {
-                ForEach(state.groups, id: \.self) { group in
+                ForEach(state.groups, id: \.id) { group in
                     groupView(group)
                     Divider()
                 }
@@ -149,9 +149,8 @@ struct MyProfileScreen: View {
             case let group as UIGroup.Editing:
                 Text(group.title)
                     .foregroundColorKMM(.companion.LightBlue)
-                ForEach(group.fields, id: \.self) { field in
-                    EditingField(field as! UIEditingField<UIEditingFieldContent, Feature.Msg>,
-                        listener: listener)
+                ForEach(group.fields, id: \.id) { field in
+                    EditingField(field as! UIEditingField<UIEditingFieldContent, Feature.Msg>, listener: listener)
                         .fillMaxWidth()
                         .padding(.vertical, 7)
                 }
