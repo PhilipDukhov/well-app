@@ -100,7 +100,10 @@ internal fun TopLevelFeatureProviderImpl.loggedIn(
         startWebSocket = true,
         NetworkManager.Services(
             onUnauthorized = {
-                logOut(listener)
+                coroutineScope.launch {
+                    logOut()
+                    listener.invoke(TopLevelFeature.Msg.OpenLoginScreen)
+                }
             },
             onUpdateNeeded = {
                 listener(TopLevelFeature.Msg.ShowUpdateNeededScreen)
@@ -141,24 +144,21 @@ internal fun TopLevelFeatureProviderImpl.loggedIn(
     dataStore.authInfo = authInfo
 }
 
-internal fun TopLevelFeatureProviderImpl.logOut(listener: (TopLevelFeature.Msg) -> Unit) {
-    coroutineScope.launch {
-        notificationHandler?.clearAllNotifications()
-        notificationHandler = null
-        val token = dataStore.notificationToken
-        if (token != null) {
-            networkManager.sendFront(WebSocketMsg.Front.Logout)
-        }
+internal suspend fun TopLevelFeatureProviderImpl.logOut() {
+    notificationHandler?.clearAllNotifications()
+    notificationHandler = null
+    val token = dataStore.notificationToken
+    if (token != null) {
+        networkManager.sendFront(WebSocketMsg.Front.Logout)
+    }
 //        networkManager.webSocketMsgSharedFlow
 //            .filterIsInstance<WebSocketMsg.Back.LogoutConfirmation>()
 //            .first()
-        sessionInfo = null
-        dataStore.authInfo = null
-        pendingNotifications.dropAll()
-        systemHelper?.systemContext?.let {
-            clearDatabase(it)
-        }
-        listener.invoke(TopLevelFeature.Msg.OpenLoginScreen)
+    sessionInfo = null
+    dataStore.authInfo = null
+    pendingNotifications.dropAll()
+    systemHelper?.systemContext?.let {
+        clearDatabase(it)
     }
 }
 
