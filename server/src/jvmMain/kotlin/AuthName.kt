@@ -4,7 +4,6 @@ import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.routing.*
 
-
 enum class AuthName {
     Twitter,
     Apple,
@@ -32,7 +31,7 @@ fun AuthenticationConfig.jwt(
     configure: JWTAuthenticationProvider.Config.() -> Unit
 ) = jwt(name?.name, configure)
 
-fun Authentication.Configuration.basic(
+fun AuthenticationConfig.basic(
     name: AuthName? = null,
-    configure: BasicAuthenticationProvider.Configuration.() -> Unit
+    configure: BasicAuthenticationProvider.Config.() -> Unit
 ) = basic(name?.name, configure)
