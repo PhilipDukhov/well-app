@@ -32,7 +32,6 @@ data class MeetingViewModel(
         is Meeting.State.Canceled -> {
             ""
         }
-        is Meeting.State.Canceled -> TODO()
     }
     val rejectionReason = (state as? Meeting.State.Rejected)?.reason
     val otherUserButtonTitle = (if (state is Meeting.State.Rejected) "by " else "with ") + otherUser.fullName
