@@ -38,12 +38,13 @@ autoManifest {
 allprojects {
     @Suppress("UnstableApiUsage")
     repositories {
+        google()
+        mavenCentral()
+
         // still needed for webrtc
         @Suppress("JcenterRepositoryObsolete", "DEPRECATION")
         jcenter()
 
-        google()
-        mavenCentral()
         addSnapshots(::uri, project)
 
         exclusiveContent {
