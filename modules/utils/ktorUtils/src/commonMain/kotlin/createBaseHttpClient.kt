@@ -25,7 +25,7 @@ fun createBaseHttpClient(): HttpClient = HttpClient {
             if (status.value < 300) return@validateResponse
 
             val content = response.bodyAsText()
-            throw Throwable("HttpResponseValidator ${response.request.url} $status $content")
+            throw Exception("HttpResponseValidator ${response.request.url} $status $content")
         }
     }
 }

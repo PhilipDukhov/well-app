@@ -77,8 +77,8 @@ class AwsManager(
                         continuation.resume(waitForUploadResult())
                     else -> Unit
                 }
-            } catch (t: Throwable) {
-                continuation.resumeWithException(t)
+            } catch (e: Exception) {
+                continuation.resumeWithException(e)
             }
         }
     }

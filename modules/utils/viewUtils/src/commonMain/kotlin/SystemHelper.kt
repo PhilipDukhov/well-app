@@ -37,7 +37,7 @@ fun SystemHelper.showSheetThreadSafe(
 
 suspend fun SystemHelper.pickSystemImageSafe(): LocalImage? = try {
     pickSystemImage()
-} catch (t: Throwable) {
-    Napier.e("pickSystemImageSafe failed", t)
+} catch (e: Exception) {
+    Napier.e("pickSystemImageSafe failed", e)
     null
 }

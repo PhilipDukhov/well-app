@@ -3,7 +3,7 @@ package com.well.modules.networking.webSocketManager
 import com.well.modules.atomic.freeze
 import io.github.aakira.napier.Napier
 import com.well.modules.utils.viewUtils.resumeWithError
-import com.well.modules.utils.viewUtils.toThrowable
+import com.well.modules.utils.viewUtils.toException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -41,8 +41,8 @@ actual class WebSocketSession(
     ) {
         when {
             nsError != null -> {
-                Napier.e("channel.close(nsError.toThrowable()) $nsError ${nsError.localizedDescription}")
-                channel.close(nsError.toThrowable())
+                Napier.e("channel.close(nsError.toException()) $nsError ${nsError.localizedDescription}")
+                channel.close(nsError.toException())
             }
             message != null -> {
                 message.string?.let {
@@ -58,6 +58,6 @@ actual class WebSocketSession(
     fun listenMessages() =
         webSocket.receiveMessageWithCompletionHandler(::handler.freeze())
 
-    fun close(t: Throwable?) =
-        channel.close(t)
+    fun close(e: Exception?) =
+        channel.close(e)
 }

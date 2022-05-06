@@ -62,20 +62,20 @@ fun Application.module() {
     val username = dbConfig.property("username").getString()
     try {
         initializedModule(Dependencies(this))
-    } catch (t: Throwable) {
-        println("initialization failed: ${t.stackTraceToString()}")
+    } catch (e: Exception) {
+        println("initialization failed: ${e.stackTraceToString()}")
         if (username == "test") {
             // e.g. local machine
-            throw t
+            throw e
         }
         try {
             sendEmail(
                 destination = "philip.dukhov@gmail.com",
-                subject = "W.E.L.L. Server failed to start ${t.localizedMessage}",
-                body = t.stackTraceToString(),
+                subject = "W.E.L.L. Server failed to start ${e.localizedMessage}",
+                body = e.stackTraceToString(),
             )
-        } catch (t: Throwable) {
-            println("sendEmail failed $t")
+        } catch (e: Exception) {
+            println("sendEmail failed $e")
         }
         routing {
             route("*") {
@@ -106,7 +106,7 @@ fun Application.initializedModule(dependencies: Dependencies) {
         exception<ForbiddenException> { call, cause ->
             call.respond(HttpStatusCode.Forbidden)
         }
-        exception<Throwable> { call, cause ->
+        exception<Exception> { call, cause ->
             println("StatusPages failed $cause")
             println(cause.stackTraceToString())
             call.respond(HttpStatusCode.InternalServerError, cause.toString())

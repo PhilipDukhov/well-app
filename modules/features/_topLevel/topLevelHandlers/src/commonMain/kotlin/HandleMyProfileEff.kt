@@ -29,10 +29,10 @@ internal fun TopLevelFeatureProviderImpl.createProfileEffHandler(
         userFlow = if (user?.initialized == false) flowOf(user) else getFullUserByIdFlow(uid),
         putUser = networkManager::putUser,
         uploadProfilePicture = networkManager::uploadProfilePicture,
-        showThrowableAlert = {
+        showExceptionAlert = {
             listener(
                 Msg.ShowAlert(
-                    Alert.Error.throwableAlert(it)
+                    Alert.Error.exceptionAlert(it)
                 )
             )
         },

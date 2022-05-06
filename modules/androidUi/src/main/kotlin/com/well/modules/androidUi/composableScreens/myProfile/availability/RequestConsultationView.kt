@@ -171,7 +171,7 @@ private fun Availabilities(
                         scope.launch {
                             try {
                                 topRowState.animateScrollToItem(selectedDayIndex)
-                            } catch (_: Throwable) {
+                            } catch (_: Exception) {
                             }
                         }
                     }

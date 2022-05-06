@@ -202,7 +202,7 @@ object MyProfileFeature {
         data class RemoteUpdateUser(val user: User) : Msg()
         data class UpdateUser(val user: User) : Msg()
         data class UpdateImage(val imageContainer: ImageContainer?) : Msg()
-        data class UserUploadFinished(val throwable: Throwable?) : Msg()
+        data class UserUploadFinished(val exception: Exception?) : Msg()
         data class UpdateHasAvailableAvailabilities(val hasAvailableAvailabilities: Boolean) : Msg()
         data class Rate(val review: Review) : Msg()
         data class AvailabilityMsg(val msg: AvailabilitiesCalendarFeature.Msg) : Msg()
@@ -220,7 +220,7 @@ object MyProfileFeature {
             val newProfileImage: ImageContainer?,
         ) : Eff
 
-        data class ShowError(val throwable: Throwable) : Eff
+        data class ShowError(val exception: Exception) : Eff
         data class Call(val user: User) : Eff
         data class Message(val uid: User.Id) : Eff
         data class RatingRequest(val ratingRequest: com.well.modules.models.RatingRequest) : Eff
@@ -289,10 +289,10 @@ object MyProfileFeature {
                     ) toSetOf Eff.UploadUser(state.user!!, state.newImage)
                 }
                 is Msg.UserUploadFinished -> {
-                    if (msg.throwable != null) {
+                    if (msg.exception != null) {
                         return@reducer state.copy(
                             editingStatus = EditingStatus.Editing,
-                        ) toSetOf Eff.ShowError(msg.throwable)
+                        ) toSetOf Eff.ShowError(msg.exception)
                     } else {
                         if (state.user!!.initialized) {
                             return@state state.copy(

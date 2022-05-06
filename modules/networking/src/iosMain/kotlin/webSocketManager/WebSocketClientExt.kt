@@ -1,8 +1,8 @@
 package com.well.modules.networking.webSocketManager
 
 import com.well.modules.atomic.freeze
-import com.well.modules.networking.getThrowable
-import com.well.modules.utils.viewUtils.toThrowable
+import com.well.modules.networking.getException
+import com.well.modules.utils.viewUtils.toException
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -66,7 +66,7 @@ private suspend fun WebSocketClient.webSocket(
                 reason: NSData?,
             ) {
                 webSocketSession.close(
-                    Throwable(
+                    Exception(
                         "NSURLSessionWebSocketTask closed code: $didCloseWithCode reason: ${
                             reason?.let {
                                 NSString.create(
@@ -84,15 +84,15 @@ private suspend fun WebSocketClient.webSocket(
                 task: NSURLSessionTask,
                 didCompleteWithError: NSError?,
             ) {
-                val throwable = (task.response as? NSHTTPURLResponse)
-                    ?.let { getThrowable(it.statusCode.toInt()) }
-                    ?: didCompleteWithError?.toThrowable()
+                val exception = (task.response as? NSHTTPURLResponse)
+                    ?.let { getException(it.statusCode.toInt()) }
+                    ?: didCompleteWithError?.toException()
                     ?: CancellationException("${task.response}")
-                Napier.e("ios web socket didCompleteWithError $didCompleteWithError", throwable)
+                Napier.e("ios web socket didCompleteWithError $didCompleteWithError", exception)
                 if (continuation.isActive) {
-                    continuation.resumeWithException(throwable)
+                    continuation.resumeWithException(exception)
                 } else {
-                    webSocketSession.close(throwable)
+                    webSocketSession.close(exception)
                 }
             }
         }

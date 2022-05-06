@@ -25,7 +25,7 @@ fun initialiseDatabase(app: Application): Pair<Database, SqlDriver> {
             jdbcUrl = "jdbc:mysql://${overrideRdsHostname ?: rdsHostname}:$rdsPort/$rdsDbName" +
                     "?user=$userName&password=$pass"
             driverClassName = "com.mysql.cj.jdbc.Driver"
-        } catch (t: Throwable) {
+        } catch (e: Exception) {
             // drs info missing - load local file
             var connectionUrl: String = dbConfig.property("connection")
                 .getString()
@@ -76,7 +76,7 @@ fun SqlDriver.executeQueryAndPrettify(sql: String): String =
                 while (true) {
                     result += getString(i++) + " "
                 }
-            } catch (_: Throwable) {
+            } catch (_: Exception) {
             }
             result += "\n"
         }

@@ -28,8 +28,8 @@ fun VideoTextureView(
         update = {
             try {
                 videoContext.videoTrack.addSink(it)
-            } catch (t: Throwable) {
-                Napier.e("VideoView addSink failed", throwable = t)
+            } catch (e: Exception) {
+                Napier.e("VideoView addSink failed", throwable = e)
             }
         },
         modifier = modifier
@@ -38,7 +38,7 @@ fun VideoTextureView(
         onDispose {
             try {
                 videoContext.videoTrack.removeSink(customView)
-            } catch (_: Throwable) { }
+            } catch (_: Exception) { }
         }
     }
 }

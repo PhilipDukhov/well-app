@@ -31,7 +31,7 @@ class FileAntilog(applicationContext: ApplicationContext) : Antilog() {
                     Napier.d("delete old $it")
                     fileSystem.delete(it)
                 }
-            } catch (t: Throwable) {
+            } catch (e: Exception) {
                 Napier.d("delete un-parsed $it")
                 fileSystem.delete(it)
             }

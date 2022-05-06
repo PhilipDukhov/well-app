@@ -56,9 +56,9 @@ internal class OAuthHelper(
                                     .webAuthenticate(redirect.location, AndroidRequestCodes.OAuthHelper.code)
                             )
                         )
-                    } catch (t: Throwable) {
+                    } catch (e: Exception) {
                         if (continuation.isActive) {
-                            continuation.resumeWithException(t)
+                            continuation.resumeWithException(e)
                         }
                     }
                 }
@@ -72,7 +72,7 @@ internal class OAuthHelper(
             )
             getCredentialsJob?.cancel()
             return true
-        } catch (_: Throwable) { }
+        } catch (_: Exception) { }
         return false
     }
 

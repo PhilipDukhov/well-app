@@ -32,22 +32,22 @@ infix fun <S, E> S.toFilterNotNull(that: Set<E?>): Pair<S, Set<E>> =
 
 suspend fun <R> tryF(
     block: suspend () -> R,
-    catch: (t: Throwable) -> Unit,
+    catch: (e: Exception) -> Unit,
 ): R? = try {
     block()
-} catch (t: Throwable) {
-    catch(t)
+} catch (e: Exception) {
+    catch(e)
     null
 }
 
 suspend fun <R> tryF(
-    vararg catchers: (t: Throwable) -> Boolean,
+    vararg catchers: (e: Exception) -> Boolean,
     block: suspend () -> R,
 ): R = try {
     block()
-} catch (t: Throwable) {
-    catchers.firstOrNull { it(t) }
-    throw t
+} catch (e: Exception) {
+    catchers.firstOrNull { it(e) }
+    throw e
 }
 
 inline fun <F, S, R> Pair<F, S>.letNamed(block: (F, S) -> R): R {
