@@ -41,6 +41,7 @@ struct EditingField<Msg: AnyObject>: View {
             Button(
                 action: {
                     showModal = true
+					UIApplication.shared.endEditing()
                 },
                 label: content
             ).sheet(isPresented: $showModal) {
@@ -94,12 +95,6 @@ struct EditingField<Msg: AnyObject>: View {
                     fieldContent.doCopy(text: text)
                 )!
             )
-//        case let fieldContent as UIEditingFieldContent.Location:
-//            listener(
-//                field.updateMsg(
-//                    fieldContent.doCopy(location: text)
-//                )
-//            )
         case let fieldContent as UIEditingFieldContent.Email:
             listener(
                 field.updateMsg(
@@ -148,9 +143,9 @@ private struct ProfileSelectionScreen: View {
     var body: some View {
         NavigationBar(
             title: title,
-            leftItem: NavigationBarItem(text: "Cancel", handler: onCancel),
+			leftItem: NavigationBarItem(text: GlobalStringsBase.companion.shared.cancel, handler: onCancel),
             rightItem: !multipleSelection ? nil :
-                       NavigationBarItem(text: GlobalStringsBase.companion.shared.cancel) {
+				NavigationBarItem(text: GlobalStringsBase.companion.shared.done) {
                            onSelectionChanged(selection)
                        }
         )

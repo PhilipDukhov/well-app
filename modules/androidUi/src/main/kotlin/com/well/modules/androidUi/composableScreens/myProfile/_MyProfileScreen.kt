@@ -208,7 +208,7 @@ private fun Content(
                             }
                         }
                         is UIGroup.Editing -> {
-                            itemsIndexed(group.fields) { fieldIndex, field ->
+                            itemsIndexed(group.fields, key = { _, field -> field.id }) { fieldIndex, field ->
                                 EditingField(
                                     field,
                                     listener,

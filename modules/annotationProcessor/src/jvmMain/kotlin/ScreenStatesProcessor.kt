@@ -116,7 +116,7 @@ class ContainerInfo(
         get() {
             return try {
                 features // should throw
-                listOf()
+                throw IllegalStateException("last line should've throw")
             } catch (e: MirroredTypesException) {
                 e.typeMirrors
             }

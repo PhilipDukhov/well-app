@@ -44,8 +44,10 @@ internal fun TopLevelFeatureProviderImpl.createProfileEffHandler(
         onStartCall = listener.map(Msg::StartCall),
         onOpenUserChat = listener.map(Msg::OpenUserChat),
         onLogout = {
-            logOut(listener)
-            listener.invoke(Msg.OpenLoginScreen)
+            coroutineScope.launch {
+                logOut()
+                listener.invoke(Msg.OpenLoginScreen)
+            }
         },
         onDeleteProfile = {
             MainScope().launch {
@@ -56,9 +58,9 @@ internal fun TopLevelFeatureProviderImpl.createProfileEffHandler(
                         positiveAction = Alert.Action.Cancel,
                         negativeAction = Alert.Action.Custom("Delete") {
                             coroutineScope.launch {
-                                logOut(listener)
-                                listener.invoke(Msg.OpenLoginScreen)
+                                logOut()
                                 networkManager.deleteProfile()
+                                listener.invoke(Msg.OpenLoginScreen)
                             }
                         }
                     )

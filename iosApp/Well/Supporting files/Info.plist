@@ -23,7 +23,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.$(GCM_SENDER_ID)</string>
+				<string>com.googleusercontent.apps.$(GCM_SENDER_ID)-$(IOS_GOOGLE_CLIENT_ID_SUFIX)</string>
 				<string>fb$(FACEBOOK_APP_ID)</string>
 				<string>world.endo.live.link</string>
 			</array>
@@ -105,7 +105,7 @@
 		<key>appId</key>
 		<string>1:$(GCM_SENDER_ID):ios:$(GOOGLE_APP_ID_PREFIX)</string>
 		<key>clientId</key>
-		<string>$(GCM_SENDER_ID).apps.googleusercontent.com</string>
+		<string>$(GCM_SENDER_ID)-$(IOS_GOOGLE_CLIENT_ID_SUFIX).apps.googleusercontent.com</string>
 		<key>gcmSenderID</key>
 		<string>$(GCM_SENDER_ID)</string>
 		<key>projectID</key>

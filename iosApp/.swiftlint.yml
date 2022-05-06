@@ -48,6 +48,6 @@ custom_rules:
     severity: warning # violation severity. optional.
   final_class:
     name: "Final Class"
-    regex: "^((?!final).)*(^| )class ((?!var).)+"
+    regex: "(?<!(?:final|open) )class (?!func|var)[^\n]*\\{"
     message: "Class should be marked as final"
     severity: error

@@ -18,10 +18,10 @@ final class GoogleProvider: CredentialProvider {
     }
 
     override func getCredentials(completionHandler: @escaping (AuthCredential?, Error?) -> Void) {
+		let clientID = (Bundle.main.object(forInfoDictionaryKey: "firebaseInfo") as! [String: String])["clientId"]!
+		GIDSignIn.sharedInstance.signOut()
         GIDSignIn.sharedInstance.signIn(
-            with: GIDConfiguration(
-                clientID: (Bundle.main.object(forInfoDictionaryKey: "firebaseInfo") as! [String: String])["clientId"]!
-            ),
+            with: GIDConfiguration(clientID: clientID),
             presenting: systemContext.rootController
         ) { user, error in
             if let token = user?.authentication.idToken {

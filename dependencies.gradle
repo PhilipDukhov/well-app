@@ -56,7 +56,6 @@ ext.Libs = [
         reflect          : "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin",
         coroutines       : [
             core        : "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.kotlinCoroutines",
-            core        : "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.kotlinCoroutines",
             playServices: "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$versions.kotlinCoroutines",
         ],
         serializationJson: "org.jetbrains.kotlinx:kotlinx-serialization-json:$versions.kotlinSerialization",
@@ -202,5 +201,5 @@ if (gradlePluginVersion != null) {
     ext.Libs["build"]["gradle"] = "com.android.tools.build:gradle:$gradlePluginVersion"
 }
 if (material3) {
-    ext.Libs["android"]["compose"]["core"]["material3"] = "androidx.compose.material3:material3:1.0.0-alpha09"
+    ext.Libs["android"]["compose"]["core"]["material3"] = "androidx.compose.material3:material3:1.0.0-alpha10"
 }

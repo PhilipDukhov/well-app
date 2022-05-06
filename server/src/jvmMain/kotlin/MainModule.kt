@@ -248,13 +248,8 @@ fun Application.initializedModule(dependencies: Dependencies) {
             }
         }
         post("twitter_oauth_callback") { twitterLogin(dependencies) }
-
-//        get("/metrics") {
-//            call.respond(appMicrometerRegistry.scrape())
-//        }
-
-        post("email") { sendEmail(dependencies) }
-        post("sms") { sendSms(dependencies) }
+//        post("email") { sendEmail(dependencies) }
+//        post("sms") { sendSms(dependencies) }
 
         authenticate(AuthName.Admin) {
             post("executeQuerySql") {

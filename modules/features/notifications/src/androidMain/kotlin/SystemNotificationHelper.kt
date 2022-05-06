@@ -76,13 +76,12 @@ internal actual class SystemNotificationHelper actual constructor(
         )
     }
 
-    actual fun getNotificationPayloadString(rawNotification: RawNotification) : String =
+    actual fun getNotificationPayloadString(rawNotification: RawNotification): String =
         rawNotification.data[Notification.payloadDataKey]!!
 
     actual fun updateTotalUnreadCounter(counter: Int) {
-        // not implemented on Android
+        // not supported on Android
     }
-
 
     actual fun deleteNotification(notification: Notification.ChatMessage) {
         manager.cancel(notification.message.id.value.toInt())

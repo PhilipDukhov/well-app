@@ -10,6 +10,8 @@ data class UIEditingField<Content, Msg> constructor(
     val content: Content,
     val updateMsg: (Content) -> Msg,
 ) where Content : UIEditingField.Content {
+    val id get() = placeholder
+
     companion object {
         inline fun <reified T : Enum<T>, Msg> createSingleSelectionList(
             placeholder: String,
