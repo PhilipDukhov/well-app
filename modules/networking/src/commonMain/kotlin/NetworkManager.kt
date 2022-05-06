@@ -16,16 +16,16 @@ import com.well.modules.models.RatingRequest
 import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.networking.webSocketManager.WebSocketClient
-import com.well.modules.networking.webSocketManager.WebSocketSession
-import com.well.modules.networking.webSocketManager.ws
 import com.well.modules.utils.kotlinUtils.tryF
 import com.well.modules.utils.viewUtils.platform.Platform
 import com.well.modules.utils.viewUtils.platform.fileSystem
 import com.well.modules.utils.viewUtils.platform.isLocalServer
 import io.github.aakira.napier.Napier
 import io.ktor.client.call.*
+import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.ktor.websocket.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -66,7 +66,7 @@ class NetworkManager(
 
     private val webSocketScope = CoroutineScope(Dispatchers.Default)
 
-    private var webSocketSession by AtomicRef<WebSocketSession?>(null)
+    private var webSocketSession by AtomicRef<DefaultClientWebSocketSession?>(null)
 
     private val _webSocketMsgSharedFlow = MutableSharedFlow<WebSocketMsg>()
     val webSocketMsgSharedFlow: Flow<WebSocketMsg> = _webSocketMsgSharedFlow
@@ -83,17 +83,26 @@ class NetworkManager(
                 try {
                     _connectionStatus.value = Connecting
                     Napier.i("Connecting")
-                    clientWrapper.ws("mainWebSocket/${deviceId}") {
+                    client.ws("mainWebSocket/${deviceId}") {
                         webSocketSession = this
                         _connectionStatus.value = Connected
                         Napier.i("Connected")
-                        for (string in incoming) {
-                            Napier.i("websocket msg: $string")
-                            val msg = Json.decodeFromString(
-                                WebSocketMsg.serializer(),
-                                string
-                            )
-                            _webSocketMsgSharedFlow.emit(msg)
+                        for (frame in incoming) {
+                            when (frame) {
+                                is Frame.Text -> {
+                                    val string = frame.readText()
+                                    Napier.i("websocket msg: $string")
+                                    val msg = Json.decodeFromString(
+                                        WebSocketMsg.serializer(),
+                                        string
+                                    )
+                                    _webSocketMsgSharedFlow.emit(msg)
+                                }
+                                else -> {
+                                    Napier.e("unexpected web socket frame: $frame")
+                                }
+                            }
+
                         }
                     }
                 } catch (t: SerializationException) {
