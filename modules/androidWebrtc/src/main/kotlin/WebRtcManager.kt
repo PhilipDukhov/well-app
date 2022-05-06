@@ -363,7 +363,7 @@ class WebRtcManager(
 
     private fun createOfferOrAnswer(
         create: PeerConnection.(SdpObserver, MediaConstraints) -> Unit,
-        completion: (String) -> Unit
+        completion: (String) -> Unit,
     ) {
         peerConnection.addTrack(localVideoTrack, listOf("track"))
         peerConnection.addTrack(localAudioTrack, listOf("track"))
