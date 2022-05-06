@@ -16,7 +16,6 @@ struct EditingField<Msg: AnyObject>: View {
     private let isTextField: Bool
     private let fieldContent: UIEditingFieldContent
 
-    @State private var text: String
     @State private var textEditing = false
     @State private var showModal = false
 
@@ -31,7 +30,6 @@ struct EditingField<Msg: AnyObject>: View {
         default:
             isTextField = true
         }
-        _text = State(initialValue: fieldContent.description)
     }
 
     var body: some View {
@@ -41,7 +39,6 @@ struct EditingField<Msg: AnyObject>: View {
             Button(
                 action: {
                     showModal = true
-					UIApplication.shared.endEditing()
                 },
                 label: content
             ).sheet(isPresented: $showModal) {
@@ -52,17 +49,14 @@ struct EditingField<Msg: AnyObject>: View {
 
     @ViewBuilder
     private func content() -> some View {
+        let text = field.description()
         HStack {
             if isTextField {
                 TextField(
                     field.placeholder,
-                    text: $text
+                    text: .init(get: { text }, set: { textContentUpdated($0) })
                 ) { editing in
                     textEditing = editing
-                    guard !editing else {
-                        return
-                    }
-                    textContentUpdated()
                 }
                 Spacer()
             } else {
@@ -84,7 +78,7 @@ struct EditingField<Msg: AnyObject>: View {
             )
     }
 
-    private func textContentUpdated() {
+    private func textContentUpdated(_ text: String) {
         guard fieldContent.description != text else {
             return
         }
