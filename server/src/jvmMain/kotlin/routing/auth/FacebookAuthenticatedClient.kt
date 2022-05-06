@@ -21,11 +21,9 @@ suspend fun Dependencies.getFacebookAuthenticatedClient(): HttpClient {
     val host = "graph.facebook.com"
     val client = this.client.config {
         defaultRequest {
-            if (url.host == "localhost") {
-                url.host = host
-                url.protocol = URLProtocol.HTTPS
-                url.encodedPath = "/v9.0" + url.encodedPath
-            }
+            url.host = host
+            url.protocol = URLProtocol.HTTPS
+            url.encodedPath = "/v9.0" + url.encodedPath
         }
     }
     val accessTokenKey = "access_token"
@@ -42,9 +40,7 @@ suspend fun Dependencies.getFacebookAuthenticatedClient(): HttpClient {
 
     facebookAuthenticatedClient = client.config {
         defaultRequest {
-            if (url.host == host) {
-                parametersOf(accessTokenKey, appAccessToken)
-            }
+            url.parameters.append(accessTokenKey, appAccessToken)
         }
     }
     return facebookAuthenticatedClient

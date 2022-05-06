@@ -87,7 +87,7 @@ class AwsManager(
 suspend fun Dependencies.uploadToS3FromUrl(
     url: Url,
     path: String,
-) = client.get(url).body<HttpStatement>()
+) = client.prepareGet(url)
     .execute { response ->
         val fileExtension = response.contentType()
             ?.let { contentType ->
