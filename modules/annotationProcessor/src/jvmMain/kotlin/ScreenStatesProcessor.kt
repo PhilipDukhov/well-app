@@ -59,12 +59,12 @@ class ScreenStatesProcessor : AbstractProcessor() {
                 ContainerInfo(element, processingEnv)
                     .file()
                     .writeTo(File(generatedSourcesRoot))
-            } catch (t: Throwable) {
+            } catch (e: Exception) {
                 processingEnv.println(
                     kind = Kind.ERROR,
-                    msg = "ContainerInfo(element, processingEnv) $t\n${t.stackTraceToString()}"
+                    msg = "ContainerInfo(element, processingEnv) $e\n${e.stackTraceToString()}"
                 )
-                throw t
+                throw e
             }
         }
         return true

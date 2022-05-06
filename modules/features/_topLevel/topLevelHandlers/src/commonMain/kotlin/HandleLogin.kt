@@ -35,9 +35,9 @@ internal suspend fun TopLevelFeatureProviderImpl.socialNetworkLogin(
         socialNetworkService?.login(socialNetwork)?.let { authResponse ->
             gotAuthResponse(authResponse, listener)
         }
-    } catch (t: Throwable) {
-        if (t !is CancellationException && t.message?.contains("com.well.modules.utils error 0") != true) {
-            listener.invoke(TopLevelFeature.Msg.ShowAlert(Alert.Error.throwableAlert(t)))
+    } catch (e: Exception) {
+        if (e !is CancellationException && e.message?.contains("com.well.modules.utils error 0") != true) {
+            listener.invoke(TopLevelFeature.Msg.ShowAlert(Alert.Error.exceptionAlert(e)))
         }
     } finally {
         listener.invoke(

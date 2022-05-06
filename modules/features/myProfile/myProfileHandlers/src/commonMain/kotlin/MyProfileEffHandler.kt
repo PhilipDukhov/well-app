@@ -39,7 +39,7 @@ class MyProfileEffHandler(
         val userFlow: Flow<User>,
         val putUser: suspend (User) -> Unit,
         val uploadProfilePicture: suspend (ByteArray) -> String,
-        val showThrowableAlert: (Throwable) -> Unit,
+        val showExceptionAlert: (Exception) -> Unit,
         val onInitializationFinished: () -> Unit,
         val onPop: () -> Unit,
         val setFavorite: (FavoriteSetter) -> Unit,
@@ -104,7 +104,7 @@ class MyProfileEffHandler(
                 }
             }
             is Eff.SetUserFavorite -> services.setFavorite(eff.setter)
-            is Eff.ShowError -> services.showThrowableAlert(eff.throwable)
+            is Eff.ShowError -> services.showExceptionAlert(eff.exception)
             is Eff.Back -> services.onPop()
             is Eff.InitializationFinished -> services.onInitializationFinished()
             is Eff.Call -> services.onStartCall(eff.user)
@@ -187,10 +187,10 @@ class MyProfileEffHandler(
                     currentUserAvailabilities
                 )
             )
-        } catch (t: Throwable) {
+        } catch (e: Exception) {
             availabilitiesCalendarListener(
                 AvailabilitiesCalendarMsg.RequestFailed(
-                    t.message ?: t.toString()
+                    e.message ?: e.toString()
                 )
             )
         } finally {
@@ -211,9 +211,9 @@ class MyProfileEffHandler(
         val userUploadError = try {
             services.putUser(user)
             null
-        } catch (t: Throwable) {
-            Napier.e("UploadUser $t")
-            t
+        } catch (e: Exception) {
+            Napier.e("UploadUser $e")
+            e
         }
         listener(Msg.UserUploadFinished(userUploadError))
     }

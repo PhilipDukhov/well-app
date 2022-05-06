@@ -226,7 +226,7 @@ fun KotlinMultiplatformExtension.iosWithSimulator(
 
     val platform = try {
         project?.let { it.extra["kotlin.native.cocoapods.platform"] as? String }
-    } catch (t: Throwable) {
+    } catch (_: Exception) {
         null
     }
 

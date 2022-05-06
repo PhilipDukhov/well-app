@@ -50,7 +50,6 @@ class WebRtcManager(
 
     private var deviceState = LocalDeviceState.default
     private val audioManager = applicationContext.getSystemService(AudioManager::class.java)!!
-    private val tag = "WebRtcManager"
     private val coroutineContext = CoroutineScope(Dispatchers.Default)
 
     init {
@@ -65,7 +64,7 @@ class WebRtcManager(
         }
         addCloseableChild(object : Closeable {
             override fun close() {
-                Napier.d("webrtcmanager close", tag = tag)
+                Napier.d("close")
                 try {
                     peerConnection.dispose()
                     videoCapturer.dispose()
@@ -77,8 +76,8 @@ class WebRtcManager(
                     ).forEach {
                         it?.dispose()
                     }
-                } catch (t: Throwable) {
-                    Napier.d("close failed $t", t, tag = tag)
+                } catch (e: Exception) {
+                    Napier.d("close failed $e", e)
                 }
             }
         })
@@ -86,8 +85,8 @@ class WebRtcManager(
         coroutineContext.launch {
             try {
                 audioManager.mode = AudioManager.MODE_IN_COMMUNICATION
-            } catch (t: Throwable) {
-                Napier.w("audioManager.mode $t", tag = tag)
+            } catch (e: Exception) {
+                Napier.w("audioManager.mode $e")
             }
         }
         val listener = object : AudioManager.OnAudioFocusChangeListener, Closeable {
@@ -311,7 +310,7 @@ class WebRtcManager(
         if (localDataChannel.state() == DataChannel.State.OPEN) {
             localDataChannel.send(DataChannel.Buffer(ByteBuffer.wrap(data), false))
         } else {
-            Napier.e("didn't sendData state ${localDataChannel.state()}", tag = tag)
+            Napier.e("didn't sendData state ${localDataChannel.state()}")
         }
     }
 

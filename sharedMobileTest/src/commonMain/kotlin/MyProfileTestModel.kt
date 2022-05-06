@@ -37,7 +37,7 @@ class MyProfileTestModel(
                 userFlow = flowOf(User.testUser),
                 putUser = {},
                 uploadProfilePicture = { error("unimplemented") },
-                showThrowableAlert = { Napier.e(it.message ?: it.toString(), it) },
+                showExceptionAlert = { Napier.e(it.message ?: it.toString(), it) },
                 onInitializationFinished = {},
                 onPop = {},
                 setFavorite = {},

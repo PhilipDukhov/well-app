@@ -14,7 +14,7 @@ fun NotificationHandler.handleNotificationResponse(response: UNNotificationRespo
                 services.openMeeting(notification.meeting.id)
             }
         }
-    } catch (t: Throwable) {
-        Napier.e("handleNotificationResponse", t)
+    } catch (e: Exception) {
+        Napier.e("handleNotificationResponse", e)
     }
 }

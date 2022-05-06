@@ -32,7 +32,7 @@ sealed class Alert(
     )
 
     data class Error(
-        val throwable: Throwable,
+        val exception: Exception,
         val errorDescription: String,
     ) : Alert(
         title = errorDescription,
@@ -40,13 +40,13 @@ sealed class Alert(
         positiveAction = Action.Ok()
     ) {
         constructor(
-            throwable: Throwable,
-            descriptionBuilder: (Throwable) -> String?,
+            exception: Exception,
+            descriptionBuilder: (Exception) -> String?,
         ) : this(
-            throwable = throwable,
-            errorDescription = descriptionBuilder(throwable)
-                ?: throwable.message
-                ?: "${throwable::class} $throwable"
+            exception = exception,
+            errorDescription = descriptionBuilder(exception)
+                ?: exception.message
+                ?: "${exception::class} $exception"
         )
         companion object
     }

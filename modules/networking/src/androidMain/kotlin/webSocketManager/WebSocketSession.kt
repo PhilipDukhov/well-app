@@ -37,9 +37,9 @@ actual class WebSocketSession(
         Napier.i("WebSocketSession send $text")
         try {
             socketSession.send(text)
-        } catch (t: Throwable) {
-            socketSession.cancel("send failed", t)
-            scope.cancel("send failed", t)
+        } catch (e: Exception) {
+            socketSession.cancel("send failed", e)
+            scope.cancel("send failed", e)
         }
     }
 }

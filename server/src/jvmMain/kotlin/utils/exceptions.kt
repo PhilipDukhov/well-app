@@ -1,4 +1,3 @@
 package com.well.server.utils
 
-
-class ForbiddenException: Throwable()
+class ForbiddenException: Exception()

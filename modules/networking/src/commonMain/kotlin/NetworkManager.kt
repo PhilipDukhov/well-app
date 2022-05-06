@@ -95,13 +95,13 @@ class NetworkManager(
                             _webSocketMsgSharedFlow.emit(msg)
                         }
                     }
-                } catch (t: SerializationException) {
-                    Napier.e("web socket serialization error", t)
+                } catch (e: SerializationException) {
+                    Napier.e("web socket serialization error", e)
                     services.onUpdateNeeded()
                     break
-                } catch (t: Throwable) {
-                    if (handleUnauthorized(t)) break
-                    Napier.e("web socket connection error", t)
+                } catch (e: Exception) {
+                    if (handleUnauthorized(e)) break
+                    Napier.e("web socket connection error", e)
                 } finally {
                     val wasConnected = _connectionStatus.value == Connected
                     _connectionStatus.value = Disconnected
@@ -141,8 +141,8 @@ class NetworkManager(
                     msg
                 )
             )
-        } catch (t: Throwable) {
-            Napier.e("failed to send $msg", t)
+        } catch (e: Exception) {
+            Napier.e("failed to send $msg", e)
         }
     }
 
@@ -212,11 +212,11 @@ class NetworkManager(
         block: suspend () -> R,
     ) = tryF(::handleUnauthorized, block = block)
 
-    private fun handleUnauthorized(t: Throwable): Boolean {
+    private fun handleUnauthorized(e: Exception): Boolean {
         @Suppress("NAME_SHADOWING")
-        when (val t = t.toResponseException()) {
+        when (val e = e.toResponseException()) {
             is ClientRequestException -> {
-                if (t.status == HttpStatusCode.Unauthorized) {
+                if (e.status == HttpStatusCode.Unauthorized) {
                     services.onUnauthorized()
                     return true
                 }

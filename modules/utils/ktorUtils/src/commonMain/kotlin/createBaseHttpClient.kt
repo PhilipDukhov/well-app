@@ -29,7 +29,7 @@ fun createBaseHttpClient(): HttpClient = HttpClient {
             } else {
                 ""
             }
-            throw Throwable("HttpResponseValidator ${response.request.url} $status $content")
+            throw Exception("HttpResponseValidator ${response.request.url} $status $content")
         }
     }
 }

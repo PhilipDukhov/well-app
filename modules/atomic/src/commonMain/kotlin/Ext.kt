@@ -1,7 +1,7 @@
 package com.well.modules.atomic
 
-fun <T> AtomicMutableList<(T) -> Unit>.notifyAll(t: T) {
-    forEach { listener -> listener.invoke(t) }
+fun <E> AtomicMutableList<(E) -> Unit>.notifyAll(e: E) {
+    forEach { listener -> listener.invoke(e) }
 }
 
 fun <T, E: (T) -> Unit> AtomicMutableList<E>.addListenerAndMakeCloseable(listener: E): Closeable {

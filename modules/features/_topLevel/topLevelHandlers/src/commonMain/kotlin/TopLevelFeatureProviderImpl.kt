@@ -132,8 +132,8 @@ internal class TopLevelFeatureProviderImpl(
                 is Eff.ShowAlert -> {
                     val alert = eff.alert
                     if (alert is Alert.Error) {
-                        Napier.e("alert", alert.throwable)
-                        Napier.e(alert.throwable.stackTraceToString())
+                        Napier.e("alert", alert.exception)
+                        Napier.e(alert.exception.stackTraceToString())
                     }
                     systemHelper?.run {
                         MainScope().launch {
@@ -384,8 +384,8 @@ internal class TopLevelFeatureProviderImpl(
                                     networkManager.sendTechSupportMessage(supportEff.text)
                                 }
                                 listener(Msg.Pop)
-                            } catch (t: Throwable) {
-                                listener(Msg.ShowAlert(Alert.Error.throwableAlert(t)))
+                            } catch (e: Exception) {
+                                listener(Msg.ShowAlert(Alert.Error.exceptionAlert(e)))
                             }
                         }
                     }
@@ -648,7 +648,7 @@ internal class TopLevelFeatureProviderImpl(
         usersQueries.updateFavorite(favorite = setter.favorite, id = uid)
         try {
             networkManager.setFavorite(setter)
-        } catch (t: Throwable) {
+        } catch (e: Exception) {
             usersQueries.transaction {
                 val current = usersQueries.getById(uid).executeAsOne()
                 if (original.lastEdited == current.lastEdited) {

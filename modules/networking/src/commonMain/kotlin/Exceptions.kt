@@ -2,7 +2,7 @@ package com.well.modules.networking
 
 import io.ktor.http.*
 
-internal fun Throwable.toResponseException(): Throwable =
+internal fun Exception.toResponseException(): Exception =
     when (this) {
         is io.ktor.client.features.RedirectResponseException -> RedirectResponseException(this)
         is io.ktor.client.features.ClientRequestException -> ClientRequestException(this)
@@ -10,7 +10,7 @@ internal fun Throwable.toResponseException(): Throwable =
         else -> this
     }
 
-internal fun getThrowable(httpStatusCode: Int): Throwable? {
+internal fun getException(httpStatusCode: Int): Exception? {
     val code = HttpStatusCode.fromValue(httpStatusCode)
     return when (httpStatusCode) {
         in 300..399 -> RedirectResponseException(code)

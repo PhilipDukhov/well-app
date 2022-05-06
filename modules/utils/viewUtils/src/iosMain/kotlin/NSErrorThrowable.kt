@@ -4,16 +4,16 @@ import platform.Foundation.NSError
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resumeWithException
 
-private const val throwableUserInfoKey = "throwableUserInfoKey"
+private const val exceptionUserInfoKey = "exceptionUserInfoKey"
 
-fun NSError.toThrowable(): Throwable =
-    (userInfo[throwableUserInfoKey] as? Throwable)
-        ?: Throwable(localizedDescription)
+fun NSError.toException(): Exception =
+    (userInfo[exceptionUserInfoKey] as? Exception)
+        ?: Exception(localizedDescription)
 
 // used from iOS part
 @Suppress("unused")
-fun Throwable.toNSError(): NSError =
-    NSError(domain = "com.well.modules.utils", code = 0, userInfo = mapOf(throwableUserInfoKey to this))
+fun Exception.toNSError(): NSError =
+    NSError(domain = "com.well.modules.utils", code = 0, userInfo = mapOf(exceptionUserInfoKey to this))
 
 fun <T> Continuation<T>.resumeWithError(error: NSError) =
-    resumeWithException(error.toThrowable())
+    resumeWithException(error.toException())

@@ -1,3 +1,3 @@
 package com.well.modules.networking
 
-actual fun Throwable.userReadableDescription(): String? = null
+actual fun Exception.userReadableDescription(): String? = null

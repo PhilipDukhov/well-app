@@ -28,9 +28,9 @@ internal class RequestConsultationEffHandler(
                 try {
                     services.book(eff.availability)
                     listener(Feature.Msg.Booked)
-                } catch (t: Throwable) {
+                } catch (e: Exception) {
                     Feature.Msg.BookingFailed(
-                        reason = t.toString(),
+                        reason = e.toString(),
                         newAvailabilities = null
                     )
                 }
