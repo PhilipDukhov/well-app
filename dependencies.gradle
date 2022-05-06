@@ -23,8 +23,7 @@ def versions = [
 ]
 
 if (ext.properties["kotlin.native.binary.memoryModel"] == "experimental") {
-    versions["kotlinCoroutines"] = "1.5.1-new-mm-dev2"
-    versions["ktor"] = "1.6.2-native-mm-eap-196"
+    versions["kotlinCoroutines"] = "1.6.1"
 }
 
 if (stableCompose) {

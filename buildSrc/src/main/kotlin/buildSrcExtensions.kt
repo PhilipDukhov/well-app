@@ -236,6 +236,15 @@ fun KotlinMultiplatformExtension.iosWithSimulator(
         val iosSimulatorArm64Main by sourceSets.getting
         iosSimulatorArm64Main.dependsOn(iosMain)
     }
+
+    if (project?.extra?.get("kotlin.native.binary.memoryModel") == "experimental") {
+        targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget::class.java) {
+            binaries.all {
+                binaryOptions["memoryModel"] = "experimental"
+                freeCompilerArgs += "-Xruntime-logs=gc=info"
+            }
+        }
+    }
 }
 
 fun DependencyHandlerScope.coreLibraryDesugaring() =

@@ -1,5 +1,6 @@
 package com.well.modules.networking.webSocketManager
 
+import com.well.modules.atomic.freeze
 import io.github.aakira.napier.Napier
 import com.well.modules.utils.viewUtils.resumeWithError
 import com.well.modules.utils.viewUtils.toThrowable
@@ -12,7 +13,6 @@ import platform.Foundation.NSError
 import platform.Foundation.NSURLSessionWebSocketMessage
 import platform.Foundation.NSURLSessionWebSocketTask
 import kotlin.coroutines.resume
-import kotlin.native.concurrent.freeze
 
 actual class WebSocketSession(
     private val webSocket: NSURLSessionWebSocketTask,
@@ -37,7 +37,7 @@ actual class WebSocketSession(
 
     private fun handler(
         message: NSURLSessionWebSocketMessage?,
-        nsError: NSError?
+        nsError: NSError?,
     ) {
         when {
             nsError != null -> {
