@@ -11,17 +11,16 @@ import com.well.modules.models.ConnectionStatus.Connecting
 import com.well.modules.models.ConnectionStatus.Disconnected
 import com.well.modules.models.DeviceId
 import com.well.modules.models.FavoriteSetter
-import com.well.modules.models.NetworkConstants
 import com.well.modules.models.RatingRequest
 import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
-import com.well.modules.networking.webSocketManager.WebSocketClient
 import com.well.modules.utils.ktorUtils.UnauthorizedException
 import com.well.modules.utils.viewUtils.platform.Platform
 import com.well.modules.utils.viewUtils.platform.fileSystem
-import com.well.modules.utils.viewUtils.platform.isLocalServer
 import io.github.aakira.napier.Napier
 import io.ktor.client.call.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.logging.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -52,18 +51,24 @@ class NetworkManager(
         val onUpdateNeeded: () -> Unit,
     )
 
-    private val clientWrapper = WebSocketClient(
-        config = NetworkConstants.current(Platform.isLocalServer).let { constants ->
-            WebSocketClient.Config(
-                host = constants.host,
-                port = constants.port,
-                webSocketProtocol = constants.webSocketProtocol,
-                bearerToken = token,
-            )
-        },
-        onUnauthorized = services.onUnauthorized,
-    )
-    private val client get() = clientWrapper.client
+    private val client = createBaseServerClient().config {
+        defaultRequest {
+            header(HttpHeaders.Authorization, "Bearer $token")
+        }
+        install(WebSockets) {
+            pingInterval = 5_000
+        }
+        install(Logging) {
+            level = LogLevel.ALL
+        }
+        HttpResponseValidator {
+            handleResponseExceptionWithRequest { cause, _ ->
+                if (cause is UnauthorizedException) {
+                    services.onUnauthorized()
+                }
+            }
+        }
+    }
 
     private val webSocketScope = CoroutineScope(Dispatchers.Default)
 
@@ -103,7 +108,6 @@ class NetworkManager(
                                     Napier.e("unexpected web socket frame: $frame")
                                 }
                             }
-
                         }
                     }
                 } catch (e: SerializationException) {
@@ -112,6 +116,7 @@ class NetworkManager(
                     break
                 } catch (e: UnauthorizedException) {
                     services.onUnauthorized()
+                    break
                 } catch (e: Exception) {
                     Napier.e("web socket connection error", e)
                 } finally {
@@ -134,7 +139,7 @@ class NetworkManager(
 
     override fun close() {
         super.close()
-        clientWrapper.client.close()
+        client.close()
     }
 
     suspend fun sendFront(msg: WebSocketMsg.Front) = send(msg as WebSocketMsg)
