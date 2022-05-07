@@ -23,14 +23,14 @@ internal fun getException(httpStatusCode: Int): Exception? {
     }
 }
 
-internal data class RedirectResponseException(val status: HttpStatusCode) : Exception() {
-    constructor(exception: io.ktor.client.features.RedirectResponseException) : this(exception.response.status)
+internal class RedirectResponseException(val status: HttpStatusCode, cause: Exception? = null) : Exception(cause) {
+    constructor(exception: io.ktor.client.features.RedirectResponseException) : this(exception.response.status, exception)
 }
 
-internal data class ClientRequestException(val status: HttpStatusCode) : Exception() {
-    constructor(exception: io.ktor.client.features.ClientRequestException) : this(exception.response.status)
+internal class ClientRequestException(val status: HttpStatusCode, cause: Exception? = null) : Exception(cause) {
+    constructor(exception: io.ktor.client.features.ClientRequestException) : this(exception.response.status, exception)
 }
 
-internal data class ServerResponseException(val status: HttpStatusCode) : Exception() {
-    constructor(exception: io.ktor.client.features.ServerResponseException) : this(exception.response.status)
+internal class ServerResponseException(val status: HttpStatusCode, cause: Exception? = null) : Exception(cause) {
+    constructor(exception: io.ktor.client.features.ServerResponseException) : this(exception.response.status, exception)
 }
