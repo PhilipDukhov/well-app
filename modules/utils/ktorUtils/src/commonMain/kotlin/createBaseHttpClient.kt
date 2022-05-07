@@ -6,6 +6,7 @@ import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.features.logging.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 
 fun createBaseHttpClient(): HttpClient = HttpClient {
     install(JsonFeature) {
@@ -29,7 +30,13 @@ fun createBaseHttpClient(): HttpClient = HttpClient {
             } else {
                 ""
             }
-            throw Exception("HttpResponseValidator ${response.request.url} $status $content")
+            throw when (status.value) {
+                HttpStatusCode.Unauthorized.value -> UnauthorizedException()
+                in 300..399 -> RedirectResponseException(response, content)
+                in 400..499 -> ClientRequestException(response, content)
+                in 500..599 -> ServerResponseException(response, content)
+                else -> IllegalStateException("HttpResponseValidator unexpected code ${status.value} $response")
+            }
         }
     }
 }

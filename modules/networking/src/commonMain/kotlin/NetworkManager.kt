@@ -18,7 +18,7 @@ import com.well.modules.models.WebSocketMsg
 import com.well.modules.networking.webSocketManager.WebSocketClient
 import com.well.modules.networking.webSocketManager.WebSocketSession
 import com.well.modules.networking.webSocketManager.ws
-import com.well.modules.utils.kotlinUtils.tryF
+import com.well.modules.utils.ktorUtils.UnauthorizedException
 import com.well.modules.utils.viewUtils.platform.Platform
 import com.well.modules.utils.viewUtils.platform.fileSystem
 import com.well.modules.utils.viewUtils.platform.isLocalServer
@@ -52,14 +52,15 @@ class NetworkManager(
     )
 
     private val clientWrapper = WebSocketClient(
-        NetworkConstants.current(Platform.isLocalServer).let { constants ->
+        config = NetworkConstants.current(Platform.isLocalServer).let { constants ->
             WebSocketClient.Config(
                 host = constants.host,
                 port = constants.port,
                 webSocketProtocol = constants.webSocketProtocol,
                 bearerToken = token,
             )
-        }
+        },
+        onUnauthorized = services.onUnauthorized,
     )
     private val client get() = clientWrapper.client
 
@@ -99,8 +100,9 @@ class NetworkManager(
                     Napier.e("web socket serialization error", e)
                     services.onUpdateNeeded()
                     break
+                } catch (e: UnauthorizedException) {
+                    services.onUnauthorized()
                 } catch (e: Exception) {
-                    if (handleUnauthorized(e)) break
                     Napier.e("web socket connection error", e)
                 } finally {
                     val wasConnected = _connectionStatus.value == Connected
@@ -146,30 +148,21 @@ class NetworkManager(
         }
     }
 
-    suspend fun uploadProfilePicture(
-        data: ByteArray,
-    ) = tryCheckAuth {
+    suspend fun uploadProfilePicture(data: ByteArray) =
         client.post<String>("user/uploadProfilePicture") {
             multipartFormBody {
                 appendByteArrayInput(data)
             }
         }
-    }
 
-    suspend fun uploadMessagePicture(
-        data: ByteArray,
-    ) = tryCheckAuth {
+    suspend fun uploadMessagePicture(data: ByteArray) =
         client.post<String>("uploadMessageMedia") {
             multipartFormBody {
                 appendByteArrayInput(data)
             }
         }
-    }
 
-    suspend fun sendTechSupportMessage(
-        message: String,
-        path: Path? = null,
-    ) = tryCheckAuth {
+    suspend fun sendTechSupportMessage(message: String, path: Path? = null) =
         client.post<String>("techSupportMessage") {
             multipartFormBody {
                 if (path != null) {
@@ -181,49 +174,27 @@ class NetworkManager(
                 append("message", message)
             }
         }
-    }
 
-    suspend fun putUser(user: User) = tryCheckAuth {
+    suspend fun putUser(user: User) =
         client.put<Unit>("user") {
             contentType(ContentType.Application.Json)
             body = user
         }
-    }
 
-    suspend fun setFavorite(favoriteSetter: FavoriteSetter) = tryCheckAuth {
+    suspend fun setFavorite(favoriteSetter: FavoriteSetter) =
         client.post<Unit>("user/setFavorite") {
             contentType(ContentType.Application.Json)
             body = favoriteSetter
         }
-    }
 
-    suspend fun requestBecomeExpert() = tryCheckAuth {
+    suspend fun requestBecomeExpert() =
         client.post<Unit>("user/requestBecomeExpert")
-    }
 
-    suspend fun rate(ratingRequest: RatingRequest) = tryCheckAuth {
+    suspend fun rate(ratingRequest: RatingRequest) =
         client.post<Unit>("user/rate") {
             contentType(ContentType.Application.Json)
             body = ratingRequest
         }
-    }
-
-    private suspend fun <R> tryCheckAuth(
-        block: suspend () -> R,
-    ) = tryF(::handleUnauthorized, block = block)
-
-    private fun handleUnauthorized(e: Exception): Boolean {
-        @Suppress("NAME_SHADOWING")
-        when (val e = e.toResponseException()) {
-            is ClientRequestException -> {
-                if (e.status == HttpStatusCode.Unauthorized) {
-                    services.onUnauthorized()
-                    return true
-                }
-            }
-        }
-        return false
-    }
 
     suspend fun listCurrentUserAvailabilities(): List<Availability> =
         client.get("availabilities/listCurrent")

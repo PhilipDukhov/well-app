@@ -1,5 +1,6 @@
 package com.well.modules.networking
 
+import com.well.modules.utils.ktorUtils.UnauthorizedException
 import io.ktor.http.*
 
 internal fun Exception.toResponseException(): Exception =
@@ -13,10 +14,12 @@ internal fun Exception.toResponseException(): Exception =
 internal fun getException(httpStatusCode: Int): Exception? {
     val code = HttpStatusCode.fromValue(httpStatusCode)
     return when (httpStatusCode) {
+        in 200 until 300 -> null
+        HttpStatusCode.Unauthorized.value -> UnauthorizedException()
         in 300..399 -> RedirectResponseException(code)
         in 400..499 -> ClientRequestException(code)
         in 500..599 -> ServerResponseException(code)
-        else -> null
+        else -> IllegalStateException("HttpResponseValidator unexpected code $httpStatusCode")
     }
 }
 
