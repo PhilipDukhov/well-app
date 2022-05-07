@@ -30,26 +30,6 @@ inline fun <A, B, RA, RB> Pair<A, B>.mapNotNull(
 infix fun <S, E> S.toFilterNotNull(that: Set<E?>): Pair<S, Set<E>> =
     this to that.filterNotNull().toSet()
 
-suspend fun <R> tryF(
-    block: suspend () -> R,
-    catch: (e: Exception) -> Unit,
-): R? = try {
-    block()
-} catch (e: Exception) {
-    catch(e)
-    null
-}
-
-suspend fun <R> tryF(
-    vararg catchers: (e: Exception) -> Boolean,
-    block: suspend () -> R,
-): R = try {
-    block()
-} catch (e: Exception) {
-    catchers.firstOrNull { it(e) }
-    throw e
-}
-
 inline fun <F, S, R> Pair<F, S>.letNamed(block: (F, S) -> R): R {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)

@@ -49,7 +49,7 @@ struct EditingField<Msg: AnyObject>: View {
 
     @ViewBuilder
     private func content() -> some View {
-        let text = field.description()
+        let text = fieldContent.description
         HStack {
             if isTextField {
                 TextField(

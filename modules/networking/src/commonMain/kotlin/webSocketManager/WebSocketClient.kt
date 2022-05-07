@@ -1,6 +1,7 @@
 package com.well.modules.networking.webSocketManager
 
 import com.well.modules.networking.createBaseServerClient
+import com.well.modules.utils.ktorUtils.UnauthorizedException
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.logging.*
@@ -8,7 +9,7 @@ import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 
-internal class WebSocketClient(val config: Config) {
+internal class WebSocketClient(val config: Config, val onUnauthorized: () -> Unit) {
     data class Config(
         val host: String,
         val port: Int?,
@@ -31,6 +32,13 @@ internal class WebSocketClient(val config: Config) {
             }
             install(Logging) {
                 level = LogLevel.ALL
+            }
+            HttpResponseValidator {
+                handleResponseException { cause ->
+                    if (cause is UnauthorizedException) {
+                        onUnauthorized()
+                    }
+                }
             }
         }
     }

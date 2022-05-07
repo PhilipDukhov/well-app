@@ -25,7 +25,13 @@ fun createBaseHttpClient(): HttpClient = HttpClient {
             if (status.value < 300) return@validateResponse
 
             val content = response.bodyAsText()
-            throw Exception("HttpResponseValidator ${response.request.url} $status $content")
+            throw when (status.value) {
+                HttpStatusCode.Unauthorized.value -> UnauthorizedException()
+                in 300..399 -> RedirectResponseException(response, content)
+                in 400..499 -> ClientRequestException(response, content)
+                in 500..599 -> ServerResponseException(response, content)
+                else -> IllegalStateException("HttpResponseValidator unexpected code ${status.value} $response")
+            }
         }
     }
 }
