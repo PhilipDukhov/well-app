@@ -29,6 +29,7 @@ import com.well.server.routing.user.updateUser
 import com.well.server.routing.userHasAvailableAvailabilities
 import com.well.server.utils.Dependencies
 import com.well.server.utils.ForbiddenException
+import com.well.server.utils.authUid
 import com.well.server.utils.configProperty
 import com.well.server.utils.createPrincipal
 import com.well.server.utils.executeQueryAndPrettify
