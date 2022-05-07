@@ -3,14 +3,14 @@ package com.well.modules.puerhBase
 import com.well.modules.atomic.AtomicMutableList
 import com.well.modules.atomic.AtomicRef
 import com.well.modules.atomic.Closeable
-import com.well.modules.atomic.CloseableContainer
+import com.well.modules.atomic.CloseableContainerImpl
 import com.well.modules.atomic.asCloseable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 
-abstract class EffectHandler<Eff : Any, Msg : Any>(coroutineScope: CoroutineScope) : CloseableContainer() {
+abstract class EffectHandler<Eff : Any, Msg : Any>(coroutineScope: CoroutineScope) : CloseableContainerImpl() {
     val effHandlerScope: CoroutineScope
     private var listener by AtomicRef<((Msg) -> Unit)?>(null)
     private val pendingMessages = AtomicMutableList<Msg>()

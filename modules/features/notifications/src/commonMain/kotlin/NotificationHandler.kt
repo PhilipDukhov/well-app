@@ -1,6 +1,6 @@
 package com.well.modules.features.notifications
 
-import com.well.modules.atomic.CloseableContainer
+import com.well.modules.atomic.CloseableContainerImpl
 import com.well.modules.atomic.asCloseable
 import com.well.modules.models.Meeting
 import com.well.modules.models.Notification
@@ -13,7 +13,6 @@ import com.well.modules.utils.flowUtils.collectIn
 import com.well.modules.utils.flowUtils.filterIterable
 import com.well.modules.utils.flowUtils.filterNotEmpty
 import com.well.modules.utils.flowUtils.flattenFlow
-import com.well.modules.utils.flowUtils.print
 import com.well.modules.utils.viewUtils.ApplicationContext
 import com.well.modules.utils.viewUtils.RawNotification
 import com.well.modules.utils.viewUtils.platform.Platform
@@ -35,7 +34,7 @@ class NotificationHandler(
     private val currentUid: User.Id,
     internal val services: Services,
     parentCoroutineScope: CoroutineScope,
-) : CloseableContainer() {
+) : CloseableContainerImpl() {
     data class Services(
         val lastListViewModelFlow: Flow<List<ChatMessageContainer>>,
         val unreadCountsFlow: (List<ChatMessage>) -> Flow<Map<ChatMessage.Id, Long>>,

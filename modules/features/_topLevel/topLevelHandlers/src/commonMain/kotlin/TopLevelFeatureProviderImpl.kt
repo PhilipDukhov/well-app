@@ -6,7 +6,7 @@ import com.well.modules.atomic.AtomicLateInitRef
 import com.well.modules.atomic.AtomicMutableList
 import com.well.modules.atomic.AtomicRef
 import com.well.modules.atomic.Closeable
-import com.well.modules.atomic.CloseableContainer
+import com.well.modules.atomic.CloseableContainerImpl
 import com.well.modules.atomic.asCloseable
 import com.well.modules.atomic.freeze
 import com.well.modules.db.chatMessages.delete
@@ -116,7 +116,7 @@ internal class TopLevelFeatureProviderImpl(
     val systemHelper get() = systemService?.context?.helper
     var networkManager by AtomicCloseableLateInitRef<NetworkManager>()
     val nonInitializedAuthInfo = AtomicLateInitRef<AuthInfo>()
-    val callCloseableContainer = CloseableContainer()
+    val callCloseableContainer = CloseableContainerImpl()
     var pendingNotifications = AtomicMutableList<RawNotification>()
     private var topScreenHandlerCloseable by AtomicCloseableRef<Closeable>()
     val onlineUsersStateFlow = MutableStateFlow(emptySet<User.Id>())

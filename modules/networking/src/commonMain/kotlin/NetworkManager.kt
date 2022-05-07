@@ -2,7 +2,7 @@ package com.well.modules.networking
 
 import com.well.modules.atomic.AtomicRef
 import com.well.modules.atomic.Closeable
-import com.well.modules.atomic.CloseableContainer
+import com.well.modules.atomic.CloseableContainerImpl
 import com.well.modules.models.Availability
 import com.well.modules.models.BookingAvailabilitiesListByDay
 import com.well.modules.models.BookingAvailability
@@ -45,7 +45,7 @@ class NetworkManager(
     deviceId: DeviceId,
     startWebSocket: Boolean,
     private val services: Services,
-) : CloseableContainer() {
+) : CloseableContainerImpl() {
     data class Services(
         val onUnauthorized: () -> Unit,
         val onUpdateNeeded: () -> Unit,

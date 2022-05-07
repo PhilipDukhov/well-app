@@ -1,7 +1,7 @@
 package com.well.modules.androidWebrtc
 
 import com.well.modules.atomic.Closeable
-import com.well.modules.atomic.CloseableContainer
+import com.well.modules.atomic.CloseableContainerImpl
 import com.well.modules.features.call.callFeature.VideoViewContext
 import com.well.modules.features.call.callFeature.webRtc.LocalDeviceState
 import com.well.modules.features.call.callFeature.webRtc.WebRtcManagerI
@@ -42,7 +42,7 @@ class WebRtcManager(
     iceServers: List<String>,
     private val applicationContext: Context,
     private val listener: WebRtcManagerI.Listener,
-) : CloseableContainer(), WebRtcManagerI {
+) : CloseableContainerImpl(), WebRtcManagerI {
 
     companion object {
         private var initialized = false

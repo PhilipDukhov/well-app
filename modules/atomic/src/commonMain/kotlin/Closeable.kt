@@ -9,14 +9,15 @@ interface Closeable {
     fun close()
 }
 
-open class CloseableContainer : Closeable {
+interface CloseableContainer: Closeable {
+    fun addCloseableChild(closeable: Closeable)
+}
+
+open class CloseableContainerImpl : CloseableContainer {
     private val closeables = AtomicMutableList<Closeable>()
 
-    fun addCloseableChild(closeable: Closeable) =
+    override fun addCloseableChild(closeable: Closeable) =
         closeables.add(closeable)
-
-    fun finalize() =
-        close()
 
     override fun close() {
         closeables
