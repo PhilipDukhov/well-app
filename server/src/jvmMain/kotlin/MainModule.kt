@@ -3,6 +3,7 @@ package com.well.server
 import com.well.modules.models.Availability
 import com.well.modules.models.DeviceId
 import com.well.modules.models.NetworkConstants
+import com.well.modules.models.NotificationToken
 import com.well.modules.models.User
 import com.well.server.routing.auth.AppleOauthResponse
 import com.well.server.routing.auth.appleLoginPrincipal
@@ -33,6 +34,7 @@ import com.well.server.utils.authUid
 import com.well.server.utils.configProperty
 import com.well.server.utils.createPrincipal
 import com.well.server.utils.executeQueryAndPrettify
+import com.well.server.utils.notifications.sendVoipApnsNotification
 import com.well.server.utils.sendEmail
 import com.auth0.jwk.JwkProviderBuilder
 import io.ktor.application.*
@@ -270,6 +272,11 @@ fun Application.initializedModule(dependencies: Dependencies) {
                     0
                 )
                 call.respond(HttpStatusCode.OK, result)
+            }
+
+            post("sendTestNotification") {
+                val res = sendVoipApnsNotification(NotificationToken.Apns(call.receive(), "com.well.app.debug"), dependencies = dependencies)
+                call.respond(HttpStatusCode.OK, res)
             }
 //            post("testNotification") {
 ////            sendFcmNotification(dependencies, call.receive())

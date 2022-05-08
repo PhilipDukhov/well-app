@@ -2,6 +2,7 @@ package com.well.modules.utils.viewUtils
 
 import platform.Foundation.NSError
 import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 private const val exceptionUserInfoKey = "exceptionUserInfoKey"
@@ -17,3 +18,10 @@ fun Exception.toNSError(): NSError =
 
 fun <T> Continuation<T>.resumeWithError(error: NSError) =
     resumeWithException(error.toException())
+
+fun Continuation<Unit>.resumeWithOptionalError(error: NSError?) =
+    if (error != null) {
+        resumeWithError(error)
+    } else {
+        resume(Unit)
+    }

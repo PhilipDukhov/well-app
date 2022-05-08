@@ -13,6 +13,7 @@ kotlin {
         val commonMain by getting {
             libDependencies(
                 ":modules:utils:dbUtils",
+                ":modules:utils:kotlinUtils",
                 "kotlin.datetime",
                 "kotlin.serializationJson",
                 "sqldelight.runtime",

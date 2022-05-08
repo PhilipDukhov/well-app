@@ -11,7 +11,7 @@ import android.app.Application
 import android.app.Service
 import com.google.firebase.FirebaseApp
 
-class Application: Application() {
+class Application : Application() {
     lateinit var featureProvider: FeatureProvider<TopLevelFeature.Msg, TopLevelFeature.State>
 
     override fun onCreate() {

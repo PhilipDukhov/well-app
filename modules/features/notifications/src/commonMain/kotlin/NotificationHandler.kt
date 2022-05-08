@@ -42,6 +42,7 @@ class NotificationHandler(
         val getMessageByIdFlow: (ChatMessage.Id) -> Flow<ChatMessageContainer?>,
         val openChat: (User.Id) -> Unit,
         val openMeeting: (Meeting.Id) -> Unit,
+        val callServiceServices: CallServiceServices,
     )
 
     private val notificationHelper = SystemNotificationHelper(applicationContext)
@@ -107,6 +108,8 @@ class NotificationHandler(
             }
     }
 
+    private val callService = CallService(services = services.callServiceServices, parentCoroutineScope = coroutineScope)
+
     fun handleRawNotification(rawNotification: RawNotification) {
         val notification = parseRawNotification(rawNotification)
         handleNotification(notification)
@@ -131,15 +134,15 @@ class NotificationHandler(
                     Napier.e("unexpected $notification")
                     return
                 }
-                if (Platform.current == Platform.Platform.Android) {
-                    notificationHelper.updateMessageNotification(notification)
-                }
+                notificationHelper.updateMessageNotification(notification)
             }
             is Notification.Meeting -> {
-
+                Napier.e("unhandled notification $notification")
+            }
+            is Notification.IncomingCall -> {
+                Napier.e("unhandled notification $notification")
             }
         }
         currentNotificationsStateFlow.add(notification)
-        Napier.i("currentNotificationsStateFlow ${currentNotificationsStateFlow.value}")
     }
 }

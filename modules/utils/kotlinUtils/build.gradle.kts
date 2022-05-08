@@ -9,10 +9,11 @@ kotlin {
     iosWithSimulator(project = project)
     jvm()
     sourceSets {
-        optIns()
+        optIns(OptIn.Serialization)
         val commonMain by getting {
             libDependencies(
                 "kotlin.coroutines.core",
+                "kotlin.serializationJson",
                 "kotlin.reflect",
             )
         }

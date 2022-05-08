@@ -1,8 +1,8 @@
 package com.well.modules.models
 
-import com.well.modules.models.date.dateTime.localizedDayAndShortMonth
-import kotlinx.serialization.Serializable
+import com.well.modules.utils.kotlinUtils.UUID
 import com.well.modules.models.Meeting.State as MeetingState
+import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class Notification {
@@ -14,6 +14,19 @@ sealed class Notification {
     abstract val senderName: String
     abstract val alertTitle: String
     abstract val alertBody: String
+
+    @Serializable
+    data class IncomingCall(
+        val callId: UUID,
+        val userId: User.Id,
+        override val hasVideo: Boolean,
+        override val senderName: String,
+        override val totalUnreadCount: Int,
+    ) : Notification(), CallInfo {
+        override val alertTitle: String = "$senderName is calling"
+        override val alertBody: String = ""
+        override val id: UUID get() = callId
+    }
 
     @Serializable
     data class ChatMessage(
@@ -32,20 +45,21 @@ sealed class Notification {
         override val senderName: String,
         override val totalUnreadCount: Int,
     ) : Notification() {
-        override val alertTitle get() = when (meeting.state) {
-            MeetingState.Requested -> {
-                "New meeting request"
+        override val alertTitle
+            get() = when (meeting.state) {
+                MeetingState.Requested -> {
+                    "New meeting request"
+                }
+                MeetingState.Confirmed -> {
+                    "Meeting confirmed"
+                }
+                is MeetingState.Rejected -> {
+                    "Meeting rejected"
+                }
+                is MeetingState.Canceled -> {
+                    "Meeting canceled"
+                }
             }
-            MeetingState.Confirmed -> {
-                "Meeting confirmed"
-            }
-            is MeetingState.Rejected -> {
-                "Meeting rejected"
-            }
-            is MeetingState.Canceled -> {
-                "Meeting canceled"
-            }
-        }
 
         override val alertBody: String
             get() {

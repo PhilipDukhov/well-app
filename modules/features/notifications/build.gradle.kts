@@ -12,6 +12,7 @@ kotlin {
             libDependencies(
                 ":modules:utils:viewUtils",
                 ":modules:utils:flowUtils",
+                ":modules:utils:kotlinUtils",
                 "kotlin.serializationJson",
                 "kotlin.coroutines.core",
                 "kotlin.stdLib",

@@ -1,12 +1,13 @@
 package com.well.server.utils.notifications
 
 import com.well.modules.db.server.SelectTokenByUid
-import com.well.modules.models.Meeting
 import com.well.modules.models.Notification
 import com.well.modules.models.NotificationToken
-import com.well.modules.models.date.dateTime.localizedDayAndShortMonth
+import com.well.modules.models.User
+import com.well.modules.utils.kotlinUtils.UUID
 import com.well.server.utils.Dependencies
 import com.eatthepath.pushy.apns.DeliveryPriority
+import com.eatthepath.pushy.apns.PushType
 import com.eatthepath.pushy.apns.util.SimpleApnsPayloadBuilder
 import com.eatthepath.pushy.apns.util.SimpleApnsPushNotification
 import com.google.firebase.messaging.FirebaseMessaging
@@ -65,6 +66,48 @@ private fun sendFcmNotification(
             }
         }
     }
+}
+
+suspend fun sendVoipApnsNotification(
+    tokenInfo: NotificationToken.Apns,
+    dependencies: Dependencies,
+): String {
+    val notification = Notification.IncomingCall(
+        callId = UUID(),
+        userId = User.Id(value = 0),
+        hasVideo = false,
+        senderName = "Phil sendVoipApnsNotification",
+        totalUnreadCount = 0,
+    )
+    val payload = mapOf(Notification.payloadDataKey to notification)
+    val pushNotification = SimpleApnsPushNotification(
+        /* token = */
+        tokenInfo.token,
+        /* topic = */
+        "${tokenInfo.bundleId}.voip",
+        /* payload = */
+        Json.encodeToString(payload),
+        /* invalidationTime = */
+        Instant.now(),
+        /* priority = */
+        DeliveryPriority.IMMEDIATE,
+        /* pushType = */
+        PushType.VOIP,
+        /* collapseId = */
+        null,
+        /* apnsId = */
+        null,
+    )
+    val response = dependencies
+        .run {
+            if (tokenInfo.bundleId == "com.well.app")
+                prodApnsClient
+            else
+                devApnsClient
+        }
+        .sendNotification(pushNotification)
+        .await()
+    return "${response.apnsId} rejectionReason ${response.rejectionReason}"
 }
 
 private suspend fun sendApnsNotification(

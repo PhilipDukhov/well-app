@@ -30,6 +30,7 @@ libDependencies(
     ":modules:features:_topLevel:topLevelFeature",
     ":modules:features:_topLevel:topLevelHandlers",
     ":modules:features:login:loginFeature",
+    ":modules:features:notifications",
     ":modules:features:login:loginHandlers",
     ":modules:features:call:callFeature",
 )

@@ -1,8 +1,8 @@
 package com.well.modules.networking.webSocketManager
 
-import io.github.aakira.napier.Napier
-import com.well.modules.utils.viewUtils.resumeWithError
+import com.well.modules.utils.viewUtils.resumeWithOptionalError
 import com.well.modules.utils.viewUtils.toException
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -11,7 +11,6 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.Foundation.NSError
 import platform.Foundation.NSURLSessionWebSocketMessage
 import platform.Foundation.NSURLSessionWebSocketTask
-import kotlin.coroutines.resume
 import kotlin.native.concurrent.freeze
 
 actual class WebSocketSession(
@@ -26,18 +25,12 @@ actual class WebSocketSession(
 
     private suspend fun send(message: NSURLSessionWebSocketMessage) =
         suspendCancellableCoroutine<Unit> { continuation ->
-            webSocket.sendMessage(message, { error: NSError? ->
-                if (error != null) {
-                    continuation.resumeWithError(error)
-                } else {
-                    continuation.resume(Unit)
-                }
-            }.freeze())
+            webSocket.sendMessage(message, continuation::resumeWithOptionalError.freeze())
         }
 
     private fun handler(
         message: NSURLSessionWebSocketMessage?,
-        nsError: NSError?
+        nsError: NSError?,
     ) {
         when {
             nsError != null -> {

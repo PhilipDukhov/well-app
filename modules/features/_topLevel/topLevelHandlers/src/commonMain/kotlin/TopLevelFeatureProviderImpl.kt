@@ -42,6 +42,7 @@ import com.well.modules.features.more.moreFeature.subfeatures.FavoritesFeature
 import com.well.modules.features.more.moreFeature.subfeatures.SupportFeature
 import com.well.modules.features.more.moreFeature.subfeatures.WellAcademyFeature
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature
+import com.well.modules.features.notifications.CallServiceServices
 import com.well.modules.features.notifications.NotificationHandler
 import com.well.modules.features.topLevel.topLevelFeature.FeatureEff
 import com.well.modules.features.topLevel.topLevelFeature.FeatureMsg
@@ -311,7 +312,24 @@ internal class TopLevelFeatureProviderImpl(
                             },
                             openMeeting = {
                                 listener(Msg.OpenMeeting(it))
-                            }
+                            },
+                            callServiceServices = CallServiceServices(
+                                updateToken = {
+                                    Napier.d("CallServiceServices updateToken $it")
+                                },
+                                reportNewCall = {
+                                    Napier.d("CallServiceServices reportNewCall $it")
+                                },
+                                answer = {
+                                    Napier.d("CallServiceServices answer")
+                                },
+                                decline = {
+                                    Napier.d("CallServiceServices decline")
+                                },
+                                setMuted = {
+                                    Napier.d("CallServiceServices setMuted $it")
+                                },
+                            ),
                         ),
                         parentCoroutineScope = coroutineScope,
                     )

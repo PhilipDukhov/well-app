@@ -67,6 +67,8 @@ object TopLevelFeature {
     data class State internal constructor(
         internal val tabs: Map<Tab, List<ScreenState>>,
         internal val selectedScreenPosition: ScreenPosition,
+        // TODO: remove
+        val loggedIn: Boolean = false,
     ) {
         val currentScreen: Screen = run {
             if (listOf(
@@ -215,6 +217,7 @@ object TopLevelFeature {
                     val newState = state.copy(
                         tabs = loggedInTabs(msg.uid),
                         selectedScreenPosition = ScreenPosition(Tab.Experts, 0),
+                        loggedIn = true,
                     )
                     return@reducer newState
                         .reduceScreenChanged()
@@ -255,6 +258,7 @@ object TopLevelFeature {
                             createTab(Tab.Login, LoginFeature.State(), ScreenState::Login)
                         ),
                         selectedScreenPosition = ScreenPosition(Tab.Login, 0),
+                        loggedIn = false,
                     )
                 }
                 Msg.OpenWelcomeScreen -> {
