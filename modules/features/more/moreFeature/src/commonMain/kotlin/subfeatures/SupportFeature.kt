@@ -12,12 +12,12 @@ object SupportFeature {
     }
 
     sealed class Msg {
-        data class Send(val text: String, val includeLogs: Boolean) : Msg()
+        class Send(val text: String, val includeLogs: Boolean) : Msg()
         object Back : Msg()
     }
 
     sealed interface Eff {
-        data class Send(val text: String, val includeLogs: Boolean) : Eff
+        class Send(val text: String, val includeLogs: Boolean) : Eff
         object Back : Eff
     }
 

@@ -49,10 +49,10 @@ data class ChatMessage(
             }
 
         @Serializable
-        data class Text(val string: String) : Content()
+        class Text(val string: String) : Content()
 
         @Serializable
-        data class Image(val url: String, val aspectRatio: Float) : Content()
+        class Image(val url: String, val aspectRatio: Float) : Content()
     }
 
     fun secondId(currentId: User.Id) = when (currentId) {

@@ -19,7 +19,7 @@ class UserChatEffHandler(
     private val services: Services,
     parentCoroutineScope: CoroutineScope,
 ) : EffectHandler<Eff, Msg>(parentCoroutineScope) {
-    data class Services(
+    class Services(
         val peerUserFlow: Flow<User>,
         val messagesFlow: Flow<List<ChatMessageContainer>>,
         val pickSystemImage: suspend () -> LocalImage,

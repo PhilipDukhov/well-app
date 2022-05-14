@@ -19,12 +19,12 @@ object DonateFeature {
 
     sealed class Msg {
         object Back : Msg()
-        data class Donate(val variant: State.Variant, val isRecurring: Boolean): Msg()
+        class Donate(val variant: State.Variant, val isRecurring: Boolean): Msg()
     }
 
     sealed interface Eff {
         object Back : Eff
-        data class Donate(val variant: State.Variant, val isRecurring: Boolean): Eff
+        class Donate(val variant: State.Variant, val isRecurring: Boolean): Eff
     }
 
     fun reducer(

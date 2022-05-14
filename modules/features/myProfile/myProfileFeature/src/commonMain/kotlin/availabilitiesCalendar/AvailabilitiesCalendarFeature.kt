@@ -61,7 +61,7 @@ object AvailabilitiesCalendarFeature {
     }
 
     sealed class Msg {
-        internal data class CalendarInfoMsg(val msg: CalendarInfoFeature.Msg) : Msg()
+        internal class CalendarInfoMsg(val msg: CalendarInfoFeature.Msg) : Msg()
 
         companion object {
             val PrevMonth: Msg = CalendarInfoMsg(CalendarInfoFeature.Msg.PrevMonth)
@@ -72,20 +72,20 @@ object AvailabilitiesCalendarFeature {
                 CalendarInfoMsg(CalendarInfoFeature.Msg.SelectDate(selectedDate))
         }
 
-        data class Add(val availability: Availability) : Msg()
-        data class Update(val availability: Availability) : Msg()
-        data class Delete(val availabilityId: Availability.Id) : Msg()
+        class Add(val availability: Availability) : Msg()
+        class Update(val availability: Availability) : Msg()
+        class Delete(val availabilityId: Availability.Id) : Msg()
         object ReloadAvailabilities : Msg()
-        data class SetAvailabilities(val availabilities: List<Availability>) : Msg()
-        data class RequestFailed(val reason: String) : Msg()
-        data class SetProcessing(val processing: Boolean) : Msg()
+        class SetAvailabilities(val availabilities: List<Availability>) : Msg()
+        class RequestFailed(val reason: String) : Msg()
+        class SetProcessing(val processing: Boolean) : Msg()
     }
 
     sealed interface Eff {
         object RequestAvailabilities : Eff
-        data class Add(val availability: Availability) : Eff
-        data class Remove(val availabilityId: Availability.Id) : Eff
-        data class Update(val availability: Availability) : Eff
+        class Add(val availability: Availability) : Eff
+        class Remove(val availabilityId: Availability.Id) : Eff
+        class Update(val availability: Availability) : Eff
     }
 
     fun reducer(

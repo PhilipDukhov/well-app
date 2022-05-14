@@ -9,12 +9,12 @@ object SignupFeature {
     )
 
     sealed class Msg {
-        data class Create(val info: SignupInfo) : Msg()
+        class Create(val info: SignupInfo) : Msg()
         object SignIn : Msg()
     }
 
     sealed interface Eff {
-        data class Create(val info: SignupInfo) : Eff
+        class Create(val info: SignupInfo) : Eff
         object SignIn : Eff
     }
 

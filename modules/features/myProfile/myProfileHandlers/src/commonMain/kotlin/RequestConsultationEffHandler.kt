@@ -11,7 +11,7 @@ internal class RequestConsultationEffHandler(
     private val services: Services,
     parentCoroutineScope: CoroutineScope,
 ) : EffectHandler<Feature.Eff, Feature.Msg>(parentCoroutineScope) {
-    data class Services(
+    class Services(
         val closeConsultationRequest: () -> Unit,
         val book: suspend (BookingAvailability) -> Unit,
         val getAvailabilitiesByDay: suspend () -> BookingAvailabilitiesListByDay,

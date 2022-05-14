@@ -16,12 +16,12 @@ object LoginFeature {
     }
 
     sealed class Msg {
-        data class OnSocialNetworkSelected(val socialNetwork: SocialNetwork) : Msg()
+        class OnSocialNetworkSelected(val socialNetwork: SocialNetwork) : Msg()
         object LoginAttemptFinished : Msg()
     }
 
     sealed interface Eff {
-        data class Login(val socialNetwork: SocialNetwork) : Eff
+        class Login(val socialNetwork: SocialNetwork) : Eff
     }
 
     fun reducer(

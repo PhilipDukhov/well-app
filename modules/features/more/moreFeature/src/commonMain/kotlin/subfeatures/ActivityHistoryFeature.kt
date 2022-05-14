@@ -27,8 +27,8 @@ object ActivityHistoryFeature {
     }
 
     sealed class Msg {
-        data class UpdateCallHistoryItems(val callHistoryItems: List<State.CallHistoryItem>) : Msg()
-        data class UpdateSearchHistoryItems(val searchHistoryItems: List<State.SearchHistoryItem>) : Msg()
+        class UpdateCallHistoryItems(val callHistoryItems: List<State.CallHistoryItem>) : Msg()
+        class UpdateSearchHistoryItems(val searchHistoryItems: List<State.SearchHistoryItem>) : Msg()
         object Back : Msg()
     }
 

@@ -23,7 +23,7 @@ class ChatListEffHandler(
     private val services: Services,
     parentCoroutineScope: CoroutineScope,
 ) : EffectHandler<Eff, Msg>(parentCoroutineScope) {
-    data class Services(
+    class Services(
         val openUserChat: (id: User.Id) -> Unit,
         val onConnectedFlow: Flow<Unit>,
         val onlineUsersFlow: Flow<Set<User.Id>>,

@@ -198,40 +198,40 @@ object MyProfileFeature {
         object Call : Msg()
         object Message : Msg()
         object ToggleFavorite : Msg()
-        data class OpenUrl(val url: String) : Msg()
-        data class RemoteUpdateUser(val user: User) : Msg()
-        data class UpdateUser(val user: User) : Msg()
-        data class UpdateImage(val imageContainer: ImageContainer?) : Msg()
-        data class UserUploadFinished(val exception: Exception?) : Msg()
-        data class UpdateHasAvailableAvailabilities(val hasAvailableAvailabilities: Boolean) : Msg()
-        data class Rate(val review: Review) : Msg()
-        data class AvailabilityMsg(val msg: AvailabilitiesCalendarFeature.Msg) : Msg()
+        class OpenUrl(val url: String) : Msg()
+        class RemoteUpdateUser(val user: User) : Msg()
+        class UpdateUser(val user: User) : Msg()
+        class UpdateImage(val imageContainer: ImageContainer?) : Msg()
+        class UserUploadFinished(val exception: Exception?) : Msg()
+        class UpdateHasAvailableAvailabilities(val hasAvailableAvailabilities: Boolean) : Msg()
+        class Rate(val review: Review) : Msg()
+        class AvailabilityMsg(val msg: AvailabilitiesCalendarFeature.Msg) : Msg()
         object RequestConsultation : Msg()
         object CloseConsultationRequest : Msg()
-        data class RequestConsultationMsg(val msg: RequestConsultationFeature.Msg) : Msg()
-        data class SettingsMsg(val msg: SettingsFeature.Msg) : Msg()
+        class RequestConsultationMsg(val msg: RequestConsultationFeature.Msg) : Msg()
+        class SettingsMsg(val msg: SettingsFeature.Msg) : Msg()
     }
 
     sealed interface Eff {
-        data class InitiateImageUpdate(val hasImage: Boolean) : Eff
-        data class OpenUrl(val url: String) : Eff
+        class InitiateImageUpdate(val hasImage: Boolean) : Eff
+        class OpenUrl(val url: String) : Eff
         data class UploadUser(
             val user: User,
             val newProfileImage: ImageContainer?,
         ) : Eff
 
-        data class ShowError(val exception: Exception) : Eff
-        data class Call(val user: User) : Eff
-        data class Message(val uid: User.Id) : Eff
-        data class RatingRequest(val ratingRequest: com.well.modules.models.RatingRequest) : Eff
+        class ShowError(val exception: Exception) : Eff
+        class Call(val user: User) : Eff
+        class Message(val uid: User.Id) : Eff
+        class RatingRequest(val ratingRequest: com.well.modules.models.RatingRequest) : Eff
 
         object Back : Eff
         object InitializationFinished : Eff
         object BecomeExpert : Eff
-        data class SetUserFavorite(val setter: FavoriteSetter) : Eff
-        data class AvailabilityEff(val eff: AvailabilitiesCalendarFeature.Eff) : Eff
-        data class RequestConsultationEff(val eff: RequestConsultationFeature.Eff) : Eff
-        data class SettingsEff(val eff: SettingsFeature.Eff) : Eff
+        class SetUserFavorite(val setter: FavoriteSetter) : Eff
+        class AvailabilityEff(val eff: AvailabilitiesCalendarFeature.Eff) : Eff
+        class RequestConsultationEff(val eff: RequestConsultationFeature.Eff) : Eff
+        class SettingsEff(val eff: SettingsFeature.Eff) : Eff
         object CloseConsultationRequest : Eff
     }
 

@@ -22,16 +22,16 @@ object FavoritesFeature {
     }
 
     sealed class Msg {
-        data class OnUserSelected(val user: User) : Msg()
-        data class UpdateUsers(val users: List<User>) : Msg()
-        data class UpdateFilterString(val filterString: String?) : Msg()
-        data class OnUserFavorite(val user: User) : Msg()
+        class OnUserSelected(val user: User) : Msg()
+        class UpdateUsers(val users: List<User>) : Msg()
+        class UpdateFilterString(val filterString: String?) : Msg()
+        class OnUserFavorite(val user: User) : Msg()
         object Back : Msg()
     }
 
     sealed interface Eff {
-        data class UnFavoriteUser(val uid: User.Id) : Eff
-        data class SelectedUser(val uid: User.Id) : Eff
+        class UnFavoriteUser(val uid: User.Id) : Eff
+        class SelectedUser(val uid: User.Id) : Eff
         object Back : Eff
     }
 

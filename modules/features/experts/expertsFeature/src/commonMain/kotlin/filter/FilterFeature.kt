@@ -52,16 +52,16 @@ object FilterFeature {
     }
 
     sealed class Msg {
-        data class Update(val filter: UsersFilter) : Msg()
-        data class SetSortByIndex(val index: Int) : Msg()
-        data class SetRatingIndex(val index: Int) : Msg()
+        class Update(val filter: UsersFilter) : Msg()
+        class SetSortByIndex(val index: Int) : Msg()
+        class SetRatingIndex(val index: Int) : Msg()
         object ToggleWithReviews : Msg()
         object Clear : Msg()
         object Show : Msg()
     }
 
     sealed interface Eff {
-        data class Show(val usersFilter: UsersFilter) : Eff
+        class Show(val usersFilter: UsersFilter) : Eff
     }
 
     fun reducer(

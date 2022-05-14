@@ -127,21 +127,21 @@ object DrawingFeature {
     }
 
     sealed class Msg {
-        data class UpdateLocalImageContainerSize(val size: Size) : Msg()
-        data class UpdateRemoteImageContainerSize(val size: Size) : Msg()
-        data class UpdateLocalVideoContainerSize(val size: Size) : Msg()
+        class UpdateLocalImageContainerSize(val size: Size) : Msg()
+        class UpdateRemoteImageContainerSize(val size: Size) : Msg()
+        class UpdateLocalVideoContainerSize(val size: Size) : Msg()
         object RequestImageUpdate : Msg()
-        data class LocalUpdateImage(val image: ImageContainer?) : Msg()
-        data class RemoteUpdateImage(val image: ImageContainer?) : Msg()
-        data class UpdateColor(val color: Color) : Msg()
-        data class UpdateLineWidth(val lineWidth: Float) : Msg()
-        data class NewDragPoint(val point: Point) : Msg()
-        data class SelectBrush(val brush: State.Brush) : Msg()
+        class LocalUpdateImage(val image: ImageContainer?) : Msg()
+        class RemoteUpdateImage(val image: ImageContainer?) : Msg()
+        class UpdateColor(val color: Color) : Msg()
+        class UpdateLineWidth(val lineWidth: Float) : Msg()
+        class NewDragPoint(val point: Point) : Msg()
+        class SelectBrush(val brush: State.Brush) : Msg()
         object EndDrag : Msg()
-        data class UpdatePaths(val paths: List<DrawingPath>) : Msg()
+        class UpdatePaths(val paths: List<DrawingPath>) : Msg()
         object Undo : Msg()
         object Redo : Msg()
-        data class LocalClear(val saveHistory: Boolean) : Msg()
+        class LocalClear(val saveHistory: Boolean) : Msg()
         data class RemoteClear(
             val saveHistory: Boolean,
             val date: Date,
@@ -149,8 +149,8 @@ object DrawingFeature {
     }
 
     sealed interface Eff {
-        data class RequestImageUpdate(val alreadyHasImage: Boolean) : Eff
-        data class NotifyViewSizeUpdate(val size: Size) : Eff
+        class RequestImageUpdate(val alreadyHasImage: Boolean) : Eff
+        class NotifyViewSizeUpdate(val size: Size) : Eff
         object ClearImage : Eff
         data class UploadImage(
             val image: ImageContainer,

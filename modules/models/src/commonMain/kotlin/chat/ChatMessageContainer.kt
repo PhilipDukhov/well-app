@@ -1,6 +1,6 @@
 package com.well.modules.models.chat
 
-data class ChatMessageContainer(
+class ChatMessageContainer(
     val message: ChatMessage,
     val viewModel: ChatMessageViewModel,
 )

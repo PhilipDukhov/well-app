@@ -30,8 +30,8 @@ object RequestConsultationFeature {
     }
 
     sealed class Msg {
-        data class UpdateAvailabilitiesByDay(val availabilitiesByDay: BookingAvailabilitiesListByDay) : Msg()
-        data class Book(val availability: BookingAvailability) : Msg()
+        class UpdateAvailabilitiesByDay(val availabilitiesByDay: BookingAvailabilitiesListByDay) : Msg()
+        class Book(val availability: BookingAvailability) : Msg()
         object Booked : Msg()
         object Close : Msg()
         object ClearFailedState : Msg()
@@ -43,9 +43,9 @@ object RequestConsultationFeature {
 
     sealed interface Eff {
         object Update : Eff
-        data class Book(val availability: BookingAvailability) : Eff
-        data class Close(val timeoutMillis: Long = 0) : Eff
-        data class ClearFailedState(val timeoutMillis: Long = 2000) : Eff
+        class Book(val availability: BookingAvailability) : Eff
+        class Close(val timeoutMillis: Long = 0) : Eff
+        class ClearFailedState(val timeoutMillis: Long = 2000) : Eff
     }
 
     fun reducer(

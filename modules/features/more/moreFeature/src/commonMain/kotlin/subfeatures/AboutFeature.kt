@@ -30,7 +30,7 @@ object AboutFeature {
             Demographic and other personally identifiable information 
         """.trimIndent()
 
-        data class TeamMember(
+        class TeamMember(
             val name: String,
             val position: String,
             val image: SharedImage,
@@ -50,15 +50,15 @@ object AboutFeature {
     }
 
     sealed class Msg {
-        data class OpenTwitter(val teamMember: State.TeamMember) : Msg()
+        class OpenTwitter(val teamMember: State.TeamMember) : Msg()
         object OpenPrivacyPolicy : Msg()
 //        object OpenSponsors : Msg()
         object Back : Msg()
     }
 
     sealed interface Eff {
-        data class OpenLink(val link: String) : Eff
-//        data class Push(val screen: MoreScreenState) : Eff
+        class OpenLink(val link: String) : Eff
+//        class Push(val screen: MoreScreenState) : Eff
         object Back : Eff
     }
 

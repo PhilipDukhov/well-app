@@ -16,12 +16,12 @@ object UserChatFeature {
     )
 
     sealed class Msg {
-        data class UpdateUser(val user: User) : Msg()
-        data class UpdateMessages(val messages: List<ChatMessageViewModel>) : Msg()
-        data class MarkMessageRead(val messageId: ChatMessage.Id) : Msg()
-        data class SendMessage(val string: String) : Msg()
+        class UpdateUser(val user: User) : Msg()
+        class UpdateMessages(val messages: List<ChatMessageViewModel>) : Msg()
+        class MarkMessageRead(val messageId: ChatMessage.Id) : Msg()
+        class SendMessage(val string: String) : Msg()
         object ChooseImage : Msg()
-        data class SendImage(val image: LocalImage) : Msg()
+        class SendImage(val image: LocalImage) : Msg()
         object OpenUserProfile : Msg()
         object Back : Msg()
         object Call : Msg()
@@ -29,12 +29,12 @@ object UserChatFeature {
 
     sealed interface Eff {
         object ChooseImage : Eff
-        data class MarkMessageRead(val messageId: ChatMessage.Id) : Eff
-        data class SendMessage(val string: String, val peerId: User.Id) : Eff
-        data class SendImage(val image: LocalImage, val peerId: User.Id) : Eff
+        class MarkMessageRead(val messageId: ChatMessage.Id) : Eff
+        class SendMessage(val string: String, val peerId: User.Id) : Eff
+        class SendImage(val image: LocalImage, val peerId: User.Id) : Eff
         object Back : Eff
-        data class Call(val user: User) : Eff
-        data class OpenUserProfile(val user: User) : Eff
+        class Call(val user: User) : Eff
+        class OpenUserProfile(val user: User) : Eff
     }
 
     fun reducer(

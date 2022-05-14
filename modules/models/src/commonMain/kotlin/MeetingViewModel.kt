@@ -3,7 +3,7 @@ package com.well.modules.models
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 
-data class MeetingViewModel(
+class MeetingViewModel(
     val id: Meeting.Id,
     val state: Meeting.State,
     val isExpert: Boolean,

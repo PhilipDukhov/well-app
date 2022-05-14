@@ -34,7 +34,7 @@ class CallEffectHandler(
     webRtcManagerGenerator: (List<String>, WebRtcManagerI.Listener) -> WebRtcManagerI,
     parentCoroutineScope: CoroutineScope,
 ) : EffectHandler<Eff, Msg>(parentCoroutineScope) {
-    data class Services(
+    class Services(
         val isConnectedFlow: Flow<Boolean>,
         val callWebSocketMsgFlow: Flow<WebSocketMsg.Call>,
         val sendCallWebSocketMsg: suspend (WebSocketMsg.Call) -> Unit,

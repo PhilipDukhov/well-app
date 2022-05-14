@@ -9,52 +9,52 @@ sealed class WebSocketMsg {
     @Serializable
     sealed class Front: WebSocketMsg() {
         @Serializable
-        data class InitiateCall(
+        class InitiateCall(
             val uid: User.Id,
         ) : Front()
 
         @Serializable
-        data class SetExpertsFilter(
+        class SetExpertsFilter(
             val filter: UsersFilter?,
         ) : Front()
 
         @Serializable
-        data class SetUsersPresence(
+        class SetUsersPresence(
             val usersPresence: List<UserPresenceInfo>,
         ) : Front()
 
         @Serializable
-        data class SetChatMessagePresence(
+        class SetChatMessagePresence(
             val messagePresenceId: ChatMessage.Id,
         ) : Front()
 
         @Serializable
-        data class UpdateChatReadStatePresence(
+        class UpdateChatReadStatePresence(
             val lastReadMessages: List<LastReadMessage>,
         ) : Front()
 
         @Serializable
-        data class SetMeetingsPresence(
+        class SetMeetingsPresence(
             val meetingsPresence: List<Pair<Meeting.Id, Meeting.State>>,
         ) : Front()
 
         @Serializable
-        data class ChatMessageRead(
+        class ChatMessageRead(
             val messageId: ChatMessage.Id,
         ) : Front()
 
         @Serializable
-        data class CreateChatMessage(
+        class CreateChatMessage(
             val message: ChatMessage,
         ) : Front()
 
         @Serializable
-        data class UpdateNotificationToken(
+        class UpdateNotificationToken(
             val token: NotificationToken,
         ) : Front()
 
         @Serializable
-        data class UpdateMeetingState(
+        class UpdateMeetingState(
             val meetingId: Meeting.Id,
             val state: Meeting.State,
         ) : Front()
@@ -66,53 +66,53 @@ sealed class WebSocketMsg {
     @Serializable
     sealed class Back: WebSocketMsg() {
         @Serializable
-        data class UpdateUsers(
+        class UpdateUsers(
             val users: List<User>,
         ) : Back()
 
         @Serializable
-        data class ListFilteredExperts(
+        class ListFilteredExperts(
             val userIds: List<User.Id>,
         ) : Back()
 
         @Serializable
-        data class IncomingCall(
+        class IncomingCall(
             val user: User,
         ) : Back()
 
         @Serializable
-        data class UpdateMessages(
+        class UpdateMessages(
             val messages: List<UpdateMessageInfo>,
         ) : Back() {
             @Serializable
-            data class UpdateMessageInfo(
+            class UpdateMessageInfo(
                 val message: ChatMessage,
                 val tmpId: ChatMessage.Id? = null,
             )
         }
 
         @Serializable
-        data class UpdateCharReadPresence(
+        class UpdateCharReadPresence(
             val lastReadMessages: List<LastReadMessage>,
         ) : Back()
 
         @Serializable
-        data class AddMeetings(
+        class AddMeetings(
             val meetings: List<Meeting>,
         ) : Back()
 
         @Serializable
-        data class RemovedMeetings(
+        class RemovedMeetings(
             val ids: List<Meeting.Id>,
         ) : Back()
 
         @Serializable
-        data class RemovedUsers(
+        class RemovedUsers(
             val ids: List<User.Id>,
         ) : Back()
 
         @Serializable
-        data class OnlineUsersList(
+        class OnlineUsersList(
             val ids: Set<User.Id>,
         ) : Back()
 
@@ -123,7 +123,7 @@ sealed class WebSocketMsg {
     @Serializable
     sealed class Call: WebSocketMsg() {
         @Serializable
-        data class Offer(
+        class Offer(
             val sessionDescriptor: String,
         ) : Call() {
             override fun toString(): String =
@@ -132,7 +132,7 @@ sealed class WebSocketMsg {
         }
 
         @Serializable
-        data class Answer(
+        class Answer(
             val sessionDescriptor: String,
         ) : Call() {
             override fun toString(): String =
@@ -141,14 +141,14 @@ sealed class WebSocketMsg {
         }
 
         @Serializable
-        data class Candidate(
+        class Candidate(
             val sdpMid: String,
             val sdpMLineIndex: Int,
             val sdp: String,
         ) : Call()
 
         @Serializable
-        data class EndCall(val reason: Reason) : Call() {
+        class EndCall(val reason: Reason) : Call() {
             @Serializable
             sealed class Reason {
                 @Serializable

@@ -35,7 +35,7 @@ class NotificationHandler(
     internal val services: Services,
     parentCoroutineScope: CoroutineScope,
 ) : CloseableContainerImpl() {
-    data class Services(
+    class Services(
         val lastListViewModelFlow: Flow<List<ChatMessageContainer>>,
         val unreadCountsFlow: (List<ChatMessage>) -> Flow<Map<ChatMessage.Id, Long>>,
         val getUsersByIdsFlow: (List<User.Id>) -> Flow<List<User>>,

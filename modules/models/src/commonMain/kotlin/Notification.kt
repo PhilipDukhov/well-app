@@ -16,7 +16,7 @@ sealed class Notification {
     abstract val alertBody: String
 
     @Serializable
-    data class IncomingCall(
+    class IncomingCall(
         val callId: UUID,
         val userId: User.Id,
         override val hasVideo: Boolean,
@@ -40,7 +40,7 @@ sealed class Notification {
     }
 
     @Serializable
-    data class Meeting(
+    class Meeting(
         val meeting: com.well.modules.models.Meeting,
         override val senderName: String,
         override val totalUnreadCount: Int,

@@ -58,7 +58,7 @@ object CalendarFeature {
             DayMeetings(day = it.date, meetings = it.events)
         }
 
-        data class DayMeetings(
+        class DayMeetings(
             val day: LocalDate,
             val meetings: List<MeetingViewModel>,
         )
@@ -80,13 +80,13 @@ object CalendarFeature {
     }
 
     sealed class Msg {
-        data class UpdateMeetings(val meetings: List<MeetingViewModel>) : Msg()
-        data class OpenUserProfile(val meeting: MeetingViewModel) : Msg()
-        data class StartCall(val meeting: MeetingViewModel) : Msg()
-        data class UpdateMeetingState(val meeting: MeetingViewModel, val state: Meeting.State) : Msg()
-        data class DeleteRequest(val meeting: MeetingViewModel) : Msg()
+        class UpdateMeetings(val meetings: List<MeetingViewModel>) : Msg()
+        class OpenUserProfile(val meeting: MeetingViewModel) : Msg()
+        class StartCall(val meeting: MeetingViewModel) : Msg()
+        class UpdateMeetingState(val meeting: MeetingViewModel, val state: Meeting.State) : Msg()
+        class DeleteRequest(val meeting: MeetingViewModel) : Msg()
 
-        internal data class CalendarInfoMsg(val msg: CalendarInfoFeature.Msg) : Msg()
+        internal class CalendarInfoMsg(val msg: CalendarInfoFeature.Msg) : Msg()
 
         companion object {
             val PrevMonth: Msg = CalendarInfoMsg(CalendarInfoFeature.Msg.PrevMonth)
@@ -99,9 +99,9 @@ object CalendarFeature {
     }
 
     sealed interface Eff {
-        data class OpenUserProfile(val uid: User.Id) : Eff
-        data class StartCall(val uid: User.Id) : Eff
-        data class UpdateMeetingState(val meetingId: Meeting.Id, val state: Meeting.State) : Eff
+        class OpenUserProfile(val uid: User.Id) : Eff
+        class StartCall(val uid: User.Id) : Eff
+        class UpdateMeetingState(val meetingId: Meeting.Id, val state: Meeting.State) : Eff
     }
 
     fun reducer(

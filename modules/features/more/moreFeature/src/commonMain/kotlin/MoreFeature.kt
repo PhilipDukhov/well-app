@@ -34,11 +34,11 @@ object MoreFeature {
     }
 
     sealed class Msg {
-        data class SelectItem(val item: State.Item) : Msg()
+        class SelectItem(val item: State.Item) : Msg()
     }
 
     sealed interface Eff {
-        data class Push(val screen: MoreScreenState) : Eff
+        class Push(val screen: MoreScreenState) : Eff
         object InviteColleague : Eff
     }
 

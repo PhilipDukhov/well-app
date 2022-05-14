@@ -4,7 +4,7 @@ import com.well.modules.models.User
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class LastReadMessage(
+class LastReadMessage(
     val fromId: User.Id,
     val peerId: User.Id,
     val messageId: ChatMessage.Id,

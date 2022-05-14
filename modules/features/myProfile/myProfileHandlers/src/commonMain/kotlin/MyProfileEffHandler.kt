@@ -35,7 +35,7 @@ class MyProfileEffHandler(
     private val services: Services,
     parentCoroutineScope: CoroutineScope,
 ) : EffectHandler<Eff, Msg>(parentCoroutineScope) {
-    data class Services(
+    class Services(
         val userFlow: Flow<User>,
         val putUser: suspend (User) -> Unit,
         val uploadProfilePicture: suspend (ByteArray) -> String,

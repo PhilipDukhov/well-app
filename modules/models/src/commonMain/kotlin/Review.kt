@@ -4,13 +4,13 @@ import com.well.modules.models.formatters.initialsFromName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RatingRequest(
+class RatingRequest(
     val uid: User.Id,
     val review: Review,
 )
 
 @Serializable
-data class ExistingReview(
+class ExistingReview(
     val userFullName: String,
     val profileImageUrl: String? = null,
     val review: Review,
@@ -19,7 +19,7 @@ data class ExistingReview(
 }
 
 @Serializable
-data class Review(
+class Review(
     val value: Int,
     val text: String? = null,
 )

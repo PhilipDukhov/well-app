@@ -125,34 +125,34 @@ object CallFeature {
         object End : Msg()
         object Back : Msg()
         object DataConnectionEstablished : Msg()
-        data class UpdateLocalCaptureDimensions(val dimensions: Size) : Msg()
-        data class UpdateRemoteCaptureDimensions(val dimensions: Size) : Msg()
-        data class UpdateStatus(val status: State.Status) : Msg()
-        data class UpdateLocalVideoContext(val viewContext: VideoViewContext) : Msg()
-        data class UpdateRemoteVideoContext(val viewContext: VideoViewContext) : Msg()
-        data class UpdateRemoteDeviceState(val deviceState: RemoteDeviceState) : Msg()
-        data class SetMicEnabled(val enabled: Boolean) : Msg()
-        data class SetCameraEnabled(val enabled: Boolean) : Msg()
-        data class SetAudioSpeakerEnabled(val enabled: Boolean) : Msg()
-        data class SetIsFrontCamera(val isFrontCamera: Boolean) : Msg()
+        class UpdateLocalCaptureDimensions(val dimensions: Size) : Msg()
+        class UpdateRemoteCaptureDimensions(val dimensions: Size) : Msg()
+        class UpdateStatus(val status: State.Status) : Msg()
+        class UpdateLocalVideoContext(val viewContext: VideoViewContext) : Msg()
+        class UpdateRemoteVideoContext(val viewContext: VideoViewContext) : Msg()
+        class UpdateRemoteDeviceState(val deviceState: RemoteDeviceState) : Msg()
+        class SetMicEnabled(val enabled: Boolean) : Msg()
+        class SetCameraEnabled(val enabled: Boolean) : Msg()
+        class SetAudioSpeakerEnabled(val enabled: Boolean) : Msg()
+        class SetIsFrontCamera(val isFrontCamera: Boolean) : Msg()
         object InitializeDrawing : Msg()
-        data class LocalUpdateViewPoint(val viewPoint: State.ViewPoint) : Msg()
-        data class RemoteUpdateViewPoint(val viewPoint: State.ViewPoint) : Msg()
-        data class UpdateControlSet(val controlSet: State.ControlSet) : Msg()
-        data class DrawingMsg(val msg: DrawingFeature.Msg) : Msg()
+        class LocalUpdateViewPoint(val viewPoint: State.ViewPoint) : Msg()
+        class RemoteUpdateViewPoint(val viewPoint: State.ViewPoint) : Msg()
+        class UpdateControlSet(val controlSet: State.ControlSet) : Msg()
+        class DrawingMsg(val msg: DrawingFeature.Msg) : Msg()
     }
 
     sealed interface Eff {
-        data class Initiate(val userId: User.Id) : Eff
-        data class Accept(val incomingCall: WebSocketMsg.Back.IncomingCall) : Eff
+        class Initiate(val userId: User.Id) : Eff
+        class Accept(val incomingCall: WebSocketMsg.Back.IncomingCall) : Eff
         object End : Eff
         object ChooseViewPoint : Eff
         object SystemBack : Eff
-        data class SyncLocalDeviceState(val localDeviceState: LocalDeviceState) : Eff
-        data class NotifyLocalCaptureDimensionsChanged(val dimensions: Size) : Eff
-        data class NotifyDeviceStateChanged(val deviceState: RemoteDeviceState) : Eff
-        data class NotifyUpdateViewPoint(val viewPoint: State.ViewPoint) : Eff
-        data class DrawingEff(val eff: DrawingFeature.Eff) : Eff
+        class SyncLocalDeviceState(val localDeviceState: LocalDeviceState) : Eff
+        class NotifyLocalCaptureDimensionsChanged(val dimensions: Size) : Eff
+        class NotifyDeviceStateChanged(val deviceState: RemoteDeviceState) : Eff
+        class NotifyUpdateViewPoint(val viewPoint: State.ViewPoint) : Eff
+        class DrawingEff(val eff: DrawingFeature.Eff) : Eff
     }
 
     fun reducer(

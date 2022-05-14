@@ -21,7 +21,7 @@ class ExpertsApiEffectHandler(
     private val services: Services,
     parentCoroutineScope: CoroutineScope,
 ) : EffectHandler<Eff, Msg>(parentCoroutineScope) {
-    data class Services(
+    class Services(
         val connectionStatusFlow: Flow<ConnectionStatus>,
         val usersListFlow: Flow<List<User>>,
         val updateUsersFilter: suspend (UsersFilter?) -> Unit,

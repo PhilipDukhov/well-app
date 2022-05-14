@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import kotlin.math.hypot
 
 @Serializable
-data class Point(
+class Point(
     val x: Float,
     val y: Float,
 ) {

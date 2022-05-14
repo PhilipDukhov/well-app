@@ -8,10 +8,10 @@ import com.well.modules.features.more.moreFeature.subfeatures.SupportFeature
 import com.well.modules.features.more.moreFeature.subfeatures.WellAcademyFeature
 
 sealed interface MoreScreenState {
-    data class Favorites(val state: FavoritesFeature.State): MoreScreenState
-    data class WellAcademy(val state: WellAcademyFeature.State): MoreScreenState
-    data class ActivityHistory(val state: ActivityHistoryFeature.State): MoreScreenState
-    data class Donate(val state: DonateFeature.State): MoreScreenState
-    data class Support(val state: SupportFeature.State): MoreScreenState
-    data class About(val state: AboutFeature.State): MoreScreenState
+    class Favorites(val state: FavoritesFeature.State): MoreScreenState
+    class WellAcademy(val state: WellAcademyFeature.State): MoreScreenState
+    class ActivityHistory(val state: ActivityHistoryFeature.State): MoreScreenState
+    class Donate(val state: DonateFeature.State): MoreScreenState
+    class Support(val state: SupportFeature.State): MoreScreenState
+    class About(val state: AboutFeature.State): MoreScreenState
 }

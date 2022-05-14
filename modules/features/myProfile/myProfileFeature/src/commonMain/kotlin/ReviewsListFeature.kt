@@ -20,7 +20,7 @@ object ReviewsListFeature {
 
     sealed class Msg {
         object LeaveReview: Msg()
-        data class UpdateReviews(val reviews: List<ExistingReview>): Msg()
+        class UpdateReviews(val reviews: List<ExistingReview>): Msg()
     }
 
     sealed interface Eff {

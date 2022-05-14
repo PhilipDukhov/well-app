@@ -81,15 +81,15 @@ object CreateAvailabilityFeature {
     }
 
     sealed class Msg {
-        data class SetStartTime(val time: LocalTime) : Msg()
-        data class SetEndTime(val time: LocalTime) : Msg()
-        data class SetRepeat(val repeat: Repeat) : Msg()
+        class SetStartTime(val time: LocalTime) : Msg()
+        class SetEndTime(val time: LocalTime) : Msg()
+        class SetRepeat(val repeat: Repeat) : Msg()
         object Save : Msg()
         object Delete : Msg()
     }
 
     sealed interface Eff {
-        data class Save(val availability: Availability) : Eff
+        class Save(val availability: Availability) : Eff
         object Delete : Eff
     }
 

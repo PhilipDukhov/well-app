@@ -19,7 +19,7 @@ class CalendarEffHandler(
     private val services: Services,
     parentCoroutineScope: CoroutineScope,
 ) : EffectHandler<Eff, Msg>(parentCoroutineScope) {
-    data class Services(
+    class Services(
         val currentUserId: User.Id,
         val meetingsFlow: Flow<List<Meeting>>,
         val getUsersByIdsFlow: (Set<User.Id>) -> Flow<List<User>>,

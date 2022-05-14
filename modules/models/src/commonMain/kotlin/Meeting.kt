@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 import kotlin.jvm.JvmInline
 
 @Serializable
-data class Meeting(
+class Meeting(
     val id: Id,
     override val startInstant: Instant,
     override val durationMinutes: Int,
@@ -37,10 +37,10 @@ data class Meeting(
         object Confirmed : State()
 
         @Serializable
-        data class Rejected(val reason: String) : State()
+        class Rejected(val reason: String) : State()
 
         @Serializable
-        data class Canceled(val reason: String) : State()
+        class Canceled(val reason: String) : State()
     }
 
     val dateTimeDescription = "on ${startDay.localizedDayAndShortMonth()} at $startTime"

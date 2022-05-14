@@ -24,12 +24,12 @@ object ChatListFeature {
     }
 
     sealed class Msg {
-        data class SelectChat(val userId: User.Id) : Msg()
-        data class UpdateItems(val listItems: List<State.ListItem>) : Msg()
+        class SelectChat(val userId: User.Id) : Msg()
+        class UpdateItems(val listItems: List<State.ListItem>) : Msg()
     }
 
     sealed interface Eff {
-        data class SelectChat(val uid: User.Id) : Eff
+        class SelectChat(val uid: User.Id) : Eff
     }
 
     fun reducer(

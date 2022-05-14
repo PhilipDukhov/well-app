@@ -31,22 +31,22 @@ object ExpertsFeature {
     }
 
     sealed class Msg {
-        data class OnConnectionStatusChange(val connectionStatus: ConnectionStatus) : Msg()
-        data class OnUsersUpdated(val users: List<User>) : Msg()
-        data class OnUserSelected(val user: User) : Msg()
-        data class OnUserFavorite(val user: User) : Msg()
+        class OnConnectionStatusChange(val connectionStatus: ConnectionStatus) : Msg()
+        class OnUsersUpdated(val users: List<User>) : Msg()
+        class OnUserSelected(val user: User) : Msg()
+        class OnUserFavorite(val user: User) : Msg()
 
-        data class FilterMsg(val msg: FilterFeature.Msg) : Msg()
-        data class SetSearchString(val searchString: String) : Msg()
+        class FilterMsg(val msg: FilterFeature.Msg) : Msg()
+        class SetSearchString(val searchString: String) : Msg()
         object ToggleFilterFavorite : Msg()
         object Reload : Msg()
     }
 
     sealed interface Eff {
-        data class SelectedUser(val user: User) : Eff
-        data class UpdateList(val filter: UsersFilter) : Eff
-        data class SetUserFavorite(val setter: FavoriteSetter) : Eff
-        data class FilterEff(val eff: FilterFeature.Eff) : Eff
+        class SelectedUser(val user: User) : Eff
+        class UpdateList(val filter: UsersFilter) : Eff
+        class SetUserFavorite(val setter: FavoriteSetter) : Eff
+        class FilterEff(val eff: FilterFeature.Eff) : Eff
     }
 
     fun reducer(

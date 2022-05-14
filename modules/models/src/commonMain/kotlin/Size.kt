@@ -5,18 +5,18 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Size(
     val width: Float,
-    val height: Float
+    val height: Float,
 ) {
     val aspectRatio: Float
         get() = width / height
 
     constructor(
         width: Int,
-        height: Int
+        height: Int,
     ) : this(width.toFloat(), height.toFloat())
 
     constructor(
-        size: Int
+        size: Int,
     ) : this(size.toFloat(), size.toFloat())
 
     fun aspectFit(aspectRatio: Size): Size =

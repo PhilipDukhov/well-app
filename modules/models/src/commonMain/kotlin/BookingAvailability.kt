@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 
 @Serializable
-data class BookingAvailability(
+class BookingAvailability(
     val availabilityId: Availability.Id,
     override val startInstant: Instant,
     override val durationMinutes: Int,

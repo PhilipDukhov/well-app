@@ -3,7 +3,7 @@ package com.well.modules.features.call.callFeature
 import org.webrtc.EglBase
 import org.webrtc.VideoTrack
 
-actual data class VideoViewContext(
+actual class VideoViewContext(
     val eglBase: EglBase,
     val videoTrack: VideoTrack,
 ) {

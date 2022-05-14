@@ -98,7 +98,7 @@ object TopLevelFeature {
                 data class TabScreen(val tab: Tab, val screen: ScreenState)
             }
 
-            data class Single(val screen: ScreenState) : Screen
+            class Single(val screen: ScreenState) : Screen
         }
 
         override fun toString() =
@@ -145,37 +145,37 @@ object TopLevelFeature {
 
     sealed class Msg {
         object Initial : Msg()
-        data class StartCall(val user: User) : Msg()
-        data class IncomingCall(val incomingCall: WebSocketMsg.Back.IncomingCall) : Msg()
+        class StartCall(val user: User) : Msg()
+        class IncomingCall(val incomingCall: WebSocketMsg.Back.IncomingCall) : Msg()
         object EndCall : Msg()
 
         object StopImageSharing : Msg()
 
-        data class ShowAlert(val alert: Alert) : Msg()
-        data class LoggedIn(val uid: User.Id) : Msg()
-        data class PushMyProfile(val myProfileState: MyProfileFeature.State) : Msg()
-        data class SelectTab(val tab: Tab) : Msg()
+        class ShowAlert(val alert: Alert) : Msg()
+        class LoggedIn(val uid: User.Id) : Msg()
+        class PushMyProfile(val myProfileState: MyProfileFeature.State) : Msg()
+        class SelectTab(val tab: Tab) : Msg()
         object OpenLoginScreen : Msg()
         object OpenWelcomeScreen : Msg()
-        data class OpenUserChat(val uid: User.Id) : Msg()
-        data class OpenMeeting(val meetingId: Meeting.Id) : Msg()
+        class OpenUserChat(val uid: User.Id) : Msg()
+        class OpenMeeting(val meetingId: Meeting.Id) : Msg()
         object Back : Msg()
         object Pop : Msg()
-        data class UpdateNotificationToken(val token: NotificationToken) : Msg()
-        data class UpdateSystemContext(val systemContext: SystemContext?) : Msg()
-        data class RawNotificationReceived(val rawNotification: RawNotification) : Msg()
+        class UpdateNotificationToken(val token: NotificationToken) : Msg()
+        class UpdateSystemContext(val systemContext: SystemContext?) : Msg()
+        class RawNotificationReceived(val rawNotification: RawNotification) : Msg()
         object ShowUpdateNeededScreen : Msg()
     }
 
     sealed interface Eff {
-        data class ShowAlert(val alert: Alert) : Eff
+        class ShowAlert(val alert: Alert) : Eff
         object SystemBack : Eff
         object Initial : Eff
         object InitialLoggedIn : Eff
-        data class TopScreenAppeared(val screen: ScreenState, val position: ScreenPosition) : Eff
-        data class UpdateNotificationToken(val token: NotificationToken) : Eff
-        data class UpdateSystemContext(val systemContext: SystemContext?) : Eff
-        data class HandleRawNotification(val rawNotification: RawNotification) : Eff
+        class TopScreenAppeared(val screen: ScreenState, val position: ScreenPosition) : Eff
+        class UpdateNotificationToken(val token: NotificationToken) : Eff
+        class UpdateSystemContext(val systemContext: SystemContext?) : Eff
+        class HandleRawNotification(val rawNotification: RawNotification) : Eff
     }
 
     fun reducer(
