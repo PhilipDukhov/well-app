@@ -13,7 +13,7 @@ def versions = [
     iosDeploymentTarget: "14.0",
     androidActivity    : "1.4.0",
     kotlinSerialization: "1.3.2",
-    coil               : "1.4.0",
+    coil               : "2.0.0",
     kotlinCoroutines   : "1.6.1-native-mt",
     ktor               : "1.6.8",
     sqldelight         : "1.5.3",
@@ -30,13 +30,11 @@ if (ext.properties["kotlin.native.binary.memoryModel"] == "experimental") {
 if (stableCompose) {
     versions["compose"] = "1.1.1"
     versions["accompanist"] = "0.23.1"
-    versions["coil"] = "1.4.0"
     versions["kotlin"] = "1.6.10"
 } else {
-    versions["compose"] = "1.2.0-alpha08"
-    versions["accompanist"] = "0.24.7-alpha"
-    versions["coil"] = "2.0.0-rc03"
-    versions["kotlin"] = "1.6.20"
+    versions["compose"] = "1.2.0-beta01"
+    versions["accompanist"] = "0.24.8-beta"
+    versions["kotlin"] = "1.6.21"
 }
 versions["kotlinBuildSrc"] = versions["kotlin"]
 
