@@ -1,6 +1,6 @@
 package com.well.server.routing.user
 
-import com.well.server.utils.Dependencies
+import com.well.server.utils.Services
 import com.well.server.utils.authUid
 import io.ktor.application.*
 import io.ktor.http.*
@@ -8,8 +8,8 @@ import io.ktor.response.*
 import io.ktor.util.pipeline.*
 
 suspend fun PipelineContext<*, ApplicationCall>.delete(
-    dependencies: Dependencies,
-) = dependencies.run {
+    services: Services,
+) = services.run {
     val currentUid = call.authUid
     database.transaction {
         with(database) {

@@ -1,6 +1,6 @@
 package com.well.server.routing.auth
 
-import com.well.server.utils.Dependencies
+import com.well.server.utils.Services
 import com.well.server.utils.append
 import com.well.server.utils.configProperty
 import com.well.server.utils.getPrimitiveContent
@@ -13,7 +13,7 @@ import kotlinx.serialization.json.jsonObject
 
 private lateinit var facebookAuthenticatedClient: HttpClient
 
-suspend fun Dependencies.getFacebookAuthenticatedClient(): HttpClient {
+suspend fun Services.getFacebookAuthenticatedClient(): HttpClient {
     if (::facebookAuthenticatedClient.isInitialized) return facebookAuthenticatedClient
     val appId = environment.configProperty("social.facebook.appId")
     val appSecret = environment.configProperty("social.facebook.appSecret")

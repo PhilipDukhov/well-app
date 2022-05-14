@@ -1,7 +1,7 @@
 package com.well.server.routing.auth
 
 import com.well.modules.models.User
-import com.well.server.utils.Dependencies
+import com.well.server.utils.Services
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier
 import com.google.api.client.http.apache.v2.ApacheHttpTransport
 import com.google.api.client.json.gson.GsonFactory
@@ -11,8 +11,8 @@ import io.ktor.util.pipeline.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-suspend fun PipelineContext<*, ApplicationCall>.googleLogin(dependencies: Dependencies) =
-    dependencies.run {
+suspend fun PipelineContext<*, ApplicationCall>.googleLogin(services: Services) =
+    services.run {
         val clientIds = environment
             .config
             .property("social.google.clientIds")
@@ -46,5 +46,5 @@ suspend fun PipelineContext<*, ApplicationCall>.googleLogin(dependencies: Depend
                     }
             }
         }
-        call.respondAuthenticated(uid, dependencies)
+        call.respondAuthenticated(uid, services)
     }

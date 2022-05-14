@@ -1,7 +1,7 @@
 package com.well.server.routing.auth
 
 import com.well.modules.models.User
-import com.well.server.utils.Dependencies
+import com.well.server.utils.Services
 import com.well.server.utils.append
 import com.well.server.utils.getPrimitiveContent
 import com.well.server.utils.uploadToS3FromUrl
@@ -18,8 +18,8 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 suspend fun PipelineContext<*, ApplicationCall>.facebookLogin(
-    dependencies: Dependencies,
-) = dependencies.run {
+    services: Services,
+) = services.run {
     getFacebookAuthenticatedClient().run {
         val facebookId = getUid(call.receive())
         val id = getFacebookUid(facebookId)
@@ -29,9 +29,9 @@ suspend fun PipelineContext<*, ApplicationCall>.facebookLogin(
                     getUserInfo(facebookId),
                 )
             }.also {
-                updateUserProfile(it, facebookId, dependencies)
+                updateUserProfile(it, facebookId, services)
             }
-        call.respondAuthenticated(id, dependencies)
+        call.respondAuthenticated(id, services)
     }
 }
 
@@ -68,14 +68,14 @@ private suspend fun HttpClient.getProfilePicture(uid: String) =
             else Url(it.getPrimitiveContent("url"))
         }
 
-private fun Dependencies.getFacebookUid(
+private fun Services.getFacebookUid(
     id: String,
 ) = database
     .usersQueries
     .getByFacebookId(id)
     .executeAsOneOrNull()
 
-private fun Dependencies.createFacebookUser(
+private fun Services.createFacebookUser(
     id: String,
     userInfo: JsonObject,
 ): User.Id = database
@@ -98,8 +98,8 @@ private fun Dependencies.createFacebookUser(
 private suspend fun HttpClient.updateUserProfile(
     id: User.Id,
     facebookId: String,
-    dependencies: Dependencies,
-) = dependencies.apply {
+    services: Services,
+) = services.apply {
     getProfilePicture(facebookId)
         ?.let { uploadToS3FromUrl(it, awsProfileImagePath(id, "")) }
         ?.let {

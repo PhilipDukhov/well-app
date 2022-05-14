@@ -2,7 +2,7 @@ package com.well.server.routing.user
 
 import com.well.modules.db.server.Favourites
 import com.well.modules.models.FavoriteSetter
-import com.well.server.utils.Dependencies
+import com.well.server.utils.Services
 import com.well.server.utils.authUid
 import io.ktor.application.*
 import io.ktor.http.*
@@ -11,8 +11,8 @@ import io.ktor.response.*
 import io.ktor.util.pipeline.*
 
 suspend fun PipelineContext<*, ApplicationCall>.setUserFavorite(
-    dependencies: Dependencies,
-) = dependencies.run {
+    services: Services,
+) = services.run {
     val setFavorite = call.receive<FavoriteSetter>()
     val uid = call.authUid
     database.favoritesQueries.run databaseQuery@{

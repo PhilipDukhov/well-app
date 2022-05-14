@@ -9,9 +9,9 @@ import io.ktor.auth.jwt.*
 val ApplicationCall.authUid: User.Id
     get() = principal<JWTPrincipal>()!!.payload.authUid!!
 
-fun Payload.createPrincipal(dependencies: Dependencies) : JWTPrincipal? =
+fun Payload.createPrincipal(services: Services) : JWTPrincipal? =
     authUid?.let {
-        val userExists = dependencies.database
+        val userExists = services.database
             .usersQueries
             .exists(it)
             .executeAsOne()

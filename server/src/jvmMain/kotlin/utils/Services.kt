@@ -36,8 +36,7 @@ import kotlin.time.Duration.Companion.seconds
 import java.io.InputStream
 import java.util.*
 
-
-class Dependencies(app: Application) {
+class Services(app: Application) {
     val environment = app.environment
     val database: Database
     val dbDriver: SqlDriver
@@ -250,7 +249,7 @@ class Dependencies(app: Application) {
         sendNotification(
             notification = notification.value,
             tokenInfo = tokenInfo,
-            dependencies = this@Dependencies
+            services = this@Services
         )
     }
 

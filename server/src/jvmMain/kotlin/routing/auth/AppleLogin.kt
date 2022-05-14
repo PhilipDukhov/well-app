@@ -1,7 +1,7 @@
 package com.well.server.routing.auth
 
 import com.well.modules.models.User
-import com.well.server.utils.Dependencies
+import com.well.server.utils.Services
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
@@ -14,8 +14,8 @@ import io.ktor.util.*
 import io.ktor.util.pipeline.*
 
 suspend fun PipelineContext<*, ApplicationCall>.appleLoginPrincipal(
-    dependencies: Dependencies,
-) = dependencies.run {
+    services: Services,
+) = services.run {
     val claims = call.principal<JWTPrincipal>()!!.payload.claims
     val appleId = claims["sub"]?.asString() ?: run {
         call.respond(HttpStatusCode.Unauthorized, "payload missing 'sub'")
@@ -28,12 +28,12 @@ suspend fun PipelineContext<*, ApplicationCall>.appleLoginPrincipal(
                 claims["email"]?.asString(),
             )
         }
-    call.respondAuthenticated(id, dependencies)
+    call.respondAuthenticated(id, services)
 }
 
 private suspend fun PipelineContext<*, ApplicationCall>.appleLoginParams(
-    dependencies: Dependencies,
-) = dependencies.run {
+    services: Services,
+) = services.run {
     val params = call.receive<String>()
         .parseUrlEncodedParameters()
     val error = params["error"]
@@ -45,10 +45,10 @@ private suspend fun PipelineContext<*, ApplicationCall>.appleLoginParams(
 
 }
 
-private fun Dependencies.getByAppleId(id: String) =
+private fun Services.getByAppleId(id: String) =
     database.usersQueries.getByAppleId(id).executeAsOneOrNull()
 
-private fun Dependencies.createWithAppleId(id: String, email: String?): User.Id =
+private fun Services.createWithAppleId(id: String, email: String?): User.Id =
     database.usersQueries.run {
         insertApple(
             appleId = id,

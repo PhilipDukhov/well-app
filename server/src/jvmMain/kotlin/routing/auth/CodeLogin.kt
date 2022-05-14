@@ -1,6 +1,6 @@
 package com.well.server.routing.auth
 
-import com.well.server.utils.Dependencies
+import com.well.server.utils.Services
 import com.well.server.utils.sendEmail
 import com.amazonaws.services.sns.AmazonSNSClientBuilder
 import com.amazonaws.services.sns.model.MessageAttributeValue
@@ -12,14 +12,14 @@ import io.ktor.response.*
 import io.ktor.util.pipeline.*
 
 suspend fun PipelineContext<*, ApplicationCall>.sendEmail(
-    dependencies: Dependencies,
+    services: Services,
 ) {
     sendEmail("philip.dukhov@gmail.com", call.receive(), "Hi", "code")
     call.respond(HttpStatusCode.OK)
 }
 
 suspend fun PipelineContext<*, ApplicationCall>.sendSms(
-    dependencies: Dependencies,
+    services: Services,
 ) {
     sendSms("Enter code", call.receive())
     call.respond(HttpStatusCode.OK)

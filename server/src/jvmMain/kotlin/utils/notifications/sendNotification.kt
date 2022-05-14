@@ -5,7 +5,7 @@ import com.well.modules.models.Notification
 import com.well.modules.models.NotificationToken
 import com.well.modules.models.User
 import com.well.modules.utils.kotlinUtils.UUID
-import com.well.server.utils.Dependencies
+import com.well.server.utils.Services
 import com.eatthepath.pushy.apns.DeliveryPriority
 import com.eatthepath.pushy.apns.PushType
 import com.eatthepath.pushy.apns.util.SimpleApnsPayloadBuilder
@@ -22,7 +22,7 @@ import java.time.Instant
 suspend fun sendNotification(
     notification: Notification,
     tokenInfo: SelectTokenByUid,
-    dependencies: Dependencies,
+    services: Services,
 ) {
     when (val token = tokenInfo.token) {
         is NotificationToken.Fcm -> {
@@ -36,7 +36,7 @@ suspend fun sendNotification(
                 notification = notification,
                 token = token.token,
                 bundleId = token.bundleId,
-                dependencies = dependencies
+                services = services
             )
         }
     }
@@ -70,7 +70,7 @@ private fun sendFcmNotification(
 
 suspend fun sendVoipApnsNotification(
     tokenInfo: NotificationToken.Apns,
-    dependencies: Dependencies,
+    services: Services,
 ): String {
     val notification = Notification.IncomingCall(
         callId = UUID(),
@@ -98,7 +98,7 @@ suspend fun sendVoipApnsNotification(
         /* apnsId = */
         null,
     )
-    val response = dependencies
+    val response = services
         .run {
             if (tokenInfo.bundleId == "com.well.app")
                 prodApnsClient
@@ -114,7 +114,7 @@ private suspend fun sendApnsNotification(
     notification: Notification,
     token: String,
     bundleId: String,
-    dependencies: Dependencies,
+    services: Services,
 ) {
     val payloadBuilder = SimpleApnsPayloadBuilder()
     payloadBuilder.setAlertTitle(notification.alertTitle)
@@ -140,7 +140,7 @@ private suspend fun sendApnsNotification(
         /* apnsId = */
         null,
     )
-    val response = dependencies
+    val response = services
         .run {
             if (bundleId == "com.well.app")
                 prodApnsClient

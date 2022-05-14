@@ -83,7 +83,7 @@ class AwsManager(
     }
 }
 
-suspend fun Dependencies.uploadToS3FromUrl(
+suspend fun Services.uploadToS3FromUrl(
     url: Url,
     path: String,
 ) = client.get<HttpStatement>(url)

@@ -28,7 +28,7 @@ import com.well.server.routing.user.requestBecomeExpert
 import com.well.server.routing.user.setUserFavorite
 import com.well.server.routing.user.updateUser
 import com.well.server.routing.userHasAvailableAvailabilities
-import com.well.server.utils.Dependencies
+import com.well.server.utils.Services
 import com.well.server.utils.ForbiddenException
 import com.well.server.utils.authUid
 import com.well.server.utils.configProperty
@@ -62,7 +62,7 @@ fun Application.module() {
     val dbConfig = environment.config.config("database")
     val username = dbConfig.property("username").getString()
     try {
-        initializedModule(Dependencies(this))
+        initializedModule(Services(this))
     } catch (e: Exception) {
         println("initialization failed: ${e.stackTraceToString()}")
         if (username == "test") {
@@ -90,7 +90,7 @@ fun Application.module() {
 
 private object AdminPrincipal: Principal
 
-fun Application.initializedModule(dependencies: Dependencies) {
+fun Application.initializedModule(services: Services) {
     install(CallLogging) {
         level = Level.INFO
         filter { call ->
@@ -136,14 +136,14 @@ fun Application.initializedModule(dependencies: Dependencies) {
             }
         }
         jwt(AuthName.Main) {
-            verifier(dependencies.jwtConfig.verifier)
-            realm = dependencies.jwtConfig.issuer
+            verifier(services.jwtConfig.verifier)
+            realm = services.jwtConfig.issuer
             validate {
-                it.payload.createPrincipal(dependencies)
+                it.payload.createPrincipal(services)
             }
         }
         oauth(AuthName.Twitter) {
-            client = dependencies.client
+            client = services.client
             providerLookup = {
                 twitterLoginProvider
             }
@@ -194,8 +194,8 @@ fun Application.initializedModule(dependencies: Dependencies) {
 
     routing {
         route("login") {
-            post("facebook") { facebookLogin(dependencies) }
-            post("google") { googleLogin(dependencies) }
+            post("facebook") { facebookLogin(services) }
+            post("google") { googleLogin(services) }
             post("appleCallback") {
                 val params = call.receive<String>()
                     .parseUrlEncodedParameters()
@@ -209,7 +209,7 @@ fun Application.initializedModule(dependencies: Dependencies) {
                 println("$code $params ${call.request.headers.flattenEntries()}")
 
                 val appleOauthResponse = application.environment.run {
-                    dependencies.client.config {
+                    services.client.config {
                         install(Logging) {
                             level = LogLevel.ALL
                         }
@@ -221,7 +221,7 @@ fun Application.initializedModule(dependencies: Dependencies) {
                                 "code" to code,
                                 "redirect_uri" to "https://well-env-1.eba-yyqqrxsi.us-east-2.elasticbeanstalk.com/login/appleCallback",
                                 "client_id" to configProperty("social.apple.clientId"),
-                                "client_secret" to dependencies.jwtConfig.createAppleAuthToken(
+                                "client_secret" to services.jwtConfig.createAppleAuthToken(
                                     keyId = configProperty("social.apple.serviceKeyId"),
                                     privateKeyString = String(
                                         Base64.getDecoder()
@@ -241,16 +241,16 @@ fun Application.initializedModule(dependencies: Dependencies) {
             }
             authenticate(AuthName.Apple) {
                 post("apple") {
-                    appleLoginPrincipal(dependencies)
+                    appleLoginPrincipal(services)
                 }
             }
             authenticate(AuthName.Twitter) {
                 post("twitter") {
-                    twitterLogin(dependencies)
+                    twitterLogin(services)
                 }
             }
         }
-        post("twitter_oauth_callback") { twitterLogin(dependencies) }
+        post("twitter_oauth_callback") { twitterLogin(services) }
 //        post("email") { sendEmail(dependencies) }
 //        post("sms") { sendSms(dependencies) }
 
@@ -258,7 +258,7 @@ fun Application.initializedModule(dependencies: Dependencies) {
             post("executeQuerySql") {
                 val request = call.receive<String>()
                 println("\nexecuteSql ${call.authUid} $request")
-                val result = dependencies.dbDriver.executeQueryAndPrettify(request)
+                val result = services.dbDriver.executeQueryAndPrettify(request)
                     .also(::print)
                 println("")
                 call.respond(HttpStatusCode.OK, result)
@@ -266,7 +266,7 @@ fun Application.initializedModule(dependencies: Dependencies) {
             post("executeSql") {
                 val request = call.receive<String>()
                 println("\nexecuteSql ${call.authUid} $request")
-                val result = dependencies.dbDriver.execute(
+                val result = services.dbDriver.execute(
                     null,
                     request,
                     0
@@ -275,7 +275,7 @@ fun Application.initializedModule(dependencies: Dependencies) {
             }
 
             post("sendTestNotification") {
-                val res = sendVoipApnsNotification(NotificationToken.Apns(call.receive(), "com.well.app.debug"), dependencies = dependencies)
+                val res = sendVoipApnsNotification(NotificationToken.Apns(call.receive(), "com.well.app.debug"), services = services)
                 call.respond(HttpStatusCode.OK, res)
             }
 //            post("testNotification") {
@@ -289,44 +289,44 @@ fun Application.initializedModule(dependencies: Dependencies) {
         }
         authenticate(AuthName.Main) {
             webSocket(path = "mainWebSocket/{deviceId}") {
-                mainWebSocket(dependencies, DeviceId(call.parameters["deviceId"]!!))
+                mainWebSocket(services, DeviceId(call.parameters["deviceId"]!!))
             }
-            post("uploadMessageMedia") { uploadMessageMedia(dependencies) }
-            post("techSupportMessage") { handleTechSupportMessage(dependencies) }
+            post("uploadMessageMedia") { uploadMessageMedia(services) }
+            post("techSupportMessage") { handleTechSupportMessage(services) }
             route("user") {
-                put { updateUser(dependencies) }
-                post("uploadProfilePicture") { uploadProfilePicture(dependencies) }
+                put { updateUser(services) }
+                post("uploadProfilePicture") { uploadProfilePicture(services) }
                 post("rate") {
-                    rate(dependencies)
+                    rate(services)
                 }
                 post("setFavorite") {
-                    setUserFavorite(dependencies)
+                    setUserFavorite(services)
                 }
                 post("requestBecomeExpert") {
-                    requestBecomeExpert(dependencies)
+                    requestBecomeExpert(services)
                 }
                 delete {
-                    delete(dependencies)
+                    delete(services)
                 }
             }
             route("availabilities") {
                 get("listCurrent") {
-                    listCurrentAvailabilities(dependencies)
+                    listCurrentAvailabilities(services)
                 }
                 get("listByUser/{id}") {
-                    listBookingAvailabilities(call.idParameter(User::Id), dependencies)
+                    listBookingAvailabilities(call.idParameter(User::Id), services)
                 }
                 get("userHasAvailable/{id}") {
-                    userHasAvailableAvailabilities(call.idParameter(User::Id), dependencies)
+                    userHasAvailableAvailabilities(call.idParameter(User::Id), services)
                 }
                 put {
-                    putAvailability(dependencies)
+                    putAvailability(services)
                 }
                 delete("{id}") {
-                    deleteAvailability(call.idParameter(Availability::Id), dependencies)
+                    deleteAvailability(call.idParameter(Availability::Id), services)
                 }
                 post("book") {
-                    bookAvailability(dependencies)
+                    bookAvailability(services)
                 }
             }
         }

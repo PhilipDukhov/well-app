@@ -1,7 +1,7 @@
 package com.well.server.routing
 
 import com.well.modules.utils.kotlinUtils.letNamed
-import com.well.server.utils.Dependencies
+import com.well.server.utils.Services
 import com.well.server.utils.authUid
 import com.amazonaws.services.simpleemail.model.RawMessage
 import com.amazonaws.services.simpleemail.model.SendRawEmailRequest
@@ -25,7 +25,7 @@ import javax.mail.internet.MimeMultipart
 import javax.mail.util.ByteArrayDataSource
 
 suspend fun PipelineContext<*, ApplicationCall>.handleTechSupportMessage(
-    dependencies: Dependencies,
+    services: Services,
 ) {
     val uid = call.authUid
     var message: String? = null
@@ -74,6 +74,6 @@ suspend fun PipelineContext<*, ApplicationCall>.handleTechSupportMessage(
     }
     val rawMessage = RawMessage(ByteBuffer.wrap(outputStream.toByteArray()))
     val rawEmailRequest = SendRawEmailRequest(rawMessage)
-    dependencies.awsManager.simpleEmailService.sendRawEmail(rawEmailRequest)
+    services.awsManager.simpleEmailService.sendRawEmail(rawEmailRequest)
     call.respond(HttpStatusCode.OK)
 }
