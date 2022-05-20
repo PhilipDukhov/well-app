@@ -19,7 +19,7 @@ def versions = [
     sqldelight         : "1.5.3",
     bouncycastle       : "1.70",
     aws                : "1.12.192",
-    napier             : "2.5.0",
+    napier             : "2.6.1",
 ]
 
 if (ext.properties["kotlin.native.binary.memoryModel"] == "experimental") {
@@ -32,8 +32,8 @@ if (stableCompose) {
     versions["accompanist"] = "0.23.1"
     versions["kotlin"] = "1.6.10"
 } else {
-    versions["compose"] = "1.2.0-beta01"
-    versions["accompanist"] = "0.24.8-beta"
+    versions["compose"] = "1.2.0-beta02"
+    versions["accompanist"] = "0.24.9-beta"
     versions["kotlin"] = "1.6.21"
 }
 versions["kotlinBuildSrc"] = versions["kotlin"]
@@ -47,7 +47,7 @@ ext.Libs = [
         dotenv              : "io.github.cdimascio:dotenv-kotlin:6.2.2",
         sqldelight          : "com.squareup.sqldelight:gradle-plugin:$versions.sqldelight",
         gradleVersionsPlugin: "com.github.ben-manes:gradle-versions-plugin:0.42.0",
-        buildKonfig         : "com.codingfeline.buildkonfig:buildkonfig-gradle-plugin:0.11.0",
+        buildKonfig         : "com.codingfeline.buildkonfig:buildkonfig-gradle-plugin:0.12.0",
     ],
     kotlin    : [
         stdLib           : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin",
