@@ -47,7 +47,7 @@ kotlin {
             dependencies.add("kapt", project(":modules:annotationProcessor"))
             kotlin.srcDir(generatedKotlinSources)
         }
-        val iosMain by getting {
+        findByName("iosMain")?.run {
             libDependencies(
                 "kotlin.coroutines.core-strictly",
             )

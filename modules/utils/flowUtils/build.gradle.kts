@@ -20,7 +20,7 @@ kotlin {
                 "ktor.client.engine.cio",
             )
         }
-        val iosMain by getting {
+        findByName("iosMain")?.run {
             libDependencies(
                 "kotlin.coroutines.core-strictly",
             )

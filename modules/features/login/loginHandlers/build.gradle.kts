@@ -44,7 +44,7 @@ kotlin {
                 "kotlin.coroutines.playServices",
             )
         }
-        val iosMain by getting {
+        findByName("iosMain")?.run {
             libDependencies(
                 "kotlin.coroutines.core-strictly",
             )

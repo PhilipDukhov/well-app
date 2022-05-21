@@ -328,7 +328,7 @@ fabric.properties
 R.generated.swift
 
 # Multiplatform Cocoapods
-*/*.podspec
+*.podspec
 
 # Config
 iosApp/Well/Supporting files/Shared.xcconfig

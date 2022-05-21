@@ -34,7 +34,7 @@ kotlin {
                 "android.activity",
             )
         }
-        val iosMain by getting {
+        findByName("iosMain")?.run {
             libDependencies(
                 "sqldelight.nativeDriver",
                 "kotlin.coroutines.core-strictly",

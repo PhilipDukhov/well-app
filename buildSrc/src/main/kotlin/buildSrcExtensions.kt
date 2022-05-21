@@ -3,8 +3,12 @@ import org.gradle.api.NamedDomainObjectCollection
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ModuleVersionSelector
 import org.gradle.api.artifacts.dsl.RepositoryHandler
+import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.DependencyHandlerScope
+import org.gradle.kotlin.dsl.KotlinBuildScript
+import org.gradle.kotlin.dsl.PluginDependenciesSpecScope
 import org.gradle.kotlin.dsl.add
+import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.getting
@@ -219,24 +223,49 @@ private fun Project.customDependencies(libs: List<String>): List<Dependency> =
     }
 
 fun KotlinMultiplatformExtension.iosWithSimulator(
-    project: Project? = null,
+    project: Project,
     config: KotlinNativeTarget.() -> Unit = {},
+    cocoapodsFrameworkName: String? = null,
 ) {
-    ios(configure = config)
+    val platform = project.iosPlatform() ?: return
 
-    val platform = try {
-        project?.let { it.extra["kotlin.native.cocoapods.platform"] as? String }
-    } catch (_: Exception) {
-        null
+    when (platform) {
+        "iphoneos" -> {
+            iosArm64(name = "ios", configure = config)
+        }
+        "iphonesimulator" -> {
+            iosSimulatorArm64(name = "ios", configure = config)
+        }
+        else -> {
+            throw Throwable("unsupported platform: $platform. Update buildSrcExtensions")
+        }
     }
-
-    if (platform == "iphonesimulator") {
-        iosSimulatorArm64(configure = config)
-        val iosMain by sourceSets.getting
-        val iosSimulatorArm64Main by sourceSets.getting
-        iosSimulatorArm64Main.dependsOn(iosMain)
+    if (cocoapodsFrameworkName != null) {
+        project.apply(plugin = "org.jetbrains.kotlin.native.cocoapods")
+        (this as ExtensionAware).extensions.configure<org.jetbrains.kotlin.gradle.plugin.cocoapods.CocoapodsExtension>("cocoapods") {
+            ios.deploymentTarget = project.version("iosDeploymentTarget")
+            framework {
+                baseName = cocoapodsFrameworkName
+            }
+            summary = cocoapodsFrameworkName
+            homepage = "-"
+        }
     }
 }
+
+fun Project.skipIos() =
+    localProperties().getProperty("skipIos") == "true"
+
+fun Project.iosPlatform(): String? =
+    try {
+        extra["kotlin.native.cocoapods.platform"] as? String
+    } catch (_: Exception) {
+        if (!skipIos()) {
+            "iphoneos"
+        } else {
+            null
+        }
+    }
 
 fun DependencyHandlerScope.coreLibraryDesugaring() =
     add("coreLibraryDesugaring", "com.android.tools:desugar_jdk_libs:1.1.5")
@@ -262,7 +291,7 @@ fun KotlinMultiplatformExtension.exportIosModules(project: Project) {
         val commonMain by getting {
             libDependencies(modulesNames)
         }
-        val iosMain by getting {
+        findByName("iosMain")?.run {
             dependencies {
                 iosExportModules.forEach {
                     api(it)

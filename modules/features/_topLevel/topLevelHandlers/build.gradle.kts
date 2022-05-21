@@ -1,27 +1,24 @@
 plugins {
     kotlin("multiplatform")
-    kotlin("native.cocoapods")
     id("com.android.library")
 }
 
 kotlin {
     android()
     val frameworkName = "SharedMobile"
-    iosWithSimulator(project = project) {
-        binaries {
-            framework(frameworkName) {
-                freeCompilerArgs += listOf("-Xobjc-generics")
+    iosWithSimulator(
+        project = project,
+        config = {
+            binaries {
+                framework(frameworkName) {
+                    @Suppress("SuspiciousCollectionReassignment")
+                    freeCompilerArgs += listOf("-Xobjc-generics")
+                }
             }
-        }
-    }
-    cocoapods {
-        framework {
-            baseName = frameworkName
-        }
-        summary = frameworkName
-        homepage = "-"
-        ios.deploymentTarget = project.version("iosDeploymentTarget")
-    }
+        },
+        cocoapodsFrameworkName = frameworkName,
+    )
+
     exportIosModules(project)
     sourceSets {
         optIns(OptIn.Coroutines)
@@ -53,7 +50,7 @@ kotlin {
                 "kotlin.datetime",
             )
         }
-        val iosMain by getting {
+        findByName("iosMain")?.run {
             libDependencies(
                 "kotlin.coroutines.core-strictly",
             )
