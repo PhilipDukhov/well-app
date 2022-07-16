@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JavaProjectCodeInsightSettings">
+    <excluded-names>
+      <name>java.util.UUID</name>
+      <name>org.h2.value.Value.UUID</name>
+    </excluded-names>
+  </component>
+</project>

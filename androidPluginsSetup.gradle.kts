@@ -11,12 +11,12 @@ object Constants {
 subprojects {
     plugins.matching { it is AppPlugin || it is LibraryPlugin }.whenPluginAdded {
         configure<BaseExtension> {
-            setCompileSdkVersion(31)
+            setCompileSdkVersion(32)
             buildToolsVersion = "30.0.3"
 
             defaultConfig {
                 minSdk = 23
-                targetSdk = 31
+                targetSdk = 32
                 versionCode = 102191720
                 versionName = Constants.version
             }

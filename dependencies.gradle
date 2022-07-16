@@ -32,8 +32,8 @@ if (stableCompose) {
     versions["accompanist"] = "0.23.1"
     versions["kotlin"] = "1.6.10"
 } else {
-    versions["compose"] = "1.2.0-beta02"
-    versions["accompanist"] = "0.24.9-beta"
+    versions["compose"] = "1.2.0-rc02"
+    versions["accompanist"] = "0.24.12-rc"
     versions["kotlin"] = "1.6.21"
 }
 versions["kotlinBuildSrc"] = versions["kotlin"]
@@ -86,7 +86,6 @@ ext.Libs = [
                 datetime: "io.github.vanpra.compose-material-dialogs:datetime:0.7.0",
             ],
             accompanist           : [
-                insets         : "com.google.accompanist:accompanist-insets:$versions.accompanist",
                 flowlayout     : "com.google.accompanist:accompanist-flowlayout:$versions.accompanist",
                 pager          : "com.google.accompanist:accompanist-pager:$versions.accompanist",
                 pagerIndicators: "com.google.accompanist:accompanist-pager-indicators:$versions.accompanist",
@@ -101,7 +100,7 @@ ext.Libs = [
         ],
     ],
     google    : [
-        playServicesAuth  : "com.google.android.gms:play-services-auth:20.1.0",
+        playServicesAuth  : "com.google.android.gms:play-services-auth:20.2.0",
         apiClient         : "com.google.api-client:google-api-client:1.33.4",
         httpClientApacheV2: "com.google.http-client:google-http-client-apache-v2:1.41.5",
     ],
@@ -197,5 +196,5 @@ if (gradlePluginVersion != null) {
     ext.Libs["build"]["gradle"] = "com.android.tools.build:gradle:$gradlePluginVersion"
 }
 if (material3) {
-    ext.Libs["android"]["compose"]["core"]["material3"] = "androidx.compose.material3:material3:1.0.0-alpha10"
+    ext.Libs["android"]["compose"]["core"]["material3"] = "androidx.compose.material3:material3:1.0.0-alpha13"
 }
