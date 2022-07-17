@@ -2,7 +2,7 @@ package com.well.modules.androidUi.theme
 
 import com.well.modules.androidUi.ext.toColor
 import com.well.modules.models.Color
-import androidx.compose.foundation.gestures.LocalOverScrollConfiguration
+import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.lightColors
@@ -29,7 +29,7 @@ fun Theme(
             .copy(medium = RoundedCornerShape(14.dp))
     ) {
         CompositionLocalProvider(
-            LocalOverScrollConfiguration provides null,
+            LocalOverscrollConfiguration provides null,
             content = content
         )
     }

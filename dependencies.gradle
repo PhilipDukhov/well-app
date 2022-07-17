@@ -14,7 +14,7 @@ def versions = [
     androidActivity    : "1.4.0",
     kotlinSerialization: "1.3.2",
     coil               : "2.0.0",
-    kotlinCoroutines   : "1.6.1-native-mt",
+    kotlinCoroutines   : "1.6.3-native-mt",
     ktor               : "1.6.8",
     sqldelight         : "1.5.3",
     bouncycastle       : "1.70",
@@ -32,8 +32,8 @@ if (stableCompose) {
     versions["accompanist"] = "0.23.1"
     versions["kotlin"] = "1.6.10"
 } else {
-    versions["compose"] = "1.2.0-rc02"
-    versions["accompanist"] = "0.24.12-rc"
+    versions["compose"] = "1.2.0-rc01"
+    versions["accompanist"] = "0.24.11-rc"
     versions["kotlin"] = "1.6.21"
 }
 versions["kotlinBuildSrc"] = versions["kotlin"]
@@ -43,7 +43,7 @@ ext.Libs = [
     build     : [
         kotlin              : "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin",
         kotlinSerialization : "org.jetbrains.kotlin:kotlin-serialization:$versions.kotlin",
-        googleServices      : "com.google.gms:google-services:4.3.10",
+        googleServices      : "com.google.gms:google-services:4.3.13",
         dotenv              : "io.github.cdimascio:dotenv-kotlin:6.2.2",
         sqldelight          : "com.squareup.sqldelight:gradle-plugin:$versions.sqldelight",
         gradleVersionsPlugin: "com.github.ben-manes:gradle-versions-plugin:0.42.0",
@@ -105,7 +105,7 @@ ext.Libs = [
         httpClientApacheV2: "com.google.http-client:google-http-client-apache-v2:1.41.5",
     ],
     firebase  : [
-        bom      : "com.google.firebase:firebase-bom:29.3.0",
+        bom      : "com.google.firebase:firebase-bom:30.2.0",
         analytics: "com.google.firebase:firebase-analytics-ktx",
         messaging: "com.google.firebase:firebase-messaging-ktx",
     ],
@@ -196,5 +196,5 @@ if (gradlePluginVersion != null) {
     ext.Libs["build"]["gradle"] = "com.android.tools.build:gradle:$gradlePluginVersion"
 }
 if (material3) {
-    ext.Libs["android"]["compose"]["core"]["material3"] = "androidx.compose.material3:material3:1.0.0-alpha13"
+    ext.Libs["android"]["compose"]["core"]["material3"] = "androidx.compose.material3:material3:1.0.0-alpha14"
 }

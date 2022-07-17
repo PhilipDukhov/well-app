@@ -45,20 +45,21 @@ internal actual class CallService actual constructor(
         }
 
         private fun createHandle(): PhoneAccountHandle {
-            val tm = context.getSystemService(Application.TELECOM_SERVICE) as TelecomManager
-            val handle = PhoneAccountHandle(ComponentName(context, com.well.androidApp.call.CallConnectionService::class.java), "uid1")
-            val account = PhoneAccount.Builder(handle, "ContactsController.formatName(self.first_name, self.last_name)")
-                .apply {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        setCapabilities(PhoneAccount.CAPABILITY_SELF_MANAGED)
-                    }
-                }
-                .setIcon(android.graphics.drawable.Icon.createWithContentUri("https://i.stack.imgur.com/nZvAi.jpg"))
-                .setHighlightColor(-0xd35a20)
-                .addSupportedUriScheme("well")
-                .build()
-            tm.registerPhoneAccount(account)
-            return handle
+            TODO()
+//            val tm = context.getSystemService(Application.TELECOM_SERVICE) as TelecomManager
+//            val handle = PhoneAccountHandle(ComponentName(context, com.well.androidApp.call.CallConnectionService::class.java), "uid1")
+//            val account = PhoneAccount.Builder(handle, "ContactsController.formatName(self.first_name, self.last_name)")
+//                .apply {
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                        setCapabilities(PhoneAccount.CAPABILITY_SELF_MANAGED)
+//                    }
+//                }
+//                .setIcon(android.graphics.drawable.Icon.createWithContentUri("https://i.stack.imgur.com/nZvAi.jpg"))
+//                .setHighlightColor(-0xd35a20)
+//                .addSupportedUriScheme("well")
+//                .build()
+//            tm.registerPhoneAccount(account)
+//            return handle
         }
     }
 

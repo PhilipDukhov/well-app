@@ -50,6 +50,14 @@ kotlin {
                 "kotlin.datetime",
             )
         }
+        val androidMain by getting {
+            libDependencies(
+                "firebase.messaging",
+            )
+            dependencies {
+                implementation(dependencies.platform(libAt("firebase.bom")))
+            }
+        }
         findByName("iosMain")?.run {
             libDependencies(
                 "kotlin.coroutines.core-strictly",

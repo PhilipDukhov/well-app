@@ -31,9 +31,10 @@ kotlin {
                 "android.material",
                 "android.activity",
                 "android.browser",
+                "firebase.messaging",
             )
             dependencies {
-                api(libAt("firebase.messaging"))
+                implementation(dependencies.platform(libAt("firebase.bom")))
             }
         }
         findByName("iosMain")?.run {
@@ -42,8 +43,4 @@ kotlin {
             )
         }
     }
-}
-
-dependencies {
-    implementation(platform(libAt("firebase.bom")))
 }

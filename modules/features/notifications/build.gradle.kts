@@ -22,7 +22,11 @@ kotlin {
         val androidMain by getting {
             libDependencies(
                 "android.appCompat",
+                "firebase.messaging",
             )
+            dependencies {
+                implementation(dependencies.platform(libAt("firebase.bom")))
+            }
         }
         findByName("iosMain")?.run {
             libDependencies(

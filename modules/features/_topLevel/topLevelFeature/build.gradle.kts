@@ -47,6 +47,14 @@ kotlin {
             dependencies.add("kapt", project(":modules:annotationProcessor"))
             kotlin.srcDir(generatedKotlinSources)
         }
+        val androidMain by getting {
+            libDependencies(
+                "firebase.messaging",
+            )
+            dependencies {
+                implementation(dependencies.platform(libAt("firebase.bom")))
+            }
+        }
         findByName("iosMain")?.run {
             libDependencies(
                 "kotlin.coroutines.core-strictly",
