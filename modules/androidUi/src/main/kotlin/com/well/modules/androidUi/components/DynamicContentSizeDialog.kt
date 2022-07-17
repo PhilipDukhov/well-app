@@ -1,5 +1,7 @@
 package com.well.modules.androidUi.components
 
+import com.well.modules.androidUi.libs.accompanistInsets.ProvideWindowInsets
+import com.well.modules.androidUi.libs.accompanistInsets.imePadding
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -10,8 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.google.accompanist.insets.ProvideWindowInsets
-import com.google.accompanist.insets.imePadding
 
 @Composable
 fun DynamicContentSizeDialog(
