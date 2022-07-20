@@ -15,28 +15,10 @@ val gradlePluginVersion = extra.properties["gradlePluginVersion"] as String
 val dotEnv = ((extra["Libs"] as Map<*, *>)["build"] as Map<*, *>)["dotenv"] as String
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib") {
-        version {
-            strictly(kotlinVersion)
-        }
-    }
-    implementation("org.jetbrains.kotlin:kotlin-reflect") {
-        version {
-            strictly(kotlinVersion)
-        }
-    }
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:kotlinVersion")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation("com.android.tools.build:gradle:$gradlePluginVersion")
     implementation(gradleApi())
     implementation(dotEnv)
-}
-
-subprojects.plus(project).forEach {
-    it.configurations.all {
-        resolutionStrategy.eachDependency {
-            if (requested.group == "org.jetbrains.kotlin") {
-                useVersion(kotlinVersion)
-            }
-        }
-    }
 }
