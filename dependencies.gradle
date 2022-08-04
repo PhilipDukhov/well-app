@@ -28,12 +28,12 @@ if (ext.properties["kotlin.native.binary.memoryModel"] == "experimental") {
 }
 
 if (stableCompose) {
-    versions["compose"] = "1.1.1"
-    versions["accompanist"] = "0.23.1"
-    versions["kotlin"] = "1.6.10"
+    versions["compose"] = "1.2.0"
+    versions["accompanist"] = "0.25.0"
+    versions["kotlin"] = "1.7.0"
 } else {
-    versions["compose"] = "1.2.0-rc03"
-    versions["accompanist"] = "0.24.13-rc"
+    versions["compose"] = "1.2.0"
+    versions["accompanist"] = "0.25.0"
     versions["kotlin"] = "1.7.0"
 }
 versions["kotlinBuildSrc"] = versions["kotlin"]
@@ -60,16 +60,17 @@ ext.Libs = [
         datetime         : "org.jetbrains.kotlinx:kotlinx-datetime:0.3.2",
     ],
     android   : [
-        appCompat    : "androidx.appcompat:appcompat:1.4.1",
-        material     : "com.google.android.material:material:1.5.0",
-        annotation   : "androidx.annotation:annotation:1.1.0",
-        activity     : "androidx.activity:activity-ktx:$versions.androidActivity",
-        dataStore    : "androidx.datastore:datastore-preferences:1.0.0",
-        browser      : "androidx.browser:browser:1.4.0",
-        coil         : "io.coil-kt:coil:$versions.coil",
-        webrtc       : "org.webrtc:google-webrtc:1.0.32006",
-        facebookLogin: "com.facebook.android:facebook-login:13.1.0",
-        compose      : [
+        appCompat       : "androidx.appcompat:appcompat:1.4.1",
+        material        : "com.google.android.material:material:1.5.0",
+        annotation      : "androidx.annotation:annotation:1.1.0",
+        activity        : "androidx.activity:activity-ktx:$versions.androidActivity",
+        dataStore       : "androidx.datastore:datastore-preferences:1.0.0",
+        browser         : "androidx.browser:browser:1.4.0",
+        coil            : "io.coil-kt:coil:$versions.coil",
+        webrtc          : "org.webrtc:google-webrtc:1.0.32006",
+        facebookLogin   : "com.facebook.android:facebook-login:13.1.0",
+        dynamicanimation: "androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha03",
+        compose         : [
             core                  : [
                 ui                   : "androidx.compose.ui:ui:$versions.compose",
                 util                 : "androidx.compose.ui:ui-util:$versions.compose",

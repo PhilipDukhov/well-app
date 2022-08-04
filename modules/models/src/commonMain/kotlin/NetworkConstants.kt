@@ -14,7 +14,7 @@ class NetworkConstants private constructor(private val isDebug: Boolean) {
     val localHttpProtocol = if (isDebug) URLProtocol.HTTP else URLProtocol.HTTPS
     val localWebSocketProtocol = if (localHttpProtocol == URLProtocol.HTTPS) URLProtocol.WSS else URLProtocol.WS
     val host = if (isDebug)
-        "dukhovwellserver-new.com"
+        "192.168.88.40"
     else
         "well-env-1.eba-yyqqrxsi.us-east-2.elasticbeanstalk.com"
     val port = if (isDebug) 8090 else null

@@ -15,6 +15,7 @@ libDependencies(
     "android.compose.*",
     "android.webrtc",
     "android.dataStore",
+    "android.dynamicanimation",
 
     "ktor.utils",
     "shared.napier",

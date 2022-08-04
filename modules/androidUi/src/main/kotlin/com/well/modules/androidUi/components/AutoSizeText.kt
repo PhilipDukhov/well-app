@@ -19,38 +19,7 @@ fun AutoSizeText(
     modifier: Modifier = Modifier,
     style: TextStyle = LocalTextStyle.current,
 ) {
-    var scaledTextStyle by remember { mutableStateOf(style) }
-    var readyToDraw by remember { mutableStateOf(false) }
-
-    Text(
-        text = text,
-        style = scaledTextStyle,
-        softWrap = false,
-        onTextLayout = { textLayoutResult ->
-            if (textLayoutResult.didOverflowWidth) {
-                scaledTextStyle = scaledTextStyle.copy(
-                    fontSize = scaledTextStyle.fontSize * 0.9
-                )
-            } else {
-                readyToDraw = true
-            }
-        },
-        modifier = modifier
-            .drawWithContent {
-                if (readyToDraw) {
-                    drawContent()
-                }
-            }
-    )
-}
-
-@Composable
-fun AutoSizeTextSubcomposeLayout(
-    text: String,
-    modifier: Modifier = Modifier,
-    textStyle: TextStyle = LocalTextStyle.current,
-) {
-    var scaledTextStyle by remember(text) { mutableStateOf(textStyle) }
+    var scaledTextStyle by remember(text) { mutableStateOf(style) }
     var readyToDraw by remember(text) { mutableStateOf(false) }
 
     SubcomposeLayout { constraints ->
