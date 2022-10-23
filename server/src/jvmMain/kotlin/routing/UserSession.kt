@@ -15,6 +15,7 @@ import com.well.modules.db.server.toChatMessage
 import com.well.modules.db.server.toLastReadMessage
 import com.well.modules.db.server.toMeeting
 import com.well.modules.db.server.toUser
+import com.well.modules.models.CallId
 import com.well.modules.models.DeviceId
 import com.well.modules.models.Meeting
 import com.well.modules.models.User
@@ -33,12 +34,14 @@ import com.well.modules.utils.flowUtils.filterNotEmpty
 import com.well.modules.utils.flowUtils.flatMapLatest
 import com.well.modules.utils.flowUtils.mapIterable
 import com.well.modules.utils.flowUtils.mapPair
-import com.well.server.utils.CallInfo
+import com.well.modules.utils.kotlinUtils.letNamed
 import com.well.server.utils.ClientKey
+import com.well.server.utils.OngoingCallInfo
 import com.well.server.utils.Services
 import com.well.server.utils.send
 import io.ktor.http.cio.websocket.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -53,206 +56,43 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
 import org.joda.time.Weeks
 
-class UserSession(
-    private val currentUid: User.Id,
-    private val deviceId: DeviceId,
-    private val webSocketSession: WebSocketSession,
-    private val services: Services,
-) : WebSocketSession by webSocketSession {
-    private class CreatedMessageInfo(
+interface UserSession : WebSocketSession {
+    suspend fun handleCallMsg(msg: WebSocketMsg.Call)
+    suspend fun handleFrontMsg(msg: WebSocketMsg.Front)
+}
+
+fun createUserSession(
+    currentUid: User.Id,
+    deviceId: DeviceId,
+    webSocketSession: WebSocketSession,
+    services: Services,
+): UserSession = UserSessionImpl(
+    currentUid = currentUid,
+    deviceId = deviceId,
+    webSocketSession = webSocketSession,
+    services = services,
+)
+
+private class UserSessionImpl(
+    val currentUid: User.Id,
+    val deviceId: DeviceId,
+    val webSocketSession: WebSocketSession,
+    val services: Services,
+) : UserSession, WebSocketSession by webSocketSession {
+    class CreatedMessageInfo(
         val tmpId: ChatMessage.Id,
         val id: ChatMessage.Id,
     )
 
-    private val expertsFilterFlow = MutableStateFlow<UsersFilter?>(null)
-    private val usersPresenceInfoFlow = MutableStateFlow<List<UserPresenceInfo>?>(null)
-    private val messagesPresenceInfoFlow = MutableStateFlow<ChatMessage.Id?>(null)
-    private val meetingIdsPresenceFlow = MutableStateFlow<List<Pair<Meeting.Id, Meeting.State>>?>(null)
-    private val chatReadStatePresenceFlow = MutableStateFlow<List<LastReadMessage>>(emptyList())
-    private val userCreatedChatMessageInfosFlow = MutableSetStateFlow<CreatedMessageInfo>()
-    private val currentClientKey = ClientKey(deviceId, currentUid)
-
-    private val expertsFlow: Flow<List<User.Id>> = expertsFilterFlow
-        .filterNotNull()
-        .flatMapLatest { filter ->
-            val maxLastOnlineDistance =
-                if (!filter.activity.contains(UsersFilter.Activity.LastWeek)) 0 else
-                    Weeks.ONE.toStandardSeconds().seconds.toLong()
-            val specificIdsRegexpFlow =
-                if (!filter.activity.contains(UsersFilter.Activity.Now)) "".asSingleFlow() else
-                    services
-                        .connectedUserSessionsFlow
-                        .map { connectedUserSessions ->
-                            connectedUserSessions
-                                .map { it.key.toString() }
-                                .adaptedOneOfRegex()
-                        }
-
-            specificIdsRegexpFlow.flatMapLatest { specificIdsRegexp ->
-                services.database.usersQueries
-                    .filterFlow(
-                        uid = currentUid,
-                        maxLastOnlineDistance = maxLastOnlineDistance,
-                        specificIdsRegexp = specificIdsRegexp,
-                        filter = filter
-                    )
-            }
-        }
-    private val newMessagesFlow =
-        messagesPresenceInfoFlow
-            .filterNotNull()
-            .combine(userCreatedChatMessageInfosFlow) { messagesPresenceInfo, userCreatedChatMessageInfos ->
-                services.database.chatMessagesQueries
-                    .getAllForUserFlow(
-                        id = currentUid,
-                        lastPresentedId = messagesPresenceInfo,
-                    )
-                    .mapIterable { message ->
-                        WebSocketMsg.Back.UpdateMessages.UpdateMessageInfo(
-                            message.toChatMessage(services.database),
-                            tmpId = userCreatedChatMessageInfos.firstOrNull { it.id == message.id }?.tmpId,
-                        )
-                    }
-            }
-            .flatMapLatest()
-            .filterNotEmpty()
-    private val newReadStatesFlow =
-        chatReadStatePresenceFlow
-            .flatMapLatest { chatReadStatePresence ->
-                val chatReadStatePresenceMap = chatReadStatePresence
-                    .groupBy { it.fromId to it.peerId }
-                    .mapValues { it.value.first() }
-                services.database.lastReadMessagesQueries
-                    .selectByAnyIdFlow(currentUid)
-                    .filterIterable { databaseLRM ->
-                        val currentReadState =
-                            chatReadStatePresenceMap[databaseLRM.fromId to databaseLRM.peerId]
-                                ?: return@filterIterable true
-                        databaseLRM.messageId > currentReadState.messageId
-                    }
-                    .mapIterable(LastReadMessages::toLastReadMessage)
-            }
-            .filterNotEmpty()
-
-    private val meetingsPresenceFlow: Flow<Pair<List<Pair<Meeting.Id, Meeting.State>>, List<Meetings>>> =
-        meetingIdsPresenceFlow
-            .filterNotNull()
-            .combine(
-                services.database.meetingsQueries
-                    .getByUserIdFlow(currentUid)
-            ) { ids, meetings ->
-                ids to meetings
-            }
-
-    private val newMeetingsFlow: Flow<List<Meeting>> = meetingsPresenceFlow
-        .mapPair { presenceIds, dbMeetings ->
-            dbMeetings.filter {
-                !presenceIds.contains(it.id to it.state) && !it.deleted
-            }
-        }
-        .mapIterable(Meetings::toMeeting)
-        .filterNotEmpty()
-    private val removedMeetingIdsFlow: Flow<List<Meeting.Id>> = meetingsPresenceFlow
-        .mapPair { presenceIds, dbMeetings ->
-            dbMeetings.filter { dbMeeting ->
-                presenceIds.any { it.first == dbMeeting.id } && dbMeeting.deleted
-            }
-        }
-        .mapIterable(Meetings::id)
-        .filterNotEmpty()
-
-    private val neededUsersFlow = expertsFlow
-        .combineToSet(flowOf(setOf(currentUid)))
-        .combineToSet(
-            services.database.chatMessagesQueries
-                .peerIdsListFlow(id = currentUid)
-        )
-        .combineToSet(
-            services.database.favoritesQueries
-                .listByOwnerIdFlow(currentUid)
-        )
-        .combineToSet(
-            services.database.meetingsQueries
-                .getByUserIdFlow(currentUid)
-                .mapIterable { setOf(it.expertUid, it.creatorUid) }
-                .map { it.flatten() }
-        )
-    private val notUpToDateUsersFlow =
-        usersPresenceInfoFlow
-            .filterNotNull()
-            .combine(neededUsersFlow) { usersPresenceInfo, neededUsers ->
-                services.database
-                    .usersQueries
-                    .getByIdsFlow(neededUsers)
-                    .map { users ->
-                        users.filter { user ->
-                            usersPresenceInfo
-                                .firstOrNull { it.id == user.id }
-                                ?.lastEdited?.let { presenceLastEdited ->
-                                    user.lastEdited > presenceLastEdited
-                                } ?: true
-                        }.map { it.toUser(currentUid, services.database) }
-                    }
-            }
-            .flatMapLatest()
-            .filterNotEmpty()
-    private val removedUsersFlow = usersPresenceInfoFlow
-        .filterNotNull()
-        .flatMapLatest { usersPresenceInfo ->
-            val usersPresenceIds = usersPresenceInfo.map { it.id }
-            services.database.usersQueries
-                .getByIdsFlow(usersPresenceIds)
-                .map { foundUsers ->
-                    val foundUserIds = foundUsers.map { it.id }
-                    usersPresenceIds
-                        .filterNot(foundUserIds::contains)
-                }
-        }
-        .filterNotEmpty()
-    private val fcmTokenNeededFlow = services.database
-        .notificationTokensQueries
-        .selectByDeviceIdFlow(deviceId = deviceId)
-        .filter { token ->
-            token == null
-                    || token.timestamp.daysUntil(Clock.System.now(), TimeZone.currentSystemDefault()) > 10
-        }.map {}
-    private val onlineUsersFlow = neededUsersFlow
-        .combine(services.connectedUserSessionsFlow) { neededUsers, connectedUserSessions ->
-            neededUsers.filter { uid ->
-                uid != currentUid && connectedUserSessions.any { it.key.uid == uid }
-            }.toSet()
-        }
-        .distinctUntilChanged()
-
-    init {
-        listOf(
-            expertsFlow.map(WebSocketMsg.Back::ListFilteredExperts),
-            notUpToDateUsersFlow.map(WebSocketMsg.Back::UpdateUsers),
-            newMessagesFlow.map(WebSocketMsg.Back::UpdateMessages),
-            newReadStatesFlow.map(WebSocketMsg.Back::UpdateCharReadPresence),
-            newMeetingsFlow.map(WebSocketMsg.Back::AddMeetings),
-            removedMeetingIdsFlow.map(WebSocketMsg.Back::RemovedMeetings),
-            fcmTokenNeededFlow.map { WebSocketMsg.Back.NotificationTokenRequest },
-            removedUsersFlow.map(WebSocketMsg.Back::RemovedUsers),
-            onlineUsersFlow.map(WebSocketMsg.Back::OnlineUsersList)
-        ).forEach { flow ->
-            flow
-                .onEach {
-                    println("$currentUid send $it")
-                }
-                .collectIn(this, ::send)
-        }
-    }
-
-    suspend fun handleCallMsg(msg: WebSocketMsg.Call) {
+    override suspend fun handleCallMsg(msg: WebSocketMsg.Call) {
         when (msg) {
             is WebSocketMsg.Call.Answer,
             is WebSocketMsg.Call.Candidate,
             is WebSocketMsg.Call.Offer,
             -> {
-                val indexedClientKey = services.callPartnerId(currentUid)!!
+                val (_, key) = services.callPartnerId(currentUid) ?: return
                 services.connectedUserSessionsFlow
-                    .value[indexedClientKey.value]
+                    .value[key]
                     ?.send(msg)
             }
             is WebSocketMsg.Call.EndCall -> {
@@ -264,7 +104,7 @@ class UserSession(
         }
     }
 
-    suspend fun handleFrontMsg(msg: WebSocketMsg.Front) {
+    override suspend fun handleFrontMsg(msg: WebSocketMsg.Front) {
         println("handleFrontMsg $currentUid $msg")
         when (msg) {
             is WebSocketMsg.Front.SetExpertsFilter -> {
@@ -283,8 +123,8 @@ class UserSession(
                 messagesPresenceInfoFlow.value = msg.messagePresenceId
                 services.pendingNotificationIds
                     .removeAll {
-                        it.itemId is Services.PendingNotificationId.ItemId.ChatMessage &&
-                                it.deviceId == deviceId &&
+                        it.deviceId == deviceId &&
+                                it.itemId is Services.PendingNotificationId.ItemId.ChatMessage &&
                                 it.itemId.chatMessageId <= msg.messagePresenceId
                     }
             }
@@ -329,8 +169,8 @@ class UserSession(
                 meetingIdsPresenceFlow.value = msg.meetingsPresence
                 services.pendingNotificationIds
                     .removeAll { pendingId ->
-                        pendingId.itemId is Services.PendingNotificationId.ItemId.Meeting &&
-                                pendingId.deviceId == deviceId &&
+                        pendingId.deviceId == deviceId &&
+                                pendingId.itemId is Services.PendingNotificationId.ItemId.Meeting &&
                                 msg.meetingsPresence.any { it.first == pendingId.itemId.meetingId }
                     }
             }
@@ -373,31 +213,223 @@ class UserSession(
                     services.deliverMeetingNotification(msg.meetingId, currentUid)
                 }
             }
+            is WebSocketMsg.Front.IncomingCallReceived -> {
+                services.pendingNotificationIds
+                    .removeAll { pendingId ->
+                        pendingId.deviceId == deviceId &&
+                                pendingId.itemId is Services.PendingNotificationId.ItemId.IncomingCall &&
+                                pendingId.itemId.callId == msg.callId
+                    }
+            }
         }
     }
 
-    private suspend fun initiateCall(msg: WebSocketMsg.Front.InitiateCall) {
-        val session = services.connectedUserSessionsFlow.value.entries.firstOrNull { it.key.uid == msg.uid }
-        if (session == null) {
-            send(WebSocketMsg.Call.EndCall(WebSocketMsg.Call.EndCall.Reason.Offline))
-            return
+    val expertsFilterFlow = MutableStateFlow<UsersFilter?>(null)
+    val usersPresenceInfoFlow = MutableStateFlow<List<UserPresenceInfo>?>(null)
+    val messagesPresenceInfoFlow = MutableStateFlow<ChatMessage.Id?>(null)
+    val meetingIdsPresenceFlow = MutableStateFlow<List<Pair<Meeting.Id, Meeting.State>>?>(null)
+    val chatReadStatePresenceFlow = MutableStateFlow<List<LastReadMessage>>(emptyList())
+    val userCreatedChatMessageInfosFlow = MutableSetStateFlow<CreatedMessageInfo>()
+    val currentClientKey = ClientKey(deviceId, currentUid)
+
+    val expertsFlow: Flow<List<User.Id>> = expertsFilterFlow
+        .filterNotNull()
+        .flatMapLatest { filter ->
+            val maxLastOnlineDistance =
+                if (!filter.activity.contains(UsersFilter.Activity.LastWeek)) 0 else
+                    Weeks.ONE.toStandardSeconds().seconds.toLong()
+            val specificIdsRegexpFlow =
+                if (!filter.activity.contains(UsersFilter.Activity.Now)) "".asSingleFlow() else
+                    services
+                        .connectedUserSessionsFlow
+                        .map { connectedUserSessions ->
+                            connectedUserSessions
+                                .map { it.key.toString() }
+                                .adaptedOneOfRegex()
+                        }
+
+            specificIdsRegexpFlow.flatMapLatest { specificIdsRegexp ->
+                services.database.usersQueries
+                    .filterFlow(
+                        uid = currentUid,
+                        maxLastOnlineDistance = maxLastOnlineDistance,
+                        specificIdsRegexp = specificIdsRegexp,
+                        filter = filter
+                    )
+            }
         }
-        if (services.callInfos.any { it.uids.contains(currentClientKey) }) {
+    val newMessagesFlow =
+        messagesPresenceInfoFlow
+            .filterNotNull()
+            .combine(userCreatedChatMessageInfosFlow) { messagesPresenceInfo, userCreatedChatMessageInfos ->
+                services.database.chatMessagesQueries
+                    .getAllForUserFlow(
+                        id = currentUid,
+                        lastPresentedId = messagesPresenceInfo,
+                    )
+                    .mapIterable { message ->
+                        WebSocketMsg.Back.UpdateMessages.UpdateMessageInfo(
+                            message.toChatMessage(services.database),
+                            tmpId = userCreatedChatMessageInfos.firstOrNull { it.id == message.id }?.tmpId,
+                        )
+                    }
+            }
+            .flatMapLatest()
+            .filterNotEmpty()
+    val newReadStatesFlow =
+        chatReadStatePresenceFlow
+            .flatMapLatest { chatReadStatePresence ->
+                val chatReadStatePresenceMap = chatReadStatePresence
+                    .groupBy { it.fromId to it.peerId }
+                    .mapValues { it.value.first() }
+                services.database.lastReadMessagesQueries
+                    .selectByAnyIdFlow(currentUid)
+                    .filterIterable { databaseLRM ->
+                        val currentReadState =
+                            chatReadStatePresenceMap[databaseLRM.fromId to databaseLRM.peerId]
+                                ?: return@filterIterable true
+                        databaseLRM.messageId > currentReadState.messageId
+                    }
+                    .mapIterable(LastReadMessages::toLastReadMessage)
+            }
+            .filterNotEmpty()
+
+    val meetingsPresenceFlow: Flow<Pair<List<Pair<Meeting.Id, Meeting.State>>, List<Meetings>>> =
+        meetingIdsPresenceFlow
+            .filterNotNull()
+            .combine(
+                services.database.meetingsQueries
+                    .getByUserIdFlow(currentUid)
+            ) { ids, meetings ->
+                ids to meetings
+            }
+
+    val newMeetingsFlow: Flow<List<Meeting>> = meetingsPresenceFlow
+        .mapPair { presenceIds, dbMeetings ->
+            dbMeetings.filter {
+                !presenceIds.contains(it.id to it.state) && !it.deleted
+            }
+        }
+        .mapIterable(Meetings::toMeeting)
+        .filterNotEmpty()
+    val removedMeetingIdsFlow: Flow<List<Meeting.Id>> = meetingsPresenceFlow
+        .mapPair { presenceIds, dbMeetings ->
+            dbMeetings.filter { dbMeeting ->
+                presenceIds.any { it.first == dbMeeting.id } && dbMeeting.deleted
+            }
+        }
+        .mapIterable(Meetings::id)
+        .filterNotEmpty()
+
+    val neededUsersFlow = expertsFlow
+        .combineToSet(flowOf(setOf(currentUid)))
+        .combineToSet(
+            services.database.chatMessagesQueries
+                .peerIdsListFlow(id = currentUid)
+        )
+        .combineToSet(
+            services.database.favoritesQueries
+                .listByOwnerIdFlow(currentUid)
+        )
+        .combineToSet(
+            services.database.meetingsQueries
+                .getByUserIdFlow(currentUid)
+                .mapIterable { setOf(it.expertUid, it.creatorUid) }
+                .map { it.flatten() }
+        )
+    val notUpToDateUsersFlow =
+        usersPresenceInfoFlow
+            .filterNotNull()
+            .combine(neededUsersFlow) { usersPresenceInfo, neededUsers ->
+                services.database
+                    .usersQueries
+                    .getByIdsFlow(neededUsers)
+                    .map { users ->
+                        users.filter { user ->
+                            usersPresenceInfo
+                                .firstOrNull { it.id == user.id }
+                                ?.lastEdited?.let { presenceLastEdited ->
+                                    user.lastEdited > presenceLastEdited
+                                } ?: true
+                        }.map { it.toUser(currentUid, services.database) }
+                    }
+            }
+            .flatMapLatest()
+            .filterNotEmpty()
+    val removedUsersFlow = usersPresenceInfoFlow
+        .filterNotNull()
+        .flatMapLatest { usersPresenceInfo ->
+            val usersPresenceIds = usersPresenceInfo.map { it.id }
+            services.database.usersQueries
+                .getByIdsFlow(usersPresenceIds)
+                .map { foundUsers ->
+                    val foundUserIds = foundUsers.map { it.id }
+                    usersPresenceIds
+                        .filterNot(foundUserIds::contains)
+                }
+        }
+        .filterNotEmpty()
+    val fcmTokenNeededFlow = services.database
+        .notificationTokensQueries
+        .selectByDeviceIdFlow(deviceId = deviceId)
+        .filter { token ->
+            token == null
+                    || token.timestamp.daysUntil(Clock.System.now(), TimeZone.currentSystemDefault()) > 10
+        }.map {}
+    val onlineUsersFlow = neededUsersFlow
+        .combine(services.connectedUserSessionsFlow) { neededUsers, connectedUserSessions ->
+            neededUsers.filter { uid ->
+                uid != currentUid && connectedUserSessions.any { it.key.uid == uid }
+            }.toSet()
+        }
+        .distinctUntilChanged()
+
+    init {
+        listOf(
+            expertsFlow.map(WebSocketMsg.Back::ListFilteredExperts),
+            notUpToDateUsersFlow.map(WebSocketMsg.Back::UpdateUsers),
+            newMessagesFlow.map(WebSocketMsg.Back::UpdateMessages),
+            newReadStatesFlow.map(WebSocketMsg.Back::UpdateCharReadPresence),
+            newMeetingsFlow.map(WebSocketMsg.Back::AddMeetings),
+            removedMeetingIdsFlow.map(WebSocketMsg.Back::RemovedMeetings),
+            fcmTokenNeededFlow.map { WebSocketMsg.Back.NotificationTokenRequest },
+            removedUsersFlow.map(WebSocketMsg.Back::RemovedUsers),
+            onlineUsersFlow.map(WebSocketMsg.Back::OnlineUsersList)
+        ).forEach { flow ->
+            flow
+                .onEach {
+                    println("$currentUid send $it")
+                }
+                .collectIn(this, ::send)
+        }
+    }
+
+    suspend fun initiateCall(msg: WebSocketMsg.Front.InitiateCall) {
+        val peerSession = services.connectedUserSessionsFlow.value.entries.firstOrNull { it.key.uid == msg.uid }
+        val webSocketMsg = WebSocketMsg.Back.IncomingCall(
+            callId = msg.callId,
+            user = services.getUser(
+                uid = currentUid,
+                currentUid = msg.uid,
+            ),
+            hasVideo = true,
+        )
+        if (services.ongoingCallInfos.any { it.value.uids.contains(msg.uid) }) {
             send(WebSocketMsg.Call.EndCall(WebSocketMsg.Call.EndCall.Reason.Busy))
             return
         }
-        session.value.send(
-            WebSocketMsg.Back.IncomingCall(
-                services.getUser(
-                    uid = currentUid,
-                    currentUid = msg.uid,
-                )
-            )
+        services.ongoingCallInfos[msg.callId] = OngoingCallInfo(
+            activeClients = listOf(currentClientKey),
+            pendingUsers = listOf(msg.uid)
         )
-        services.callInfos.add(CallInfo(listOf(currentClientKey, session.key)))
+        services.deliverCallNotification(
+            webSocketMsg = webSocketMsg,
+            peerId = msg.uid,
+        )
+        peerSession?.value?.send(webSocketMsg)
     }
 
-    private fun insertChatMessage(message: ChatMessage) {
+    fun insertChatMessage(message: ChatMessage) {
         with(services.database) {
             val id = transactionWithResult<ChatMessage.Id> {
                 val finalMessageId = insertChatMessage(message)
@@ -413,7 +445,7 @@ class UserSession(
         }
     }
 
-    private fun chatMessageRead(messageId: ChatMessage.Id) {
+    fun chatMessageRead(messageId: ChatMessage.Id) {
         services.database
             .run {
                 transaction {
@@ -449,24 +481,26 @@ class UserSession(
     }
 }
 
-private fun Services.callPartnerId(uid: User.Id) =
-    callInfos
-        .withIndex()
-        .firstOrNull { it.value.uids.any { it.uid == uid } }
-        ?.run {
-            IndexedValue(
-                index,
-                value
-                    .uids
-                    .first { it.uid != uid }
-            )
+private fun Services.callPartnerId(uid: User.Id): Pair<CallId, ClientKey>? =
+    ongoingCallInfos
+        .firstNotNullOfOrNull { infoEntry ->
+            if (infoEntry.value.uids.contains(uid)) {
+                infoEntry.value.activeClients
+                    .firstOrNull { it.uid == uid }
+                    ?.let {
+                        infoEntry.key to it
+                    }
+            } else {
+                null
+            }
         }
 
 suspend fun Services.endCall(
     uid: User.Id,
     reason: WebSocketMsg.Call.EndCall.Reason,
 ) = callPartnerId(uid)
-    ?.run {
-        connectedUserSessionsFlow[value]!!.send(WebSocketMsg.Call.EndCall(reason))
-        callInfos.removeAt(index)
+    ?.letNamed { callId, key ->
+        connectedUserSessionsFlow[key]?.send(WebSocketMsg.Call.EndCall(reason))
+        ongoingCallInfos.remove(callId)
+//        deliverEndCallNotification
     }

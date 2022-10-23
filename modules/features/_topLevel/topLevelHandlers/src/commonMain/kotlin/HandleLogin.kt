@@ -147,6 +147,7 @@ internal fun TopLevelFeatureProviderImpl.loggedIn(
 internal suspend fun TopLevelFeatureProviderImpl.logOut() {
     notificationHandler?.clearAllNotifications()
     notificationHandler = null
+    callService = null
     val token = dataStore.notificationToken
     if (token != null) {
         networkManager.sendFront(WebSocketMsg.Front.Logout)

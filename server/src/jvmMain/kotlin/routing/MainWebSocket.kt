@@ -17,7 +17,7 @@ suspend fun DefaultWebSocketServerSession.mainWebSocket(services: Services, devi
         val user = services.database.usersQueries.getById(currentUid)
             .executeAsOne()
         println("mainWebSocket connected $user")
-        val currentUserSession = UserSession(
+        val currentUserSession = createUserSession(
             currentUid = currentUid,
             deviceId = deviceId,
             webSocketSession = this,
@@ -60,4 +60,3 @@ private suspend fun Services.userDisconnected(
     // TODO: wait user to reconnect
     endCall(clientKey.uid, WebSocketMsg.Call.EndCall.Reason.Offline)
 }
-

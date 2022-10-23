@@ -16,7 +16,6 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.util.pipeline.*
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 
 suspend fun PipelineContext<*, ApplicationCall>.listCurrentAvailabilities(

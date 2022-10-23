@@ -14,20 +14,21 @@ import com.well.modules.features.call.callFeature.webRtc.RtcMsg
 import com.well.modules.features.call.callFeature.webRtc.WebRtcManagerI
 import com.well.modules.features.call.callFeature.webRtc.WebRtcManagerI.Listener.DataChannelState
 import com.well.modules.features.call.callHandlers.drawing.DrawingEffectHandler
+import com.well.modules.models.CallId
+import com.well.modules.models.CallInfo
 import com.well.modules.models.Size
 import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.puerhBase.EffectHandler
+import com.well.modules.utils.kotlinUtils.UUID
 import com.well.modules.utils.viewUtils.sharedImage.ImageContainer
 import com.well.modules.features.call.callFeature.webRtc.RtcMsg.ImageSharingContainer.Msg.UpdateImage as ImgSharingUpdateImage
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-
 
 class CallEffectHandler(
     private val services: Services,
@@ -35,7 +36,11 @@ class CallEffectHandler(
     parentCoroutineScope: CoroutineScope,
 ) : EffectHandler<Eff, Msg>(parentCoroutineScope) {
     class Services(
+        val callService: CallService?,
         val isConnectedFlow: Flow<Boolean>,
+        val onStartOutgoingCall: (CallInfo) -> Unit,
+        val onStartedConnecting: () -> Unit,
+        val onConnected: () -> Unit,
         val callWebSocketMsgFlow: Flow<WebSocketMsg.Call>,
         val sendCallWebSocketMsg: suspend (WebSocketMsg.Call) -> Unit,
         val sendFrontWebSocketMsg: suspend (WebSocketMsg.Front) -> Unit,
@@ -49,10 +54,10 @@ class CallEffectHandler(
         webRtcSendListener = {
             send(RtcMsg.ImageSharingContainer(it))
         },
-        onRequestImageUpdate = {
-            services.requestImageUpdate(it) {
+        onRequestImageUpdate = { requestUpdate ->
+            services.requestImageUpdate(requestUpdate) { imageContainer ->
                 listener(
-                    Msg.DrawingMsg(DrawingFeature.Msg.LocalUpdateImage(it))
+                    Msg.DrawingMsg(DrawingFeature.Msg.LocalUpdateImage(imageContainer))
                 )
             }
         }
@@ -81,11 +86,9 @@ class CallEffectHandler(
 
     init {
         val webRtcManagerListener = object : WebRtcManagerI.Listener, Closeable {
-            lateinit var handlerRef: CallEffectHandler
-
             private var closed by AtomicRef(false)
             private val handler: CallEffectHandler?
-                get() = if (closed) null else handlerRef
+                get() = if (closed) null else this@CallEffectHandler
 
             override fun close() {
                 closed = true
@@ -117,21 +120,25 @@ class CallEffectHandler(
                 handler?.send(WebSocketMsg.Call.Answer(webRTCSessionDescriptor))
             }
 
+            private var connectedOnce by AtomicRef(false)
+
             override fun dataChannelStateChanged(state: DataChannelState) {
-                handler?.listener(
-                    if (state == DataChannelState.Open) {
-                        Msg.DataConnectionEstablished
-                    } else {
-                        Msg.UpdateStatus(State.Status.Connecting)
+                val handler = handler ?: return
+                if (state == DataChannelState.Open) {
+                    if (!connectedOnce) {
+                        connectedOnce = true
+                        handler.services.onConnected()
                     }
-                )
+                    handler.listener(Msg.DataConnectionEstablished)
+                } else {
+                    handler.listener(Msg.UpdateStatus(State.Status.Connecting))
+                }
             }
 
             override fun receiveData(data: ByteArray) {
                 handler?.handleDataChannelMessage(data)
             }
         }
-        webRtcManagerListener.handlerRef = this
         webRtcManager = webRtcManagerGenerator(
             listOf(
                 "stun:stun.l.google.com:19302",
@@ -168,19 +175,20 @@ class CallEffectHandler(
         ).forEach(::addCloseableChild)
     }
 
-    @Suppress("NAME_SHADOWING")
     override suspend fun processEffect(eff: Eff) {
         when (eff) {
             Eff.SystemBack,
             -> Unit
-            is Eff.Initiate ->
-                initiateCall(eff.userId)
+            is Eff.Initiate -> {
+                initiateCall(eff)
+            }
             is Eff.Accept -> {
                 runWebRtcManager {
+                    services.onStartedConnecting()
                     sendOffer()
                 }
             }
-            Eff.End -> {
+            is Eff.End -> {
                 close()
             }
             Eff.ChooseViewPoint -> Unit
@@ -213,12 +221,21 @@ class CallEffectHandler(
         }
     }
 
-    private fun initiateCall(userId: User.Id) =
+    private fun initiateCall(eff: Eff.Initiate) {
+        val callInfo = object : CallInfo {
+            override val id: CallId = CallId.new()
+            override val hasVideo: Boolean = eff.hasVideo
+            override val user: User = eff.user
+        }
+        services.onStartOutgoingCall(callInfo)
         send(
             WebSocketMsg.Front.InitiateCall(
-                userId,
+                uid = eff.user.id,
+                callId = callInfo.id,
+                hasVideo = eff.hasVideo
             )
         )
+    }
 
     private fun send(msg: WebSocketMsg.Front) = prepareSend(msg, services.sendFrontWebSocketMsg)
 
@@ -226,16 +243,14 @@ class CallEffectHandler(
 
     private fun <M : WebSocketMsg> prepareSend(
         msg: M,
-        perform: suspend (M) -> Unit
-    ) = msg.freeze()
-        .let {
-            effHandlerScope.launch {
-                perform(msg)
-            }
-        }
-        .also {
+        perform: suspend (M) -> Unit,
+    ) {
+        msg.freeze()
+        effHandlerScope.launch {
+            perform(msg)
             Napier.i("CallEffectHandler send ws $msg")
         }
+    }
 
     private fun send(msg: RtcMsg) =
         runWebRtcManager {

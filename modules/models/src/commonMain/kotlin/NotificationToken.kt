@@ -7,5 +7,11 @@ sealed class NotificationToken {
     @Serializable
     class Fcm(val token: String): NotificationToken()
     @Serializable
-    class Apns(val token: String, val bundleId: String): NotificationToken()
+
+    data class Apns(val notificationToken: String?, val voipToken: String?, val bundleId: String): NotificationToken()
+
+    // helper containers
+    class ApnsNotification(val notificationToken: String, val bundleId: String)
+
+    class ApnsVoip(val voipToken: String?, val bundleId: String)
 }

@@ -7,10 +7,17 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class WebSocketMsg {
     @Serializable
-    sealed class Front: WebSocketMsg() {
+    sealed class Front : WebSocketMsg() {
         @Serializable
         class InitiateCall(
             val uid: User.Id,
+            val callId: CallId,
+            val hasVideo: Boolean,
+        ) : Front()
+
+        @Serializable
+        class IncomingCallReceived(
+            val callId: CallId,
         ) : Front()
 
         @Serializable
@@ -64,7 +71,7 @@ sealed class WebSocketMsg {
     }
 
     @Serializable
-    sealed class Back: WebSocketMsg() {
+    sealed class Back : WebSocketMsg() {
         @Serializable
         class UpdateUsers(
             val users: List<User>,
@@ -77,8 +84,13 @@ sealed class WebSocketMsg {
 
         @Serializable
         class IncomingCall(
-            val user: User,
-        ) : Back()
+            val callId: CallId,
+            override val user: User,
+            override val hasVideo: Boolean,
+        ) : Back(), CallInfo {
+            override val id: CallId
+                get() = callId
+        }
 
         @Serializable
         class UpdateMessages(
@@ -121,7 +133,7 @@ sealed class WebSocketMsg {
     }
 
     @Serializable
-    sealed class Call: WebSocketMsg() {
+    sealed class Call : WebSocketMsg() {
         @Serializable
         class Offer(
             val sessionDescriptor: String,

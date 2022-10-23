@@ -16,7 +16,7 @@ import AVFoundation
 private let rtcTrue = kRTCMediaConstraintsValueTrue
 
 final class WebRtcManager: NSObject, WebRtcManagerI {
-    private var deviceState = LocalDeviceState.companion.default_
+	private var deviceState = LocalDeviceState.companion.default(cameraEnabled: nil)
     private let listener: WebRtcManagerIListener
     private static let factory: RTCPeerConnectionFactory = {
         RTCInitializeSSL()

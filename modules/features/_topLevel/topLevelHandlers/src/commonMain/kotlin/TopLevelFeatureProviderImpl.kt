@@ -27,7 +27,11 @@ import com.well.modules.db.users.getFavoritesFlow
 import com.well.modules.db.users.insertOrReplace
 import com.well.modules.db.users.toUser
 import com.well.modules.features.calendar.calendarHandlers.CalendarEffHandler
+import com.well.modules.features.call.callFeature.CallEndedReason
+import com.well.modules.features.call.callFeature.CallFeature
 import com.well.modules.features.call.callFeature.webRtc.WebRtcManagerI
+import com.well.modules.features.call.callHandlers.CallService
+import com.well.modules.features.call.callHandlers.createCallService
 import com.well.modules.features.chatList.chatListHandlers.ChatListEffHandler
 import com.well.modules.features.experts.expertsFeature.ExpertsFeature
 import com.well.modules.features.experts.expertsHandlers.ExpertsApiEffectHandler
@@ -42,7 +46,6 @@ import com.well.modules.features.more.moreFeature.subfeatures.FavoritesFeature
 import com.well.modules.features.more.moreFeature.subfeatures.SupportFeature
 import com.well.modules.features.more.moreFeature.subfeatures.WellAcademyFeature
 import com.well.modules.features.myProfile.myProfileFeature.MyProfileFeature
-import com.well.modules.features.notifications.CallServiceServices
 import com.well.modules.features.notifications.NotificationHandler
 import com.well.modules.features.topLevel.topLevelFeature.FeatureEff
 import com.well.modules.features.topLevel.topLevelFeature.FeatureMsg
@@ -53,6 +56,7 @@ import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.Msg
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.features.welcome.WelcomeFeature
 import com.well.modules.models.FavoriteSetter
+import com.well.modules.models.NotificationToken
 import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.networking.NetworkManager
@@ -110,7 +114,8 @@ internal class TopLevelFeatureProviderImpl(
     var sessionInfo by AtomicCloseableRef<SessionInfo>()
     private var systemService by AtomicRef<SystemService?>()
     val socialNetworkService get() = systemService?.socialNetworkService
-    var notificationHandler by AtomicRef<NotificationHandler?>()
+    var notificationHandler by AtomicCloseableRef<NotificationHandler>()
+    var callService by AtomicCloseableRef<CallService>()
     val dataStore = DataStore(applicationContext)
     val permissionsHandler get() = systemService?.permissionsHandler
     val coroutineScope = CoroutineScope(coroutineContext)
@@ -206,7 +211,7 @@ internal class TopLevelFeatureProviderImpl(
                                         .executeAsOne()
                                         .toUser()
                                     coroutineScope.launch {
-                                        handleCall(user, listener)
+                                        handleCall(user, hasVideo = true, listener)
                                     }
                                 },
                                 updateMeetingState = { id, state ->
@@ -313,23 +318,70 @@ internal class TopLevelFeatureProviderImpl(
                             openMeeting = {
                                 listener(Msg.OpenMeeting(it))
                             },
-                            callServiceServices = CallServiceServices(
-                                updateToken = {
-                                    Napier.d("CallServiceServices updateToken $it")
-                                },
-                                reportNewCall = {
-                                    Napier.d("CallServiceServices reportNewCall $it")
-                                },
-                                answer = {
-                                    Napier.d("CallServiceServices answer")
-                                },
-                                decline = {
-                                    Napier.d("CallServiceServices decline")
-                                },
-                                setMuted = {
-                                    Napier.d("CallServiceServices setMuted $it")
-                                },
-                            ),
+                        ),
+                        parentCoroutineScope = coroutineScope,
+                    )
+                    callService = createCallService(
+                        CallService.Services(
+                            updateToken = { token ->
+                                val originalToken = dataStore.notificationToken
+                                val newToken = (originalToken as? NotificationToken.Apns)
+                                    ?.copy(
+                                        voipToken = token.voipToken,
+                                        bundleId = token.bundleId,
+                                    )
+                                    ?: NotificationToken.Apns(
+                                        notificationToken = null,
+                                        voipToken = token.voipToken,
+                                        bundleId = token.bundleId,
+                                    )
+
+                                Napier.i("apns token $newToken")
+
+                                if (newToken == originalToken) return@Services
+                                tokenUpdated(newToken)
+                                Napier.d("CallServiceServices updateToken $newToken")
+                            },
+                            reportNewCall = {
+                                Napier.d("CallServiceServices reportNewCall $it")
+                                webSocketMessageHandler(it, listener)
+                            },
+                            answer = {
+                                listener(
+                                    FeatureMsg.Call(
+                                        CallFeature.Msg.Accept,
+                                        TopLevelFeature.State.ScreenPosition(tab = TopLevelFeature.State.Tab.Overlay, index = 0)
+                                    )
+                                )
+                                Napier.d("CallServiceServices accept")
+                            },
+                            decline = {
+                                listener(
+                                    FeatureMsg.Call(
+                                        CallFeature.Msg.End,
+                                        TopLevelFeature.State.ScreenPosition(tab = TopLevelFeature.State.Tab.Overlay, index = 0)
+                                    )
+                                )
+                                Napier.d("CallServiceServices decline")
+                            },
+                            reportCallCancelled = {
+                                listener(
+                                    FeatureMsg.Call(
+                                        CallFeature.Msg.End,
+                                        TopLevelFeature.State.ScreenPosition(tab = TopLevelFeature.State.Tab.Overlay, index = 0)
+                                    )
+                                )
+                                Napier.d("CallServiceServices reportCallCancelled $it")
+                            },
+                            setMuted = {
+                                listener(
+                                    FeatureMsg.Call(
+                                        CallFeature.Msg.SetMicEnabled(it),
+                                        TopLevelFeature.State.ScreenPosition(tab = TopLevelFeature.State.Tab.Overlay, index = 0)
+                                    )
+                                )
+                                Napier.d("CallServiceServices setMuted $it")
+                            },
                         ),
                         parentCoroutineScope = coroutineScope,
                     )
@@ -426,7 +478,7 @@ internal class TopLevelFeatureProviderImpl(
                             listener(Msg.Pop)
                         }
                         is UserChatFeature.Eff.Call -> {
-                            listener(Msg.StartCall(userChatEff.user))
+                            listener(Msg.StartCall(userChatEff.user, hasVideo = false))
                         }
                         is UserChatFeature.Eff.OpenUserProfile -> {
                             listener(
@@ -489,14 +541,25 @@ internal class TopLevelFeatureProviderImpl(
                         }
                     }
                 }
-                is Eff.UpdateNotificationToken -> {
+                is Eff.UpdateApnsNotificationToken -> {
+                    val originalToken = dataStore.notificationToken
+                    val newToken = (originalToken as? NotificationToken.Apns)
+                        ?.copy(
+                            notificationToken = eff.token.notificationToken,
+                            bundleId = eff.token.bundleId,
+                        )
+                        ?: NotificationToken.Apns(
+                            notificationToken = eff.token.notificationToken,
+                            voipToken = null,
+                            bundleId = eff.token.bundleId,
+                        )
+
+                    if (newToken == originalToken) return@interpreter
+                    tokenUpdated(newToken)
+                }
+                is Eff.UpdateFcmNotificationToken -> {
                     if (dataStore.notificationToken == eff.token) return@interpreter
-                    dataStore.notificationToken = eff.token
-                    if (sessionInfo != null) {
-                        networkManager.sendFront(WebSocketMsg.Front.UpdateNotificationToken(eff.token))
-                    } else {
-                        dataStore.notificationTokenNotified = false
-                    }
+                    tokenUpdated(eff.token)
                 }
                 is Eff.UpdateSystemContext -> {
                     systemService = eff.systemContext?.let { context ->
@@ -580,16 +643,13 @@ internal class TopLevelFeatureProviderImpl(
         when (msg) {
             is WebSocketMsg.Front -> Unit
             is WebSocketMsg.Call.EndCall -> {
-                endCall(listener)
+                endCall(listener, CallEndedReason.RemoteEnded)
             }
             is WebSocketMsg.Call -> Unit
             is WebSocketMsg.Back.IncomingCall -> {
-                listener.invoke(Msg.IncomingCall(msg))
                 coroutineScope.launch {
-                    handleCallPermissions()?.also {
-                        listener(Msg.EndCall)
-                        listener(Msg.ShowAlert(it.first.alert))
-                    }
+                    networkManager.sendFront(WebSocketMsg.Front.IncomingCallReceived(msg.callId))
+                    handleIncomingCall(msg, listener)
                 }
             }
             is WebSocketMsg.Back.ListFilteredExperts -> Unit
@@ -673,6 +733,19 @@ internal class TopLevelFeatureProviderImpl(
                     usersQueries.updateFavorite(favorite = original.favorite, id = original.id)
                 }
             }
+        }
+    }
+
+    private fun tokenUpdated(
+        token: NotificationToken,
+    ) {
+        dataStore.notificationToken = token
+        if (sessionInfo != null) {
+            coroutineScope.launch {
+                networkManager.sendFront(WebSocketMsg.Front.UpdateNotificationToken(token))
+            }
+        } else {
+            dataStore.notificationTokenNotified = false
         }
     }
 }

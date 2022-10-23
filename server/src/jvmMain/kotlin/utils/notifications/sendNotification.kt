@@ -3,8 +3,6 @@ package com.well.server.utils.notifications
 import com.well.modules.db.server.SelectTokenByUid
 import com.well.modules.models.Notification
 import com.well.modules.models.NotificationToken
-import com.well.modules.models.User
-import com.well.modules.utils.kotlinUtils.UUID
 import com.well.server.utils.Services
 import com.eatthepath.pushy.apns.DeliveryPriority
 import com.eatthepath.pushy.apns.PushType
@@ -28,15 +26,14 @@ suspend fun sendNotification(
         is NotificationToken.Fcm -> {
             sendFcmNotification(
                 notification = notification,
-                token = token.token
+                token = token
             )
         }
         is NotificationToken.Apns -> {
             sendApnsNotification(
                 notification = notification,
-                token = token.token,
-                bundleId = token.bundleId,
-                services = services
+                token = token,
+                services = services,
             )
         }
     }
@@ -44,12 +41,12 @@ suspend fun sendNotification(
 
 private fun sendFcmNotification(
     notification: Notification,
-    token: String,
+    token: NotificationToken.Fcm,
 ) {
     try {
         val message = Message.builder()
             .putData(Notification.payloadDataKey, Json.encodeToString(notification))
-            .setToken(token)
+            .setToken(token.token)
             .build()
         val res = FirebaseMessaging.getInstance().send(message, false)
         println("sent ok $res")
@@ -58,7 +55,7 @@ private fun sendFcmNotification(
             MessagingErrorCode.UNREGISTERED,
             MessagingErrorCode.INVALID_ARGUMENT,
             -> {
-                println(" invalid token $firebaseException ${firebaseException.messagingErrorCode}")
+                println("invalid token $firebaseException ${firebaseException.messagingErrorCode}")
                 println(firebaseException.cause?.stackTraceToString())
             }
             else -> {
@@ -68,81 +65,60 @@ private fun sendFcmNotification(
     }
 }
 
-suspend fun sendVoipApnsNotification(
-    tokenInfo: NotificationToken.Apns,
-    services: Services,
-): String {
-    val notification = Notification.IncomingCall(
-        callId = UUID(),
-        userId = User.Id(value = 0),
-        hasVideo = false,
-        senderName = "Phil sendVoipApnsNotification",
-        totalUnreadCount = 0,
-    )
-    val payload = mapOf(Notification.payloadDataKey to notification)
-    val pushNotification = SimpleApnsPushNotification(
-        /* token = */
-        tokenInfo.token,
-        /* topic = */
-        "${tokenInfo.bundleId}.voip",
-        /* payload = */
-        Json.encodeToString(payload),
-        /* invalidationTime = */
-        Instant.now(),
-        /* priority = */
-        DeliveryPriority.IMMEDIATE,
-        /* pushType = */
-        PushType.VOIP,
-        /* collapseId = */
-        null,
-        /* apnsId = */
-        null,
-    )
-    val response = services
-        .run {
-            if (tokenInfo.bundleId == "com.well.app")
-                prodApnsClient
-            else
-                devApnsClient
-        }
-        .sendNotification(pushNotification)
-        .await()
-    return "${response.apnsId} rejectionReason ${response.rejectionReason}"
-}
-
 private suspend fun sendApnsNotification(
     notification: Notification,
-    token: String,
-    bundleId: String,
+    token: NotificationToken.Apns,
     services: Services,
 ) {
-    val payloadBuilder = SimpleApnsPayloadBuilder()
-    payloadBuilder.setAlertTitle(notification.alertTitle)
-    payloadBuilder.setAlertBody(notification.alertBody)
-    payloadBuilder.setBadgeNumber(notification.totalUnreadCount)
-    payloadBuilder.addCustomProperty(Notification.payloadDataKey, Json.encodeToString(notification))
-    val payload = payloadBuilder.build()
+    val rawToken: String
+    val topic: String
+    val invalidationTime: Instant
+    val pushType: PushType
+    val payload: String
+
+    if (notification is Notification.Voip) {
+        rawToken = token.voipToken ?: return
+        topic = "${token.bundleId}.voip"
+        invalidationTime = Instant.now()
+        pushType = PushType.VOIP
+        payload = Json.encodeToString(
+            mapOf(Notification.payloadDataKey to notification)
+        )
+    } else {
+        rawToken = token.notificationToken ?: return
+        topic = token.bundleId
+        invalidationTime = Instant.now().plus(SimpleApnsPushNotification.DEFAULT_EXPIRATION_PERIOD)
+        pushType = PushType.ALERT
+        val payloadBuilder = SimpleApnsPayloadBuilder()
+        payloadBuilder.setAlertTitle(notification.alertTitle)
+        payloadBuilder.setAlertBody(notification.alertBody)
+        payloadBuilder.setBadgeNumber(notification.totalUnreadCount)
+        payloadBuilder.addCustomProperty(Notification.payloadDataKey, Json.encodeToString(notification))
+        payload = payloadBuilder.build()
+    }
+
     val pushNotification = SimpleApnsPushNotification(
         /* token = */
-        token,
+        rawToken,
         /* topic = */
-        bundleId,
+        topic,
         /* payload = */
         payload,
         /* invalidationTime = */
-        Instant.now().plus(SimpleApnsPushNotification.DEFAULT_EXPIRATION_PERIOD),
+        invalidationTime,
         /* priority = */
         DeliveryPriority.IMMEDIATE,
         /* pushType = */
-        null,
+        pushType,
         /* collapseId = */
         null,
         /* apnsId = */
         null,
     )
+    println("send $pushNotification")
     val response = services
         .run {
-            if (bundleId == "com.well.app")
+            if (token.bundleId == "com.well.app")
                 prodApnsClient
             else
                 devApnsClient

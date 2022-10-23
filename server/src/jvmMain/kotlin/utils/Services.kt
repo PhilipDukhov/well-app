@@ -5,10 +5,12 @@ import com.well.modules.db.server.SelectTokenByUid
 import com.well.modules.db.server.toChatMessage
 import com.well.modules.db.server.toMeeting
 import com.well.modules.db.server.toUser
+import com.well.modules.models.CallId
 import com.well.modules.models.DeviceId
 import com.well.modules.models.Meeting
 import com.well.modules.models.Notification
 import com.well.modules.models.User
+import com.well.modules.models.WebSocketMsg
 import com.well.modules.models.chat.ChatMessage
 import com.well.modules.utils.flowUtils.MutableMapFlow
 import com.well.modules.utils.flowUtils.MutableSetStateFlow
@@ -32,6 +34,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import java.io.InputStream
 import java.util.*
@@ -107,7 +110,7 @@ class Services(app: Application) {
         )
     }
     val connectedUserSessionsFlow = MutableMapFlow<ClientKey, UserSession>()
-    val callInfos: MutableList<CallInfo> = Collections.synchronizedList(mutableListOf<CallInfo>())
+    val ongoingCallInfos: MutableMap<CallId, OngoingCallInfo> = Collections.synchronizedMap(mutableMapOf<CallId, OngoingCallInfo>())
     val client: HttpClient = createBaseHttpClient()
 
     fun awsProfileImagePath(
@@ -133,6 +136,8 @@ class Services(app: Application) {
         sealed interface ItemId {
             data class Meeting(val meetingId: com.well.modules.models.Meeting.Id) : ItemId
             data class ChatMessage(val chatMessageId: com.well.modules.models.chat.ChatMessage.Id) : ItemId
+            data class IncomingCall(val callId: CallId) : ItemId
+            data class EndCall(val callId: CallId) : ItemId
         }
     }
 
@@ -177,12 +182,39 @@ class Services(app: Application) {
         )
     }
 
+    fun deliverCallNotification(webSocketMsg: WebSocketMsg.Back.IncomingCall, peerId: User.Id) {
+        deliverNotificationIfNeeded(
+            getItem = { webSocketMsg },
+            itemId = PendingNotificationId.ItemId.IncomingCall(webSocketMsg.callId),
+            getPeerId = { peerId },
+            senderId = { webSocketMsg.user.id },
+            waitToDeliverDelay = 3.seconds,
+            buildNotification = { _, _, unreadCount: Int ->
+                Notification.Voip.IncomingCall(webSocketMsg, unreadCount)
+            }
+        )
+    }
+
+    fun deliverEndCallNotification(webSocketMsg: WebSocketMsg.Back.IncomingCall, peerId: User.Id) {
+        deliverNotificationIfNeeded(
+            getItem = { webSocketMsg },
+            itemId = PendingNotificationId.ItemId.EndCall(webSocketMsg.callId),
+            getPeerId = { peerId },
+            senderId = { webSocketMsg.user.id },
+            waitToDeliverDelay = 3.seconds,
+            buildNotification = { _, _, unreadCount: Int ->
+                Notification.Voip.IncomingCall(webSocketMsg, unreadCount)
+            }
+        )
+    }
+
     val pendingNotificationIds = MutableSetStateFlow<PendingNotificationId>()
     private fun <Item, N : Notification> deliverNotificationIfNeeded(
         getItem: () -> Item,
         itemId: PendingNotificationId.ItemId,
         getPeerId: Item.() -> User.Id,
         senderId: Item.() -> User.Id,
+        waitToDeliverDelay: Duration = 10.seconds,
         buildNotification: (Item, senderName: String, unreadCount: Int) -> N,
     ) {
         val item = getItem()
@@ -209,6 +241,7 @@ class Services(app: Application) {
                     itemId = itemId,
                     clientKey = it.second,
                     tokenInfo = it.first,
+                    waitToDeliverDelay = waitToDeliverDelay,
                     notification = notification,
                 )
             }
@@ -219,6 +252,7 @@ class Services(app: Application) {
         itemId: PendingNotificationId.ItemId,
         clientKey: ClientKey,
         tokenInfo: SelectTokenByUid,
+        waitToDeliverDelay: Duration,
         notification: Lazy<Notification>,
     ) {
         if (connectedUserSessionsFlow.contains(clientKey)) {
@@ -233,7 +267,7 @@ class Services(app: Application) {
                         }
                     }
                 }
-                delay(10.seconds)
+                delay(waitToDeliverDelay)
                 collectingJob.cancel()
             }
             checkingJob.join()

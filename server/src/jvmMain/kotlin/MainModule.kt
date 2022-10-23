@@ -1,17 +1,19 @@
 package com.well.server
 
+import com.well.modules.db.server.SelectTokenByUid
 import com.well.modules.models.Availability
+import com.well.modules.models.CallId
 import com.well.modules.models.DeviceId
 import com.well.modules.models.NetworkConstants
+import com.well.modules.models.Notification
 import com.well.modules.models.NotificationToken
 import com.well.modules.models.User
+import com.well.modules.models.WebSocketMsg
 import com.well.server.routing.auth.AppleOauthResponse
 import com.well.server.routing.auth.appleLoginPrincipal
 import com.well.server.routing.auth.build
 import com.well.server.routing.auth.facebookLogin
 import com.well.server.routing.auth.googleLogin
-import com.well.server.routing.auth.sendEmail
-import com.well.server.routing.auth.sendSms
 import com.well.server.routing.auth.twitterLogin
 import com.well.server.routing.bookAvailability
 import com.well.server.routing.deleteAvailability
@@ -34,7 +36,7 @@ import com.well.server.utils.authUid
 import com.well.server.utils.configProperty
 import com.well.server.utils.createPrincipal
 import com.well.server.utils.executeQueryAndPrettify
-import com.well.server.utils.notifications.sendVoipApnsNotification
+import com.well.server.utils.notifications.sendNotification
 import com.well.server.utils.sendEmail
 import com.auth0.jwk.JwkProviderBuilder
 import io.ktor.application.*
@@ -88,7 +90,7 @@ fun Application.module() {
     }
 }
 
-private object AdminPrincipal: Principal
+private object AdminPrincipal : Principal
 
 fun Application.initializedModule(services: Services) {
     install(CallLogging) {
@@ -275,7 +277,25 @@ fun Application.initializedModule(services: Services) {
             }
 
             post("sendTestNotification") {
-                val res = sendVoipApnsNotification(NotificationToken.Apns(call.receive(), "com.well.app.debug"), services = services)
+                val res = sendNotification(
+                    tokenInfo = SelectTokenByUid(
+                        token = NotificationToken.Apns(
+                            notificationToken = null,
+                            voipToken = call.receive(),
+                            bundleId = "com.well.app.debug"
+                        ),
+                        deviceId = DeviceId(value = "")
+                    ),
+                    notification = Notification.Voip.IncomingCall(
+                        webSocketMsg = WebSocketMsg.Back.IncomingCall(
+                            callId = CallId.new(),
+                            user = services.getCurrentUser(id = User.Id(6)),
+                            hasVideo = false,
+                        ),
+                        totalUnreadCount = 0,
+                    ),
+                    services = services,
+                )
                 call.respond(HttpStatusCode.OK, res)
             }
 //            post("testNotification") {

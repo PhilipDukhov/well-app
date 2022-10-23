@@ -124,7 +124,7 @@ private class BottomSheetDialogWrapper(
     composeView: View,
     layoutDirection: LayoutDirection,
     density: Density,
-    dialogId: UUID,
+    dialogId: CallId,
 ) : BottomSheetDialog(composeView.context), ViewRootForInspector {
 
     private val bottomDialogLayout: BottomDialogLayout

@@ -8,9 +8,10 @@ import com.well.modules.features.call.callFeature.drawing.DrawingFeature
 import com.well.modules.features.call.callFeature.drawing.DrawingFeature.copyClear
 import com.well.modules.features.call.callFeature.webRtc.LocalDeviceState
 import com.well.modules.features.call.callFeature.webRtc.RemoteDeviceState
+import com.well.modules.models.CallId
+import com.well.modules.models.CallInfo
 import com.well.modules.models.Size
 import com.well.modules.models.User
-import com.well.modules.models.WebSocketMsg
 import com.well.modules.models.date.Date
 import com.well.modules.models.date.secondsSinceNow
 import com.well.modules.puerhBase.plus
@@ -21,12 +22,21 @@ import com.well.modules.utils.viewUtils.nativeFormat
 import com.well.modules.features.call.callFeature.drawing.DrawingFeature.State as DrawingState
 
 object CallFeature {
-    fun callingStateAndEffects(user: User) =
-        (State(user = user, status = Calling) toSetOf Eff.Initiate(user.id))
-            .reduceInitialState()
+    fun callingStateAndEffects(user: User, hasVideo: Boolean) =
+        (State(
+            user = user,
+            status = Calling,
+            callId = CallId.new()
+        ) toSetOf Eff.Initiate(user, hasVideo)
+                ).reduceInitialState()
 
-    fun incomingStateAndEffects(incomingCall: WebSocketMsg.Back.IncomingCall) =
-        State(incomingCall, incomingCall.user, Incoming)
+    fun incomingStateAndEffects(incomingCall: CallInfo) =
+        State(
+            incomingCall = incomingCall,
+            callId = incomingCall.id,
+            user = incomingCall.user,
+            status = Incoming
+        )
             .withEmptySet<State, Eff>()
             .reduceInitialState()
 
@@ -34,10 +44,11 @@ object CallFeature {
         first to (second + Eff.SyncLocalDeviceState(first.localDeviceState))
 
     data class State(
-        val incomingCall: WebSocketMsg.Back.IncomingCall? = null,
+        val incomingCall: CallInfo? = null,
+        val callId: CallId,
         val user: User,
         val status: Status,
-        val localDeviceState: LocalDeviceState = LocalDeviceState.default,
+        val localDeviceState: LocalDeviceState = LocalDeviceState.default(cameraEnabled = incomingCall?.hasVideo),
         val remoteDeviceState: RemoteDeviceState? = null,
         val callStartedDateInfo: CallStartedDateInfo? = null,
         val viewPoint: ViewPoint = ViewPoint.Both,
@@ -143,9 +154,9 @@ object CallFeature {
     }
 
     sealed interface Eff {
-        class Initiate(val userId: User.Id) : Eff
-        class Accept(val incomingCall: WebSocketMsg.Back.IncomingCall) : Eff
-        object End : Eff
+        class Initiate(val user: User, val hasVideo: Boolean) : Eff
+        class Accept(val incomingCall: CallInfo) : Eff
+        class End(val reason: CallEndedReason) : Eff
         object ChooseViewPoint : Eff
         object SystemBack : Eff
         class SyncLocalDeviceState(val localDeviceState: LocalDeviceState) : Eff
@@ -162,7 +173,7 @@ object CallFeature {
         is Msg.Accept -> state.incomingCall?.let { incomingCall ->
             state.copy(status = Connecting) to setOf(Eff.Accept(incomingCall))
         } ?: throw IllegalStateException("$msg | $state")
-        is Msg.End -> state toSetOf Eff.End
+        is Msg.End -> state toSetOf Eff.End(if (state.status == State.Status.Ongoing) CallEndedReason.Finished else CallEndedReason.Failed)
         is Msg.Back -> {
             when (state.controlSet) {
                 State.ControlSet.Call -> {
@@ -264,7 +275,7 @@ object CallFeature {
             drawingState = drawingStateCopyViewPoint(viewPoint),
         ).reduceUpdateLocalDeviceState(forceMineBackCamera = true)
 
-    private fun State.reduceLocalUpdateViewPoint(viewPoint: State.ViewPoint) : Pair<State, Set<Eff>> =
+    private fun State.reduceLocalUpdateViewPoint(viewPoint: State.ViewPoint): Pair<State, Set<Eff>> =
         copy(
             viewPoint = viewPoint,
             controlSetSaved = if (viewPoint == State.ViewPoint.Both)

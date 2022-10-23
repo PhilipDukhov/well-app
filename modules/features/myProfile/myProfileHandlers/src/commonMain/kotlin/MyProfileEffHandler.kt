@@ -43,7 +43,7 @@ class MyProfileEffHandler(
         val onInitializationFinished: () -> Unit,
         val onPop: () -> Unit,
         val setFavorite: (FavoriteSetter) -> Unit,
-        val onStartCall: (User) -> Unit,
+        val onStartCall: (User, hasVideo: Boolean) -> Unit,
         val onOpenUserChat: (User.Id) -> Unit,
         val onLogout: () -> Unit,
         val onDeleteProfile: () -> Unit,
@@ -107,7 +107,7 @@ class MyProfileEffHandler(
             is Eff.ShowError -> services.showExceptionAlert(eff.exception)
             is Eff.Back -> services.onPop()
             is Eff.InitializationFinished -> services.onInitializationFinished()
-            is Eff.Call -> services.onStartCall(eff.user)
+            is Eff.Call -> services.onStartCall(eff.user, true)
             is Eff.Message -> services.onOpenUserChat(eff.uid)
             is Eff.BecomeExpert -> services.requestBecomeExpert()
             is Eff.RatingRequest -> services.onRatingRequest(eff.ratingRequest)

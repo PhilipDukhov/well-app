@@ -210,9 +210,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
         featureProvider.accept(
-            msg: TopLevelFeature.MsgUpdateNotificationToken(
-                token: NotificationToken.Apns(
-                    token: deviceToken.toHexEncodedString(),
+            msg: TopLevelFeature.MsgUpdateApnsNotificationToken(
+                token: NotificationToken.ApnsNotification(
+                    notificationToken: deviceToken.toHexEncodedString(),
                     bundleId: Bundle.main.bundleIdentifier!
                 )
             )
@@ -248,9 +248,17 @@ extension AppDelegate: PKPushRegistryDelegate {
         callUpdate.hasVideo = false
         callUpdate.supportsHolding = false
 
-        callProvider.reportNewIncomingCall(with: id, update: callUpdate) { error in
+		print("didReceiveIncomingPushWith")
+
+		if calling {
+			callProvider.invalidate()
+			calling = false
+		} else {
+
+        callProvider.reportNewIncomingCall(with: id, update: callUpdate) { [self] error in
             printd("reportNewIncomingCall", error as Any)
             completion()
+			calling = true
 //            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: { [self] in
 
 //                callUpdate.hasVideo = false
@@ -258,8 +266,11 @@ extension AppDelegate: PKPushRegistryDelegate {
 //                printd("invalidate")
 //            })
         }
+		}
     }
 }
+
+var calling = false
 
 let callController = CXCallController()
 

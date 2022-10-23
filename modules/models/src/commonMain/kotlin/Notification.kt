@@ -16,16 +16,28 @@ sealed class Notification {
     abstract val alertBody: String
 
     @Serializable
-    class IncomingCall(
-        val callId: UUID,
-        val userId: User.Id,
-        override val hasVideo: Boolean,
-        override val senderName: String,
-        override val totalUnreadCount: Int,
-    ) : Notification(), CallInfo {
-        override val alertTitle: String = "$senderName is calling"
-        override val alertBody: String = ""
-        override val id: UUID get() = callId
+    sealed class Voip: Notification() {
+        @Serializable
+        class IncomingCall(
+            val webSocketMsg: WebSocketMsg.Back.IncomingCall,
+            override val totalUnreadCount: Int,
+        ) : Voip(), CallInfo by webSocketMsg {
+            override val senderName: String
+                get() = user.fullName
+            override val alertTitle: String = "$senderName is calling"
+            override val alertBody: String = ""
+            override val id: CallId get() = webSocketMsg.callId
+        }
+
+        @Serializable
+        class CanceledCall(
+            val callId: CallId,
+            override val senderName: String,
+            override val totalUnreadCount: Int,
+        ) : Voip() {
+            override val alertTitle: String = ""
+            override val alertBody: String = ""
+        }
     }
 
     @Serializable

@@ -48,7 +48,7 @@ class WebRtcManager(
         private var initialized = false
     }
 
-    private var deviceState = LocalDeviceState.default
+    private var deviceState = LocalDeviceState.default()
     private val audioManager = applicationContext.getSystemService(AudioManager::class.java)!!
     private val coroutineContext = CoroutineScope(Dispatchers.Default)
 

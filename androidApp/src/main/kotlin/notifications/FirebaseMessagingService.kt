@@ -7,7 +7,7 @@ import com.google.firebase.messaging.RemoteMessage
 
 class FirebaseMessagingService : com.google.firebase.messaging.FirebaseMessagingService() {
     override fun onNewToken(token: String) {
-        featureProvider.accept(TopLevelFeature.Msg.UpdateNotificationToken(NotificationToken.Fcm(token)))
+        featureProvider.accept(TopLevelFeature.Msg.UpdateFcmNotificationToken(NotificationToken.Fcm(token)))
         println("onNewToken $token")
     }
 

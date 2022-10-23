@@ -2,12 +2,14 @@ package com.well.modules.features.topLevel.topLevelHandlers
 
 import com.well.modules.atomic.CloseableFuture
 import com.well.modules.atomic.freeze
+import com.well.modules.features.call.callFeature.CallEndedReason
 import com.well.modules.features.call.callFeature.CallFeature
 import com.well.modules.features.call.callFeature.drawing.DrawingFeature
 import com.well.modules.features.call.callHandlers.CallEffectHandler
 import com.well.modules.features.topLevel.topLevelFeature.FeatureEff
 import com.well.modules.features.topLevel.topLevelFeature.FeatureMsg
 import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature
+import com.well.modules.models.CallInfo
 import com.well.modules.models.User
 import com.well.modules.models.WebSocketMsg
 import com.well.modules.puerhBase.adapt
@@ -47,7 +49,7 @@ internal suspend fun TopLevelFeatureProviderImpl.handleCallEff(
             networkManager.sendCall(
                 WebSocketMsg.Call.EndCall(WebSocketMsg.Call.EndCall.Reason.Decline)
             )
-            endCall(listener)
+            endCall(listener, eff.reason)
         }
         CallFeature.Eff.ChooseViewPoint -> {
             fun startDrawing(viewPoint: CallFeature.State.ViewPoint) =
@@ -85,6 +87,7 @@ private fun TopLevelFeatureProviderImpl.createWebRtcManagerHandler(
     addEffectHandler(
         CallEffectHandler(
             CallEffectHandler.Services(
+                callService = callService,
                 isConnectedFlow = networkManager.isConnectedFlow,
                 callWebSocketMsgFlow = networkManager.webSocketMsgSharedFlow.filterIsInstance(),
                 sendCallWebSocketMsg = networkManager::sendCall,
@@ -94,6 +97,13 @@ private fun TopLevelFeatureProviderImpl.createWebRtcManagerHandler(
                         handleRequestImageUpdate(eff, updateImage)
                     }
                 },
+                onStartOutgoingCall = {
+                    callService?.reportNewOutgoingCall(it)
+                },
+                onStartedConnecting = {
+                    callService?.callStartedConnecting()
+                },
+                onConnected = {},
             ),
             webRtcManagerGenerator,
             coroutineScope,
@@ -104,6 +114,20 @@ private fun TopLevelFeatureProviderImpl.createWebRtcManagerHandler(
             msgAdapter = { FeatureMsg.Call(it, position) }
         )
     )
+}
+
+internal suspend fun TopLevelFeatureProviderImpl.handleIncomingCall(
+    callInfo: CallInfo,
+    listener: (TopLevelMsg) -> Unit,
+) {
+    listener.invoke(TopLevelMsg.IncomingCall(callInfo))
+    val failedPermissions = handleCallPermissions()
+    if (failedPermissions == null) {
+        callService?.reportNewIncomingCall(callInfo)
+    } else {
+        listener(TopLevelMsg.EndCall)
+        listener(TopLevelMsg.ShowAlert(failedPermissions.first.alert))
+    }
 }
 
 private suspend fun TopLevelFeatureProviderImpl.handleRequestImageUpdate(
@@ -126,16 +150,19 @@ private suspend fun TopLevelFeatureProviderImpl.handleRequestImageUpdate(
 
 internal suspend fun TopLevelFeatureProviderImpl.handleCall(
     user: User,
+    hasVideo: Boolean,
     listener: (TopLevelMsg) -> Unit,
 ) = handleCallPermissions()?.also {
     listener(TopLevelMsg.ShowAlert(it.first.alert))
-} ?: listener(TopLevelMsg.StartCall(user))
+} ?: listener(TopLevelMsg.StartCall(user, hasVideo))
 
 internal fun TopLevelFeatureProviderImpl.endCall(
     listener: (TopLevelMsg) -> Unit,
+    reason: CallEndedReason,
 ) {
     listener.invoke(TopLevelMsg.EndCall)
     callCloseableContainer.close()
+    callService?.endCall(reason)
 }
 
 internal suspend fun TopLevelFeatureProviderImpl.handleCallPermissions() =

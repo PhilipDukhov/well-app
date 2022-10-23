@@ -1,5 +1,6 @@
 package com.well.modules.features.call.callFeature.webRtc
 
+import com.well.modules.atomic.freeze
 import com.well.modules.features.call.callFeature.CallFeature
 import com.well.modules.utils.viewUtils.platform.Platform
 import com.well.modules.utils.viewUtils.platform.isDebug
@@ -23,11 +24,12 @@ data class LocalDeviceState(
         CallFeature.Msg.SetIsFrontCamera(!isFrontCamera)
 
     companion object {
-        val default = LocalDeviceState(
-            micEnabled = true,
-            cameraEnabled = true,
-            audioSpeakerEnabled = !Platform.isDebug,
-            isFrontCamera = true
-        )
+        fun default(cameraEnabled: Boolean? = null) =
+            LocalDeviceState(
+                micEnabled = true,
+                cameraEnabled = cameraEnabled ?: true,
+                audioSpeakerEnabled = !Platform.isDebug,
+                isFrontCamera = true
+            ).freeze()
     }
 }

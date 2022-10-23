@@ -15,8 +15,6 @@ import com.well.modules.utils.flowUtils.filterNotEmpty
 import com.well.modules.utils.flowUtils.flattenFlow
 import com.well.modules.utils.viewUtils.ApplicationContext
 import com.well.modules.utils.viewUtils.RawNotification
-import com.well.modules.utils.viewUtils.platform.Platform
-import com.well.modules.utils.viewUtils.platform.current
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -42,7 +40,6 @@ class NotificationHandler(
         val getMessageByIdFlow: (ChatMessage.Id) -> Flow<ChatMessageContainer?>,
         val openChat: (User.Id) -> Unit,
         val openMeeting: (Meeting.Id) -> Unit,
-        val callServiceServices: CallServiceServices,
     )
 
     private val notificationHelper = SystemNotificationHelper(applicationContext)
@@ -108,7 +105,6 @@ class NotificationHandler(
             }
     }
 
-    private val callService = CallService(services = services.callServiceServices, parentCoroutineScope = coroutineScope)
 
     fun handleRawNotification(rawNotification: RawNotification) {
         val notification = parseRawNotification(rawNotification)
@@ -139,8 +135,8 @@ class NotificationHandler(
             is Notification.Meeting -> {
                 Napier.e("unhandled notification $notification")
             }
-            is Notification.IncomingCall -> {
-                Napier.e("unhandled notification $notification")
+            is Notification.Voip -> {
+                Napier.e("unexpected voip notification: $notification")
             }
         }
         currentNotificationsStateFlow.add(notification)

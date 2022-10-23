@@ -41,7 +41,9 @@ internal fun TopLevelFeatureProviderImpl.createProfileEffHandler(
         },
         onPop = { listener(Msg.Pop) },
         setFavorite = ::updateUserFavorite.launchedIn(coroutineScope),
-        onStartCall = listener.map(Msg::StartCall),
+        onStartCall = { _user, hasVideo ->
+            listener(Msg.StartCall(_user, hasVideo))
+        },
         onOpenUserChat = listener.map(Msg::OpenUserChat),
         onLogout = {
             coroutineScope.launch {

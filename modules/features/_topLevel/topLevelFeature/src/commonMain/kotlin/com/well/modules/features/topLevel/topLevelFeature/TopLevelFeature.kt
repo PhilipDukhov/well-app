@@ -19,10 +19,10 @@ import com.well.modules.features.topLevel.topLevelFeature.TopLevelFeature.State.
 import com.well.modules.features.updateRequest.UpdateRequestFeature
 import com.well.modules.features.userChat.userChatFeature.UserChatFeature
 import com.well.modules.features.welcome.WelcomeFeature
+import com.well.modules.models.CallInfo
 import com.well.modules.models.Meeting
 import com.well.modules.models.NotificationToken
 import com.well.modules.models.User
-import com.well.modules.models.WebSocketMsg
 import com.well.modules.puerhBase.toSetOf
 import com.well.modules.puerhBase.withEmptySet
 import com.well.modules.utils.kotlinUtils.map
@@ -145,8 +145,8 @@ object TopLevelFeature {
 
     sealed class Msg {
         object Initial : Msg()
-        class StartCall(val user: User) : Msg()
-        class IncomingCall(val incomingCall: WebSocketMsg.Back.IncomingCall) : Msg()
+        class StartCall(val user: User, val hasVideo: Boolean) : Msg()
+        class IncomingCall(val incomingCall: CallInfo) : Msg()
         object EndCall : Msg()
 
         object StopImageSharing : Msg()
@@ -161,7 +161,8 @@ object TopLevelFeature {
         class OpenMeeting(val meetingId: Meeting.Id) : Msg()
         object Back : Msg()
         object Pop : Msg()
-        class UpdateNotificationToken(val token: NotificationToken) : Msg()
+        class UpdateApnsNotificationToken(val token: NotificationToken.ApnsNotification) : Msg()
+        class UpdateFcmNotificationToken(val token: NotificationToken.Fcm) : Msg()
         class UpdateSystemContext(val systemContext: SystemContext?) : Msg()
         class RawNotificationReceived(val rawNotification: RawNotification) : Msg()
         object ShowUpdateNeededScreen : Msg()
@@ -173,7 +174,8 @@ object TopLevelFeature {
         object Initial : Eff
         object InitialLoggedIn : Eff
         class TopScreenAppeared(val screen: ScreenState, val position: ScreenPosition) : Eff
-        class UpdateNotificationToken(val token: NotificationToken) : Eff
+        class UpdateApnsNotificationToken(val token: NotificationToken.ApnsNotification) : Eff
+        class UpdateFcmNotificationToken(val token: NotificationToken.Fcm) : Eff
         class UpdateSystemContext(val systemContext: SystemContext?) : Eff
         class HandleRawNotification(val rawNotification: RawNotification) : Eff
     }
@@ -232,7 +234,7 @@ object TopLevelFeature {
                             )
                 }
                 is Msg.StartCall -> {
-                    return@reducer CallFeature.callingStateAndEffects(msg.user)
+                    return@reducer CallFeature.callingStateAndEffects(msg.user, hasVideo = msg.hasVideo)
                         .map(
                             { state.copyShowCall(it) },
                             {
@@ -300,8 +302,11 @@ object TopLevelFeature {
                         )
                         .reduceScreenChanged()
                 }
-                is Msg.UpdateNotificationToken -> {
-                    return@eff Eff.UpdateNotificationToken(msg.token)
+                is Msg.UpdateFcmNotificationToken -> {
+                    return@eff Eff.UpdateFcmNotificationToken(msg.token)
+                }
+                is Msg.UpdateApnsNotificationToken -> {
+                    return@eff Eff.UpdateApnsNotificationToken(msg.token)
                 }
                 is Msg.UpdateSystemContext -> {
                     return@eff Eff.UpdateSystemContext(msg.systemContext)
